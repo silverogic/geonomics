@@ -1,5 +1,5 @@
 import React from 'react'
-import { Shield, ExternalLink, Globe } from 'lucide-react'
+import { ExternalLink, Globe } from 'lucide-react'
 import type { Language } from '../types/economics'
 import { translations } from '../i18n/translations'
 
@@ -61,16 +61,8 @@ export const Footer: React.FC<FooterProps> = ({ lang }) => {
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/60 flex items-start gap-3">
-          <Shield className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-          <div className="space-y-1 text-slate-400 leading-relaxed">
-            <p>
-              <strong>{t.footerZeroStorageTitle}:</strong> {t.footerZeroStorageDesc}
-            </p>
-            <p className="text-[11px] text-slate-500">
-              * {t.footerDisclaimer}
-            </p>
-          </div>
+        <div className="text-center text-slate-500 text-[11px] space-y-1">
+          <p>* {t.footerDisclaimer}</p>
         </div>
 
         <div className="text-center text-slate-600 text-[11px]">
