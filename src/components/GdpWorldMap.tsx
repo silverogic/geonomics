@@ -35,7 +35,6 @@ interface GdpWorldMapProps {
   onYearChange: (year: EconomicYear) => void
   onSelectCountry: (country: CountryMeta) => void
   localCountryItem?: CountryRowItem
-  isLoading?: boolean
 }
 
 // Bounding box presets for smooth region focus
@@ -57,7 +56,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   onYearChange,
   onSelectCountry,
   localCountryItem,
-  isLoading = false,
 }) => {
   const t = translations[lang]
   const [metric, setMetric] = useState<MapMetric>('gdp')
@@ -84,11 +82,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       map.set(item.country.id, item)
     }
     return map
-  }, [items])
-
-  // Total global GDP tracked (converted to base currency)
-  const totalWorldGdpUsd = useMemo(() => {
-    return items.reduce((sum, item) => sum + (item.totalGdpUsd || 0), 0)
   }, [items])
 
   // Filtered items when search is active

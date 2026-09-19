@@ -204,7 +204,6 @@ export function App() {
               onYearChange={handleYearChange}
               onSelectCountry={(c) => setSelectedCountry(c)}
               localCountryItem={localCountryItem}
-              isLoading={isLoading}
             />
           )
         )}
