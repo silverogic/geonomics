@@ -1,4 +1,4 @@
-export type Language = 'en' | 'ko'
+export type Language = 'en' | 'ko' | 'ja'
 
 export const translations = {
   en: {
@@ -36,6 +36,24 @@ export const translations = {
     filterOceania: 'Oceania',
     viewCards: 'Card View',
     viewTable: 'Table View',
+
+    // Map View
+    mapTitle: 'Global GDP Map Explorer',
+    mapSubtitle: 'Real-time Forex & Official World Bank · IMF Macroeconomic Intelligence',
+    mapMetricLabel: 'Indicator:',
+    metricTotalGdp: 'Total GDP',
+    metricPerCapita: 'GDP Per Capita',
+    metricGrowth: 'Real Growth',
+    metricDebt: 'Gov Debt %',
+    mapResetZoom: 'Reset',
+    mapZoomIn: 'Zoom In',
+    mapZoomOut: 'Zoom Out',
+    top10Title: 'World Top 10 Economies',
+    legendTitle: 'Indicator Scale',
+    clickCountryHint: 'Click any country for 10-year historical trajectory & forex',
+    selectedCountryBadge: 'Selected Economy',
+    viewDetailsBtn: 'Deep Dive & 10-Yr Chart',
+    viewMap: 'World Map View',
 
     // Year Switcher
     yearLabel: 'Economic Horizon',
@@ -164,6 +182,24 @@ export const translations = {
     viewCards: '카드 뷰',
     viewTable: '리스트 테이블 뷰',
 
+    // Map View
+    mapTitle: '세계 GDP 시각화 지도',
+    mapSubtitle: '실시간 환율 및 세계은행(World Bank) · IMF 공식 데이터 기반 경제 지도',
+    mapMetricLabel: '분석 지표:',
+    metricTotalGdp: '총 GDP',
+    metricPerCapita: '1인당 GDP',
+    metricGrowth: '실질 성장률',
+    metricDebt: '국가 부채 비율',
+    mapResetZoom: '초기화',
+    mapZoomIn: '확대',
+    mapZoomOut: '축소',
+    top10Title: '글로벌 TOP 10 경제 대국',
+    legendTitle: '지표 규모별 범례',
+    clickCountryHint: '국가를 클릭하면 10개년 GDP 추이와 상세 통계를 볼 수 있습니다',
+    selectedCountryBadge: '선택된 국가',
+    viewDetailsBtn: '상세 지표 및 10개년 차트',
+    viewMap: '세계 지도 뷰',
+
     // Year Switcher
     yearLabel: '기준 연도',
     yearActual: '{year}년 실적',
@@ -254,5 +290,150 @@ export const translations = {
     footerImf: '국제통화기금(IMF) DataMapper',
     footerEcb: '유럽중앙은행(ECB) 공식 환율',
     footerGithub: 'GitHub Pages 호스팅',
+  },
+  ja: {
+    // Header & Nav
+    appTitle: 'Geonomics',
+    appSubtitle: 'リアルタイム為替レート & 世界銀行・IMF公式マクロ経済統計',
+    liveBadge: 'LIVE',
+    navExplorer: '国別探索',
+    navCompare: '1:1 比較',
+    baseCurrencyLabel: '基準通貨:',
+    refreshBtn: '更新',
+    refreshTooltip: '最新データを再取得',
+
+    // Ticker
+    tickerTitle: '主要リアルタイム為替レート',
+    asOf: '更新:',
+
+    // Hero Section
+    heroBadge: '世界銀行(World Bank) · IMF WEO 公式統計 × リアルタイム為替連動',
+    heroTitle: '世界各国の為替レート & GDPリアルタイム分析',
+    heroDescription:
+      'データベース不要のオンデマンド経済情報プラットフォーム。世界銀行(World Bank)、国際通貨基金(IMF WEO)、欧州中央銀行(ECB)などの公式APIから直接データを取得し、高精度なマクロ経済指標とリアルタイム為替レートを提供します。',
+    statCountriesTracked: '追跡対象国数',
+    statBaseCurrency: '現在の基準通貨',
+    statTopEconomy: '世界第1位の経済大国',
+    statLocalEconomy: '現在地の経済規模 ({country})',
+
+    // Filters & Search
+    searchPlaceholder: '国名、コード、通貨で検索...',
+    filterAll: 'すべて',
+    filterAsia: 'アジア',
+    filterEurope: 'ヨーロッパ',
+    filterAmericas: 'アメリカ',
+    filterAfrica: 'アフリカ',
+    filterOceania: 'オセアニア',
+    viewCards: 'カードビュー',
+    viewTable: 'テーブルビュー',
+
+    // Map View
+    mapTitle: '世界GDP可視化マップ',
+    mapSubtitle: 'リアルタイム為替レートおよび世界銀行・IMF公式統計による世界各国の経済規模マップ',
+    mapMetricLabel: '分析指標:',
+    metricTotalGdp: '名目GDP',
+    metricPerCapita: '1人当たりGDP',
+    metricGrowth: '実質成長率',
+    metricDebt: '政府債務比率',
+    mapResetZoom: 'リセット',
+    mapZoomIn: '拡大',
+    mapZoomOut: '縮小',
+    top10Title: '世界トップ10経済大国',
+    legendTitle: '指標規模の凡例',
+    clickCountryHint: '国をクリックすると10年間の推移と詳細指標を表示します',
+    selectedCountryBadge: '選択された国',
+    viewDetailsBtn: '詳細指標と10年チャートを見る',
+    viewMap: '世界地図ビュー',
+
+    // Year Switcher
+    yearLabel: '対象年度',
+    yearActual: '{year}年 実績',
+    yearEstimate: '{year}年 推計',
+    yearProjection: '{year}年 予測',
+
+    // Country Card
+    cardTotalGdp: '名目GDP',
+    cardPerCapita: '1人当たりGDP',
+    cardStockIndex: '主要株価指数',
+    cardFxRate: 'リアルタイム為替',
+    cardGrowthRate: '成長率',
+    cardDebtRatio: '政府債務',
+    cardViewDetails: '詳細指標 & 10年チャート',
+    loadingData: 'データを読み込み中...',
+    noCountriesFound: '検索条件に一致する国が見つかりません。',
+
+    // Modal
+    modalContinent: '地域',
+    modalCurrency: '通貨',
+    modalTotalGdpTitle: '名目GDP',
+    modalPerCapitaTitle: '1人当たりGDP',
+    modalGrowthTitle: '年間実質GDP成長率',
+    modalRealGrowth: '実質GDP成長率',
+    modalDebtTitle: '政府総債務残高比率',
+    modalDebtSub: '一般政府総債務 (対GDP比 %, IMF WEO)',
+    modalRankTitle: '世界順位',
+    modalRankValue: '世界第{rank}位',
+    modalRankSub: '名目GDP基準',
+    modalFxSectionTitle: '公式リアルタイム為替レート',
+    modalOnDemandBadge: 'オンデマンド',
+    modalForexTimestamp: '為替市場タイムスタンプ',
+    modalStockIndexTitle: '国の代表的株価指数',
+    modalStockIndexSub: '公式証券取引所ライブデータ & インタラクティブチャート',
+    modalChartTitle: '過去10年間のGDP推移 (2015 - {year})',
+    modalChartUnit: '単位: {base} 換算',
+    modalChartLoading: '世界銀行の時系列データを読み込み中...',
+    modalAccuracyTitle: 'データの信頼性と公的情報源',
+    modalAccuracyGdp:
+      'GDP統計: 世界銀行オープンデータ (NY.GDP.MKTP.CD, NY.GDP.PCAP.CD) およびIMF世界経済見通し (WEO) から直接取得。',
+    modalAccuracyDebt:
+      '政府債務統計: 国際通貨基金 (IMF) 世界経済見通し (WEO) 一般政府総債務指標 (GGXWDG_NGDP) より取得。',
+    modalAccuracyFx:
+      '為替レート: 欧州中央銀行 (ECB) 基準金利およびグローバル為替フィードからオンデマンドで直接取得。',
+    modalWorldBankLink: '世界銀行 国別データポータルへ移動',
+    modalImfLink: 'IMF データポータルへ移動',
+    modalClose: '閉じる',
+
+    // Currency Converter
+    converterTitle: 'リアルタイム為替計算機',
+    converterSending: '換算元の金額',
+    converterConverted: '換算予想金額',
+    swapCurrencies: '通貨を入れ替える',
+
+    // 1:1 Compare View
+    compareTitle: '国別 1:1 経済規模 & 為替比較',
+    compareDescription:
+      '2か国の世界銀行・IMF公式マクロ経済推移とリアルタイム為替レートを直感的に横並びで比較します。',
+    compareRecommended: '人気の比較:',
+    compareBaseCountry: '基準国 (A)',
+    compareTargetCountry: '比較対象国 (B)',
+    compareInsightTitle: '比較サマリー:',
+    compareInsightText:
+      '{countryA}の名目GDPは{countryB}の{gdpRatio}倍、1人当たりGDPは{perCapitaRatio}倍の水準です。',
+    compareDebtRatio: '政府債務比率 (% GDP, IMF)',
+    compareChartTitle: '10年間GDP推移の同時比較',
+    compareChartLoading: '比較データを集計中...',
+
+    // Ranking Table
+    tableTitle: '世界GDP & 為替レート ランキング',
+    tableSubtitle: '世界銀行およびIMF WEO公式マクロ経済統計基準 (主要{count}か国収録)',
+    colRank: '順位',
+    colCountry: '国・地域',
+    colCurrency: '通貨',
+    colFxRate: 'リアルタイム為替 ({base})',
+    colTotalGdp: '名目GDP ({base})',
+    colPerCapita: '1人当たりGDP',
+    colGrowth: '成長率',
+    colDebt: '債務比率 (% GDP, IMF)',
+
+    // Footer
+    footerZeroStorageTitle: 'ゼロストレージ・オンデマンドシステム',
+    footerZeroStorageDesc:
+      '当サイトはサーバーやデータベースを一切保持せず、ユーザーのブラウザから公的機関の公式API（世界銀行、IMF WEO、ECB）へ直接接続し、最新のデータをリアルタイムでオンデマンド描画します。',
+    footerDisclaimer:
+      '提供される為替レートおよびマクロ経済統計は公的データを基に集計された参考情報です。投資判断および金融取引の最終責任は利用者に帰属します。',
+    footerWorldBank: '世界銀行 (World Bank) Open Data',
+    footerImf: '国際通貨基金 (IMF) DataMapper',
+    footerEcb: '欧州中央銀行 (ECB) 公式為替レート',
+    footerGithub: 'GitHub Pages でホスティング中',
   },
 } as const

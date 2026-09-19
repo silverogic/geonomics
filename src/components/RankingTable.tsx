@@ -6,6 +6,7 @@ import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
+import { getCountryName, getCountrySecondaryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
 
 export interface CountryRowItem {
   country: CountryMeta
@@ -64,9 +65,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       .filter((item) => {
         const query = searchTerm.toLowerCase().trim()
         if (!query) return true
+        const matchesNameJa = COUNTRY_NAMES_JA[item.country.id]?.toLowerCase().includes(query) || false
         return (
           item.country.nameEn.toLowerCase().includes(query) ||
           item.country.nameKo.toLowerCase().includes(query) ||
+          matchesNameJa ||
           item.country.id.toLowerCase().includes(query) ||
           item.country.currencyCode.toLowerCase().includes(query)
         )
@@ -76,8 +79,8 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         let valB: any = b[sortField as keyof CountryRowItem]
 
         if (sortField === 'countryName') {
-          valA = lang === 'ko' ? a.country.nameKo : a.country.nameEn
-          valB = lang === 'ko' ? b.country.nameKo : b.country.nameEn
+          valA = getCountryName(a.country, lang)
+          valB = getCountryName(b.country, lang)
           return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
         }
 
@@ -245,8 +248,8 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 ? getConversionRate(exchangeRates, item.country.currencyCode, baseCurrency)
                 : 0
 
-              const displayName = lang === 'ko' ? item.country.nameKo : item.country.nameEn
-              const secondaryName = lang === 'ko' ? item.country.nameEn : item.country.nameKo
+              const displayName = getCountryName(item.country, lang)
+              const secondaryName = getCountrySecondaryName(item.country, lang)
 
               return (
                 <tr

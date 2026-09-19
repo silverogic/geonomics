@@ -1,20 +1,18 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Search, Filter, Sparkles, AlertCircle, LayoutGrid, List } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import { COUNTRIES } from './data/countries'
-import type { CountryMeta, BaseCurrency, ExchangeRates, Region, Language, EconomicYear } from './types/economics'
-import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from './utils/economicYears'
-import { fetchExchangeRates, getConversionRate } from './services/exchangeApi'
+import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from './types/economics'
+import { DEFAULT_ECONOMIC_YEAR } from './utils/economicYears'
+import { fetchExchangeRates } from './services/exchangeApi'
 import { loadGlobalGdpOverview } from './services/worldBankApi'
-import { formatGdpCompact } from './utils/formatters'
 import { translations } from './i18n/translations'
 import { Navbar } from './components/Navbar'
 import { TickerBar } from './components/TickerBar'
-import { CountryCard } from './components/CountryCard'
 import { CountryModal } from './components/CountryModal'
 import { CompareView } from './components/CompareView'
-import { RankingTable, type CountryRowItem } from './components/RankingTable'
+import type { CountryRowItem } from './components/RankingTable'
 import { Footer } from './components/Footer'
-import { CountryFlag } from './components/CountryFlag'
+import { GdpWorldMap } from './components/GdpWorldMap'
 import {
   detectBrowserLanguage,
   detectBrowserBaseCurrency,
@@ -49,11 +47,6 @@ export function App() {
 
   // Selected economic year: Default 2024 (Actual)
   const [selectedYear, setSelectedYear] = useState<EconomicYear>(DEFAULT_ECONOMIC_YEAR)
-
-  // Search & Filter state
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedRegion, setSelectedRegion] = useState<Region | 'All'>('All')
-  const [explorerViewMode, setExplorerViewMode] = useState<'cards' | 'table'>('table')
 
   // Selected country for deep-dive modal
   const [selectedCountry, setSelectedCountry] = useState<CountryMeta | null>(null)
@@ -95,7 +88,9 @@ export function App() {
       setErrorMsg(
         lang === 'ko'
           ? '데이터를 동기화하는 중 네트워크 지연이 발생했습니다. 다시 시도해 주세요.'
-          : 'A network timeout occurred while synchronizing data. Please try again.'
+          : lang === 'ja'
+            ? 'データの同期中にネットワーク遅延が発生しました。再試行してください。'
+            : 'A network timeout occurred while synchronizing data. Please try again.'
       )
     } finally {
       setIsLoading(false)
@@ -139,23 +134,6 @@ export function App() {
     return list
   }, [gdpMap, perCapitaMap, growthMap, debtMap])
 
-  // Filtered countries for Card Grid
-  const filteredRankedItems = useMemo(() => {
-    return allRankedItems.filter((item) => {
-      const q = searchQuery.toLowerCase().trim()
-      const matchQuery =
-        !q ||
-        item.country.nameEn.toLowerCase().includes(q) ||
-        item.country.nameKo.toLowerCase().includes(q) ||
-        item.country.id.toLowerCase().includes(q) ||
-        item.country.currencyCode.toLowerCase().includes(q)
-
-      const matchRegion = selectedRegion === 'All' || item.country.region === selectedRegion
-
-      return matchQuery && matchRegion
-    })
-  }, [allRankedItems, searchQuery, selectedRegion])
-
   // Selected country rank for modal
   const selectedRank = useMemo(() => {
     if (!selectedCountry) return 1
@@ -173,8 +151,6 @@ export function App() {
     )
   }, [allRankedItems, localCountryId])
 
-  const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       {/* Navigation Header */}
@@ -187,7 +163,9 @@ export function App() {
         setLang={setLang}
         onRefresh={() => loadData(true)}
         isRefreshing={isRefreshing}
-        lastUpdatedText={lastRefreshed.toLocaleTimeString(lang === 'ko' ? 'ko-KR' : 'en-US')}
+        lastUpdatedText={lastRefreshed.toLocaleTimeString(
+          lang === 'ko' ? 'ko-KR' : lang === 'ja' ? 'ja-JP' : 'en-US'
+        )}
       />
 
       {/* Real-time FX Ticker */}
@@ -204,213 +182,31 @@ export function App() {
               onClick={() => loadData(true)}
               className="px-3 py-1 bg-rose-800 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold"
             >
-              {lang === 'ko' ? '다시 시도' : 'Retry'}
+              {lang === 'ko' ? '다시 시도' : lang === 'ja' ? '再試行' : 'Retry'}
             </button>
           </div>
         )}
 
-        {/* TAB 1: CARDS EXPLORER */}
+        {/* TAB 1: GDP WORLD MAP & EXPLORER */}
         {activeTab === 'cards' && (
-          <div className="space-y-6">
-            {/* Hero / Overview Banner */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-6 sm:p-8">
-              <div className="relative z-10 max-w-3xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-3">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{t.heroBadge}</span>
-                </div>
-                <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-                  {t.heroTitle}
-                </h1>
-                <p className="text-sm sm:text-base text-slate-400 mt-2 leading-relaxed">
-                  {t.heroDescription}
-                </p>
-              </div>
-
-              {/* Statistical Highlights (No Emojis) */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 pt-6 border-t border-slate-800/80">
-                <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
-                  <div className="text-[11px] text-slate-400 font-medium">{t.statCountriesTracked}</div>
-                  <div className="text-xl sm:text-2xl font-bold text-white font-mono mt-0.5">
-                    {COUNTRIES.length}
-                  </div>
-                </div>
-
-                <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
-                  <div className="text-[11px] text-slate-400 font-medium">{t.statBaseCurrency}</div>
-                  <div className="text-xl sm:text-2xl font-bold text-indigo-400 font-mono mt-0.5">
-                    {baseCurrency}
-                  </div>
-                </div>
-
-                <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
-                  <div className="text-[11px] text-slate-400 font-medium">{t.statTopEconomy}</div>
-                  <div className="text-base sm:text-lg font-bold text-slate-200 mt-1 truncate flex items-center">
-                    <CountryFlag iso2="US" className="w-5 h-3.5 mr-1.5" />
-                    <span>United States ({allRankedItems[0]?.totalGdpUsd ? formatGdpCompact(allRankedItems[0].totalGdpUsd, baseCurrency, usdToBase, lang) : '...'})</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
-                  <div className="text-[11px] text-slate-400 font-medium">
-                    {t.statLocalEconomy.replace(
-                      '{country}',
-                      localCountryItem ? (lang === 'ko' ? localCountryItem.country.nameKo : localCountryItem.country.nameEn) : ''
-                    )}
-                  </div>
-                  <div className="text-base sm:text-lg font-bold text-slate-200 mt-1 truncate flex items-center">
-                    {localCountryItem && (
-                      <>
-                        <CountryFlag iso2={localCountryItem.country.iso2} className="w-5 h-3.5 mr-1.5" />
-                        <span>
-                          {lang === 'ko' ? localCountryItem.country.nameKo : localCountryItem.country.nameEn} (#{localCountryItem.rank || '-'})
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+          isLoading ? (
+            <div className="py-24 flex flex-col items-center justify-center gap-3 text-slate-400">
+              <div className="w-9 h-9 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm font-medium">{t.loadingData}</p>
             </div>
-
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                {/* Search Bar */}
-                <div className="relative w-full sm:w-64 flex-shrink-0">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={t.searchPlaceholder}
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                  />
-                </div>
-
-                {/* Year Switcher Segment */}
-                <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
-                  <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                    {t.yearLabel}:
-                  </span>
-                  {ECONOMIC_YEAR_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.year}
-                      onClick={() => handleYearChange(opt.year)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                        selectedYear === opt.year
-                          ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                      }`}
-                    >
-                      {t[opt.labelKey].replace('{year}', opt.year)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Region Filter Buttons and View Switcher */}
-              <div className="flex flex-wrap items-center justify-between xl:justify-end gap-2.5">
-                {/* Region Filter Buttons */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0 scrollbar-none text-xs font-semibold">
-                  <Filter className="w-3.5 h-3.5 text-slate-500 mr-1 hidden sm:inline" />
-                  {(['All', 'Asia', 'Europe', 'Americas', 'Africa', 'Oceania'] as const).map((reg) => (
-                    <button
-                      key={reg}
-                      onClick={() => setSelectedRegion(reg)}
-                      className={`px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap ${
-                        selectedRegion === reg
-                          ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                          : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
-                      }`}
-                    >
-                      {reg === 'All'
-                        ? t.filterAll
-                        : reg === 'Asia'
-                        ? t.filterAsia
-                        : reg === 'Europe'
-                        ? t.filterEurope
-                        : reg === 'Americas'
-                        ? t.filterAmericas
-                        : reg === 'Africa'
-                        ? t.filterAfrica
-                        : t.filterOceania}
-                    </button>
-                  ))}
-                </div>
-
-                {/* View Mode Switcher: Card View vs List Table View */}
-                <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
-                  <button
-                    onClick={() => setExplorerViewMode('cards')}
-                    title={t.viewCards}
-                    aria-label={t.viewCards}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                      explorerViewMode === 'cards'
-                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                    }`}
-                  >
-                    <LayoutGrid className="w-3.5 h-3.5" />
-                    <span>{t.viewCards}</span>
-                  </button>
-                  <button
-                    onClick={() => setExplorerViewMode('table')}
-                    title={t.viewTable}
-                    aria-label={t.viewTable}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                      explorerViewMode === 'table'
-                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                    }`}
-                  >
-                    <List className="w-3.5 h-3.5" />
-                    <span>{t.viewTable}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Country Cards Grid or Table View */}
-            {isLoading ? (
-              <div className="py-20 flex flex-col items-center justify-center gap-3 text-slate-400">
-                <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-sm font-medium">{t.loadingData}</p>
-              </div>
-            ) : filteredRankedItems.length === 0 ? (
-              <div className="py-16 text-center text-slate-500 bg-slate-900/40 rounded-2xl border border-slate-800">
-                {t.noCountriesFound}
-              </div>
-            ) : explorerViewMode === 'cards' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                {filteredRankedItems.map((item) => (
-                  <CountryCard
-                    key={item.country.id}
-                    country={item.country}
-                    rank={item.rank}
-                    totalGdpUsd={item.totalGdpUsd}
-                    gdpPerCapitaUsd={item.gdpPerCapitaUsd}
-                    growthRatePct={item.growthRatePct}
-                    debtRatioPct={item.debtRatioPct}
-                    baseCurrency={baseCurrency}
-                    exchangeRates={exchangeRates}
-                    lang={lang}
-                    onSelect={(c) => setSelectedCountry(c)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <RankingTable
-                items={filteredRankedItems}
-                baseCurrency={baseCurrency}
-                exchangeRates={exchangeRates}
-                lang={lang}
-                onSelectCountry={(c) => setSelectedCountry(c)}
-                selectedYear={selectedYear}
-                onYearChange={handleYearChange}
-                hideHeader
-              />
-            )}
-          </div>
+          ) : (
+            <GdpWorldMap
+              items={allRankedItems}
+              baseCurrency={baseCurrency}
+              exchangeRates={exchangeRates}
+              lang={lang}
+              selectedYear={selectedYear}
+              onYearChange={handleYearChange}
+              onSelectCountry={(c) => setSelectedCountry(c)}
+              localCountryItem={localCountryItem}
+              isLoading={isLoading}
+            />
+          )
         )}
 
         {/* 1:1 COMPARE */}

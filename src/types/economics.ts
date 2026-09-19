@@ -1,15 +1,17 @@
 export type Region = 'Asia' | 'Europe' | 'Americas' | 'Africa' | 'Oceania'
 
-export type Language = 'en' | 'ko'
+export type Language = 'en' | 'ko' | 'ja'
 
 export interface CountryMeta {
   id: string // ISO 3166-1 alpha-3 (World Bank API country id, e.g., 'KOR', 'USA')
   iso2: string // ISO 3166-1 alpha-2 (e.g., 'KR', 'US')
   nameKo: string
   nameEn: string
+  nameJa?: string
   currencyCode: string // e.g., 'KRW', 'USD'
   currencyNameEn: string
   currencyNameKo: string
+  currencyNameJa?: string
   currencySymbol: string
   region: Region
   flagEmoji: string

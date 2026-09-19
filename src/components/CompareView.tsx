@@ -6,9 +6,10 @@ import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicY
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
-import { GdpChart } from './GdpChart'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
+import { GdpChart } from './GdpChart'
+import { getCountryName, getCountrySecondaryName } from '../utils/countryNames'
 
 interface CompareViewProps {
   baseCurrency: BaseCurrency
@@ -79,8 +80,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const gdpRatio = detailA && detailB && detailB.totalGdpUsd > 0 ? detailA.totalGdpUsd / detailB.totalGdpUsd : 1
   const perCapitaRatio = detailA && detailB && detailB.gdpPerCapitaUsd > 0 ? detailA.gdpPerCapitaUsd / detailB.gdpPerCapitaUsd : 1
 
-  const nameA = lang === 'ko' ? countryA.nameKo : countryA.nameEn
-  const nameB = lang === 'ko' ? countryB.nameKo : countryB.nameEn
+  const nameA = getCountryName(countryA, lang)
+  const nameB = getCountryName(countryB, lang)
 
   const insightFormatted = t.compareInsightText
     .replace('{countryA}', nameA)
@@ -171,7 +172,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             >
               {COUNTRIES.map((c) => (
                 <option key={c.id} value={c.id} className="bg-slate-900 text-white">
-                  {c.flagEmoji} {lang === 'ko' ? c.nameKo : c.nameEn}
+                  {c.flagEmoji} {getCountryName(c, lang)}
                 </option>
               ))}
             </select>
@@ -199,7 +200,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             >
               {COUNTRIES.map((c) => (
                 <option key={c.id} value={c.id} className="bg-slate-900 text-white">
-                  {c.flagEmoji} {lang === 'ko' ? c.nameKo : c.nameEn}
+                  {c.flagEmoji} {getCountryName(c, lang)}
                 </option>
               ))}
             </select>
@@ -216,7 +217,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div>
               <h3 className="text-xl font-bold text-white">{nameA}</h3>
               <p className="text-xs text-slate-400">
-                {lang === 'ko' ? countryA.nameEn : countryA.nameKo} • {countryA.currencyCode}
+                {getCountrySecondaryName(countryA, lang)} • {countryA.currencyCode}
               </p>
             </div>
           </div>
@@ -290,7 +291,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div>
               <h3 className="text-xl font-bold text-white">{nameB}</h3>
               <p className="text-xs text-slate-400">
-                {lang === 'ko' ? countryB.nameEn : countryB.nameKo} • {countryB.currencyCode}
+                {getCountrySecondaryName(countryB, lang)} • {countryB.currencyCode}
               </p>
             </div>
           </div>

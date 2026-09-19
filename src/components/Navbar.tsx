@@ -97,6 +97,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 KO
               </button>
+              <button
+                onClick={() => setLang('ja')}
+                className={`px-2 py-1 rounded-lg transition-colors ${
+                  lang === 'ja' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                JA
+              </button>
             </div>
 
             {/* Base Currency Select */}
@@ -113,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 {BASE_CURRENCIES.map((bc) => (
                   <option key={bc.code} value={bc.code} className="bg-slate-900 text-white">
-                    {lang === 'ko' ? bc.nameKo : bc.nameEn}
+                    {lang === 'ko' ? bc.nameKo : lang === 'ja' ? bc.nameJa : bc.nameEn}
                   </option>
                 ))}
               </select>

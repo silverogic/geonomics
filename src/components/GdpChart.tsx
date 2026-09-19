@@ -118,7 +118,7 @@ export const GdpChart: React.FC<GdpChartProps> = ({
           label: (context) => {
             const rawVal = context.raw as number
             const valInUsd = rawVal / exchangeRateToBase
-            const formatted = formatGdpCompact(valInUsd, baseCurrency, exchangeRateToBase, lang)
+            const formatted = formatGdpCompact(valInUsd, baseCurrency, exchangeRateToBase, lang || 'en')
             return ` ${context.dataset.label}: ${formatted}`
           },
         },

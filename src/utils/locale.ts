@@ -10,7 +10,7 @@ const STORAGE_CURRENCY_KEY = 'geonomics_base_currency'
 export function detectBrowserLanguage(): Language {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem(STORAGE_LANG_KEY)
-    if (saved === 'ko' || saved === 'en') {
+    if (saved === 'ko' || saved === 'en' || saved === 'ja') {
       return saved
     }
 
@@ -24,6 +24,9 @@ export function detectBrowserLanguage(): Language {
         const lower = cand.toLowerCase()
         if (lower.startsWith('ko')) {
           return 'ko'
+        }
+        if (lower.startsWith('ja')) {
+          return 'ja'
         }
       }
     }

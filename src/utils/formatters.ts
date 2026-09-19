@@ -27,6 +27,19 @@ export function formatGdpCompact(
     return `${Math.round(converted).toLocaleString('ko-KR')}원`
   }
 
+  // Japanese localized format
+  if (lang === 'ja' && baseCurrency === 'JPY') {
+    const cho = converted / 1_000_000_000_000
+    if (cho >= 1) {
+      return `${cho.toLocaleString('ja-JP', { maximumFractionDigits: 1 })}兆円`
+    }
+    const oku = converted / 100_000_000
+    if (oku >= 1) {
+      return `${oku.toLocaleString('ja-JP', { maximumFractionDigits: 0 })}億円`
+    }
+    return `${Math.round(converted).toLocaleString('ja-JP')}円`
+  }
+
   // Western / English format
   const symbol = getCurrencySymbol(baseCurrency)
   if (converted >= 1e12) {
@@ -60,6 +73,14 @@ export function formatPerCapita(
       return `${man.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}만 원`
     }
     return `${Math.round(converted).toLocaleString('ko-KR')}원`
+  }
+
+  if (lang === 'ja' && baseCurrency === 'JPY') {
+    const man = converted / 10_000
+    if (man >= 1) {
+      return `${man.toLocaleString('ja-JP', { maximumFractionDigits: 0 })}万円`
+    }
+    return `${Math.round(converted).toLocaleString('ja-JP')}円`
   }
 
   return `${getCurrencySymbol(baseCurrency)}${Math.round(converted).toLocaleString()}`

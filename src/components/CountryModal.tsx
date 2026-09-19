@@ -11,6 +11,7 @@ import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { StockChart } from './StockChart'
 import { getStockPriceData } from '../data/stockPrices'
+import { getCountryName, getCountrySecondaryName, getCurrencyName } from '../utils/countryNames'
 
 interface CountryModalProps {
   country: CountryMeta
@@ -66,9 +67,9 @@ export const CountryModal: React.FC<CountryModalProps> = ({
     ? getConversionRate(exchangeRates, baseCurrency, country.currencyCode)
     : 0
 
-  const displayName = lang === 'ko' ? country.nameKo : country.nameEn
-  const secondaryName = lang === 'ko' ? country.nameEn : country.nameKo
-  const currencyName = lang === 'ko' ? country.currencyNameKo : country.currencyNameEn
+  const displayName = getCountryName(country, lang)
+  const secondaryName = getCountrySecondaryName(country, lang)
+  const currencyName = getCurrencyName(country, lang)
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-fadeIn">
@@ -291,7 +292,9 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               • {country.id === 'TWN'
                 ? (lang === 'ko'
                     ? 'GDP 통계: 세계은행 미수록 국가로 국제통화기금(IMF WEO) 및 대만 행정원 주계총처(DGBAS) 공식 집계치 기준.'
-                    : 'GDP Statistics: Sourced from IMF World Economic Outlook (WEO) & DGBAS Taiwan official data.')
+                    : lang === 'ja'
+                      ? 'GDP統計: 世界銀行未収録のため、国際通貨基金(IMF WEO)および台湾行政院主計総処(DGBAS)公式統計基準。'
+                      : 'GDP Statistics: Sourced from IMF World Economic Outlook (WEO) & DGBAS Taiwan official data.')
                 : t.modalAccuracyGdp}
             </p>
             <p>• {t.modalAccuracyDebt}</p>
@@ -303,7 +306,15 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 rel="noreferrer"
                 className="flex items-center gap-1 hover:underline"
               >
-                <span>{country.id === 'TWN' ? (lang === 'ko' ? 'IMF 대만 공식 경제 포털 바로가기' : 'Visit IMF Taiwan Data Portal') : t.modalWorldBankLink}</span>
+                <span>
+                  {country.id === 'TWN'
+                    ? lang === 'ko'
+                      ? 'IMF 대만 공식 경제 포털 바로가기'
+                      : lang === 'ja'
+                        ? 'IMF 台湾公式経済ポータル'
+                        : 'Visit IMF Taiwan Data Portal'
+                    : t.modalWorldBankLink}
+                </span>
                 <ExternalLink className="w-3 h-3" />
               </a>
               <a
