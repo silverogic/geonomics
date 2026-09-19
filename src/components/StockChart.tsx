@@ -42,6 +42,8 @@ export const StockChart: React.FC<StockChartProps> = ({
   if (!stockData || !stockData.isSupported || stockData.points.length === 0) {
     const fallbackReason = lang === 'ko'
       ? stockData?.fallbackReasonKo || '해당 국가는 증시 데이터가 제공되지 않거나 조회가 제한되어 있습니다.'
+      : lang === 'ja'
+      ? '該当国・地域は株式市場データが提供されていないか、照会が制限されています。'
       : stockData?.fallbackReasonEn || 'Stock market data is not available or restricted for this region.'
 
     return (
@@ -51,7 +53,7 @@ export const StockChart: React.FC<StockChartProps> = ({
         </div>
         <div>
           <h5 className="text-sm font-bold text-slate-200">
-            {lang === 'ko' ? '증시 시세 조회 제한 지역' : 'Market Data Notice'}
+            {lang === 'ko' ? '증시 시세 조회 제한 지역' : lang === 'ja' ? '市場データ照会制限地域' : 'Market Data Notice'}
           </h5>
           <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
             {fallbackReason}
@@ -186,7 +188,12 @@ export const StockChart: React.FC<StockChartProps> = ({
             </div>
           </div>
           <span className="text-[11px] text-slate-500">
-            {lang === 'ko' ? '최근 30거래일 등락률' : '30-Day Trading Trend'} ({startDate} ~ {endDate})
+            {lang === 'ko'
+              ? '최근 30거래일 등락률'
+              : lang === 'ja'
+              ? '直近30取引日の騰落率'
+              : '30-Day Trading Trend'}{' '}
+            ({startDate} ~ {endDate})
           </span>
         </div>
 
@@ -194,7 +201,7 @@ export const StockChart: React.FC<StockChartProps> = ({
         <div className="flex items-center gap-4 text-xs">
           <div className="bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-right">
             <span className="text-[10px] text-slate-500 block">
-              {lang === 'ko' ? '30일 최고' : '30D High'}
+              {lang === 'ko' ? '30일 최고' : lang === 'ja' ? '30日最高' : '30D High'}
             </span>
             <span className="font-mono font-semibold text-slate-200">
               {maxPrice.toLocaleString()}
@@ -202,7 +209,7 @@ export const StockChart: React.FC<StockChartProps> = ({
           </div>
           <div className="bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-right">
             <span className="text-[10px] text-slate-500 block">
-              {lang === 'ko' ? '30일 최저' : '30D Low'}
+              {lang === 'ko' ? '30일 최저' : lang === 'ja' ? '30日最安' : '30D Low'}
             </span>
             <span className="font-mono font-semibold text-slate-200">
               {minPrice.toLocaleString()}
@@ -223,11 +230,13 @@ export const StockChart: React.FC<StockChartProps> = ({
           <span>
             {lang === 'ko'
               ? `야후 파이낸스(Yahoo Finance) 일별 공식 종가 데이터 (${ticker})`
+              : lang === 'ja'
+              ? `Yahoo Finance 公式日次終値データ (${ticker})`
               : `Yahoo Finance Official Daily Close Data (${ticker})`}
           </span>
         </div>
         <span className="font-mono text-slate-400">
-          {points.length} {lang === 'ko' ? '거래일' : 'trading days'}
+          {points.length} {lang === 'ko' ? '거래일' : lang === 'ja' ? '営業日' : 'trading days'}
         </span>
       </div>
     </div>

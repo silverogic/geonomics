@@ -147,28 +147,52 @@ async function fetchTicker(item) {
 
 async function main() {
   console.log('Fetching Yahoo Finance stock data for 56 countries...')
-  const results = {}
+  const outDirSrc = path.resolve(__dirname, '../src/data')
+  const outDirPub = path.resolve(__dirname, '../public/data')
+  const outDirDocs = path.resolve(__dirname, '../docs/data')
+
+  if (!fs.existsSync(outDirSrc)) fs.mkdirSync(outDirSrc, { recursive: true })
+  if (!fs.existsSync(outDirPub)) fs.mkdirSync(outDirPub, { recursive: true })
+  if (!fs.existsSync(outDirDocs)) fs.mkdirSync(outDirDocs, { recursive: true })
+
+  // Retain existing cache if network fails on any ticker
+  let results = {}
+  try {
+    const existingFile = path.join(outDirSrc, 'stockPricesData.json')
+    if (fs.existsSync(existingFile)) {
+      results = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
+    }
+  } catch (e) {
+    // ignore
+  }
 
   for (const item of COUNTRY_TICKERS) {
-    const stockData = await fetchTicker(item)
-    if (stockData) {
-      results[item.id] = stockData
-      if (stockData.isSupported) {
-        console.log(`✓ ${item.id} (${item.ticker}): ${stockData.currentPrice} ${stockData.currency} (${stockData.changePct > 0 ? '+' : ''}${stockData.changePct}%)`)
+    try {
+      const stockData = await fetchTicker(item)
+      if (stockData) {
+        results[item.id] = stockData
+        if (stockData.isSupported) {
+          console.log(`✓ ${item.id} (${item.ticker}): ${stockData.currentPrice} ${stockData.currency} (${stockData.changePct > 0 ? '+' : ''}${stockData.changePct}%)`)
+        } else {
+          console.log(`- ${item.id} (Restricted region graceful fallback)`)
+        }
+      } else if (results[item.id]) {
+        console.warn(`⚠ Network issue for ${item.id} (${item.ticker}), using cached data`)
       } else {
-        console.log(`- ${item.id} (Restricted region graceful fallback)`)
+        console.warn(`✗ Failed: ${item.id} (${item.ticker})`)
       }
-    } else {
-      console.warn(`✗ Failed: ${item.id} (${item.ticker})`)
+    } catch (err) {
+      if (results[item.id]) {
+        console.warn(`⚠ Error fetching ${item.id}, using cached data:`, err.message)
+      } else {
+        console.warn(`✗ Failed ${item.id}:`, err.message)
+      }
     }
   }
 
-  const outDirSrc = path.resolve(__dirname, '../src/data')
-  const outDirPub = path.resolve(__dirname, '../public/data')
-  if (!fs.existsSync(outDirPub)) fs.mkdirSync(outDirPub, { recursive: true })
-
   fs.writeFileSync(path.join(outDirSrc, 'stockPricesData.json'), JSON.stringify(results, null, 2), 'utf8')
   fs.writeFileSync(path.join(outDirPub, 'stockPricesData.json'), JSON.stringify(results, null, 2), 'utf8')
+  fs.writeFileSync(path.join(outDirDocs, 'stockPricesData.json'), JSON.stringify(results, null, 2), 'utf8')
 
   console.log(`\nSuccessfully saved ${Object.keys(results).length} / ${COUNTRY_TICKERS.length} countries to stockPricesData.json!`)
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "extract:excel": "node scripts/extractFromExcel.js",
-    "prebuild": "node scripts/extractFromExcel.js",
+    "fetch:stocks": "node scripts/fetchStockData.js",
+    "prebuild": "node scripts/extractFromExcel.js && node scripts/fetchStockData.js",
     "build": "tsc -b && vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d docs",

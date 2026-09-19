@@ -6,6 +6,9 @@ on:
       - main
       - master
   workflow_dispatch:
+  schedule:
+    # Run daily at 00:00 UTC (9:00 AM KST/JST) to keep stock charts up to date
+    - cron: '0 0 * * *'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
