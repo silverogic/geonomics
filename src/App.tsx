@@ -16,7 +16,6 @@ import { GdpWorldMap } from './components/GdpWorldMap'
 import {
   detectBrowserLanguage,
   detectBrowserBaseCurrency,
-  detectLocalCountryId,
   saveLanguagePreference,
   saveBaseCurrencyPreference,
 } from './utils/locale'
@@ -141,15 +140,7 @@ export function App() {
     return found ? found.rank : 1
   }, [allRankedItems, selectedCountry])
 
-  // User's detected home/local country for regional summary card
-  const localCountryId = useMemo(() => detectLocalCountryId(), [])
-  const localCountryItem = useMemo(() => {
-    return (
-      allRankedItems.find((i) => i.country.id === localCountryId) ||
-      allRankedItems.find((i) => i.country.id === 'KOR') ||
-      allRankedItems[0]
-    )
-  }, [allRankedItems, localCountryId])
+
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -203,7 +194,6 @@ export function App() {
               selectedYear={selectedYear}
               onYearChange={handleYearChange}
               onSelectCountry={(c) => setSelectedCountry(c)}
-              localCountryItem={localCountryItem}
             />
           )
         )}

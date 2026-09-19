@@ -32,7 +32,6 @@ interface GdpWorldMapProps {
   selectedYear: EconomicYear
   onYearChange: (year: EconomicYear) => void
   onSelectCountry: (country: CountryMeta) => void
-  localCountryItem?: CountryRowItem
 }
 
 // Bounding box presets for smooth region focus
@@ -53,7 +52,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   selectedYear,
   onYearChange,
   onSelectCountry,
-  localCountryItem,
 }) => {
   const t = translations[lang]
   const [metric, setMetric] = useState<MapMetric>('gdp')
@@ -213,84 +211,25 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* 1. TOP HERO OVERVIEW: Macroeconomic Snapshot */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-6 sm:p-8">
-        <div className="relative z-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-3">
+      {/* 1. UNIFIED MAP HEADER & CONTROL BAR */}
+      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
+        {/* Upper Row: Title & Search Spotlight */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{t.heroBadge}</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
               {t.mapTitle}
             </h1>
-            <p className="text-sm sm:text-base text-slate-400 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
               {t.mapSubtitle}
             </p>
           </div>
-        </div>
 
-        {/* Statistical Highlights Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 pt-6 border-t border-slate-800/80">
-          <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 sm:p-4">
-            <div className="text-[11px] text-slate-400 font-medium">{t.statCountriesTracked}</div>
-            <div className="text-xl sm:text-2xl font-bold text-white font-mono mt-0.5">
-              {items.length}{' '}
-              <span className="text-xs text-indigo-400 font-sans font-medium">/ 56</span>
-            </div>
-          </div>
-
-          <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 sm:p-4">
-            <div className="text-[11px] text-slate-400 font-medium">{t.statBaseCurrency}</div>
-            <div className="text-xl sm:text-2xl font-bold text-indigo-400 font-mono mt-0.5">
-              {baseCurrency}
-            </div>
-          </div>
-
-          <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 sm:p-4">
-            <div className="text-[11px] text-slate-400 font-medium">{t.statTopEconomy}</div>
-            <div className="text-sm sm:text-base font-bold text-slate-200 mt-1 truncate flex items-center">
-              <CountryFlag iso2="US" className="w-5 h-3.5 mr-1.5 flex-shrink-0" />
-              <span className="truncate">
-                {items[0]?.totalGdpUsd
-                  ? formatGdpCompact(items[0].totalGdpUsd, baseCurrency, usdToBase, lang)
-                  : '...'}
-              </span>
-            </div>
-          </div>
-
-          <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 sm:p-4">
-            <div className="text-[11px] text-slate-400 font-medium">
-              {t.statLocalEconomy.replace(
-                '{country}',
-                localCountryItem ? getCountryName(localCountryItem.country, lang) : ''
-              )}
-            </div>
-            <div className="text-sm sm:text-base font-bold text-slate-200 mt-1 truncate flex items-center">
-              {localCountryItem && (
-                <>
-                  <CountryFlag
-                    iso2={localCountryItem.country.iso2}
-                    className="w-5 h-3.5 mr-1.5 flex-shrink-0"
-                  />
-                  <span className="truncate">
-                    {getCountryName(localCountryItem.country, lang)}{' '}
-                    <span className="text-indigo-400 text-xs font-mono">
-                      (#{localCountryItem.rank || '-'})
-                    </span>
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. MAP CONTROLS & FILTER BAR */}
-      <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl shadow-md">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Quick Country Search */}
-          <div className="relative w-full sm:w-60 flex-shrink-0">
+          <div className="relative w-full md:w-72 shrink-0">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
@@ -300,81 +239,86 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
             />
           </div>
-
-          {/* Metric Selector (Total GDP, Per Capita, Growth, Debt) */}
-          <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
-            <span className="text-[11px] font-semibold text-slate-400 px-2 hidden md:inline">
-              {t.mapMetricLabel}
-            </span>
-            {(
-              [
-                { id: 'gdp', label: t.metricTotalGdp },
-                { id: 'perCapita', label: t.metricPerCapita },
-                { id: 'growth', label: t.metricGrowth },
-                { id: 'debt', label: t.metricDebt },
-              ] as const
-            ).map((m) => (
-              <button
-                key={m.id}
-                onClick={() => setMetric(m.id)}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  metric === m.id
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                }`}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Year Switcher */}
-          <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
-            <span className="text-[11px] font-semibold text-slate-400 px-2 hidden md:inline">
-              {t.yearLabel}:
-            </span>
-            {ECONOMIC_YEAR_OPTIONS.map((opt) => (
-              <button
-                key={opt.year}
-                onClick={() => onYearChange(opt.year)}
-                className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  selectedYear === opt.year
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                }`}
-              >
-                {t[opt.labelKey].replace('{year}', opt.year)}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {/* Region Filter Buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0 scrollbar-none text-xs font-semibold">
-          <Filter className="w-3.5 h-3.5 text-slate-500 mr-1 hidden sm:inline" />
-          {(['All', 'Asia', 'Europe', 'Americas', 'Africa', 'Oceania'] as const).map((reg) => (
-            <button
-              key={reg}
-              onClick={() => handleRegionSelect(reg)}
-              className={`px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap ${
-                selectedRegion === reg
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                  : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
-              }`}
-            >
-              {reg === 'All'
-                ? t.filterAll
-                : reg === 'Asia'
-                  ? t.filterAsia
-                  : reg === 'Europe'
-                    ? t.filterEurope
-                    : reg === 'Americas'
-                      ? t.filterAmericas
-                      : reg === 'Africa'
-                        ? t.filterAfrica
-                        : t.filterOceania}
-            </button>
-          ))}
+        {/* Lower Row: Filter HUD (Metric, Year, Continent) */}
+        <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 pt-4 border-t border-slate-800/80">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Metric Selector (Total GDP, Per Capita, Growth, Debt) */}
+            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
+              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
+                {t.mapMetricLabel}:
+              </span>
+              {(
+                [
+                  { id: 'gdp', label: t.metricTotalGdp },
+                  { id: 'perCapita', label: t.metricPerCapita },
+                  { id: 'growth', label: t.metricGrowth },
+                  { id: 'debt', label: t.metricDebt },
+                ] as const
+              ).map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => setMetric(m.id)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                    metric === m.id
+                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Year Switcher */}
+            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
+              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
+                {t.yearLabel}:
+              </span>
+              {ECONOMIC_YEAR_OPTIONS.map((opt) => (
+                <button
+                  key={opt.year}
+                  onClick={() => onYearChange(opt.year)}
+                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                    selectedYear === opt.year
+                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                >
+                  {t[opt.labelKey].replace('{year}', opt.year)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Region Filter Buttons */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0 scrollbar-none text-xs font-semibold">
+            <Filter className="w-3.5 h-3.5 text-slate-500 mr-1 hidden sm:inline" />
+            {(['All', 'Asia', 'Europe', 'Americas', 'Africa', 'Oceania'] as const).map((reg) => (
+              <button
+                key={reg}
+                onClick={() => handleRegionSelect(reg)}
+                className={`px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap ${
+                  selectedRegion === reg
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'bg-slate-950/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-slate-800/80'
+                }`}
+              >
+                {reg === 'All'
+                  ? t.filterAll
+                  : reg === 'Asia'
+                    ? t.filterAsia
+                    : reg === 'Europe'
+                      ? t.filterEurope
+                      : reg === 'Americas'
+                        ? t.filterAmericas
+                        : reg === 'Africa'
+                          ? t.filterAfrica
+                          : t.filterOceania}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
