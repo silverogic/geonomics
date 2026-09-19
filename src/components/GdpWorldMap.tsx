@@ -9,8 +9,6 @@ import {
   Info,
   Search,
   Filter,
-  Layers,
-  List,
   ChevronRight,
   ExternalLink,
 } from 'lucide-react'
@@ -61,7 +59,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   const [metric, setMetric] = useState<MapMetric>('gdp')
   const [selectedRegion, setSelectedRegion] = useState<Region | 'All'>('All')
   const [searchQuery, setSearchQuery] = useState('')
-  const [viewMode, setViewMode] = useState<'map' | 'table'>('map')
 
   // Hover & Tooltip state
   const [hoveredCountryId, setHoveredCountryId] = useState<string | null>(null)
@@ -218,7 +215,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     <div className="space-y-6">
       {/* 1. TOP HERO OVERVIEW: Macroeconomic Snapshot */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-6 sm:p-8">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+        <div className="relative z-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-3">
               <Sparkles className="w-3.5 h-3.5" />
@@ -230,32 +227,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
             <p className="text-sm sm:text-base text-slate-400 mt-2 leading-relaxed">
               {t.mapSubtitle}
             </p>
-          </div>
-
-          {/* Quick View Mode Switcher: Map vs Table */}
-          <div className="flex items-center self-start lg:self-center bg-slate-950/90 border border-slate-800 p-1.5 rounded-2xl shrink-0 shadow-lg">
-            <button
-              onClick={() => setViewMode('map')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                viewMode === 'map'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              <span>{t.viewMap}</span>
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                viewMode === 'table'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-              }`}
-            >
-              <List className="w-4 h-4" />
-              <span>{t.viewTable}</span>
-            </button>
           </div>
         </div>
 
@@ -407,20 +378,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         </div>
       </div>
 
-      {/* 3. MAIN DISPLAY: MAP VIEW OR TABLE VIEW */}
-      {viewMode === 'table' ? (
-        <RankingTable
-          items={items}
-          baseCurrency={baseCurrency}
-          exchangeRates={exchangeRates}
-          lang={lang}
-          onSelectCountry={onSelectCountry}
-          selectedYear={selectedYear}
-          onYearChange={onYearChange}
-          hideHeader={false}
-        />
-      ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      {/* 3. INTERACTIVE WORLD MAP & INSPECTOR HUD */}
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* MAP CANVAS (Takes 3 columns on wide screens) */}
           <div className="xl:col-span-3 space-y-4">
             <div
@@ -540,14 +499,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         className="pointer-events-none transition-opacity duration-300"
                         opacity={zoomLevel >= 1 ? 0.9 : 0}
                       >
-                        <circle
-                          cx={cx}
-                          cy={cy}
-                          r="4.5"
-                          fill="#f59e0b"
-                          className="animate-ping opacity-60"
-                        />
-                        <circle cx={cx} cy={cy} r="3" fill="#ffffff" stroke="#000000" strokeWidth="1" />
+                        <circle cx={cx} cy={cy} r="3.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
                         <text
                           x={cx}
                           y={cy - 6}
@@ -854,7 +806,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
             )}
           </div>
         </div>
-      )}
 
       {/* 4. GLOBAL TOP 10 LEADERBOARD QUICK BAR */}
       <div className="bg-slate-900/80 border border-slate-800/80 rounded-3xl p-5 space-y-3">
@@ -898,6 +849,20 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* 5. FULL RANKING LIST TABLE */}
+      <div className="pt-2">
+        <RankingTable
+          items={items}
+          baseCurrency={baseCurrency}
+          exchangeRates={exchangeRates}
+          lang={lang}
+          onSelectCountry={onSelectCountry}
+          selectedYear={selectedYear}
+          onYearChange={onYearChange}
+          hideHeader={false}
+        />
       </div>
     </div>
   )
