@@ -157,13 +157,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       )}
 
       {/* Datatable */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800">
-        <table className="w-full text-left border-collapse text-sm">
-          <thead>
-            <tr className="bg-slate-950/80 border-b border-slate-800 text-xs font-semibold text-slate-400">
+      <div className="rounded-xl border border-slate-800 overflow-x-clip md:overflow-visible">
+        <table className="w-full text-left border-separate border-spacing-0 text-sm">
+          <thead className="sticky top-16 sm:top-20 z-30">
+            <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
               <th
                 onClick={() => handleSort('rank')}
-                className="py-3 px-3.5 cursor-pointer hover:text-slate-200"
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors"
               >
                 <div className="flex items-center gap-1.5">
                   <span>{t.colRank}</span>
@@ -173,7 +173,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('countryName')}
-                className="py-3 px-3.5 cursor-pointer hover:text-slate-200"
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center gap-1.5">
                   <span>{t.colCountry}</span>
@@ -181,11 +181,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 </div>
               </th>
 
-              <th className="py-3 px-3.5 hidden md:table-cell">{t.colCurrency}</th>
+              <th className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 hidden md:table-cell border-b border-slate-800 shadow-sm text-slate-400">
+                {t.colCurrency}
+              </th>
 
               <th
                 onClick={() => handleSort('fxRate')}
-                className="py-3 px-3.5 cursor-pointer hover:text-slate-200 text-right"
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
@@ -195,7 +197,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('totalGdpUsd')}
-                className="py-3 px-3.5 cursor-pointer hover:text-slate-200 text-right"
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colTotalGdp.replace('{base}', baseCurrency)}</span>
@@ -205,7 +207,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('gdpPerCapitaUsd')}
-                className="py-3 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden lg:table-cell"
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden lg:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colPerCapita}</span>
@@ -215,7 +217,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('growthRatePct')}
-                className="py-3 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell"
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colGrowth}</span>
@@ -225,7 +227,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('debtRatioPct')}
-                className="py-3 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden md:table-cell"
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden md:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colDebt}</span>
@@ -257,11 +259,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                   onClick={() => onSelectCountry(item.country)}
                   className="hover:bg-slate-800/70 transition-colors cursor-pointer group"
                 >
-                  <td className="py-3.5 px-3.5 font-mono font-bold text-slate-400 group-hover:text-indigo-400">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 font-mono font-bold text-slate-400 group-hover:text-indigo-400">
                     #{item.rank}
                   </td>
 
-                  <td className="py-3.5 px-3.5">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60">
                     <div className="flex items-center gap-2.5">
                       <CountryFlag iso2={item.country.iso2} className="w-7 h-5" alt={displayName} />
                       <div>
@@ -274,16 +276,16 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </div>
                   </td>
 
-                  <td className="py-3.5 px-3.5 hidden md:table-cell text-xs text-slate-300">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 hidden md:table-cell text-xs text-slate-300">
                     <span className="font-mono font-bold">{item.country.currencyCode}</span>{' '}
                     <span className="text-slate-500">({item.country.currencySymbol})</span>
                   </td>
 
-                  <td className="py-3.5 px-3.5 text-right font-mono font-semibold text-slate-200">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200">
                     {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
                   </td>
 
-                  <td className="py-3.5 px-3.5 text-right">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right">
                     <span className="font-bold text-slate-100 block">
                       {formatGdpCompact(item.totalGdpUsd, baseCurrency, usdToBase, lang)}
                     </span>
@@ -292,7 +294,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </span>
                   </td>
 
-                  <td className="py-3.5 px-3.5 text-right hidden lg:table-cell">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right hidden lg:table-cell">
                     <span className="font-semibold text-slate-300 block">
                       {formatPerCapita(item.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                     </span>
@@ -301,7 +303,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </span>
                   </td>
 
-                  <td className="py-3.5 px-3.5 text-right hidden sm:table-cell">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right hidden sm:table-cell">
                     {item.growthRatePct !== null ? (
                       <span
                         className={`font-mono font-semibold ${
@@ -315,7 +317,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     )}
                   </td>
 
-                  <td className="py-3.5 px-3.5 text-right hidden md:table-cell">
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right hidden md:table-cell">
                     {item.debtRatioPct !== null ? (
                       <span
                         className={`inline-block font-mono font-semibold px-1.5 py-0.5 rounded text-xs ${
