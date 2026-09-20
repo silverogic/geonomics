@@ -3813,10 +3813,6 @@
       {
         "date": "2026-09-16",
         "close": 4.75
-      },
-      {
-        "date": "2026-09-18",
-        "close": 4.81
       }
     ]
   },
@@ -4117,10 +4113,6 @@
       {
         "date": "2026-09-16",
         "close": 1371
-      },
-      {
-        "date": "2026-09-18",
-        "close": 1354
       }
     ]
   },
@@ -4221,10 +4213,6 @@
       {
         "date": "2026-09-16",
         "close": 70.4
-      },
-      {
-        "date": "2026-09-18",
-        "close": 72
       }
     ]
   },
@@ -4625,10 +4613,6 @@
       {
         "date": "2026-09-16",
         "close": 47130
-      },
-      {
-        "date": "2026-09-18",
-        "close": 46160
       }
     ]
   },
@@ -4954,10 +4938,6 @@
       {
         "date": "2026-09-16",
         "close": 314.14
-      },
-      {
-        "date": "2026-09-18",
-        "close": 318.06
       }
     ]
   },
@@ -5060,5 +5040,287 @@
         "close": 97.53
       }
     ]
+  },
+  "IRN": {
+    "countryId": "IRN",
+    "nameEn": "Tehran TEDPIX",
+    "nameKo": "테헤란 TEDPIX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Market data is restricted due to international financial sanctions.",
+    "fallbackReasonKo": "국제 금융 제재 및 거래소 규제로 인해 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "IRQ": {
+    "countryId": "IRQ",
+    "nameEn": "Iraq ISX",
+    "nameKo": "이라크 ISX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Local exchange data is restricted.",
+    "fallbackReasonKo": "이라크 증권거래소(ISX) 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "DZA": {
+    "countryId": "DZA",
+    "nameEn": "Algeria SGBV",
+    "nameKo": "알제리 SGBV",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Algiers Stock Exchange data is not publicly accessible.",
+    "fallbackReasonKo": "알제 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "MAR": {
+    "countryId": "MAR",
+    "nameEn": "MASI Index (Morocco)",
+    "nameKo": "MASI 지수 (모로코)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Casablanca Stock Exchange live feed is restricted.",
+    "fallbackReasonKo": "카사블랑카 증권거래소 실시간 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "ETH": {
+    "countryId": "ETH",
+    "nameEn": "Ethiopia ESX",
+    "nameKo": "에티오피아 ESX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Ethiopian Securities Exchange is establishing live data feeds.",
+    "fallbackReasonKo": "에티오피아 증권거래소 데이터 연동 준비 중입니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "SVK": {
+    "countryId": "SVK",
+    "nameEn": "SAX Index (Slovakia)",
+    "nameKo": "SAX 지수 (슬로바키아)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Bratislava Stock Exchange live feed is restricted.",
+    "fallbackReasonKo": "브라티슬라바 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "PRI": {
+    "countryId": "PRI",
+    "nameEn": "Popular Inc (Puerto Rico Proxy)",
+    "nameKo": "포퓰러 (푸에르토리코 대표주)",
+    "ticker": "BPOP",
+    "isSupported": true,
+    "currency": "USD",
+    "currentPrice": 162.03,
+    "changePct": -5.01,
+    "points": [
+      {
+        "date": "2026-08-19",
+        "close": 170.57
+      },
+      {
+        "date": "2026-08-20",
+        "close": 168.22
+      },
+      {
+        "date": "2026-08-21",
+        "close": 169.07
+      },
+      {
+        "date": "2026-08-24",
+        "close": 168.43
+      },
+      {
+        "date": "2026-08-25",
+        "close": 169.55
+      },
+      {
+        "date": "2026-08-26",
+        "close": 169.75
+      },
+      {
+        "date": "2026-08-27",
+        "close": 169.75
+      },
+      {
+        "date": "2026-08-28",
+        "close": 169.75
+      },
+      {
+        "date": "2026-08-31",
+        "close": 168.19
+      },
+      {
+        "date": "2026-09-01",
+        "close": 167.23
+      },
+      {
+        "date": "2026-09-02",
+        "close": 170.57
+      },
+      {
+        "date": "2026-09-03",
+        "close": 171.33
+      },
+      {
+        "date": "2026-09-04",
+        "close": 171.32
+      },
+      {
+        "date": "2026-09-08",
+        "close": 167.58
+      },
+      {
+        "date": "2026-09-09",
+        "close": 164.85
+      },
+      {
+        "date": "2026-09-10",
+        "close": 163.96
+      },
+      {
+        "date": "2026-09-11",
+        "close": 163.71
+      },
+      {
+        "date": "2026-09-14",
+        "close": 165.68
+      },
+      {
+        "date": "2026-09-15",
+        "close": 164.9
+      },
+      {
+        "date": "2026-09-16",
+        "close": 160.96
+      },
+      {
+        "date": "2026-09-17",
+        "close": 160.97
+      },
+      {
+        "date": "2026-09-18",
+        "close": 162.03
+      }
+    ]
+  },
+  "DOM": {
+    "countryId": "DOM",
+    "nameEn": "BVRD (Dominican Republic)",
+    "nameKo": "BVRD (도미니카 공화국)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Dominican Republic Stock Exchange live feed is restricted.",
+    "fallbackReasonKo": "도미니카 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "ECU": {
+    "countryId": "ECU",
+    "nameEn": "Bolsa de Valores de Quito",
+    "nameKo": "키토 증권거래소 (에콰도르)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Quito Stock Exchange live feed is restricted.",
+    "fallbackReasonKo": "에콰도르 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "UZB": {
+    "countryId": "UZB",
+    "nameEn": "Tashkent Stock Exchange",
+    "nameKo": "타슈켄트 증권거래소",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Tashkent Stock Exchange live feed is restricted.",
+    "fallbackReasonKo": "타슈켄트 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "VEN": {
+    "countryId": "VEN",
+    "nameEn": "Caracas Stock Exchange (IBC)",
+    "nameKo": "카라카스 증권거래소 (IBC)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Market data is restricted due to international sanctions.",
+    "fallbackReasonKo": "국제 금융 제재로 인해 실시간 데이터 조회가 불가합니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "AGO": {
+    "countryId": "AGO",
+    "nameEn": "BODIVA (Angola)",
+    "nameKo": "BODIVA (앙골라)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "BODIVA Angola live feed is restricted.",
+    "fallbackReasonKo": "앙골라 증권거래소(BODIVA) 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "KEN": {
+    "countryId": "KEN",
+    "nameEn": "NSE 20 (Kenya)",
+    "nameKo": "NSE 20 (케냐)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Nairobi Securities Exchange live feed is restricted.",
+    "fallbackReasonKo": "나이로비 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "BGR": {
+    "countryId": "BGR",
+    "nameEn": "SOFIX Index (Bulgaria)",
+    "nameKo": "SOFIX 지수 (불가리아)",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Bulgarian Stock Exchange live feed is restricted.",
+    "fallbackReasonKo": "불가리아 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
+  },
+  "GTM": {
+    "countryId": "GTM",
+    "nameEn": "Bolsa Nacional de Valores",
+    "nameKo": "과테말라 증권거래소",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Guatemala Stock Exchange live feed is restricted.",
+    "fallbackReasonKo": "과테말라 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": []
   }
 }
