@@ -22,10 +22,10 @@ export type EconomicYear = string
 export interface GdpYearPoint {
   year: number
   gdp: number // Current US$
-  gdpPerCapita?: number // Current US$
-  growthRate?: number // Annual %
-  debtRatio?: number // % of GDP
-  inflationRate?: number // Annual %
+  gdpPerCapita?: number | null // Current US$
+  growthRate?: number | null // Annual %
+  debtRatio?: number | null // % of GDP
+  inflationRate?: number | null // Annual %
 }
 
 export interface CountryGdpDetail {

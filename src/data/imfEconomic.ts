@@ -17,7 +17,7 @@ export interface ImfCountryRecord {
   lastUpdated: string
 }
 
-const IMF_DATA: Record<string, ImfCountryRecord> = excelDataJson as Record<string, ImfCountryRecord>
+const IMF_DATA: Record<string, ImfCountryRecord> = excelDataJson as unknown as Record<string, ImfCountryRecord>
 
 export const getImfCountryData = (countryId: string): ImfCountryRecord | undefined => {
   return IMF_DATA[countryId.toUpperCase()]

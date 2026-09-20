@@ -284,31 +284,47 @@ export const CountryModal: React.FC<CountryModalProps> = ({
 
           {/* 10-Year Historical GDP Chart */}
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-bold text-slate-200">
-                {t.modalChartTitle.replace('{year}', (detail?.latestYear ?? 2024).toString())}
-              </h4>
-              <span className="text-[11px] text-slate-400">
-                {t.modalChartUnit.replace('{base}', baseCurrency)}
-              </span>
-            </div>
+            {(() => {
+              const endYear = detail?.latestYear ?? (selectedYear ? parseInt(selectedYear, 10) : 2024)
+              const startYear = endYear - 9
+              const chartPoints = (detail?.historical || []).filter(
+                (p) => p.year >= startYear && p.year <= endYear
+              )
+              const chartTitle = t.modalChartTitle
+                .replace('{startYear}', startYear.toString())
+                .replace('2015', startYear.toString())
+                .replace('{year}', endYear.toString())
 
-            {isLoading ? (
-              <div className="h-72 flex items-center justify-center bg-slate-950/50 rounded-xl border border-slate-800">
-                <div className="flex flex-col items-center gap-2 text-slate-400 text-sm">
-                  <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span>{t.modalChartLoading}</span>
-                </div>
-              </div>
-            ) : (
-              <GdpChart
-                countryName={displayName}
-                dataPoints={detail?.historical || []}
-                baseCurrency={baseCurrency}
-                exchangeRateToBase={usdToBase}
-                lang={lang}
-              />
-            )}
+              return (
+                <>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-bold text-slate-200">
+                      {chartTitle}
+                    </h4>
+                    <span className="text-[11px] text-slate-400">
+                      {t.modalChartUnit.replace('{base}', baseCurrency)}
+                    </span>
+                  </div>
+
+                  {isLoading ? (
+                    <div className="h-72 flex items-center justify-center bg-slate-950/50 rounded-xl border border-slate-800">
+                      <div className="flex flex-col items-center gap-2 text-slate-400 text-sm">
+                        <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span>{t.modalChartLoading}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <GdpChart
+                      countryName={displayName}
+                      dataPoints={chartPoints}
+                      baseCurrency={baseCurrency}
+                      exchangeRateToBase={usdToBase}
+                      lang={lang}
+                    />
+                  )}
+                </>
+              )
+            })()}
           </div>
 
           {/* Authoritative Source Transparency */}

@@ -417,32 +417,49 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
       {/* Combined 10-Year GDP Trend Line Chart */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <span>{t.compareChartTitle}</span>
-            <span className="text-xs font-normal text-slate-400">
-              ({nameA} <span className="text-indigo-400">■</span> vs {nameB}{' '}
-              <span className="text-emerald-400">■</span>)
-            </span>
-          </h3>
-          <span className="text-xs text-slate-500 font-mono">{baseCurrency}</span>
-        </div>
+        {(() => {
+          const endYear = selectedYear ? parseInt(selectedYear, 10) : (detailA?.latestYear || 2024)
+          const startYear = endYear - 9
+          const chartPointsA = (detailA?.historical || []).filter(
+            (p) => p.year >= startYear && p.year <= endYear
+          )
+          const chartPointsB = (detailB?.historical || []).filter(
+            (p) => p.year >= startYear && p.year <= endYear
+          )
 
-        {loading ? (
-          <div className="h-80 flex items-center justify-center text-slate-500 text-sm">
-            {t.compareChartLoading}
-          </div>
-        ) : (
-          <GdpChart
-            countryName={nameA}
-            dataPoints={detailA?.historical || []}
-            baseCurrency={baseCurrency}
-            exchangeRateToBase={usdToBase}
-            comparisonPoints={detailB?.historical || []}
-            comparisonCountryName={nameB}
-            lang={lang}
-          />
-        )}
+          return (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <span>
+                    {t.compareChartTitle} ({startYear} ~ {endYear})
+                  </span>
+                  <span className="text-xs font-normal text-slate-400">
+                    ({nameA} <span className="text-indigo-400">■</span> vs {nameB}{' '}
+                    <span className="text-emerald-400">■</span>)
+                  </span>
+                </h3>
+                <span className="text-xs text-slate-500 font-mono">{baseCurrency}</span>
+              </div>
+
+              {loading ? (
+                <div className="h-80 flex items-center justify-center text-slate-500 text-sm">
+                  {t.compareChartLoading}
+                </div>
+              ) : (
+                <GdpChart
+                  countryName={nameA}
+                  dataPoints={chartPointsA}
+                  baseCurrency={baseCurrency}
+                  exchangeRateToBase={usdToBase}
+                  comparisonPoints={chartPointsB}
+                  comparisonCountryName={nameB}
+                  lang={lang}
+                />
+              )}
+            </>
+          )
+        })()}
       </div>
     </div>
   )

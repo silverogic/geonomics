@@ -20,6 +20,7 @@ const summaryCache: Map<string, { totalGdp: number; year: number }> = new Map()
 const perCapitaCache: Map<string, { perCapita: number; year: number }> = new Map()
 const growthCache: Map<string, { growth: number; year: number }> = new Map()
 const debtCache: Map<string, { debtRatio: number | null; year: number }> = new Map()
+const inflationCache: Map<string, { inflation: number | null; year: number }> = new Map()
 const detailCache: Map<string, CountryGdpDetail> = new Map()
 
 let isBulkLoaded = false
@@ -62,9 +63,10 @@ export async function loadGlobalGdpOverview(
     return { gdpMap, perCapitaMap, growthMap, debtMap, inflationMap }
   }
 
-  // Populate Debt Map from IMF WEO for all countries if available
+  // Populate Debt and Inflation Map from IMF WEO for all countries if available
   for (const [id, m] of imfMap.entries()) {
     debtCache.set(id, { debtRatio: m.debtRatioPct, year: yrNum })
+    inflationCache.set(id, { inflation: m.inflationRatePct, year: yrNum })
   }
 
   if (isBulkLoaded && !forceRefresh) {
@@ -73,6 +75,7 @@ export async function loadGlobalGdpOverview(
       perCapitaMap: perCapitaCache,
       growthMap: growthCache,
       debtMap: debtCache,
+      inflationMap: inflationCache,
     }
   }
 
@@ -171,6 +174,7 @@ export async function loadGlobalGdpOverview(
     perCapitaMap: perCapitaCache,
     growthMap: growthCache,
     debtMap: debtCache,
+    inflationMap: inflationCache,
   }
 }
 
@@ -201,11 +205,16 @@ export async function fetchCountryGdpDetail(
           gdpPerCapitaUsd: pt.gdpPerCapita ?? 0,
           growthRatePct: pt.growthRate ?? null,
           debtRatioPct: pt.debtRatio ?? null,
+          inflationRatePct: pt.inflationRate ?? null,
         }
       }
     }
 
     if (yearMetrics) {
+      const startYear = yrNum - 9
+      const filteredHistorical = (imfRecord.historical || []).filter(
+        (h) => h.year >= startYear && h.year <= yrNum
+      )
       const detail: CountryGdpDetail = {
         countryCode: code,
         latestYear: yrNum,
@@ -214,7 +223,7 @@ export async function fetchCountryGdpDetail(
         growthRatePct: yearMetrics.growthRatePct,
         debtRatioPct: yearMetrics.debtRatioPct,
         inflationRatePct: yearMetrics.inflationRatePct,
-        historical: imfRecord.historical,
+        historical: filteredHistorical,
         source: 'IMF World Economic Outlook (WEO)',
         lastUpdated: 'IMF WEO Official Database',
       }
@@ -305,23 +314,26 @@ export async function fetchCountryGdpDetail(
     }
   }
 
-  const sortedPoints = Array.from(historyMap.values()).sort((a, b) => a.year - b.year)
+  const startYear = yrNum - 9
+  const sortedPoints = Array.from(historyMap.values())
+    .filter((h) => h.year >= startYear && h.year <= yrNum)
+    .sort((a, b) => a.year - b.year)
 
-  const imf2024 = imfRecord?.years['2024']
-  if (!latestTotalGdp && imf2024) {
-    latestTotalGdp = imf2024.totalGdpUsd
-    latestPerCapita = imf2024.gdpPerCapitaUsd
-    latestGrowth = imf2024.growthRatePct
+  const imfTarget = imfRecord?.years[year] || imfRecord?.years['2024']
+  if (!latestTotalGdp && imfTarget) {
+    latestTotalGdp = imfTarget.totalGdpUsd
+    latestPerCapita = imfTarget.gdpPerCapitaUsd
+    latestGrowth = imfTarget.growthRatePct
   }
 
   const detail: CountryGdpDetail = {
     countryCode: code,
-    latestYear: 2024,
+    latestYear: yrNum,
     totalGdpUsd: latestTotalGdp,
     gdpPerCapitaUsd: latestPerCapita,
     growthRatePct: latestGrowth,
-    debtRatioPct: imf2024?.debtRatioPct ?? null,
-    inflationRatePct: imf2024?.inflationRatePct ?? null,
+    debtRatioPct: imfTarget?.debtRatioPct ?? null,
+    inflationRatePct: imfTarget?.inflationRatePct ?? null,
     historical: sortedPoints,
     source: 'World Bank Open Data (NY.GDP.MKTP.CD) & IMF WEO',
     lastUpdated,
