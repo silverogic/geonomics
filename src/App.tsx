@@ -58,14 +58,11 @@ export function App() {
   const [debtMap, setDebtMap] = useState<Map<string, { debtRatio: number | null; year: number }>>(new Map())
 
   const [isLoading, setIsLoading] = useState(true)
-  const [isRefreshing, setIsRefreshing] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date())
 
   // Initial and refresh data fetcher
   const loadData = useCallback(async (isRefresh = false, yearToLoad?: EconomicYear) => {
-    if (isRefresh) setIsRefreshing(true)
-    else setIsLoading(true)
+    setIsLoading(true)
     setErrorMsg(null)
 
     const yr = yearToLoad ?? selectedYear
@@ -81,7 +78,6 @@ export function App() {
       setPerCapitaMap(new Map(gdpData.perCapitaMap))
       setGrowthMap(new Map(gdpData.growthMap))
       setDebtMap(new Map(gdpData.debtMap))
-      setLastRefreshed(new Date())
     } catch (err: any) {
       console.error('Error synchronizing economic data:', err)
       setErrorMsg(
@@ -93,7 +89,6 @@ export function App() {
       )
     } finally {
       setIsLoading(false)
-      setIsRefreshing(false)
     }
   }, [lang, selectedYear])
 
@@ -152,11 +147,6 @@ export function App() {
         setBaseCurrency={setBaseCurrency}
         lang={lang}
         setLang={setLang}
-        onRefresh={() => loadData(true)}
-        isRefreshing={isRefreshing}
-        lastUpdatedText={lastRefreshed.toLocaleTimeString(
-          lang === 'ko' ? 'ko-KR' : lang === 'ja' ? 'ja-JP' : 'en-US'
-        )}
       />
 
       {/* Real-time FX Ticker */}
