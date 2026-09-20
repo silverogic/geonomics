@@ -75,7 +75,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     setMapStyle(style)
     try {
       localStorage.setItem('geonomics_map_style', style)
-    } catch {}
+    } catch { }
   }
 
   // Hover & Tooltip state
@@ -291,11 +291,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <button
                   key={m.id}
                   onClick={() => setMetric(m.id)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                    metric === m.id
-                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                  }`}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${metric === m.id
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    }`}
                 >
                   {m.label}
                 </button>
@@ -311,11 +310,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <button
                   key={opt.year}
                   onClick={() => onYearChange(opt.year)}
-                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                    selectedYear === opt.year
-                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                  }`}
+                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    }`}
                 >
                   {t[opt.labelKey].replace('{year}', opt.year)}
                 </button>
@@ -330,11 +328,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleMapStyleChange('tile')}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  mapStyle === 'tile'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                }`}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${mapStyle === 'tile'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
                 title={t.mapStyleTile}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
@@ -343,11 +340,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleMapStyleChange('vector')}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  mapStyle === 'vector'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                }`}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${mapStyle === 'vector'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
                 title={t.mapStyleVector}
               >
                 <Globe className="w-3.5 h-3.5" />
@@ -363,11 +359,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               <button
                 key={reg}
                 onClick={() => handleRegionSelect(reg)}
-                className={`px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap ${
-                  selectedRegion === reg
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'bg-slate-950/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-slate-800/80'
-                }`}
+                className={`px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap ${selectedRegion === reg
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                  : 'bg-slate-950/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-slate-800/80'
+                  }`}
               >
                 {reg === 'All'
                   ? t.filterAll
@@ -388,519 +383,514 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       {/* 3. INTERACTIVE WORLD MAP & INSPECTOR HUD */}
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-          {/* MAP CANVAS (Takes 3 columns on wide screens) */}
-          <div className="xl:col-span-3 space-y-4">
-            {mapStyle === 'tile' ? (
-              <TileWorldMap
-                items={items}
-                metric={metric}
-                baseCurrency={baseCurrency}
-                usdToBase={usdToBase}
-                lang={lang}
-                selectedRegion={selectedRegion}
-                searchQuery={searchQuery}
-                hoveredCountryId={hoveredCountryId}
-                pinnedCountryId={pinnedCountryId}
-                getCountryFill={getCountryFill}
-                onHoverCountry={(id) => setHoveredCountryId(id)}
-                onSelectCountry={onSelectCountry}
-              />
-            ) : (
+        {/* MAP CANVAS (Takes 3 columns on wide screens) */}
+        <div className="xl:col-span-3 space-y-4">
+          {mapStyle === 'tile' ? (
+            <TileWorldMap
+              items={items}
+              metric={metric}
+              baseCurrency={baseCurrency}
+              usdToBase={usdToBase}
+              lang={lang}
+              selectedRegion={selectedRegion}
+              searchQuery={searchQuery}
+              hoveredCountryId={hoveredCountryId}
+              pinnedCountryId={pinnedCountryId}
+              getCountryFill={getCountryFill}
+              onHoverCountry={(id) => setHoveredCountryId(id)}
+              onSelectCountry={onSelectCountry}
+            />
+          ) : (
+            <div
+              ref={mapContainerRef}
+              className="relative w-full aspect-[1000/540] bg-slate-950 rounded-3xl border border-slate-800/90 overflow-hidden shadow-2xl select-none group"
+            >
+              {/* Decorative Subtle Gridlines */}
               <div
-                ref={mapContainerRef}
-                className="relative w-full aspect-[1000/540] bg-slate-950 rounded-3xl border border-slate-800/90 overflow-hidden shadow-2xl select-none group"
-              >
-                {/* Decorative Subtle Gridlines */}
-                <div
-                  className="absolute inset-0 opacity-20 pointer-events-none"
-                  style={{
-                    backgroundImage: `radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1px, transparent 0)`,
-                    backgroundSize: '24px 24px',
-                  }}
-                />
+                className="absolute inset-0 opacity-20 pointer-events-none"
+                style={{
+                  backgroundImage: `radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1px, transparent 0)`,
+                  backgroundSize: '24px 24px',
+                }}
+              />
 
-                {/* Ocean glow background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950 pointer-events-none" />
+              {/* Ocean glow background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950 pointer-events-none" />
 
-                {/* Map Zoom Controls HUD */}
-                <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800 shadow-xl">
-                  <button
-                    onClick={handleZoomIn}
-                    title={t.mapZoomIn}
-                    className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                  >
-                    <ZoomIn className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleZoomOut}
-                    title={t.mapZoomOut}
-                    className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                  >
-                    <ZoomOut className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleResetZoom}
-                    title={t.mapResetZoom}
-                    className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Interactive SVG Canvas */}
-                <svg
-                  viewBox={currentViewBox}
-                  className="w-full h-full cursor-grab active:cursor-grabbing transition-[viewBox] duration-500 ease-out"
-                  style={{ filter: 'drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4))' }}
-                >
-                  <defs>
-                    {/* Subtle drop shadow filter for active/hovered country */}
-                    <filter id="country-glow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="3" result="blur" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                  </defs>
-
-                  {/* Country Polygons */}
-                  <g className="transition-all duration-300">
-                    {WORLD_MAP_PATHS.map((countryPath) => {
-                      const countryId = countryPath.id
-                      const isTracked = countryItemMap.has(countryId)
-                      const isHovered = hoveredCountryId === countryId
-                      const isPinned = pinnedCountryId === countryId
-                      const isSearchMatch = searchMatchedCountry?.country.id === countryId
-                      const fill = getCountryFill(countryId)
-
-                      return (
-                        <path
-                          key={countryId}
-                          id={`map-country-${countryId}`}
-                          d={countryPath.d}
-                          fill={fill}
-                          stroke={
-                            isSearchMatch
-                              ? '#38bdf8'
-                              : isHovered || isPinned
-                                ? '#ffffff'
-                                : isTracked
-                                  ? '#1e293b'
-                                  : '#0f172a'
-                          }
-                          strokeWidth={
-                            isSearchMatch ? '2.5' : isHovered || isPinned ? '1.8' : isTracked ? '0.75' : '0.4'
-                          }
-                          opacity={
-                            isTracked
-                              ? 1
-                              : selectedRegion !== 'All'
-                                ? 0.35
-                                : 0.65
-                          }
-                          className={`transition-all duration-200 ${
-                            isTracked
-                              ? 'cursor-pointer hover:brightness-125'
-                              : 'cursor-default pointer-events-none'
-                          }`}
-                          onMouseMove={(e) => {
-                            if (isTracked) handleCountryMouseMove(e, countryId)
-                          }}
-                          onMouseLeave={handleCountryMouseLeave}
-                          onClick={() => {
-                            if (isTracked) handleCountryClick(countryId)
-                          }}
-                        />
-                      )
-                    })}
-
-                    {/* Top 5 Beacon Markers */}
-                    {top10Items.slice(0, 5).map((topItem) => {
-                      const pathData = WORLD_MAP_PATHS.find((p) => p.id === topItem.country.id)
-                      if (!pathData) return null
-                      const [cx, cy] = pathData.centroid
-                      return (
-                        <g
-                          key={`beacon-${topItem.country.id}`}
-                          className="pointer-events-none transition-opacity duration-300"
-                          opacity={zoomLevel >= 1 ? 0.9 : 0}
-                        >
-                          <circle cx={cx} cy={cy} r="3.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
-                          <text
-                            x={cx}
-                            y={cy - 6}
-                            fill="#ffffff"
-                            fontSize="7"
-                            fontWeight="bold"
-                            textAnchor="middle"
-                            className="select-none font-mono"
-                            style={{ textShadow: '0 1px 3px rgba(0,0,0,0.9)' }}
-                          >
-                            #{topItem.rank}
-                          </text>
-                        </g>
-                      )
-                    })}
-                  </g>
-                </svg>
-
-                {/* Floating Dynamic Tooltip HUD */}
-                {hoveredItem && tooltipPos && (
-                  <div
-                    className="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-3 transition-transform duration-75"
-                    style={{
-                      left: `${tooltipPos.x}px`,
-                      top: `${tooltipPos.y}px`,
-                    }}
-                  >
-                    <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[200px] text-xs space-y-2">
-                      {/* Header */}
-                      <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-2">
-                        <div className="flex items-center gap-2">
-                          <CountryFlag iso2={hoveredItem.country.iso2} className="w-5 h-3.5 rounded-sm" />
-                          <span className="font-bold text-white text-sm">
-                            {getCountryName(hoveredItem.country, lang)}
-                          </span>
-                        </div>
-                        <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px]">
-                          #{hoveredItem.rank}
-                        </span>
-                      </div>
-
-                      {/* Stats List */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-slate-400">
-                          <span>{t.cardTotalGdp}:</span>
-                          <span className="font-mono font-bold text-slate-100">
-                            {formatGdpCompact(hoveredItem.totalGdpUsd, baseCurrency, usdToBase, lang)}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-slate-400">
-                          <span>{t.cardPerCapita}:</span>
-                          <span className="font-mono text-slate-300">
-                            {formatPerCapita(hoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
-                          </span>
-                        </div>
-                        {hoveredItem.growthRatePct !== null && (
-                          <div className="flex items-center justify-between text-slate-400">
-                            <span>{t.metricGrowth}:</span>
-                            <span
-                              className={`font-mono font-semibold ${
-                                hoveredItem.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
-                              }`}
-                            >
-                              {hoveredItem.growthRatePct > 0
-                                ? `+${hoveredItem.growthRatePct.toFixed(1)}%`
-                                : `${hoveredItem.growthRatePct.toFixed(1)}%`}
-                            </span>
-                          </div>
-                        )}
-                        {hoveredItem.inflationRatePct !== null && (
-                          <div className="flex items-center justify-between text-slate-400">
-                            <span>{t.metricInflation}:</span>
-                            <span
-                              className={`font-mono font-semibold ${
-                                hoveredItem.inflationRatePct < 0
-                                  ? 'text-purple-400'
-                                  : hoveredItem.inflationRatePct <= 2.5
-                                  ? 'text-emerald-400'
-                                  : hoveredItem.inflationRatePct <= 4.0
-                                  ? 'text-cyan-400'
-                                  : hoveredItem.inflationRatePct <= 7.0
-                                  ? 'text-amber-400'
-                                  : 'text-rose-400'
-                              }`}
-                            >
-                              {hoveredItem.inflationRatePct.toFixed(1)}%
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Hint */}
-                      <div className="text-[10px] text-indigo-400 font-medium pt-1 border-t border-slate-800 flex items-center justify-between">
-                        <span>{t.clickCountryHint}</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Bottom Map Info Footer */}
-                <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-                  <Info className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>{t.clickCountryHint}</span>
-                </div>
-              </div>
-            )}
-
-            {/* CHOROPLETH COLOR SCALE LEGEND */}
-            <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-slate-300 font-semibold">
-                <span>{t.legendTitle}:</span>
-                <span className="text-indigo-400 font-bold">
-                  {metric === 'gdp'
-                    ? t.metricTotalGdp
-                    : metric === 'perCapita'
-                      ? t.metricPerCapita
-                      : metric === 'growth'
-                        ? t.metricGrowth
-                        : metric === 'debt'
-                          ? t.metricDebt
-                          : t.metricInflation}
-                </span>
-              </div>
-
-              {/* Legend scale swatches */}
-              <div className="flex flex-wrap items-center gap-3">
-                {metric === 'gdp' && (
-                  <>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
-                      <span className="text-slate-300 font-mono font-medium">$10T+</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
-                      <span className="text-slate-300 font-mono font-medium">$2T ~ $10T</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
-                      <span className="text-slate-300 font-mono font-medium">$500B ~ $2T</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
-                      <span className="text-slate-300 font-mono font-medium">$100B ~ $500B</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#475569] shadow-sm"></span>
-                      <span className="text-slate-300 font-mono font-medium">&lt; $100B</span>
-                    </div>
-                  </>
-                )}
-
-                {metric === 'perCapita' && (
-                  <>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&gt; $60K</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
-                      <span className="text-slate-300 font-mono font-medium">$30K ~ $60K</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#6366f1]"></span>
-                      <span className="text-slate-300 font-mono font-medium">$12K ~ $30K</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#475569]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&lt; $12K</span>
-                    </div>
-                  </>
-                )}
-
-                {metric === 'growth' && (
-                  <>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&gt; 5.0%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
-                      <span className="text-slate-300 font-mono font-medium">2.5% ~ 5.0%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#6366f1]"></span>
-                      <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
-                    </div>
-                  </>
-                )}
-
-                {metric === 'debt' && (
-                  <>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&lt; 50%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
-                      <span className="text-slate-300 font-mono font-medium">50% ~ 80%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#f59e0b]"></span>
-                      <span className="text-slate-300 font-mono font-medium">80% ~ 110%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&gt; 110%</span>
-                    </div>
-                  </>
-                )}
-
-                {metric === 'inflation' && (
-                  <>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#8b5cf6]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
-                      <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
-                      <span className="text-slate-300 font-mono font-medium">2.5% ~ 4.0%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#f59e0b]"></span>
-                      <span className="text-slate-300 font-mono font-medium">4.0% ~ 7.0%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
-                      <span className="text-slate-300 font-mono font-medium">&gt; 7.0%</span>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT SIDEBAR: Selected / Hovered Economy Inspector HUD */}
-          <div className="xl:col-span-1 space-y-4">
-            {inspectedCountryItem && (
-              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5">
-                {/* Badge & Country Identity */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-semibold text-indigo-400 tracking-wide uppercase">
-                      {t.selectedCountryBadge}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono font-bold text-xs">
-                      #{inspectedCountryItem.rank}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <CountryFlag
-                      iso2={inspectedCountryItem.country.iso2}
-                      className="w-8 h-6 rounded-md shadow"
-                    />
-                    <div>
-                      <h2 className="text-xl font-black text-white leading-tight">
-                        {getCountryName(inspectedCountryItem.country, lang)}
-                      </h2>
-                      <p className="text-xs text-slate-400">
-                        {inspectedCountryItem.country.region} · {inspectedCountryItem.country.currencyCode}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Key Metrics Cards */}
-                <div className="space-y-2.5">
-                  {/* Total GDP */}
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
-                    <div className="text-[11px] text-slate-400 font-medium">{t.cardTotalGdp}</div>
-                    <div className="text-xl font-black text-white font-mono mt-0.5">
-                      {formatGdpCompact(
-                        inspectedCountryItem.totalGdpUsd,
-                        baseCurrency,
-                        usdToBase,
-                        lang
-                      )}
-                    </div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">
-                      (USD ${formatGdpCompact(inspectedCountryItem.totalGdpUsd, 'USD', 1, lang)})
-                    </div>
-                  </div>
-
-                  {/* GDP Per Capita */}
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
-                    <div className="text-[11px] text-slate-400 font-medium">{t.cardPerCapita}</div>
-                    <div className="text-lg font-bold text-slate-200 font-mono mt-0.5">
-                      {formatPerCapita(
-                        inspectedCountryItem.gdpPerCapitaUsd,
-                        baseCurrency,
-                        usdToBase,
-                        lang
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Growth Rate, Inflation Rate & Debt Ratio Grid */}
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
-                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
-                      <div
-                        className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 ${
-                          (inspectedCountryItem.growthRatePct ?? 0) >= 0
-                            ? 'text-emerald-400'
-                            : 'text-rose-400'
-                        }`}
-                      >
-                        {(inspectedCountryItem.growthRatePct ?? 0) >= 0 ? (
-                          <TrendingUp className="w-3 h-3" />
-                        ) : (
-                          <TrendingDown className="w-3 h-3" />
-                        )}
-                        <span>
-                          {inspectedCountryItem.growthRatePct !== null
-                            ? inspectedCountryItem.growthRatePct > 0
-                              ? `+${inspectedCountryItem.growthRatePct.toFixed(1)}%`
-                              : `${inspectedCountryItem.growthRatePct.toFixed(1)}%`
-                            : '-'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
-                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricInflation}</div>
-                      <div
-                        className={`text-sm font-bold font-mono mt-0.5 ${
-                          inspectedCountryItem.inflationRatePct === null || inspectedCountryItem.inflationRatePct === undefined
-                            ? 'text-slate-400'
-                            : inspectedCountryItem.inflationRatePct < 0
-                            ? 'text-purple-400'
-                            : inspectedCountryItem.inflationRatePct <= 2.5
-                            ? 'text-emerald-400'
-                            : inspectedCountryItem.inflationRatePct <= 4.0
-                            ? 'text-cyan-400'
-                            : inspectedCountryItem.inflationRatePct <= 7.0
-                            ? 'text-amber-400'
-                            : 'text-rose-400'
-                        }`}
-                      >
-                        {inspectedCountryItem.inflationRatePct !== null && inspectedCountryItem.inflationRatePct !== undefined
-                          ? `${inspectedCountryItem.inflationRatePct.toFixed(1)}%`
-                          : '-'}
-                      </div>
-                    </div>
-
-                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
-                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
-                      <div className="text-sm font-bold text-slate-200 font-mono mt-0.5">
-                        {inspectedCountryItem.debtRatioPct !== null &&
-                        inspectedCountryItem.debtRatioPct !== undefined
-                          ? `${inspectedCountryItem.debtRatioPct.toFixed(1)}%`
-                          : '-'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Open Modal CTA Button */}
+              {/* Map Zoom Controls HUD */}
+              <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800 shadow-xl">
                 <button
-                  onClick={() => onSelectCountry(inspectedCountryItem.country)}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={handleZoomIn}
+                  title={t.mapZoomIn}
+                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
                 >
-                  <span>{t.viewDetailsBtn}</span>
-                  <ExternalLink className="w-4 h-4" />
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleZoomOut}
+                  title={t.mapZoomOut}
+                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleResetZoom}
+                  title={t.mapResetZoom}
+                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                  <RotateCcw className="w-4 h-4" />
                 </button>
               </div>
-            )}
+
+              {/* Interactive SVG Canvas */}
+              <svg
+                viewBox={currentViewBox}
+                className="w-full h-full cursor-grab active:cursor-grabbing transition-[viewBox] duration-500 ease-out"
+                style={{ filter: 'drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4))' }}
+              >
+                <defs>
+                  {/* Subtle drop shadow filter for active/hovered country */}
+                  <filter id="country-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                {/* Country Polygons */}
+                <g className="transition-all duration-300">
+                  {WORLD_MAP_PATHS.map((countryPath) => {
+                    const countryId = countryPath.id
+                    const isTracked = countryItemMap.has(countryId)
+                    const isHovered = hoveredCountryId === countryId
+                    const isPinned = pinnedCountryId === countryId
+                    const isSearchMatch = searchMatchedCountry?.country.id === countryId
+                    const fill = getCountryFill(countryId)
+
+                    return (
+                      <path
+                        key={countryId}
+                        id={`map-country-${countryId}`}
+                        d={countryPath.d}
+                        fill={fill}
+                        stroke={
+                          isSearchMatch
+                            ? '#38bdf8'
+                            : isHovered || isPinned
+                              ? '#ffffff'
+                              : isTracked
+                                ? '#1e293b'
+                                : '#0f172a'
+                        }
+                        strokeWidth={
+                          isSearchMatch ? '2.5' : isHovered || isPinned ? '1.8' : isTracked ? '0.75' : '0.4'
+                        }
+                        opacity={
+                          isTracked
+                            ? 1
+                            : selectedRegion !== 'All'
+                              ? 0.35
+                              : 0.65
+                        }
+                        className={`transition-all duration-200 ${isTracked
+                          ? 'cursor-pointer hover:brightness-125'
+                          : 'cursor-default pointer-events-none'
+                          }`}
+                        onMouseMove={(e) => {
+                          if (isTracked) handleCountryMouseMove(e, countryId)
+                        }}
+                        onMouseLeave={handleCountryMouseLeave}
+                        onClick={() => {
+                          if (isTracked) handleCountryClick(countryId)
+                        }}
+                      />
+                    )
+                  })}
+
+                  {/* Top 5 Beacon Markers */}
+                  {top10Items.slice(0, 5).map((topItem) => {
+                    const pathData = WORLD_MAP_PATHS.find((p) => p.id === topItem.country.id)
+                    if (!pathData) return null
+                    const [cx, cy] = pathData.centroid
+                    return (
+                      <g
+                        key={`beacon-${topItem.country.id}`}
+                        className="pointer-events-none transition-opacity duration-300"
+                        opacity={zoomLevel >= 1 ? 0.9 : 0}
+                      >
+                        <circle cx={cx} cy={cy} r="3.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
+                        <text
+                          x={cx}
+                          y={cy - 6}
+                          fill="#ffffff"
+                          fontSize="7"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          className="select-none font-mono"
+                          style={{ textShadow: '0 1px 3px rgba(0,0,0,0.9)' }}
+                        >
+                          #{topItem.rank}
+                        </text>
+                      </g>
+                    )
+                  })}
+                </g>
+              </svg>
+
+              {/* Floating Dynamic Tooltip HUD */}
+              {hoveredItem && tooltipPos && (
+                <div
+                  className="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-3 transition-transform duration-75"
+                  style={{
+                    left: `${tooltipPos.x}px`,
+                    top: `${tooltipPos.y}px`,
+                  }}
+                >
+                  <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[200px] text-xs space-y-2">
+                    {/* Header */}
+                    <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <CountryFlag iso2={hoveredItem.country.iso2} className="w-5 h-3.5 rounded-sm" />
+                        <span className="font-bold text-white text-sm">
+                          {getCountryName(hoveredItem.country, lang)}
+                        </span>
+                      </div>
+                      <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px]">
+                        #{hoveredItem.rank}
+                      </span>
+                    </div>
+
+                    {/* Stats List */}
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-slate-400">
+                        <span>{t.cardTotalGdp}:</span>
+                        <span className="font-mono font-bold text-slate-100">
+                          {formatGdpCompact(hoveredItem.totalGdpUsd, baseCurrency, usdToBase, lang)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-400">
+                        <span>{t.cardPerCapita}:</span>
+                        <span className="font-mono text-slate-300">
+                          {formatPerCapita(hoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
+                        </span>
+                      </div>
+                      {hoveredItem.growthRatePct !== null && (
+                        <div className="flex items-center justify-between text-slate-400">
+                          <span>{t.metricGrowth}:</span>
+                          <span
+                            className={`font-mono font-semibold ${hoveredItem.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                              }`}
+                          >
+                            {hoveredItem.growthRatePct > 0
+                              ? `+${hoveredItem.growthRatePct.toFixed(1)}%`
+                              : `${hoveredItem.growthRatePct.toFixed(1)}%`}
+                          </span>
+                        </div>
+                      )}
+                      {hoveredItem.inflationRatePct !== null && (
+                        <div className="flex items-center justify-between text-slate-400">
+                          <span>{t.metricInflation}:</span>
+                          <span
+                            className={`font-mono font-semibold ${hoveredItem.inflationRatePct < 0
+                              ? 'text-purple-400'
+                              : hoveredItem.inflationRatePct <= 2.5
+                                ? 'text-emerald-400'
+                                : hoveredItem.inflationRatePct <= 4.0
+                                  ? 'text-cyan-400'
+                                  : hoveredItem.inflationRatePct <= 7.0
+                                    ? 'text-amber-400'
+                                    : 'text-rose-400'
+                              }`}
+                          >
+                            {hoveredItem.inflationRatePct.toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Hint */}
+                    <div className="text-[10px] text-indigo-400 font-medium pt-1 border-t border-slate-800 flex items-center justify-between">
+                      <span>{t.clickCountryHint}</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Bottom Map Info Footer */}
+              <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+                <Info className="w-3.5 h-3.5 text-indigo-400" />
+                <span>{t.clickCountryHint}</span>
+              </div>
+            </div>
+          )}
+
+          {/* CHOROPLETH COLOR SCALE LEGEND */}
+          <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-slate-300 font-semibold">
+              <span>{t.legendTitle}:</span>
+              <span className="text-indigo-400 font-bold">
+                {metric === 'gdp'
+                  ? t.metricTotalGdp
+                  : metric === 'perCapita'
+                    ? t.metricPerCapita
+                    : metric === 'growth'
+                      ? t.metricGrowth
+                      : metric === 'debt'
+                        ? t.metricDebt
+                        : t.metricInflation}
+              </span>
+            </div>
+
+            {/* Legend scale swatches */}
+            <div className="flex flex-wrap items-center gap-3">
+              {metric === 'gdp' && (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">$10T+</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">$2T ~ $10T</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">$500B ~ $2T</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">$100B ~ $500B</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#475569] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">&lt; $100B</span>
+                  </div>
+                </>
+              )}
+
+              {metric === 'perCapita' && (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&gt; $60K</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
+                    <span className="text-slate-300 font-mono font-medium">$30K ~ $60K</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1]"></span>
+                    <span className="text-slate-300 font-mono font-medium">$12K ~ $30K</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#475569]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&lt; $12K</span>
+                  </div>
+                </>
+              )}
+
+              {metric === 'growth' && (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&gt; 5.0%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
+                    <span className="text-slate-300 font-mono font-medium">2.5% ~ 5.0%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1]"></span>
+                    <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
+                  </div>
+                </>
+              )}
+
+              {metric === 'debt' && (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&lt; 50%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
+                    <span className="text-slate-300 font-mono font-medium">50% ~ 80%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b]"></span>
+                    <span className="text-slate-300 font-mono font-medium">80% ~ 110%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&gt; 110%</span>
+                  </div>
+                </>
+              )}
+
+              {metric === 'inflation' && (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#8b5cf6]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
+                    <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
+                    <span className="text-slate-300 font-mono font-medium">2.5% ~ 4.0%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b]"></span>
+                    <span className="text-slate-300 font-mono font-medium">4.0% ~ 7.0%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
+                    <span className="text-slate-300 font-mono font-medium">&gt; 7.0%</span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* RIGHT SIDEBAR: Selected / Hovered Economy Inspector HUD */}
+        <div className="xl:col-span-1 space-y-4">
+          {inspectedCountryItem && (
+            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5">
+              {/* Badge & Country Identity */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-semibold text-indigo-400 tracking-wide uppercase">
+                    {t.selectedCountryBadge}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono font-bold text-xs">
+                    #{inspectedCountryItem.rank}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CountryFlag
+                    iso2={inspectedCountryItem.country.iso2}
+                    className="w-8 h-6 rounded-md shadow"
+                  />
+                  <div>
+                    <h2 className="text-xl font-black text-white leading-tight">
+                      {getCountryName(inspectedCountryItem.country, lang)}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {inspectedCountryItem.country.region} · {inspectedCountryItem.country.currencyCode}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Metrics Cards */}
+              <div className="space-y-2.5">
+                {/* Total GDP */}
+                <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
+                  <div className="text-[11px] text-slate-400 font-medium">{t.cardTotalGdp}</div>
+                  <div className="text-xl font-black text-white font-mono mt-0.5">
+                    {formatGdpCompact(
+                      inspectedCountryItem.totalGdpUsd,
+                      baseCurrency,
+                      usdToBase,
+                      lang
+                    )}
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">
+                    (USD {formatGdpCompact(inspectedCountryItem.totalGdpUsd, 'USD', 1, lang)})
+                  </div>
+                </div>
+
+                {/* GDP Per Capita */}
+                <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
+                  <div className="text-[11px] text-slate-400 font-medium">{t.cardPerCapita}</div>
+                  <div className="text-lg font-bold text-slate-200 font-mono mt-0.5">
+                    {formatPerCapita(
+                      inspectedCountryItem.gdpPerCapitaUsd,
+                      baseCurrency,
+                      usdToBase,
+                      lang
+                    )}
+                  </div>
+                </div>
+
+                {/* Growth Rate, Inflation Rate & Debt Ratio Grid */}
+                <div className="grid grid-cols-3 gap-1.5">
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                    <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
+                    <div
+                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 ${(inspectedCountryItem.growthRatePct ?? 0) >= 0
+                        ? 'text-emerald-400'
+                        : 'text-rose-400'
+                        }`}
+                    >
+                      {(inspectedCountryItem.growthRatePct ?? 0) >= 0 ? (
+                        <TrendingUp className="w-3 h-3" />
+                      ) : (
+                        <TrendingDown className="w-3 h-3" />
+                      )}
+                      <span>
+                        {inspectedCountryItem.growthRatePct !== null
+                          ? inspectedCountryItem.growthRatePct > 0
+                            ? `+${inspectedCountryItem.growthRatePct.toFixed(1)}%`
+                            : `${inspectedCountryItem.growthRatePct.toFixed(1)}%`
+                          : '-'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                    <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricInflation}</div>
+                    <div
+                      className={`text-sm font-bold font-mono mt-0.5 ${inspectedCountryItem.inflationRatePct === null || inspectedCountryItem.inflationRatePct === undefined
+                        ? 'text-slate-400'
+                        : inspectedCountryItem.inflationRatePct < 0
+                          ? 'text-purple-400'
+                          : inspectedCountryItem.inflationRatePct <= 2.5
+                            ? 'text-emerald-400'
+                            : inspectedCountryItem.inflationRatePct <= 4.0
+                              ? 'text-cyan-400'
+                              : inspectedCountryItem.inflationRatePct <= 7.0
+                                ? 'text-amber-400'
+                                : 'text-rose-400'
+                        }`}
+                    >
+                      {inspectedCountryItem.inflationRatePct !== null && inspectedCountryItem.inflationRatePct !== undefined
+                        ? `${inspectedCountryItem.inflationRatePct.toFixed(1)}%`
+                        : '-'}
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                    <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
+                    <div className="text-sm font-bold text-slate-200 font-mono mt-0.5">
+                      {inspectedCountryItem.debtRatioPct !== null &&
+                        inspectedCountryItem.debtRatioPct !== undefined
+                        ? `${inspectedCountryItem.debtRatioPct.toFixed(1)}%`
+                        : '-'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Open Modal CTA Button */}
+              <button
+                onClick={() => onSelectCountry(inspectedCountryItem.country)}
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>{t.viewDetailsBtn}</span>
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* 4. GLOBAL TOP 10 LEADERBOARD QUICK BAR */}
       <div className="bg-slate-900/80 border border-slate-800/80 rounded-3xl p-5 space-y-3">
@@ -923,11 +913,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 setPinnedCountryId(item.country.id)
                 onSelectCountry(item.country)
               }}
-              className={`flex flex-col p-2.5 rounded-2xl border transition-all text-left group ${
-                pinnedCountryId === item.country.id
-                  ? 'bg-indigo-950/60 border-indigo-500/80 shadow-md shadow-indigo-500/20'
-                  : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/40'
-              }`}
+              className={`flex flex-col p-2.5 rounded-2xl border transition-all text-left group ${pinnedCountryId === item.country.id
+                ? 'bg-indigo-950/60 border-indigo-500/80 shadow-md shadow-indigo-500/20'
+                : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/40'
+                }`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <CountryFlag iso2={item.country.iso2} className="w-4 h-3 rounded-sm" />
