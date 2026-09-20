@@ -319,7 +319,7 @@ export async function fetchCountryGdpDetail(
     .filter((h) => h.year >= startYear && h.year <= yrNum)
     .sort((a, b) => a.year - b.year)
 
-  const imfTarget = imfRecord?.years[year] || imfRecord?.years['2024']
+  const imfTarget = imfRecord?.years[targetYear] || imfRecord?.years['2024']
   if (!latestTotalGdp && imfTarget) {
     latestTotalGdp = imfTarget.totalGdpUsd
     latestPerCapita = imfTarget.gdpPerCapitaUsd
