@@ -1,5 +1,5 @@
 /**
- * Pixel Grid World Map Data (50 cols x 28 rows)
+ * Pixel Grid World Map Data (53 cols x 28 rows)
  * Recreates the iconic pixel/dot world map silhouette with interactive country tiles.
  */
 export interface PixelTile {
@@ -9,7 +9,7 @@ export interface PixelTile {
   isTracked: boolean
 }
 
-export const PIXEL_MAP_COLS = 50
+export const PIXEL_MAP_COLS = 53
 export const PIXEL_MAP_ROWS = 28
 
 export const PIXEL_MAP_TILES: PixelTile[] = [
@@ -32,12 +32,6 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 10,
-    "r": 0,
-    "id": "CAN",
-    "isTracked": true
-  },
-  {
     "c": 11,
     "r": 0,
     "id": "CAN",
@@ -56,10 +50,10 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 16,
+    "c": 14,
     "r": 0,
-    "id": "GRL",
-    "isTracked": false
+    "id": "CAN",
+    "isTracked": true
   },
   {
     "c": 17,
@@ -92,13 +86,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": false
   },
   {
-    "c": 31,
+    "c": 22,
     "r": 0,
-    "id": "RUS",
-    "isTracked": true
+    "id": "GRL",
+    "isTracked": false
   },
   {
-    "c": 32,
+    "c": 33,
     "r": 0,
     "id": "RUS",
     "isTracked": true
@@ -110,19 +104,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 35,
-    "r": 0,
-    "id": "RUS",
-    "isTracked": true
-  },
-  {
     "c": 36,
-    "r": 0,
-    "id": "RUS",
-    "isTracked": true
-  },
-  {
-    "c": 37,
     "r": 0,
     "id": "RUS",
     "isTracked": true
@@ -170,7 +152,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 45,
+    "c": 46,
+    "r": 0,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 47,
     "r": 0,
     "id": "RUS",
     "isTracked": true
@@ -254,10 +242,10 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 16,
+    "c": 15,
     "r": 1,
-    "id": "GRL",
-    "isTracked": false
+    "id": "CAN",
+    "isTracked": true
   },
   {
     "c": 17,
@@ -284,37 +272,37 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": false
   },
   {
-    "c": 27,
+    "c": 21,
+    "r": 1,
+    "id": "GRL",
+    "isTracked": false
+  },
+  {
+    "c": 22,
+    "r": 1,
+    "id": "GRL",
+    "isTracked": false
+  },
+  {
+    "c": 28,
     "r": 1,
     "id": "NOR",
     "isTracked": true
   },
   {
-    "c": 28,
+    "c": 29,
     "r": 1,
-    "id": "FIN",
+    "id": "NOR",
     "isTracked": true
   },
   {
-    "c": 31,
+    "c": 30,
     "r": 1,
-    "id": "RUS",
+    "id": "NOR",
     "isTracked": true
   },
   {
     "c": 33,
-    "r": 1,
-    "id": "RUS",
-    "isTracked": true
-  },
-  {
-    "c": 34,
-    "r": 1,
-    "id": "RUS",
-    "isTracked": true
-  },
-  {
-    "c": 35,
     "r": 1,
     "id": "RUS",
     "isTracked": true
@@ -386,7 +374,25 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 47,
+    "r": 1,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
     "c": 48,
+    "r": 1,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 49,
+    "r": 1,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 51,
     "r": 1,
     "id": "RUS",
     "isTracked": true
@@ -418,7 +424,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 4,
     "r": 2,
-    "id": "CAN",
+    "id": "USA",
     "isTracked": true
   },
   {
@@ -488,10 +494,10 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 17,
+    "c": 16,
     "r": 2,
-    "id": "GRL",
-    "isTracked": false
+    "id": "CAN",
+    "isTracked": true
   },
   {
     "c": 18,
@@ -512,6 +518,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": false
   },
   {
+    "c": 21,
+    "r": 2,
+    "id": "GRL",
+    "isTracked": false
+  },
+  {
     "c": 24,
     "r": 2,
     "id": "NOR",
@@ -524,12 +536,6 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 26,
-    "r": 2,
-    "id": "NOR",
-    "isTracked": true
-  },
-  {
     "c": 27,
     "r": 2,
     "id": "FIN",
@@ -538,13 +544,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 28,
     "r": 2,
-    "id": "RUS",
+    "id": "NOR",
     "isTracked": true
   },
   {
     "c": 29,
     "r": 2,
-    "id": "RUS",
+    "id": "NOR",
     "isTracked": true
   },
   {
@@ -668,6 +674,24 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 50,
+    "r": 2,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 51,
+    "r": 2,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 52,
+    "r": 2,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
     "c": 0,
     "r": 3,
     "id": "RUS",
@@ -694,7 +718,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 4,
     "r": 3,
-    "id": "CAN",
+    "id": "USA",
     "isTracked": true
   },
   {
@@ -764,10 +788,10 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 17,
+    "c": 16,
     "r": 3,
-    "id": "GRL",
-    "isTracked": false
+    "id": "CAN",
+    "isTracked": true
   },
   {
     "c": 18,
@@ -776,13 +800,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": false
   },
   {
-    "c": 21,
+    "c": 19,
+    "r": 3,
+    "id": "GRL",
+    "isTracked": false
+  },
+  {
+    "c": 22,
     "r": 3,
     "id": "ISL",
     "isTracked": false
   },
   {
-    "c": 22,
+    "c": 23,
     "r": 3,
     "id": "ISL",
     "isTracked": false
@@ -794,33 +824,21 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 25,
-    "r": 3,
-    "id": "NOR",
-    "isTracked": true
-  },
-  {
-    "c": 26,
-    "r": 3,
-    "id": "NOR",
-    "isTracked": true
-  },
-  {
     "c": 27,
     "r": 3,
-    "id": "SWE",
+    "id": "NOR",
     "isTracked": true
   },
   {
     "c": 28,
     "r": 3,
-    "id": "RUS",
+    "id": "SWE",
     "isTracked": true
   },
   {
     "c": 29,
     "r": 3,
-    "id": "RUS",
+    "id": "FIN",
     "isTracked": true
   },
   {
@@ -944,6 +962,24 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 50,
+    "r": 3,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 51,
+    "r": 3,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 52,
+    "r": 3,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
     "c": 1,
     "r": 4,
     "id": "USA",
@@ -964,7 +1000,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 4,
     "r": 4,
-    "id": "CAN",
+    "id": "USA",
     "isTracked": true
   },
   {
@@ -1004,7 +1040,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 13,
+    "c": 11,
     "r": 4,
     "id": "CAN",
     "isTracked": true
@@ -1022,13 +1058,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 17,
+    "c": 18,
     "r": 4,
     "id": "GRL",
     "isTracked": false
   },
   {
-    "c": 18,
+    "c": 19,
     "r": 4,
     "id": "GRL",
     "isTracked": false
@@ -1052,33 +1088,27 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 25,
+    "c": 26,
     "r": 4,
     "id": "NOR",
     "isTracked": true
   },
   {
-    "c": 26,
-    "r": 4,
-    "id": "SWE",
-    "isTracked": true
-  },
-  {
     "c": 27,
     "r": 4,
-    "id": "FIN",
+    "id": "NOR",
     "isTracked": true
   },
   {
     "c": 28,
     "r": 4,
-    "id": "RUS",
+    "id": "SWE",
     "isTracked": true
   },
   {
     "c": 29,
     "r": 4,
-    "id": "RUS",
+    "id": "FIN",
     "isTracked": true
   },
   {
@@ -1196,6 +1226,24 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 49,
+    "r": 4,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 50,
+    "r": 4,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 51,
+    "r": 4,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
     "c": 1,
     "r": 5,
     "id": "USA",
@@ -1205,12 +1253,6 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 2,
     "r": 5,
     "id": "USA",
-    "isTracked": true
-  },
-  {
-    "c": 5,
-    "r": 5,
-    "id": "CAN",
     "isTracked": true
   },
   {
@@ -1250,7 +1292,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 13,
+    "c": 12,
     "r": 5,
     "id": "CAN",
     "isTracked": true
@@ -1263,6 +1305,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   },
   {
     "c": 15,
+    "r": 5,
+    "id": "CAN",
+    "isTracked": true
+  },
+  {
+    "c": 16,
     "r": 5,
     "id": "CAN",
     "isTracked": true
@@ -1288,8 +1336,8 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 27,
     "r": 5,
-    "id": "EST",
-    "isTracked": false
+    "id": "SWE",
+    "isTracked": true
   },
   {
     "c": 28,
@@ -1300,8 +1348,8 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 29,
     "r": 5,
-    "id": "RUS",
-    "isTracked": true
+    "id": "EST",
+    "isTracked": false
   },
   {
     "c": 30,
@@ -1318,13 +1366,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 32,
     "r": 5,
-    "id": "KAZ",
+    "id": "RUS",
     "isTracked": true
   },
   {
     "c": 33,
     "r": 5,
-    "id": "RUS",
+    "id": "KAZ",
     "isTracked": true
   },
   {
@@ -1388,15 +1436,27 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 44,
+    "r": 5,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 45,
+    "r": 5,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
     "c": 46,
     "r": 5,
     "id": "RUS",
     "isTracked": true
   },
   {
-    "c": 5,
-    "r": 6,
-    "id": "CAN",
+    "c": 49,
+    "r": 5,
+    "id": "RUS",
     "isTracked": true
   },
   {
@@ -1466,6 +1526,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 17,
+    "r": 6,
+    "id": "CAN",
+    "isTracked": true
+  },
+  {
     "c": 23,
     "r": 6,
     "id": "FRA",
@@ -1474,13 +1540,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 24,
     "r": 6,
-    "id": "GBR",
+    "id": "IRL",
     "isTracked": true
   },
   {
     "c": 25,
     "r": 6,
-    "id": "DEU",
+    "id": "GBR",
     "isTracked": true
   },
   {
@@ -1498,14 +1564,14 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 28,
     "r": 6,
-    "id": "UKR",
+    "id": "POL",
     "isTracked": true
   },
   {
     "c": 29,
     "r": 6,
-    "id": "RUS",
-    "isTracked": true
+    "id": "LTU",
+    "isTracked": false
   },
   {
     "c": 30,
@@ -1522,13 +1588,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 32,
     "r": 6,
-    "id": "UZB",
+    "id": "RUS",
     "isTracked": true
   },
   {
     "c": 33,
     "r": 6,
-    "id": "KAZ",
+    "id": "UZB",
     "isTracked": true
   },
   {
@@ -1546,13 +1612,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 36,
     "r": 6,
-    "id": "RUS",
+    "id": "KAZ",
     "isTracked": true
   },
   {
     "c": 37,
     "r": 6,
-    "id": "RUS",
+    "id": "KAZ",
     "isTracked": true
   },
   {
@@ -1598,15 +1664,21 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 45,
+    "r": 6,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
     "c": 46,
     "r": 6,
     "id": "RUS",
     "isTracked": true
   },
   {
-    "c": 6,
-    "r": 7,
-    "id": "CAN",
+    "c": 49,
+    "r": 6,
+    "id": "RUS",
     "isTracked": true
   },
   {
@@ -1658,7 +1730,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 15,
+    "r": 7,
+    "id": "CAN",
+    "isTracked": true
+  },
+  {
     "c": 16,
+    "r": 7,
+    "id": "CAN",
+    "isTracked": true
+  },
+  {
+    "c": 17,
     "r": 7,
     "id": "CAN",
     "isTracked": true
@@ -1696,25 +1780,25 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 29,
     "r": 7,
-    "id": "RUS",
+    "id": "UKR",
     "isTracked": true
   },
   {
     "c": 30,
     "r": 7,
-    "id": "RUS",
+    "id": "UKR",
     "isTracked": true
   },
   {
     "c": 31,
     "r": 7,
-    "id": "KAZ",
+    "id": "RUS",
     "isTracked": true
   },
   {
     "c": 32,
     "r": 7,
-    "id": "KAZ",
+    "id": "RUS",
     "isTracked": true
   },
   {
@@ -1744,32 +1828,32 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 37,
     "r": 7,
-    "id": "MNG",
-    "isTracked": false
+    "id": "KAZ",
+    "isTracked": true
   },
   {
     "c": 38,
     "r": 7,
-    "id": "MNG",
-    "isTracked": false
+    "id": "KAZ",
+    "isTracked": true
   },
   {
     "c": 39,
     "r": 7,
-    "id": "RUS",
-    "isTracked": true
+    "id": "MNG",
+    "isTracked": false
   },
   {
     "c": 40,
     "r": 7,
-    "id": "RUS",
-    "isTracked": true
+    "id": "MNG",
+    "isTracked": false
   },
   {
     "c": 41,
     "r": 7,
-    "id": "CHN",
-    "isTracked": true
+    "id": "MNG",
+    "isTracked": false
   },
   {
     "c": 42,
@@ -1785,6 +1869,18 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   },
   {
     "c": 44,
+    "r": 7,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 45,
+    "r": 7,
+    "id": "RUS",
+    "isTracked": true
+  },
+  {
+    "c": 46,
     "r": 7,
     "id": "RUS",
     "isTracked": true
@@ -1840,37 +1936,37 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 15,
     "r": 8,
-    "id": "CAN",
+    "id": "USA",
     "isTracked": true
   },
   {
-    "c": 23,
+    "c": 16,
     "r": 8,
-    "id": "ESP",
+    "id": "CAN",
     "isTracked": true
   },
   {
     "c": 24,
     "r": 8,
-    "id": "FRA",
+    "id": "ESP",
     "isTracked": true
   },
   {
     "c": 25,
     "r": 8,
-    "id": "ITA",
+    "id": "FRA",
     "isTracked": true
   },
   {
     "c": 26,
     "r": 8,
-    "id": "HRV",
-    "isTracked": false
+    "id": "FRA",
+    "isTracked": true
   },
   {
     "c": 27,
     "r": 8,
-    "id": "ROU",
+    "id": "ITA",
     "isTracked": true
   },
   {
@@ -1882,7 +1978,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 29,
     "r": 8,
-    "id": "RUS",
+    "id": "ROU",
     "isTracked": true
   },
   {
@@ -1894,13 +1990,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 31,
     "r": 8,
-    "id": "KAZ",
+    "id": "RUS",
     "isTracked": true
   },
   {
     "c": 32,
     "r": 8,
-    "id": "KAZ",
+    "id": "RUS",
     "isTracked": true
   },
   {
@@ -1924,13 +2020,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 36,
     "r": 8,
-    "id": "CHN",
+    "id": "KAZ",
     "isTracked": true
   },
   {
     "c": 37,
     "r": 8,
-    "id": "CHN",
+    "id": "KAZ",
     "isTracked": true
   },
   {
@@ -1942,8 +2038,8 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 39,
     "r": 8,
-    "id": "MNG",
-    "isTracked": false
+    "id": "CHN",
+    "isTracked": true
   },
   {
     "c": 40,
@@ -1954,17 +2050,29 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 41,
     "r": 8,
+    "id": "MNG",
+    "isTracked": false
+  },
+  {
+    "c": 42,
+    "r": 8,
     "id": "CHN",
     "isTracked": true
   },
   {
-    "c": 42,
+    "c": 43,
+    "r": 8,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 44,
     "r": 8,
     "id": "KOR",
     "isTracked": true
   },
   {
-    "c": 45,
+    "c": 47,
     "r": 8,
     "id": "JPN",
     "isTracked": true
@@ -2007,6 +2115,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   },
   {
     "c": 13,
+    "r": 9,
+    "id": "USA",
+    "isTracked": true
+  },
+  {
+    "c": 14,
     "r": 9,
     "id": "USA",
     "isTracked": true
@@ -2024,25 +2138,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 23,
+    "c": 24,
     "r": 9,
     "id": "PRT",
     "isTracked": true
   },
   {
-    "c": 24,
-    "r": 9,
-    "id": "ESP",
-    "isTracked": true
-  },
-  {
     "c": 25,
-    "r": 9,
-    "id": "ITA",
-    "isTracked": true
-  },
-  {
-    "c": 26,
     "r": 9,
     "id": "ITA",
     "isTracked": true
@@ -2056,7 +2158,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 28,
     "r": 9,
-    "id": "TUR",
+    "id": "ITA",
     "isTracked": true
   },
   {
@@ -2068,14 +2170,14 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 30,
     "r": 9,
-    "id": "IRQ",
+    "id": "TUR",
     "isTracked": true
   },
   {
     "c": 31,
     "r": 9,
-    "id": "AZE",
-    "isTracked": false
+    "id": "IRQ",
+    "isTracked": true
   },
   {
     "c": 32,
@@ -2086,25 +2188,25 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 33,
     "r": 9,
-    "id": "UZB",
+    "id": "IRN",
     "isTracked": true
   },
   {
     "c": 34,
     "r": 9,
-    "id": "UZB",
-    "isTracked": true
+    "id": "TKM",
+    "isTracked": false
   },
   {
     "c": 35,
     "r": 9,
-    "id": "CHN",
+    "id": "UZB",
     "isTracked": true
   },
   {
     "c": 36,
     "r": 9,
-    "id": "CHN",
+    "id": "UZB",
     "isTracked": true
   },
   {
@@ -2140,13 +2242,25 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 42,
     "r": 9,
-    "id": "KOR",
+    "id": "CHN",
     "isTracked": true
   },
   {
-    "c": 7,
-    "r": 10,
-    "id": "USA",
+    "c": 43,
+    "r": 9,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 44,
+    "r": 9,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 46,
+    "r": 9,
+    "id": "JPN",
     "isTracked": true
   },
   {
@@ -2186,13 +2300,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 21,
+    "c": 14,
     "r": 10,
-    "id": "MAR",
+    "id": "USA",
     "isTracked": true
   },
   {
-    "c": 23,
+    "c": 21,
     "r": 10,
     "id": "MAR",
     "isTracked": true
@@ -2210,57 +2324,63 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 29,
+    "c": 26,
     "r": 10,
-    "id": "SYR",
+    "id": "DZA",
+    "isTracked": true
+  },
+  {
+    "c": 27,
+    "r": 10,
+    "id": "TUN",
     "isTracked": false
   },
   {
-    "c": 30,
+    "c": 29,
     "r": 10,
-    "id": "IRQ",
+    "id": "GRC",
     "isTracked": true
   },
   {
     "c": 31,
     "r": 10,
-    "id": "IRN",
+    "id": "IRQ",
     "isTracked": true
   },
   {
     "c": 32,
     "r": 10,
-    "id": "IRN",
+    "id": "IRQ",
     "isTracked": true
   },
   {
     "c": 33,
     "r": 10,
-    "id": "PAK",
+    "id": "IRN",
     "isTracked": true
   },
   {
     "c": 34,
     "r": 10,
-    "id": "IND",
+    "id": "IRN",
     "isTracked": true
   },
   {
     "c": 35,
     "r": 10,
-    "id": "IND",
+    "id": "PAK",
     "isTracked": true
   },
   {
     "c": 36,
     "r": 10,
-    "id": "CHN",
+    "id": "PAK",
     "isTracked": true
   },
   {
     "c": 37,
     "r": 10,
-    "id": "CHN",
+    "id": "IND",
     "isTracked": true
   },
   {
@@ -2282,13 +2402,37 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 41,
+    "r": 10,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
     "c": 42,
+    "r": 10,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 43,
+    "r": 10,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 44,
     "r": 10,
     "id": "KOR",
     "isTracked": true
   },
   {
-    "c": 43,
+    "c": 45,
+    "r": 10,
+    "id": "JPN",
+    "isTracked": true
+  },
+  {
+    "c": 46,
     "r": 10,
     "id": "JPN",
     "isTracked": true
@@ -2302,7 +2446,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 9,
     "r": 11,
-    "id": "USA",
+    "id": "MEX",
     "isTracked": true
   },
   {
@@ -2324,15 +2468,9 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 22,
+    "c": 13,
     "r": 11,
-    "id": "MAR",
-    "isTracked": true
-  },
-  {
-    "c": 23,
-    "r": 11,
-    "id": "DZA",
+    "id": "USA",
     "isTracked": true
   },
   {
@@ -2350,8 +2488,8 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 26,
     "r": 11,
-    "id": "LBY",
-    "isTracked": false
+    "id": "DZA",
+    "isTracked": true
   },
   {
     "c": 27,
@@ -2374,43 +2512,43 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 30,
     "r": 11,
-    "id": "IRQ",
+    "id": "EGY",
     "isTracked": true
   },
   {
     "c": 31,
     "r": 11,
-    "id": "KWT",
+    "id": "SAU",
     "isTracked": true
   },
   {
     "c": 32,
     "r": 11,
-    "id": "QAT",
+    "id": "KWT",
     "isTracked": true
   },
   {
     "c": 33,
     "r": 11,
-    "id": "PAK",
+    "id": "QAT",
     "isTracked": true
   },
   {
     "c": 34,
     "r": 11,
-    "id": "IND",
+    "id": "IRN",
     "isTracked": true
   },
   {
     "c": 35,
     "r": 11,
-    "id": "IND",
+    "id": "PAK",
     "isTracked": true
   },
   {
     "c": 36,
     "r": 11,
-    "id": "BGD",
+    "id": "IND",
     "isTracked": true
   },
   {
@@ -2422,19 +2560,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 38,
     "r": 11,
-    "id": "CHN",
+    "id": "BGD",
     "isTracked": true
   },
   {
     "c": 39,
     "r": 11,
-    "id": "CHN",
+    "id": "IND",
     "isTracked": true
   },
   {
     "c": 40,
     "r": 11,
-    "id": "HKG",
+    "id": "CHN",
     "isTracked": true
   },
   {
@@ -2446,13 +2584,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 42,
     "r": 11,
-    "id": "TWN",
+    "id": "HKG",
     "isTracked": true
   },
   {
-    "c": 8,
-    "r": 12,
-    "id": "MEX",
+    "c": 43,
+    "r": 11,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 44,
+    "r": 11,
+    "id": "TWN",
     "isTracked": true
   },
   {
@@ -2465,6 +2609,18 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 10,
     "r": 12,
     "id": "MEX",
+    "isTracked": true
+  },
+  {
+    "c": 11,
+    "r": 12,
+    "id": "MEX",
+    "isTracked": true
+  },
+  {
+    "c": 13,
+    "r": 12,
+    "id": "USA",
     "isTracked": true
   },
   {
@@ -2480,22 +2636,16 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 22,
+    "c": 23,
     "r": 12,
     "id": "MAR",
     "isTracked": true
   },
   {
-    "c": 23,
-    "r": 12,
-    "id": "DZA",
-    "isTracked": true
-  },
-  {
     "c": 24,
     "r": 12,
-    "id": "DZA",
-    "isTracked": true
+    "id": "MRT",
+    "isTracked": false
   },
   {
     "c": 25,
@@ -2506,31 +2656,31 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 26,
     "r": 12,
-    "id": "LBY",
-    "isTracked": false
+    "id": "DZA",
+    "isTracked": true
   },
   {
     "c": 27,
+    "r": 12,
+    "id": "DZA",
+    "isTracked": true
+  },
+  {
+    "c": 28,
     "r": 12,
     "id": "LBY",
     "isTracked": false
   },
   {
-    "c": 28,
+    "c": 29,
     "r": 12,
     "id": "EGY",
     "isTracked": true
   },
   {
-    "c": 29,
-    "r": 12,
-    "id": "SAU",
-    "isTracked": true
-  },
-  {
     "c": 30,
     "r": 12,
-    "id": "SAU",
+    "id": "EGY",
     "isTracked": true
   },
   {
@@ -2542,25 +2692,25 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 32,
     "r": 12,
-    "id": "ARE",
+    "id": "SAU",
     "isTracked": true
   },
   {
     "c": 33,
     "r": 12,
-    "id": "PAK",
+    "id": "ARE",
     "isTracked": true
   },
   {
     "c": 34,
     "r": 12,
-    "id": "IND",
+    "id": "IRN",
     "isTracked": true
   },
   {
     "c": 35,
     "r": 12,
-    "id": "IND",
+    "id": "PAK",
     "isTracked": true
   },
   {
@@ -2578,13 +2728,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 38,
     "r": 12,
-    "id": "CHN",
+    "id": "IND",
     "isTracked": true
   },
   {
     "c": 39,
     "r": 12,
-    "id": "CHN",
+    "id": "IND",
     "isTracked": true
   },
   {
@@ -2596,13 +2746,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 41,
     "r": 12,
-    "id": "TWN",
+    "id": "CHN",
     "isTracked": true
   },
   {
-    "c": 9,
-    "r": 13,
-    "id": "MEX",
+    "c": 42,
+    "r": 12,
+    "id": "CHN",
+    "isTracked": true
+  },
+  {
+    "c": 43,
+    "r": 12,
+    "id": "CHN",
     "isTracked": true
   },
   {
@@ -2618,16 +2774,16 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 14,
+    "c": 12,
     "r": 13,
-    "id": "DOM",
+    "id": "MEX",
     "isTracked": true
   },
   {
-    "c": 22,
+    "c": 15,
     "r": 13,
-    "id": "MRT",
-    "isTracked": false
+    "id": "DOM",
+    "isTracked": true
   },
   {
     "c": 23,
@@ -2638,68 +2794,68 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 24,
     "r": 13,
-    "id": "DZA",
-    "isTracked": true
+    "id": "MRT",
+    "isTracked": false
   },
   {
     "c": 25,
     "r": 13,
-    "id": "NER",
+    "id": "MLI",
     "isTracked": false
   },
   {
     "c": 26,
     "r": 13,
-    "id": "NER",
-    "isTracked": false
+    "id": "DZA",
+    "isTracked": true
   },
   {
     "c": 27,
     "r": 13,
-    "id": "TCD",
+    "id": "NER",
     "isTracked": false
   },
   {
     "c": 28,
     "r": 13,
-    "id": "SDN",
+    "id": "TCD",
     "isTracked": false
   },
   {
     "c": 29,
     "r": 13,
-    "id": "SDN",
+    "id": "LBY",
     "isTracked": false
   },
   {
     "c": 30,
     "r": 13,
-    "id": "SAU",
-    "isTracked": true
+    "id": "SDN",
+    "isTracked": false
   },
   {
     "c": 31,
     "r": 13,
-    "id": "SAU",
-    "isTracked": true
+    "id": "SDN",
+    "isTracked": false
   },
   {
     "c": 32,
     "r": 13,
-    "id": "OMN",
-    "isTracked": false
+    "id": "SAU",
+    "isTracked": true
+  },
+  {
+    "c": 33,
+    "r": 13,
+    "id": "SAU",
+    "isTracked": true
   },
   {
     "c": 34,
     "r": 13,
-    "id": "IND",
-    "isTracked": true
-  },
-  {
-    "c": 35,
-    "r": 13,
-    "id": "IND",
-    "isTracked": true
+    "id": "OMN",
+    "isTracked": false
   },
   {
     "c": 36,
@@ -2710,31 +2866,37 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 37,
     "r": 13,
-    "id": "MMR",
-    "isTracked": false
+    "id": "IND",
+    "isTracked": true
   },
   {
     "c": 38,
     "r": 13,
-    "id": "THA",
+    "id": "IND",
     "isTracked": true
   },
   {
     "c": 39,
     "r": 13,
-    "id": "CHN",
-    "isTracked": true
+    "id": "MMR",
+    "isTracked": false
   },
   {
     "c": 40,
     "r": 13,
-    "id": "VNM",
+    "id": "THA",
     "isTracked": true
   },
   {
     "c": 41,
     "r": 13,
-    "id": "PHL",
+    "id": "THA",
+    "isTracked": true
+  },
+  {
+    "c": 42,
+    "r": 13,
+    "id": "VNM",
     "isTracked": true
   },
   {
@@ -2744,15 +2906,21 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 11,
-    "r": 14,
-    "id": "GTM",
+    "c": 45,
+    "r": 13,
+    "id": "PHL",
     "isTracked": true
   },
   {
     "c": 12,
     "r": 14,
-    "id": "HND",
+    "id": "GTM",
+    "isTracked": true
+  },
+  {
+    "c": 13,
+    "r": 14,
+    "id": "NIC",
     "isTracked": false
   },
   {
@@ -2762,15 +2930,9 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 22,
-    "r": 14,
-    "id": "GNB",
-    "isTracked": false
-  },
-  {
     "c": 23,
     "r": 14,
-    "id": "BFA",
+    "id": "GIN",
     "isTracked": false
   },
   {
@@ -2782,8 +2944,8 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 25,
     "r": 14,
-    "id": "NGA",
-    "isTracked": true
+    "id": "BFA",
+    "isTracked": false
   },
   {
     "c": 26,
@@ -2794,13 +2956,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 27,
     "r": 14,
-    "id": "TCD",
-    "isTracked": false
+    "id": "NGA",
+    "isTracked": true
   },
   {
     "c": 28,
     "r": 14,
-    "id": "SDN",
+    "id": "TCD",
     "isTracked": false
   },
   {
@@ -2812,29 +2974,47 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 30,
     "r": 14,
-    "id": "DJI",
+    "id": "SDN",
     "isTracked": false
   },
   {
-    "c": 35,
+    "c": 31,
+    "r": 14,
+    "id": "ETH",
+    "isTracked": true
+  },
+  {
+    "c": 32,
+    "r": 14,
+    "id": "YEM",
+    "isTracked": false
+  },
+  {
+    "c": 37,
     "r": 14,
     "id": "IND",
     "isTracked": true
   },
   {
-    "c": 38,
+    "c": 40,
     "r": 14,
     "id": "THA",
     "isTracked": true
   },
   {
-    "c": 39,
+    "c": 41,
     "r": 14,
     "id": "VNM",
     "isTracked": true
   },
   {
-    "c": 41,
+    "c": 43,
+    "r": 14,
+    "id": "PHL",
+    "isTracked": true
+  },
+  {
+    "c": 44,
     "r": 14,
     "id": "PHL",
     "isTracked": true
@@ -2848,8 +3028,8 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 13,
     "r": 15,
-    "id": "COL",
-    "isTracked": true
+    "id": "PAN",
+    "isTracked": false
   },
   {
     "c": 14,
@@ -2860,85 +3040,73 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 15,
     "r": 15,
+    "id": "COL",
+    "isTracked": true
+  },
+  {
+    "c": 16,
+    "r": 15,
     "id": "VEN",
     "isTracked": true
   },
   {
-    "c": 22,
+    "c": 24,
     "r": 15,
-    "id": "SLE",
+    "id": "LBR",
     "isTracked": false
   },
   {
-    "c": 23,
+    "c": 25,
     "r": 15,
     "id": "CIV",
     "isTracked": false
   },
   {
-    "c": 24,
-    "r": 15,
-    "id": "NGA",
-    "isTracked": true
-  },
-  {
-    "c": 25,
-    "r": 15,
-    "id": "NGA",
-    "isTracked": true
-  },
-  {
     "c": 26,
+    "r": 15,
+    "id": "NGA",
+    "isTracked": true
+  },
+  {
+    "c": 27,
+    "r": 15,
+    "id": "NGA",
+    "isTracked": true
+  },
+  {
+    "c": 28,
     "r": 15,
     "id": "CAF",
     "isTracked": false
   },
   {
-    "c": 27,
-    "r": 15,
-    "id": "SDS",
-    "isTracked": false
-  },
-  {
-    "c": 28,
-    "r": 15,
-    "id": "SDS",
-    "isTracked": false
-  },
-  {
     "c": 29,
     "r": 15,
-    "id": "ETH",
-    "isTracked": true
+    "id": "SDS",
+    "isTracked": false
   },
   {
     "c": 30,
     "r": 15,
-    "id": "ETH",
-    "isTracked": true
+    "id": "SDS",
+    "isTracked": false
   },
   {
     "c": 31,
     "r": 15,
-    "id": "SOM",
-    "isTracked": false
-  },
-  {
-    "c": 35,
-    "r": 15,
-    "id": "LKA",
-    "isTracked": false
-  },
-  {
-    "c": 38,
-    "r": 15,
-    "id": "MYS",
+    "id": "ETH",
     "isTracked": true
   },
   {
-    "c": 39,
+    "c": 32,
     "r": 15,
-    "id": "SGP",
+    "id": "ETH",
+    "isTracked": true
+  },
+  {
+    "c": 37,
+    "r": 15,
+    "id": "IND",
     "isTracked": true
   },
   {
@@ -2949,6 +3117,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   },
   {
     "c": 41,
+    "r": 15,
+    "id": "SGP",
+    "isTracked": true
+  },
+  {
+    "c": 44,
     "r": 15,
     "id": "PHL",
     "isTracked": true
@@ -2960,15 +3134,9 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 13,
-    "r": 16,
-    "id": "COL",
-    "isTracked": true
-  },
-  {
     "c": 14,
     "r": 16,
-    "id": "BRA",
+    "id": "COL",
     "isTracked": true
   },
   {
@@ -2990,21 +3158,15 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 25,
+    "c": 18,
     "r": 16,
-    "id": "GAB",
-    "isTracked": false
-  },
-  {
-    "c": 26,
-    "r": 16,
-    "id": "GAB",
-    "isTracked": false
+    "id": "BRA",
+    "isTracked": true
   },
   {
     "c": 27,
     "r": 16,
-    "id": "COD",
+    "id": "GAB",
     "isTracked": false
   },
   {
@@ -3016,26 +3178,26 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 29,
     "r": 16,
-    "id": "KEN",
-    "isTracked": true
+    "id": "COD",
+    "isTracked": false
   },
   {
     "c": 30,
     "r": 16,
-    "id": "SOM",
+    "id": "UGA",
     "isTracked": false
   },
   {
-    "c": 38,
+    "c": 31,
     "r": 16,
-    "id": "IDN",
+    "id": "KEN",
     "isTracked": true
   },
   {
-    "c": 39,
+    "c": 32,
     "r": 16,
-    "id": "IDN",
-    "isTracked": true
+    "id": "SOM",
+    "isTracked": false
   },
   {
     "c": 40,
@@ -3044,13 +3206,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 41,
+    "c": 42,
     "r": 16,
     "id": "IDN",
     "isTracked": true
   },
   {
-    "c": 42,
+    "c": 43,
+    "r": 16,
+    "id": "IDN",
+    "isTracked": true
+  },
+  {
+    "c": 44,
     "r": 16,
     "id": "IDN",
     "isTracked": true
@@ -3070,7 +3238,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 14,
     "r": 17,
-    "id": "BRA",
+    "id": "PER",
     "isTracked": true
   },
   {
@@ -3098,55 +3266,49 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 25,
+    "c": 19,
+    "r": 17,
+    "id": "BRA",
+    "isTracked": true
+  },
+  {
+    "c": 27,
     "r": 17,
     "id": "GAB",
     "isTracked": false
   },
   {
-    "c": 26,
-    "r": 17,
-    "id": "COG",
-    "isTracked": false
-  },
-  {
-    "c": 27,
+    "c": 28,
     "r": 17,
     "id": "COD",
     "isTracked": false
   },
   {
-    "c": 28,
+    "c": 29,
+    "r": 17,
+    "id": "COD",
+    "isTracked": false
+  },
+  {
+    "c": 30,
     "r": 17,
     "id": "BDI",
     "isTracked": false
   },
   {
-    "c": 29,
+    "c": 31,
     "r": 17,
     "id": "KEN",
     "isTracked": true
   },
   {
-    "c": 38,
-    "r": 17,
-    "id": "IDN",
-    "isTracked": true
-  },
-  {
-    "c": 39,
-    "r": 17,
-    "id": "IDN",
-    "isTracked": true
-  },
-  {
-    "c": 40,
-    "r": 17,
-    "id": "IDN",
-    "isTracked": true
-  },
-  {
     "c": 41,
+    "r": 17,
+    "id": "IDN",
+    "isTracked": true
+  },
+  {
+    "c": 42,
     "r": 17,
     "id": "IDN",
     "isTracked": true
@@ -3158,21 +3320,27 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 44,
+    "c": 45,
+    "r": 17,
+    "id": "IDN",
+    "isTracked": true
+  },
+  {
+    "c": 46,
+    "r": 17,
+    "id": "IDN",
+    "isTracked": true
+  },
+  {
+    "c": 47,
     "r": 17,
     "id": "PNG",
     "isTracked": false
   },
   {
-    "c": 13,
-    "r": 18,
-    "id": "PER",
-    "isTracked": true
-  },
-  {
     "c": 14,
     "r": 18,
-    "id": "BRA",
+    "id": "PER",
     "isTracked": true
   },
   {
@@ -3206,18 +3374,18 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 20,
+    "r": 18,
+    "id": "BRA",
+    "isTracked": true
+  },
+  {
     "c": 25,
     "r": 18,
     "id": "AGO",
     "isTracked": true
   },
   {
-    "c": 26,
-    "r": 18,
-    "id": "AGO",
-    "isTracked": true
-  },
-  {
     "c": 27,
     "r": 18,
     "id": "AGO",
@@ -3226,44 +3394,44 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 28,
     "r": 18,
-    "id": "ZMB",
-    "isTracked": false
+    "id": "AGO",
+    "isTracked": true
   },
   {
     "c": 29,
+    "r": 18,
+    "id": "COD",
+    "isTracked": false
+  },
+  {
+    "c": 30,
+    "r": 18,
+    "id": "MWI",
+    "isTracked": false
+  },
+  {
+    "c": 31,
     "r": 18,
     "id": "TZA",
     "isTracked": false
   },
   {
-    "c": 40,
+    "c": 42,
     "r": 18,
     "id": "IDN",
     "isTracked": true
   },
   {
-    "c": 43,
+    "c": 46,
     "r": 18,
     "id": "IDN",
     "isTracked": true
   },
   {
-    "c": 44,
+    "c": 47,
     "r": 18,
     "id": "PNG",
     "isTracked": false
-  },
-  {
-    "c": 45,
-    "r": 18,
-    "id": "PNG",
-    "isTracked": false
-  },
-  {
-    "c": 13,
-    "r": 19,
-    "id": "PER",
-    "isTracked": true
   },
   {
     "c": 14,
@@ -3273,17 +3441,17 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   },
   {
     "c": 15,
+    "r": 19,
+    "id": "PER",
+    "isTracked": true
+  },
+  {
+    "c": 16,
     "r": 19,
     "id": "BOL",
     "isTracked": false
   },
   {
-    "c": 16,
-    "r": 19,
-    "id": "BRA",
-    "isTracked": true
-  },
-  {
     "c": 17,
     "r": 19,
     "id": "BRA",
@@ -3296,9 +3464,9 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 26,
+    "c": 19,
     "r": 19,
-    "id": "AGO",
+    "id": "BRA",
     "isTracked": true
   },
   {
@@ -3310,44 +3478,32 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 28,
     "r": 19,
-    "id": "MOZ",
-    "isTracked": false
+    "id": "AGO",
+    "isTracked": true
   },
   {
     "c": 29,
     "r": 19,
-    "id": "MOZ",
+    "id": "ZMB",
     "isTracked": false
   },
   {
     "c": 30,
     "r": 19,
-    "id": "MDG",
+    "id": "MOZ",
     "isTracked": false
   },
   {
     "c": 31,
     "r": 19,
-    "id": "MDG",
+    "id": "MOZ",
     "isTracked": false
   },
   {
-    "c": 41,
+    "c": 32,
     "r": 19,
-    "id": "AUS",
-    "isTracked": true
-  },
-  {
-    "c": 42,
-    "r": 19,
-    "id": "AUS",
-    "isTracked": true
-  },
-  {
-    "c": 43,
-    "r": 19,
-    "id": "AUS",
-    "isTracked": true
+    "id": "MDG",
+    "isTracked": false
   },
   {
     "c": 44,
@@ -3356,22 +3512,28 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 14,
-    "r": 20,
-    "id": "CHL",
+    "c": 45,
+    "r": 19,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 47,
+    "r": 19,
+    "id": "AUS",
     "isTracked": true
   },
   {
     "c": 15,
     "r": 20,
-    "id": "PRY",
-    "isTracked": false
+    "id": "CHL",
+    "isTracked": true
   },
   {
     "c": 16,
     "r": 20,
-    "id": "BRA",
-    "isTracked": true
+    "id": "PRY",
+    "isTracked": false
   },
   {
     "c": 17,
@@ -3386,52 +3548,40 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 26,
+    "c": 19,
+    "r": 20,
+    "id": "BRA",
+    "isTracked": true
+  },
+  {
+    "c": 27,
     "r": 20,
     "id": "NAM",
     "isTracked": false
   },
   {
-    "c": 27,
-    "r": 20,
-    "id": "BWA",
-    "isTracked": false
-  },
-  {
     "c": 28,
     "r": 20,
-    "id": "ZWE",
+    "id": "NAM",
     "isTracked": false
   },
   {
     "c": 29,
     "r": 20,
+    "id": "BWA",
+    "isTracked": false
+  },
+  {
+    "c": 30,
+    "r": 20,
     "id": "MOZ",
     "isTracked": false
   },
   {
-    "c": 30,
+    "c": 32,
     "r": 20,
     "id": "MDG",
     "isTracked": false
-  },
-  {
-    "c": 40,
-    "r": 20,
-    "id": "AUS",
-    "isTracked": true
-  },
-  {
-    "c": 41,
-    "r": 20,
-    "id": "AUS",
-    "isTracked": true
-  },
-  {
-    "c": 42,
-    "r": 20,
-    "id": "AUS",
-    "isTracked": true
   },
   {
     "c": 43,
@@ -3446,9 +3596,21 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 14,
-    "r": 21,
-    "id": "ARG",
+    "c": 45,
+    "r": 20,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 46,
+    "r": 20,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 47,
+    "r": 20,
+    "id": "AUS",
     "isTracked": true
   },
   {
@@ -3466,14 +3628,14 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 17,
     "r": 21,
-    "id": "BRA",
+    "id": "ARG",
     "isTracked": true
   },
   {
-    "c": 26,
+    "c": 18,
     "r": 21,
-    "id": "NAM",
-    "isTracked": false
+    "id": "BRA",
+    "isTracked": true
   },
   {
     "c": 27,
@@ -3488,22 +3650,22 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 29,
+    "r": 21,
+    "id": "ZAF",
+    "isTracked": true
+  },
+  {
     "c": 30,
+    "r": 21,
+    "id": "ZAF",
+    "isTracked": true
+  },
+  {
+    "c": 32,
     "r": 21,
     "id": "MDG",
     "isTracked": false
-  },
-  {
-    "c": 40,
-    "r": 21,
-    "id": "AUS",
-    "isTracked": true
-  },
-  {
-    "c": 41,
-    "r": 21,
-    "id": "AUS",
-    "isTracked": true
   },
   {
     "c": 42,
@@ -3530,15 +3692,27 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 13,
-    "r": 22,
-    "id": "CHL",
+    "c": 46,
+    "r": 21,
+    "id": "AUS",
     "isTracked": true
   },
   {
-    "c": 14,
+    "c": 47,
+    "r": 21,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 48,
+    "r": 21,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 13,
     "r": 22,
-    "id": "ARG",
+    "id": "CHL",
     "isTracked": true
   },
   {
@@ -3560,15 +3734,9 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 26,
+    "c": 18,
     "r": 22,
-    "id": "ZAF",
-    "isTracked": true
-  },
-  {
-    "c": 27,
-    "r": 22,
-    "id": "ZAF",
+    "id": "BRA",
     "isTracked": true
   },
   {
@@ -3578,21 +3746,15 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 40,
+    "c": 29,
     "r": 22,
-    "id": "AUS",
+    "id": "ZAF",
     "isTracked": true
   },
   {
-    "c": 41,
+    "c": 30,
     "r": 22,
-    "id": "AUS",
-    "isTracked": true
-  },
-  {
-    "c": 42,
-    "r": 22,
-    "id": "AUS",
+    "id": "ZAF",
     "isTracked": true
   },
   {
@@ -3609,6 +3771,24 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   },
   {
     "c": 45,
+    "r": 22,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 46,
+    "r": 22,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 47,
+    "r": 22,
+    "id": "AUS",
+    "isTracked": true
+  },
+  {
+    "c": 48,
     "r": 22,
     "id": "AUS",
     "isTracked": true
@@ -3632,9 +3812,15 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 40,
+    "c": 17,
     "r": 23,
-    "id": "AUS",
+    "id": "ARG",
+    "isTracked": true
+  },
+  {
+    "c": 28,
+    "r": 23,
+    "id": "ZAF",
     "isTracked": true
   },
   {
@@ -3644,27 +3830,21 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 44,
+    "c": 46,
     "r": 23,
     "id": "AUS",
     "isTracked": true
   },
   {
-    "c": 45,
+    "c": 47,
     "r": 23,
     "id": "AUS",
     "isTracked": true
   },
   {
-    "c": 48,
+    "c": 51,
     "r": 23,
     "id": "NZL",
-    "isTracked": true
-  },
-  {
-    "c": 14,
-    "r": 24,
-    "id": "ARG",
     "isTracked": true
   },
   {
@@ -3674,13 +3854,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 44,
+    "c": 16,
+    "r": 24,
+    "id": "ARG",
+    "isTracked": true
+  },
+  {
+    "c": 47,
     "r": 24,
     "id": "AUS",
     "isTracked": true
   },
   {
-    "c": 48,
+    "c": 51,
     "r": 24,
     "id": "NZL",
     "isTracked": true
@@ -3688,29 +3874,29 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 14,
     "r": 25,
+    "id": "CHL",
+    "isTracked": true
+  },
+  {
+    "c": 15,
+    "r": 25,
     "id": "ARG",
     "isTracked": true
   },
   {
-    "c": 48,
-    "r": 25,
-    "id": "NZL",
-    "isTracked": true
-  },
-  {
-    "c": 13,
+    "c": 14,
     "r": 26,
     "id": "CHL",
     "isTracked": true
   },
   {
-    "c": 14,
+    "c": 15,
     "r": 26,
     "id": "ARG",
     "isTracked": true
   },
   {
-    "c": 14,
+    "c": 15,
     "r": 27,
     "id": "CHL",
     "isTracked": true
@@ -3719,10 +3905,21 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
 
 export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   "CAN": { "c": 11, "r": 2 },
+  "USA": { "c": 10, "r": 6 },
+  "MEX": { "c": 8, "r": 11 },
+  "GTM": { "c": 9, "r": 12 },
+  "DOM": { "c": 14, "r": 12 },
+  "PRI": { "c": 15, "r": 12 },
+  "COL": { "c": 12, "r": 15 },
+  "VEN": { "c": 14, "r": 14 },
+  "ECU": { "c": 11, "r": 16 },
+  "PER": { "c": 12, "r": 17 },
+  "BRA": { "c": 17, "r": 18 },
+  "CHL": { "c": 13, "r": 22 },
+  "ARG": { "c": 14, "r": 23 },
   "NOR": { "c": 24, "r": 2 },
   "SWE": { "c": 25, "r": 2 },
   "FIN": { "c": 27, "r": 2 },
-  "RUS": { "c": 36, "r": 2 },
   "DNK": { "c": 24, "r": 3 },
   "IRL": { "c": 21, "r": 4 },
   "GBR": { "c": 22, "r": 4 },
@@ -3731,62 +3928,51 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   "DEU": { "c": 25, "r": 5 },
   "POL": { "c": 26, "r": 5 },
   "UKR": { "c": 28, "r": 5 },
-  "KAZ": { "c": 32, "r": 5 },
-  "USA": { "c": 10, "r": 6 },
   "FRA": { "c": 23, "r": 6 },
   "CZE": { "c": 26, "r": 6 },
+  "SVK": { "c": 27, "r": 6 },
   "CHE": { "c": 24, "r": 7 },
   "AUT": { "c": 26, "r": 7 },
   "HUN": { "c": 27, "r": 7 },
   "ROU": { "c": 28, "r": 7 },
-  "JPN": { "c": 45, "r": 8 },
+  "BGR": { "c": 28, "r": 8 },
   "PRT": { "c": 20, "r": 9 },
   "ESP": { "c": 21, "r": 9 },
   "ITA": { "c": 25, "r": 9 },
   "GRC": { "c": 27, "r": 9 },
   "TUR": { "c": 29, "r": 9 },
-  "CHN": { "c": 38, "r": 8 },
-  "KOR": { "c": 42, "r": 8 },
-  "PAK": { "c": 33, "r": 10 },
-  "MEX": { "c": 8, "r": 11 },
+  "MAR": { "c": 21, "r": 10 },
+  "DZA": { "c": 24, "r": 10 },
+  "NGA": { "c": 24, "r": 14 },
+  "AGO": { "c": 25, "r": 18 },
   "EGY": { "c": 28, "r": 11 },
   "ISR": { "c": 29, "r": 11 },
-  "KWT": { "c": 31, "r": 11 },
-  "QAT": { "c": 32, "r": 11 },
-  "BGD": { "c": 36, "r": 11 },
-  "HKG": { "c": 40, "r": 11 },
-  "TWN": { "c": 42, "r": 11 },
-  "SAU": { "c": 31, "r": 12 },
-  "ARE": { "c": 32, "r": 12 },
-  "IND": { "c": 34, "r": 12 },
-  "THA": { "c": 38, "r": 13 },
-  "VNM": { "c": 40, "r": 13 },
-  "PHL": { "c": 43, "r": 13 },
-  "NGA": { "c": 24, "r": 14 },
-  "COL": { "c": 12, "r": 15 },
-  "MYS": { "c": 38, "r": 15 },
-  "SGP": { "c": 39, "r": 15 },
-  "PER": { "c": 12, "r": 17 },
-  "IDN": { "c": 40, "r": 17 },
-  "BRA": { "c": 16, "r": 18 },
-  "CHL": { "c": 13, "r": 22 },
-  "ZAF": { "c": 27, "r": 21 },
-  "AUS": { "c": 44, "r": 21 },
-  "ARG": { "c": 14, "r": 23 },
-  "NZL": { "c": 48, "r": 24 },
-  "IRN": { "c": 32, "r": 9 },
-  "IRQ": { "c": 30, "r": 9 },
-  "DZA": { "c": 24, "r": 10 },
-  "MAR": { "c": 21, "r": 10 },
   "ETH": { "c": 29, "r": 14 },
-  "SVK": { "c": 27, "r": 6 },
-  "PRI": { "c": 15, "r": 12 },
-  "DOM": { "c": 14, "r": 12 },
-  "ECU": { "c": 11, "r": 16 },
-  "UZB": { "c": 32, "r": 6 },
-  "VEN": { "c": 14, "r": 14 },
-  "AGO": { "c": 25, "r": 18 },
   "KEN": { "c": 28, "r": 16 },
-  "BGR": { "c": 28, "r": 8 },
-  "GTM": { "c": 9, "r": 12 }
+  "ZAF": { "c": 27, "r": 21 },
+  "KAZ": { "c": 33, "r": 5 },
+  "UZB": { "c": 33, "r": 6 },
+  "IRQ": { "c": 31, "r": 9 },
+  "IRN": { "c": 33, "r": 9 },
+  "KWT": { "c": 32, "r": 11 },
+  "QAT": { "c": 33, "r": 11 },
+  "SAU": { "c": 32, "r": 12 },
+  "ARE": { "c": 33, "r": 12 },
+  "PAK": { "c": 35, "r": 10 },
+  "IND": { "c": 36, "r": 12 },
+  "BGD": { "c": 38, "r": 11 },
+  "RUS": { "c": 38, "r": 2 },
+  "CHN": { "c": 40, "r": 8 },
+  "KOR": { "c": 44, "r": 8 },
+  "JPN": { "c": 47, "r": 8 },
+  "HKG": { "c": 42, "r": 11 },
+  "TWN": { "c": 44, "r": 11 },
+  "THA": { "c": 40, "r": 13 },
+  "VNM": { "c": 42, "r": 13 },
+  "PHL": { "c": 45, "r": 13 },
+  "MYS": { "c": 40, "r": 15 },
+  "SGP": { "c": 41, "r": 15 },
+  "IDN": { "c": 42, "r": 17 },
+  "AUS": { "c": 46, "r": 21 },
+  "NZL": { "c": 51, "r": 24 }
 }

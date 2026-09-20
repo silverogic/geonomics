@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
 
-const COLS = 50
+const COLS = 53
 const ROWS = 28
 
 function pointInPoly(pt, ring) {
@@ -57,7 +57,7 @@ async function main() {
   const yMax = millerY(74)
   const yMin = millerY(-54)
 
-  const tiles = []
+  let tiles = []
 
   for (let r = 0; r < ROWS; r++) {
     const yNorm = r / (ROWS - 1)
@@ -69,10 +69,10 @@ async function main() {
 
       const subPoints = [
         [lon, lat],
-        [lon - 1.8, lat - 1.2],
-        [lon + 1.8, lat + 1.2],
-        [lon - 1.8, lat + 1.2],
-        [lon + 1.8, lat - 1.2],
+        [lon - 1.5, lat - 1.1],
+        [lon + 1.5, lat + 1.1],
+        [lon - 1.5, lat + 1.1],
+        [lon + 1.5, lat - 1.1],
       ]
 
       let matchedCountryId = null
@@ -106,13 +106,29 @@ async function main() {
     }
   }
 
-  // Explicit anchors for all 56 tracked countries to ensure coverage
+  // Explicit anchors for all 71 tracked countries (53x28 grid)
   const trackedAnchors = {
+    // North America
     CAN: { c: 11, r: 2 },
+    USA: { c: 10, r: 6 },
+    MEX: { c: 8, r: 11 },
+    GTM: { c: 9, r: 12 },
+    DOM: { c: 14, r: 12 },
+    PRI: { c: 15, r: 12 },
+
+    // South America (expanded eastward for Brazil)
+    COL: { c: 12, r: 15 },
+    VEN: { c: 14, r: 14 },
+    ECU: { c: 11, r: 16 },
+    PER: { c: 12, r: 17 },
+    BRA: { c: 17, r: 18 },
+    CHL: { c: 13, r: 22 },
+    ARG: { c: 14, r: 23 },
+
+    // Northern / Western / Central Europe
     NOR: { c: 24, r: 2 },
     SWE: { c: 25, r: 2 },
     FIN: { c: 27, r: 2 },
-    RUS: { c: 36, r: 2 },
     DNK: { c: 24, r: 3 },
     IRL: { c: 21, r: 4 },
     GBR: { c: 22, r: 4 },
@@ -121,64 +137,59 @@ async function main() {
     DEU: { c: 25, r: 5 },
     POL: { c: 26, r: 5 },
     UKR: { c: 28, r: 5 },
-    KAZ: { c: 32, r: 5 },
-    USA: { c: 10, r: 6 },
     FRA: { c: 23, r: 6 },
     CZE: { c: 26, r: 6 },
+    SVK: { c: 27, r: 6 },
     CHE: { c: 24, r: 7 },
     AUT: { c: 26, r: 7 },
     HUN: { c: 27, r: 7 },
     ROU: { c: 28, r: 7 },
-    JPN: { c: 45, r: 8 },
+    BGR: { c: 28, r: 8 },
+
+    // Southern Europe & North Africa
     PRT: { c: 20, r: 9 },
     ESP: { c: 21, r: 9 },
     ITA: { c: 25, r: 9 },
     GRC: { c: 27, r: 9 },
     TUR: { c: 29, r: 9 },
-    CHN: { c: 38, r: 8 },
-    KOR: { c: 42, r: 8 },
-    PAK: { c: 33, r: 10 },
-    MEX: { c: 8, r: 11 },
+    MAR: { c: 21, r: 10 },
+    DZA: { c: 24, r: 10 },
+    NGA: { c: 24, r: 14 },
+    AGO: { c: 25, r: 18 },
     EGY: { c: 28, r: 11 },
     ISR: { c: 29, r: 11 },
-    KWT: { c: 31, r: 11 },
-    QAT: { c: 32, r: 11 },
-    BGD: { c: 36, r: 11 },
-    HKG: { c: 40, r: 11 },
-    TWN: { c: 42, r: 11 },
-    SAU: { c: 31, r: 12 },
-    ARE: { c: 32, r: 12 },
-    IND: { c: 34, r: 12 },
-    THA: { c: 38, r: 13 },
-    VNM: { c: 40, r: 13 },
-    PHL: { c: 43, r: 13 },
-    NGA: { c: 24, r: 14 },
-    COL: { c: 12, r: 15 },
-    MYS: { c: 38, r: 15 },
-    SGP: { c: 39, r: 15 },
-    PER: { c: 12, r: 17 },
-    IDN: { c: 40, r: 17 },
-    BRA: { c: 16, r: 18 },
-    CHL: { c: 13, r: 22 },
-    ZAF: { c: 27, r: 21 },
-    AUS: { c: 44, r: 21 },
-    ARG: { c: 14, r: 23 },
-    NZL: { c: 48, r: 24 },
-    IRN: { c: 32, r: 9 },
-    IRQ: { c: 30, r: 9 },
-    DZA: { c: 24, r: 10 },
-    MAR: { c: 21, r: 10 },
     ETH: { c: 29, r: 14 },
-    SVK: { c: 27, r: 6 },
-    PRI: { c: 15, r: 12 },
-    DOM: { c: 14, r: 12 },
-    ECU: { c: 11, r: 16 },
-    UZB: { c: 32, r: 6 },
-    VEN: { c: 14, r: 14 },
-    AGO: { c: 25, r: 18 },
     KEN: { c: 28, r: 16 },
-    BGR: { c: 28, r: 8 },
-    GTM: { c: 9, r: 12 },
+    ZAF: { c: 27, r: 21 },
+
+    // Central Asia / Middle East / South Asia
+    KAZ: { c: 33, r: 5 },
+    UZB: { c: 33, r: 6 },
+    IRQ: { c: 31, r: 9 },
+    IRN: { c: 33, r: 9 },
+    KWT: { c: 32, r: 11 },
+    QAT: { c: 33, r: 11 },
+    SAU: { c: 32, r: 12 },
+    ARE: { c: 33, r: 12 },
+    PAK: { c: 35, r: 10 },
+    IND: { c: 36, r: 12 },
+    BGD: { c: 38, r: 11 },
+    RUS: { c: 38, r: 2 },
+
+    // East Asia & Southeast Asia & Oceania
+    CHN: { c: 40, r: 8 },
+    KOR: { c: 44, r: 8 },
+    JPN: { c: 47, r: 8 },
+    HKG: { c: 42, r: 11 },
+    TWN: { c: 44, r: 11 },
+    THA: { c: 40, r: 13 },
+    VNM: { c: 42, r: 13 },
+    PHL: { c: 45, r: 13 },
+    MYS: { c: 40, r: 15 },
+    SGP: { c: 41, r: 15 },
+    IDN: { c: 42, r: 17 },
+    AUS: { c: 46, r: 21 },
+    NZL: { c: 51, r: 24 },
   }
 
   for (const [id, coord] of Object.entries(trackedAnchors)) {
@@ -190,6 +201,12 @@ async function main() {
       tiles.push({ c: coord.c, r: coord.r, id, isTracked: true })
     }
   }
+
+  // Dover Strait: c: 23, r: 4 should be ocean
+  tiles = tiles.filter((t) => !(t.c === 23 && t.r === 4))
+
+  // Sea of Japan: c: 45, r: 8 and c: 46, r: 8 should be ocean
+  tiles = tiles.filter((t) => !((t.c === 45 || t.c === 46) && t.r === 8))
 
   // Check coverage
   const coveredTracked = new Set(tiles.filter((t) => t.isTracked).map((t) => t.id))
@@ -203,7 +220,7 @@ async function main() {
   tiles.sort((a, b) => a.r - b.r || a.c - b.c)
 
   const outputTs = `/**
- * Pixel Grid World Map Data (46 cols x 23 rows)
+ * Pixel Grid World Map Data (53 cols x 28 rows)
  * Recreates the iconic pixel/dot world map silhouette with interactive country tiles.
  */
 export interface PixelTile {
