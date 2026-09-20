@@ -4736,8 +4736,8 @@
     "ticker": "^TWII",
     "isSupported": true,
     "currency": "TWD",
-    "currentPrice": 47180.75,
-    "changePct": 4.13,
+    "currentPrice": 47368.04,
+    "changePct": 4.55,
     "points": [
       {
         "date": "2026-08-18",
@@ -4837,7 +4837,7 @@
       },
       {
         "date": "2026-09-20",
-        "close": 47180.75
+        "close": 47368.04
       }
     ]
   },
