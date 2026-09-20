@@ -57,7 +57,8 @@ async function main() {
   const yMax = millerY(74)
   const yMin = millerY(-54)
 
-  let tiles = []
+  // 2D grid for topological calibration
+  const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null))
 
   for (let r = 0; r < ROWS; r++) {
     const yNorm = r / (ROWS - 1)
@@ -95,32 +96,203 @@ async function main() {
         }
       }
 
-      if (matchedCountryId) {
-        tiles.push({
-          c,
-          r,
-          id: matchedCountryId,
-          isTracked: trackedSet.has(matchedCountryId),
-        })
+      grid[r][c] = matchedCountryId
+    }
+  }
+
+  // ==========================================
+  // TOPOLOGICAL REFINEMENTS
+  // ==========================================
+
+  // 1. IBERIA & FRANCE (Fix Spain island issue)
+  grid[9][20] = null
+  grid[9][21] = null
+  grid[10][21] = null
+  grid[8][22] = 'PRT'
+  grid[9][22] = 'PRT'
+  grid[8][23] = 'ESP'
+  grid[8][24] = 'ESP'
+  grid[9][23] = 'ESP'
+  grid[9][24] = 'ESP'
+  grid[6][23] = 'FRA'
+  grid[6][24] = 'FRA'
+  grid[7][23] = 'FRA'
+  grid[7][24] = 'FRA'
+  grid[7][25] = 'FRA'
+  grid[8][25] = null
+
+  // 2. BRITISH ISLES
+  grid[4][21] = 'IRL'
+  grid[4][22] = 'GBR'
+  grid[3][22] = 'GBR'
+  grid[6][25] = 'DEU'
+  grid[4][23] = null
+  grid[5][22] = null
+  grid[5][23] = 'BEL'
+  grid[4][24] = 'NLD'
+
+  // 3. CENTRAL & EASTERN EUROPE
+  grid[5][25] = 'DEU'
+  grid[5][26] = 'POL'
+  grid[5][27] = 'POL'
+  grid[6][26] = 'CZE'
+  grid[6][27] = 'SVK'
+  grid[6][28] = 'UKR'
+  grid[7][25] = 'CHE'
+  grid[7][26] = 'AUT'
+  grid[7][27] = 'HUN'
+  grid[7][28] = 'ROU'
+  grid[8][26] = 'ITA'
+  grid[8][27] = 'ITA'
+  grid[9][26] = 'ITA'
+  grid[8][28] = 'BGR'
+  grid[9][27] = 'GRC'
+  grid[9][28] = 'GRC'
+  grid[9][29] = 'TUR'
+  grid[9][30] = 'TUR'
+
+  // 4. SCANDINAVIA
+  grid[1][24] = 'NOR'
+  grid[2][24] = 'NOR'
+  grid[3][24] = 'DNK'
+  grid[1][25] = 'SWE'
+  grid[2][25] = 'SWE'
+  grid[3][25] = 'SWE'
+  grid[4][25] = 'SWE'
+  grid[2][26] = 'FIN'
+  grid[3][26] = 'FIN'
+  grid[2][27] = 'FIN'
+  grid[3][27] = 'FIN'
+  grid[4][26] = null
+  grid[4][27] = null
+  for (let r = 1; r <= 4; r++) {
+    for (let c = 28; c <= 30; c++) {
+      if (grid[r][c] === 'NOR' || grid[r][c] === 'SWE' || grid[r][c] === 'FIN') {
+        grid[r][c] = 'RUS'
       }
     }
   }
 
-  // Explicit anchors for all 71 tracked countries (53x28 grid)
+  // 5. EAST ASIA
+  grid[8][44] = 'KOR'
+  grid[9][44] = 'KOR'
+  grid[10][44] = null
+  grid[8][45] = null
+  grid[9][45] = null
+  grid[10][45] = null
+  grid[8][46] = null
+  grid[8][47] = 'JPN'
+  grid[9][46] = 'JPN'
+  grid[9][47] = 'JPN'
+  grid[10][46] = 'JPN'
+  grid[8][43] = 'CHN'
+  grid[9][43] = 'CHN'
+  grid[10][43] = 'CHN'
+  grid[11][44] = 'TWN'
+  grid[11][42] = 'HKG'
+
+  // 6. MIDDLE EAST & NORTH AFRICA
+  grid[10][22] = 'MAR'
+  grid[10][23] = 'MAR'
+  grid[11][22] = 'MAR'
+  grid[11][23] = 'MAR'
+  grid[12][23] = null
+  grid[10][24] = 'DZA'
+  grid[10][25] = 'DZA'
+  grid[10][26] = 'DZA'
+  grid[11][24] = 'DZA'
+  grid[11][25] = 'DZA'
+  grid[11][26] = 'DZA'
+  grid[11][28] = 'EGY'
+  grid[11][29] = 'EGY'
+  grid[12][28] = 'EGY'
+  grid[12][29] = 'EGY'
+  grid[11][30] = 'ISR'
+  grid[12][30] = null
+  grid[11][31] = 'SAU'
+  grid[11][32] = 'KWT'
+  grid[11][33] = 'QAT'
+  grid[12][31] = 'SAU'
+  grid[12][32] = 'SAU'
+  grid[12][33] = 'ARE'
+  grid[13][32] = 'SAU'
+  grid[13][33] = 'SAU'
+  grid[9][31] = 'IRQ'
+  grid[10][31] = 'IRQ'
+  grid[9][32] = 'IRN'
+  grid[9][33] = 'IRN'
+  grid[10][32] = 'IRN'
+  grid[10][33] = 'IRN'
+
+  // 7. AMERICAS
+  grid[6][10] = 'CAN'
+  grid[7][10] = 'USA'
+  grid[7][11] = 'USA'
+  grid[7][12] = 'USA'
+  grid[8][7] = 'USA'
+  grid[8][8] = 'USA'
+  grid[8][9] = 'USA'
+  grid[8][10] = 'USA'
+  grid[8][11] = 'USA'
+  grid[8][12] = 'USA'
+  grid[8][13] = 'USA'
+  grid[8][14] = 'USA'
+  grid[8][15] = 'USA'
+  grid[8][16] = null
+  grid[12][13] = null
+  grid[12][9] = 'MEX'
+  grid[12][10] = 'MEX'
+  grid[13][10] = 'GTM'
+  grid[14][11] = null
+  grid[14][12] = null
+  grid[12][14] = 'DOM'
+  grid[12][15] = 'PRI'
+  grid[15][12] = 'COL'
+  grid[15][13] = 'COL'
+  grid[16][13] = 'COL'
+  grid[14][14] = 'VEN'
+  grid[14][15] = 'VEN'
+  grid[15][14] = 'VEN'
+  grid[15][15] = 'VEN'
+  grid[16][12] = 'ECU'
+  grid[17][12] = 'PER'
+  grid[17][13] = 'PER'
+  grid[18][13] = 'PER'
+  grid[19][13] = 'PER'
+  grid[20][13] = 'CHL'
+  grid[21][13] = 'CHL'
+  grid[22][13] = 'CHL'
+  grid[23][13] = 'CHL'
+  grid[24][13] = 'CHL'
+  grid[25][14] = 'CHL'
+  grid[26][14] = 'CHL'
+  grid[27][15] = 'CHL'
+  grid[20][14] = 'ARG'
+  grid[20][15] = 'ARG'
+  grid[21][14] = 'ARG'
+  grid[21][15] = 'ARG'
+  grid[22][14] = 'ARG'
+  grid[22][15] = 'ARG'
+  grid[23][14] = 'ARG'
+  grid[23][15] = 'ARG'
+  grid[24][14] = 'ARG'
+  grid[24][15] = 'ARG'
+
+  // Explicit calibrated anchors for all 71 tracked countries
   const trackedAnchors = {
     // North America
     CAN: { c: 11, r: 2 },
-    USA: { c: 10, r: 6 },
-    MEX: { c: 8, r: 11 },
-    GTM: { c: 9, r: 12 },
+    USA: { c: 10, r: 8 },
+    MEX: { c: 9, r: 12 },
+    GTM: { c: 10, r: 13 },
     DOM: { c: 14, r: 12 },
     PRI: { c: 15, r: 12 },
 
-    // South America (expanded eastward for Brazil)
-    COL: { c: 12, r: 15 },
+    // South America
+    COL: { c: 13, r: 15 },
     VEN: { c: 14, r: 14 },
-    ECU: { c: 11, r: 16 },
-    PER: { c: 12, r: 17 },
+    ECU: { c: 12, r: 16 },
+    PER: { c: 13, r: 17 },
     BRA: { c: 17, r: 18 },
     CHL: { c: 13, r: 22 },
     ARG: { c: 14, r: 23 },
@@ -128,7 +300,7 @@ async function main() {
     // Northern / Western / Central Europe
     NOR: { c: 24, r: 2 },
     SWE: { c: 25, r: 2 },
-    FIN: { c: 27, r: 2 },
+    FIN: { c: 26, r: 2 },
     DNK: { c: 24, r: 3 },
     IRL: { c: 21, r: 4 },
     GBR: { c: 22, r: 4 },
@@ -136,30 +308,30 @@ async function main() {
     BEL: { c: 23, r: 5 },
     DEU: { c: 25, r: 5 },
     POL: { c: 26, r: 5 },
-    UKR: { c: 28, r: 5 },
-    FRA: { c: 23, r: 6 },
+    UKR: { c: 28, r: 6 },
+    FRA: { c: 24, r: 6 },
     CZE: { c: 26, r: 6 },
     SVK: { c: 27, r: 6 },
-    CHE: { c: 24, r: 7 },
+    CHE: { c: 25, r: 7 },
     AUT: { c: 26, r: 7 },
     HUN: { c: 27, r: 7 },
     ROU: { c: 28, r: 7 },
     BGR: { c: 28, r: 8 },
 
     // Southern Europe & North Africa
-    PRT: { c: 20, r: 9 },
-    ESP: { c: 21, r: 9 },
-    ITA: { c: 25, r: 9 },
+    PRT: { c: 22, r: 9 },
+    ESP: { c: 23, r: 8 },
+    ITA: { c: 26, r: 8 },
     GRC: { c: 27, r: 9 },
     TUR: { c: 29, r: 9 },
-    MAR: { c: 21, r: 10 },
+    MAR: { c: 22, r: 10 },
     DZA: { c: 24, r: 10 },
     NGA: { c: 24, r: 14 },
     AGO: { c: 25, r: 18 },
     EGY: { c: 28, r: 11 },
-    ISR: { c: 29, r: 11 },
-    ETH: { c: 29, r: 14 },
-    KEN: { c: 28, r: 16 },
+    ISR: { c: 30, r: 11 },
+    ETH: { c: 30, r: 14 },
+    KEN: { c: 30, r: 16 },
     ZAF: { c: 27, r: 21 },
 
     // Central Asia / Middle East / South Asia
@@ -183,8 +355,8 @@ async function main() {
     HKG: { c: 42, r: 11 },
     TWN: { c: 44, r: 11 },
     THA: { c: 40, r: 13 },
-    VNM: { c: 42, r: 13 },
-    PHL: { c: 45, r: 13 },
+    VNM: { c: 41, r: 13 },
+    PHL: { c: 44, r: 13 },
     MYS: { c: 40, r: 15 },
     SGP: { c: 41, r: 15 },
     IDN: { c: 42, r: 17 },
@@ -193,20 +365,23 @@ async function main() {
   }
 
   for (const [id, coord] of Object.entries(trackedAnchors)) {
-    const existing = tiles.find((t) => t.c === coord.c && t.r === coord.r)
-    if (existing) {
-      existing.id = id
-      existing.isTracked = true
-    } else {
-      tiles.push({ c: coord.c, r: coord.r, id, isTracked: true })
-    }
+    grid[coord.r][coord.c] = id
   }
 
-  // Dover Strait: c: 23, r: 4 should be ocean
-  tiles = tiles.filter((t) => !(t.c === 23 && t.r === 4))
-
-  // Sea of Japan: c: 45, r: 8 and c: 46, r: 8 should be ocean
-  tiles = tiles.filter((t) => !((t.c === 45 || t.c === 46) && t.r === 8))
+  const tiles = []
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const id = grid[r][c]
+      if (id) {
+        tiles.push({
+          c,
+          r,
+          id,
+          isTracked: trackedSet.has(id),
+        })
+      }
+    }
+  }
 
   // Check coverage
   const coveredTracked = new Set(tiles.filter((t) => t.isTracked).map((t) => t.id))
@@ -222,6 +397,7 @@ async function main() {
   const outputTs = `/**
  * Pixel Grid World Map Data (53 cols x 28 rows)
  * Recreates the iconic pixel/dot world map silhouette with interactive country tiles.
+ * Calibrated for accurate continental topology, land bridges, and sea borders.
  */
 export interface PixelTile {
   c: number
