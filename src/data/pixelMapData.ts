@@ -2609,7 +2609,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 37,
     "r": 11,
-    "id": "IND",
+    "id": "NPL",
     "isTracked": true
   },
   {
@@ -2829,6 +2829,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
+    "c": 22,
+    "r": 13,
+    "id": "SEN",
+    "isTracked": true
+  },
+  {
     "c": 23,
     "r": 13,
     "id": "MRT",
@@ -2898,7 +2904,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 34,
     "r": 13,
     "id": "OMN",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 36,
@@ -3053,7 +3059,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 41,
     "r": 14,
-    "id": "VNM",
+    "id": "KHM",
     "isTracked": true
   },
   {
@@ -3618,7 +3624,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 16,
     "r": 20,
     "id": "PRY",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 17,
@@ -4123,5 +4129,10 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   "TZA": { "c": 30, "r": 17 },
   "LKA": { "c": 37, "r": 15 },
   "MMR": { "c": 39, "r": 12 },
-  "MAC": { "c": 41, "r": 11 }
+  "MAC": { "c": 41, "r": 11 },
+  "OMN": { "c": 34, "r": 13 },
+  "PRY": { "c": 16, "r": 20 },
+  "KHM": { "c": 41, "r": 14 },
+  "NPL": { "c": 37, "r": 11 },
+  "SEN": { "c": 22, "r": 13 }
 }

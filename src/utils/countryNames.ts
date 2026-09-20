@@ -103,6 +103,11 @@ export const COUNTRY_NAMES_JA: Record<string, string> = {
   EST: 'エストニア',
   ISL: 'アイスランド',
   CYP: 'キプロス',
+  OMN: 'オマーン',
+  PRY: 'パラグアイ',
+  KHM: 'カンボジア',
+  NPL: 'ネパール',
+  SEN: 'セネガル',
 }
 
 /**
@@ -177,6 +182,10 @@ export const CURRENCY_NAMES_JA: Record<string, string> = {
   MOP: 'マカオパタカ',
   BHD: 'バーレーンディナール',
   ISK: 'アイスランドクローナ',
+  OMR: 'オマーンリアル',
+  PYG: 'パラグアイグアラニー',
+  KHR: 'カンボジアリエル',
+  NPR: 'ネパールルピー',
 }
 
 /**
@@ -282,6 +291,11 @@ export const COUNTRY_NAMES_ES: Record<string, string> = {
   EST: 'Estonia',
   ISL: 'Islandia',
   CYP: 'Chipre',
+  OMN: 'Omán',
+  PRY: 'Paraguay',
+  KHM: 'Camboya',
+  NPL: 'Nepal',
+  SEN: 'Senegal',
 }
 
 /**
@@ -387,6 +401,11 @@ export const COUNTRY_NAMES_ZH: Record<string, string> = {
   EST: '爱沙尼亚',
   ISL: '冰岛',
   CYP: '塞浦路斯',
+  OMN: '阿曼',
+  PRY: '巴拉圭',
+  KHM: '柬埔寨',
+  NPL: '尼泊尔',
+  SEN: '塞内加尔',
 }
 
 /**
@@ -461,6 +480,10 @@ export const CURRENCY_NAMES_ES: Record<string, string> = {
   MOP: 'Pataca de Macao',
   BHD: 'Dinar bareiní',
   ISK: 'Corona islandesa',
+  OMR: 'Rial omaní',
+  PYG: 'Guaraní paraguayo',
+  KHR: 'Riel camboyano',
+  NPR: 'Rupia nepalí',
 }
 
 /**
@@ -535,6 +558,10 @@ export const CURRENCY_NAMES_ZH: Record<string, string> = {
   MOP: '澳门元',
   BHD: '巴林第纳尔',
   ISK: '冰岛克朗',
+  OMR: '阿曼里亚尔',
+  PYG: '巴拉圭瓜拉尼',
+  KHR: '柬埔寨瑞尔',
+  NPR: '尼泊尔卢比',
 }
 
 /**
