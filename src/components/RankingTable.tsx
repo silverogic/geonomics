@@ -7,6 +7,8 @@ import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { getCountryName, getCountrySecondaryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
+import { StockSparkline } from './StockSparkline'
+import { getStockPriceData } from '../data/stockPrices'
 
 export interface CountryRowItem {
   country: CountryMeta
@@ -38,6 +40,7 @@ type SortField =
   | 'debtRatioPct'
   | 'inflationRatePct'
   | 'fxRate'
+  | 'stockChangePct'
 
 export const RankingTable: React.FC<RankingTableProps> = ({
   items,
@@ -61,7 +64,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
       setSortField(field)
-      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct'].includes(field)) {
+      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct', 'stockChangePct'].includes(field)) {
         setSortDirection('desc')
       } else {
         setSortDirection('asc')
@@ -96,6 +99,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         if (sortField === 'fxRate') {
           valA = exchangeRates ? getConversionRate(exchangeRates, a.country.currencyCode, baseCurrency) : 0
           valB = exchangeRates ? getConversionRate(exchangeRates, b.country.currencyCode, baseCurrency) : 0
+        }
+
+        if (sortField === 'stockChangePct') {
+          const sA = getStockPriceData(a.country.id)
+          const sB = getStockPriceData(b.country.id)
+          valA = sA && sA.isSupported ? sA.changePct : -Infinity
+          valB = sB && sB.isSupported ? sB.changePct : -Infinity
         }
 
         valA = valA ?? -Infinity
@@ -205,6 +215,16 @@ export const RankingTable: React.FC<RankingTableProps> = ({
               </th>
 
               <th
+                onClick={() => handleSort('stockChangePct')}
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
+              >
+                <div className="flex items-center justify-end gap-1.5">
+                  <span>{t.colStockIndex}</span>
+                  {renderSortIcon('stockChangePct')}
+                </div>
+              </th>
+
+              <th
                 onClick={() => handleSort('totalGdpUsd')}
                 className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors"
               >
@@ -259,7 +279,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           <tbody className="divide-y divide-slate-800/60 bg-slate-900/50">
             {filteredAndSorted.length === 0 ? (
               <tr>
-                <td colSpan={9} className="py-12 text-center text-slate-500">
+                <td colSpan={10} className="py-12 text-center text-slate-500">
                   {t.noCountriesFound}
                 </td>
               </tr>
@@ -302,6 +322,63 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
                   <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200">
                     {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
+                  </td>
+
+                  {/* Stock Market Mini Chart */}
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right hidden sm:table-cell">
+                    {(() => {
+                      const stockData = getStockPriceData(item.country.id)
+                      if (!stockData) {
+                        return <span className="text-slate-600 font-mono text-xs">-</span>
+                      }
+                      if (!stockData.isSupported) {
+                        return (
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            {lang === 'ko'
+                              ? '제재/제한'
+                              : lang === 'ja'
+                              ? '制限'
+                              : lang === 'es'
+                              ? 'Restringido'
+                              : lang === 'zh'
+                              ? '受限'
+                              : 'Restricted'}
+                          </span>
+                        )
+                      }
+                      return (
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="text-right">
+                            <span className="text-xs font-mono font-semibold text-slate-200 block leading-tight">
+                              {stockData.currentPrice.toLocaleString()}
+                            </span>
+                            <span
+                              className="text-[10px] text-slate-400 truncate max-w-[85px] block leading-tight"
+                              title={stockData.nameEn}
+                            >
+                              {lang === 'ko' ? stockData.nameKo : stockData.nameEn}
+                            </span>
+                          </div>
+                          {stockData.points.length > 0 && (
+                            <StockSparkline
+                              points={stockData.points}
+                              isPositive={stockData.changePct >= 0}
+                              width={52}
+                              height={20}
+                            />
+                          )}
+                          <span
+                            className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                              stockData.changePct >= 0
+                                ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                                : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+                            }`}
+                          >
+                            {stockData.changePct >= 0 ? '+' : ''}{stockData.changePct}%
+                          </span>
+                        </div>
+                      )
+                    })()}
                   </td>
 
                   <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right">
