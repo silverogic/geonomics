@@ -53,9 +53,10 @@ const COUNTRIES = []
 
 for (const block of countryBlocks) {
   const idMatch = block.match(/^\s*'([A-Z]{3})'/)
-  const nameEnMatch = block.match(/nameEn:\s*'([^']+)'/)
+  const nameEnMatch = block.match(/nameEn:\s*(?:'([^']+)'|"([^"]+)")/)
   if (idMatch && nameEnMatch) {
-    COUNTRIES.push({ id: idMatch[1], nameEn: nameEnMatch[1] })
+    const nameEn = nameEnMatch[1] || nameEnMatch[2]
+    COUNTRIES.push({ id: idMatch[1], nameEn })
   }
 }
 
@@ -71,20 +72,49 @@ const ALIAS_MAP = {
   'Vietnam': 'Vietnam',
   'Iran': 'Iran',
   'Hong Kong': 'Hong Kong SAR',
+  'Macao SAR': 'Macao SAR',
   'Czech Republic': 'Czech Republic',
   'Slovakia': 'Slovak Republic',
+  'DR Congo': 'Congo, Dem. Rep. of the',
+  'Dominican Republic': 'Dominican Republic',
+  'Venezuela': 'Venezuela',
+  'Puerto Rico': 'Puerto Rico',
+  'Ecuador': 'Ecuador',
+  'Uzbekistan': 'Uzbekistan',
+  'Angola': 'Angola',
+  'Kenya': 'Kenya',
+  'Bulgaria': 'Bulgaria',
+  'Guatemala': 'Guatemala',
+  'Ethiopia': 'Ethiopia',
+  'Morocco': 'Morocco',
+  'Algeria': 'Algeria',
+  'Iraq': 'Iraq',
+}
+
+function normalizeStr(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
 }
 
 function findRow(rows, target) {
   if (!rows || !Array.isArray(rows)) return undefined
+  const normTarget = normalizeStr(target)
   // 1. Exact match first (prevents "India" matching "British Indian Ocean Territories")
   const exact = rows.find(
-    (r) => r && r[0] && typeof r[0] === 'string' && r[0].trim().toLowerCase() === target
+    (r) => r && r[0] && typeof r[0] === 'string' && (r[0].trim().toLowerCase() === target || normalizeStr(r[0]) === normTarget)
   )
   if (exact) return exact
-  // 2. Partial match fallback
+  // 2. StartsWith match
+  const startsWith = rows.find(
+    (r) => r && r[0] && typeof r[0] === 'string' && (r[0].toLowerCase().startsWith(target) || normalizeStr(r[0]).startsWith(normTarget))
+  )
+  if (startsWith) return startsWith
+  // 3. Includes match
   return rows.find(
-    (r) => r && r[0] && typeof r[0] === 'string' && r[0].toLowerCase().includes(target)
+    (r) => r && r[0] && typeof r[0] === 'string' && (r[0].toLowerCase().includes(target) || normalizeStr(r[0]).includes(normTarget))
   )
 }
 
@@ -104,12 +134,13 @@ const inflationWb = XLSX.readFile(inflationFilePath)
 const inflationRows = XLSX.utils.sheet_to_json(inflationWb.Sheets[inflationWb.SheetNames[0]], { header: 1 })
 const inflationHeader = inflationRows[0]
 
-// Read existing json to preserve population reference ratios
+// Read existing json to preserve population reference ratios and GDP per capita
 const existingJsonPath = path.join(projectRoot, 'src', 'data', 'excelEconomicData.json')
 let existing = {}
 if (fs.existsSync(existingJsonPath)) {
   try {
-    existing = JSON.parse(fs.readFileSync(existingJsonPath, 'utf8'))
+    const raw = fs.readFileSync(existingJsonPath, 'utf8').replace(/^\uFEFF/, '')
+    existing = JSON.parse(raw)
   } catch (e) {
     console.warn('Could not read existing json for population ratio:', e.message)
   }
@@ -133,6 +164,21 @@ for (const c of COUNTRIES) {
   const yearsObj = {}
   const historicalList = []
 
+  // Calculate implied population reference from latest reliable year in existing
+  let refPop = 0
+  if (existing[c.id]?.years) {
+    for (const testYr of ['2024', '2023', '2022', '2021', '2020']) {
+      const yData = existing[c.id].years[testYr]
+      if (yData && yData.totalGdpUsd > 0 && yData.gdpPerCapitaUsd > 0) {
+        refPop = yData.totalGdpUsd / yData.gdpPerCapitaUsd
+        break
+      }
+    }
+  }
+
+  let lastKnownTotalGdp = 0
+  let lastKnownGrowthRate = 3.5
+
   for (const y of targetYears) {
     const yNum = parseInt(y, 10)
     const gCol = gdpHeader.indexOf(yNum)
@@ -140,13 +186,21 @@ for (const c of COUNTRIES) {
     const grCol = growthHeader.indexOf(yNum)
     const infCol = inflationHeader.indexOf(yNum)
 
-    const rawGdpBillion =
-      gCol !== -1 && gRow && typeof gRow[gCol] === 'number'
-        ? gRow[gCol]
-        : existing[c.id]?.years?.[y]?.totalGdpUsd
-        ? existing[c.id].years[y].totalGdpUsd / 1e9
-        : 0
+    let rawGdpBillion = 0
+    if (gCol !== -1 && gRow && typeof gRow[gCol] === 'number') {
+      rawGdpBillion = gRow[gCol]
+    } else if (existing[c.id]?.years?.[y]?.totalGdpUsd) {
+      rawGdpBillion = existing[c.id].years[y].totalGdpUsd / 1e9
+    }
+
+    // Extrapolate if still <= 0 but lastKnownTotalGdp > 0
+    if (rawGdpBillion <= 0 && lastKnownTotalGdp > 0) {
+      const gr = grCol !== -1 && grRow && typeof grRow[grCol] === 'number' ? grRow[grCol] : lastKnownGrowthRate
+      rawGdpBillion = (lastKnownTotalGdp / 1e9) * (1 + gr / 100)
+    }
+
     const totalGdpUsd = Math.round(rawGdpBillion * 1e9)
+    if (totalGdpUsd > 0) lastKnownTotalGdp = totalGdpUsd
 
     let debtRatioPct =
       dCol !== -1 && dRow && typeof dRow[dCol] === 'number'
@@ -164,6 +218,7 @@ for (const c of COUNTRIES) {
       grCol !== -1 && grRow && typeof grRow[grCol] === 'number'
         ? Math.round(grRow[grCol] * 10) / 10
         : existing[c.id]?.years?.[y]?.growthRatePct ?? null
+    if (growthRatePct !== null) lastKnownGrowthRate = growthRatePct
 
     const inflationRatePct =
       infCol !== -1 && infRow && typeof infRow[infCol] === 'number'
@@ -171,9 +226,13 @@ for (const c of COUNTRIES) {
         : existing[c.id]?.years?.[y]?.inflationRatePct ?? null
 
     let gdpPerCapitaUsd = existing[c.id]?.years?.[y]?.gdpPerCapitaUsd ?? 0
-    if (existing[c.id]?.years?.[y]?.totalGdpUsd && gdpPerCapitaUsd > 0) {
+    if (gdpPerCapitaUsd <= 0 && refPop > 0 && totalGdpUsd > 0) {
+      gdpPerCapitaUsd = Math.round((totalGdpUsd / refPop) * 100) / 100
+    } else if (gdpPerCapitaUsd > 0 && existing[c.id]?.years?.[y]?.totalGdpUsd) {
       const pop = existing[c.id].years[y].totalGdpUsd / gdpPerCapitaUsd
-      gdpPerCapitaUsd = Math.round((totalGdpUsd / pop) * 100) / 100
+      if (pop > 0 && totalGdpUsd > 0) {
+        gdpPerCapitaUsd = Math.round((totalGdpUsd / pop) * 100) / 100
+      }
     }
 
     yearsObj[y] = {
@@ -203,6 +262,19 @@ for (const c of COUNTRIES) {
     historical: historicalList,
   }
 }
+
+// Verification check: ensure all countries are accounted for and have valid 2026 data
+const resultKeys = Object.keys(result)
+if (resultKeys.length !== COUNTRIES.length) {
+  throw new Error(`Country count mismatch: expected ${COUNTRIES.length}, got ${resultKeys.length}`)
+}
+for (const id of resultKeys) {
+  const y2026 = result[id].years?.['2026']
+  if (!y2026 || y2026.totalGdpUsd <= 0 || y2026.gdpPerCapitaUsd <= 0) {
+    throw new Error(`Data validation failed for ${id}: 2026 GDP (${y2026?.totalGdpUsd}) or Per Capita (${y2026?.gdpPerCapitaUsd}) is invalid!`)
+  }
+}
+console.log(`Verified all ${resultKeys.length} countries: 100% have valid 2026 GDP and GDP per capita.`)
 
 const outputTargets = [
   path.join(projectRoot, 'src', 'data', 'excelEconomicData.json'),
