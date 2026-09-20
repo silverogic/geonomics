@@ -278,13 +278,54 @@ async function main() {
   grid[24][14] = 'ARG'
   grid[24][15] = 'ARG'
 
-  // Explicit calibrated anchors for all 71 tracked countries
+  // 8. 28 NEW TRACKED COUNTRIES TOPOLOGY
+  grid[2][21] = 'ISL'
+  grid[3][23] = null // open North Sea between UK and Denmark
+  grid[5][24] = 'LUX'
+  grid[3][27] = 'EST'
+  grid[4][27] = 'LVA'
+  grid[5][27] = 'LTU'
+  grid[5][28] = 'BLR'
+  grid[8][25] = 'SVN'
+  grid[9][26] = 'HRV'
+  grid[8][27] = 'SRB'
+  grid[10][29] = 'CYP'
+  grid[10][27] = 'TUN'
+  grid[12][30] = 'JOR'
+  grid[11][34] = 'BHR'
+  grid[8][32] = 'AZE'
+  grid[8][34] = 'TKM'
+  grid[9][34] = 'TKM'
+  grid[13][11] = 'CRI'
+  grid[14][11] = 'PAN'
+  grid[19][14] = 'BOL'
+  grid[19][16] = 'BOL'
+  grid[23][16] = 'URY'
+  grid[14][22] = 'CIV'
+  grid[14][23] = 'GHA'
+  grid[14][25] = 'CMR'
+  grid[16][26] = 'COD'
+  grid[17][28] = 'COD'
+  grid[16][29] = 'COD'
+  grid[17][29] = 'COD'
+  grid[18][29] = 'COD'
+  grid[15][29] = 'UGA'
+  grid[17][30] = 'TZA'
+  grid[18][31] = 'TZA'
+  grid[15][37] = 'LKA'
+  grid[12][39] = 'MMR'
+  grid[13][39] = 'MMR'
+  grid[11][41] = 'MAC'
+
+  // Explicit calibrated anchors for all 99 tracked countries
   const trackedAnchors = {
     // North America
     CAN: { c: 11, r: 2 },
     USA: { c: 10, r: 8 },
     MEX: { c: 9, r: 12 },
     GTM: { c: 10, r: 13 },
+    CRI: { c: 11, r: 13 },
+    PAN: { c: 11, r: 14 },
     DOM: { c: 14, r: 12 },
     PRI: { c: 15, r: 12 },
 
@@ -293,19 +334,27 @@ async function main() {
     VEN: { c: 14, r: 14 },
     ECU: { c: 12, r: 16 },
     PER: { c: 13, r: 17 },
+    BOL: { c: 16, r: 19 },
     BRA: { c: 17, r: 18 },
     CHL: { c: 13, r: 22 },
     ARG: { c: 14, r: 23 },
+    URY: { c: 16, r: 23 },
 
     // Northern / Western / Central Europe
+    ISL: { c: 21, r: 2 },
     NOR: { c: 24, r: 2 },
     SWE: { c: 25, r: 2 },
     FIN: { c: 26, r: 2 },
     DNK: { c: 24, r: 3 },
+    EST: { c: 27, r: 3 },
+    LVA: { c: 27, r: 4 },
+    LTU: { c: 27, r: 5 },
+    BLR: { c: 28, r: 5 },
     IRL: { c: 21, r: 4 },
     GBR: { c: 22, r: 4 },
     NLD: { c: 24, r: 4 },
     BEL: { c: 23, r: 5 },
+    LUX: { c: 24, r: 5 },
     DEU: { c: 25, r: 5 },
     POL: { c: 26, r: 5 },
     UKR: { c: 28, r: 6 },
@@ -321,39 +370,57 @@ async function main() {
     // Southern Europe & North Africa
     PRT: { c: 22, r: 9 },
     ESP: { c: 23, r: 8 },
+    SVN: { c: 25, r: 8 },
     ITA: { c: 26, r: 8 },
+    HRV: { c: 26, r: 9 },
+    SRB: { c: 27, r: 8 },
     GRC: { c: 27, r: 9 },
     TUR: { c: 29, r: 9 },
+    CYP: { c: 29, r: 10 },
     MAR: { c: 22, r: 10 },
     DZA: { c: 24, r: 10 },
+    TUN: { c: 27, r: 10 },
+    CIV: { c: 22, r: 14 },
+    GHA: { c: 23, r: 14 },
     NGA: { c: 24, r: 14 },
+    CMR: { c: 25, r: 14 },
+    COD: { c: 28, r: 17 },
     AGO: { c: 25, r: 18 },
     EGY: { c: 28, r: 11 },
     ISR: { c: 30, r: 11 },
+    JOR: { c: 30, r: 12 },
     ETH: { c: 30, r: 14 },
+    UGA: { c: 29, r: 15 },
     KEN: { c: 30, r: 16 },
+    TZA: { c: 30, r: 17 },
     ZAF: { c: 27, r: 21 },
 
     // Central Asia / Middle East / South Asia
     KAZ: { c: 33, r: 5 },
     UZB: { c: 33, r: 6 },
+    TKM: { c: 34, r: 8 },
+    AZE: { c: 32, r: 8 },
     IRQ: { c: 31, r: 9 },
     IRN: { c: 33, r: 9 },
     KWT: { c: 32, r: 11 },
+    BHR: { c: 34, r: 11 },
     QAT: { c: 33, r: 11 },
     SAU: { c: 32, r: 12 },
     ARE: { c: 33, r: 12 },
     PAK: { c: 35, r: 10 },
     IND: { c: 36, r: 12 },
+    LKA: { c: 37, r: 15 },
     BGD: { c: 38, r: 11 },
     RUS: { c: 38, r: 2 },
 
     // East Asia & Southeast Asia & Oceania
+    MMR: { c: 39, r: 12 },
     CHN: { c: 40, r: 8 },
-    KOR: { c: 44, r: 8 },
-    JPN: { c: 47, r: 8 },
+    MAC: { c: 41, r: 11 },
     HKG: { c: 42, r: 11 },
     TWN: { c: 44, r: 11 },
+    KOR: { c: 44, r: 8 },
+    JPN: { c: 47, r: 8 },
     THA: { c: 40, r: 13 },
     VNM: { c: 41, r: 13 },
     PHL: { c: 44, r: 13 },

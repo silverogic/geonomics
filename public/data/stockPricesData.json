@@ -1,8 +1,8 @@
-{
+﻿{
   "USA": {
     "countryId": "USA",
-    "nameEn": "S&P 500",
-    "nameKo": "S&P 500",
+    "nameEn": "S\u0026P 500",
+    "nameKo": "S\u0026P 500",
     "ticker": "^GSPC",
     "isSupported": true,
     "currency": "USD",
@@ -953,8 +953,8 @@
   },
   "CAN": {
     "countryId": "CAN",
-    "nameEn": "S&P/TSX Composite",
-    "nameKo": "S&P/TSX 종합",
+    "nameEn": "S\u0026P/TSX Composite",
+    "nameKo": "S\u0026P/TSX 종합",
     "ticker": "^GSPTSE",
     "isSupported": true,
     "currency": "CAD",
@@ -1066,12 +1066,14 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "MEX": {
     "countryId": "MEX",
-    "nameEn": "S&P/BMV IPC",
-    "nameKo": "S&P/BMV IPC",
+    "nameEn": "S\u0026P/BMV IPC",
+    "nameKo": "S\u0026P/BMV IPC",
     "ticker": "^MXX",
     "isSupported": true,
     "currency": "MXN",
@@ -1174,8 +1176,8 @@
   },
   "AUS": {
     "countryId": "AUS",
-    "nameEn": "S&P/ASX 200",
-    "nameKo": "S&P/ASX 200",
+    "nameEn": "S\u0026P/ASX 200",
+    "nameKo": "S\u0026P/ASX 200",
     "ticker": "^AXJO",
     "isSupported": true,
     "currency": "AUD",
@@ -2174,8 +2176,8 @@
   },
   "ARG": {
     "countryId": "ARG",
-    "nameEn": "S&P Merval",
-    "nameKo": "S&P 메르발",
+    "nameEn": "S\u0026P Merval",
+    "nameKo": "S\u0026P 메르발",
     "ticker": "^MERV",
     "isSupported": true,
     "currency": "USD",
@@ -3498,8 +3500,8 @@
   },
   "NZL": {
     "countryId": "NZL",
-    "nameEn": "S&P/NZX 50",
-    "nameKo": "S&P/NZX 50",
+    "nameEn": "S\u0026P/NZX 50",
+    "nameKo": "S\u0026P/NZX 50",
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
@@ -3922,8 +3924,8 @@
   },
   "CHL": {
     "countryId": "CHL",
-    "nameEn": "S&P/CLX IPSA (iShares Chile)",
-    "nameKo": "S&P IPSA (iShares 칠레)",
+    "nameEn": "S\u0026P/CLX IPSA (iShares Chile)",
+    "nameKo": "S\u0026P IPSA (iShares 칠레)",
     "ticker": "ECH",
     "isSupported": true,
     "currency": "USD",
@@ -4743,7 +4745,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "TWN": {
     "countryId": "TWN",
@@ -5072,7 +5076,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "IRQ": {
     "countryId": "IRQ",
@@ -5085,7 +5091,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "DZA": {
     "countryId": "DZA",
@@ -5098,7 +5106,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "MAR": {
     "countryId": "MAR",
@@ -5111,7 +5121,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "ETH": {
     "countryId": "ETH",
@@ -5124,7 +5136,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "SVK": {
     "countryId": "SVK",
@@ -5137,7 +5151,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "PRI": {
     "countryId": "PRI",
@@ -5250,7 +5266,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "ECU": {
     "countryId": "ECU",
@@ -5263,7 +5281,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "UZB": {
     "countryId": "UZB",
@@ -5276,7 +5296,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "VEN": {
     "countryId": "VEN",
@@ -5289,7 +5311,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "AGO": {
     "countryId": "AGO",
@@ -5302,7 +5326,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "KEN": {
     "countryId": "KEN",
@@ -5315,7 +5341,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "BGR": {
     "countryId": "BGR",
@@ -5328,7 +5356,9 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
   },
   "GTM": {
     "countryId": "GTM",
@@ -5341,6 +5371,428 @@
     "currency": "USD",
     "currentPrice": 0,
     "changePct": 0,
-    "points": []
+    "points": [
+      
+    ]
+  },
+  "LKA": {
+    "countryId": "LKA",
+    "nameEn": "CSE All Share",
+    "nameKo": "콜롬보 CSE 종합",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Colombo Stock Exchange (CSE) data is restricted.",
+    "fallbackReasonKo": "콜롬보 증권거래소(CSE) 데이터 조회가 제한됩니다.",
+    "currency": "LKR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "CRI": {
+    "countryId": "CRI",
+    "nameEn": "BNV Costa Rica",
+    "nameKo": "코스타리카 BNV",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Costa Rica National Stock Exchange (BNV) data is restricted.",
+    "fallbackReasonKo": "코스타리카 증권거래소(BNV) 데이터 조회가 제한됩니다.",
+    "currency": "CRC",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "LUX": {
+    "countryId": "LUX",
+    "nameEn": "LuxX Index",
+    "nameKo": "룩셈부르크 LuxX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Luxembourg Stock Exchange data is restricted.",
+    "fallbackReasonKo": "룩셈부르크 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "EUR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "HRV": {
+    "countryId": "HRV",
+    "nameEn": "Zagreb CROBEX",
+    "nameKo": "자그레브 CROBEX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Zagreb Stock Exchange (CROBEX) data is restricted.",
+    "fallbackReasonKo": "자그레브 증권거래소(CROBEX) 데이터 조회가 제한됩니다.",
+    "currency": "EUR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "SRB": {
+    "countryId": "SRB",
+    "nameEn": "Belgrade BELEX15",
+    "nameKo": "베오그라드 BELEX15",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Belgrade Stock Exchange data is restricted.",
+    "fallbackReasonKo": "베오그라드 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "RSD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "CIV": {
+    "countryId": "CIV",
+    "nameEn": "BRVM Composite",
+    "nameKo": "서아프리카 BRVM 종합",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "BRVM West Africa regional exchange data is restricted.",
+    "fallbackReasonKo": "서아프리카 BRVM 지역거래소 데이터 조회가 제한됩니다.",
+    "currency": "XOF",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "PAN": {
+    "countryId": "PAN",
+    "nameEn": "BVPA Panama",
+    "nameKo": "파나마 BVPA",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Panama Stock Exchange (BVPA) data is restricted.",
+    "fallbackReasonKo": "파나마 증권거래소(BVPA) 데이터 조회가 제한됩니다.",
+    "currency": "USD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "LTU": {
+    "countryId": "LTU",
+    "nameEn": "OMX Vilnius",
+    "nameKo": "OMX 빌뉴스",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Nasdaq Vilnius data is restricted.",
+    "fallbackReasonKo": "나스닥 빌뉴스(리투아니아) 데이터 조회가 제한됩니다.",
+    "currency": "EUR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "GHA": {
+    "countryId": "GHA",
+    "nameEn": "GSE Composite",
+    "nameKo": "가나 GSE 종합",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Ghana Stock Exchange (GSE) data is restricted.",
+    "fallbackReasonKo": "가나 증권거래소(GSE) 데이터 조회가 제한됩니다.",
+    "currency": "GHS",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "URY": {
+    "countryId": "URY",
+    "nameEn": "BVMB Montevideo",
+    "nameKo": "몬테비데오 BVMB",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Montevideo Stock Exchange data is restricted.",
+    "fallbackReasonKo": "몬테비데오 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "UYU",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "TZA": {
+    "countryId": "TZA",
+    "nameEn": "DSE Dar es Salaam",
+    "nameKo": "다르에스살람 DSE",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Dar es Salaam Stock Exchange data is restricted.",
+    "fallbackReasonKo": "다르에스살람 증권거래소(DSE) 데이터 조회가 제한됩니다.",
+    "currency": "TZS",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "BLR": {
+    "countryId": "BLR",
+    "nameEn": "BCSE Belarus",
+    "nameKo": "벨라루스 BCSE",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Belarus Currency and Stock Exchange data is restricted.",
+    "fallbackReasonKo": "벨라루스 증권거래소(BCSE) 데이터 조회가 제한됩니다.",
+    "currency": "BYN",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "MMR": {
+    "countryId": "MMR",
+    "nameEn": "YSX Yangon",
+    "nameKo": "양곤 YSX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Yangon Stock Exchange data is restricted.",
+    "fallbackReasonKo": "양곤 증권거래소(YSX) 데이터 조회가 제한됩니다.",
+    "currency": "MMK",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "COD": {
+    "countryId": "COD",
+    "nameEn": "DR Congo Market",
+    "nameKo": "콩고민주공화국 시장",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "No active national stock exchange in DR Congo.",
+    "fallbackReasonKo": "현지 공식 주식시장이 개설되어 있지 않습니다.",
+    "currency": "CDF",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "AZE": {
+    "countryId": "AZE",
+    "nameEn": "BSE Baku",
+    "nameKo": "바쿠 BSE",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Baku Stock Exchange data is restricted.",
+    "fallbackReasonKo": "바쿠 증권거래소(BSE) 데이터 조회가 제한됩니다.",
+    "currency": "AZN",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "SVN": {
+    "countryId": "SVN",
+    "nameEn": "Ljubljana SBITOP",
+    "nameKo": "류블랴나 SBITOP",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Ljubljana Stock Exchange data is restricted.",
+    "fallbackReasonKo": "류블랴나 증권거래소(SBITOP) 데이터 조회가 제한됩니다.",
+    "currency": "EUR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "TKM": {
+    "countryId": "TKM",
+    "nameEn": "Turkmenistan Market",
+    "nameKo": "투르크메니스탄 시장",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "No active national stock exchange in Turkmenistan.",
+    "fallbackReasonKo": "현지 공식 주식시장이 개설되어 있지 않습니다.",
+    "currency": "TMT",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "JOR": {
+    "countryId": "JOR",
+    "nameEn": "Amman ASE",
+    "nameKo": "암만 ASE 지수",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Amman Stock Exchange data is restricted.",
+    "fallbackReasonKo": "암만 증권거래소(ASE) 데이터 조회가 제한됩니다.",
+    "currency": "JOD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "UGA": {
+    "countryId": "UGA",
+    "nameEn": "USE Uganda",
+    "nameKo": "우간다 USE 지수",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Uganda Securities Exchange data is restricted.",
+    "fallbackReasonKo": "우간다 증권거래소(USE) 데이터 조회가 제한됩니다.",
+    "currency": "UGX",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "BOL": {
+    "countryId": "BOL",
+    "nameEn": "BBV Bolivia",
+    "nameKo": "볼리비아 BBV",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Bolivian Stock Exchange data is restricted.",
+    "fallbackReasonKo": "볼리비아 증권거래소(BBV) 데이터 조회가 제한됩니다.",
+    "currency": "BOB",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "CMR": {
+    "countryId": "CMR",
+    "nameEn": "BVMAC Cameroon",
+    "nameKo": "중앙아프리카 BVMAC",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "BVMAC Central Africa regional exchange data is restricted.",
+    "fallbackReasonKo": "중앙아프리카 BVMAC 증권거래소 데이터 조회가 제한됩니다.",
+    "currency": "XAF",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "TUN": {
+    "countryId": "TUN",
+    "nameEn": "TUNINDEX",
+    "nameKo": "튀니스 TUNINDEX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Bourse de Tunis data is restricted.",
+    "fallbackReasonKo": "튀니스 증권거래소(TUNINDEX) 데이터 조회가 제한됩니다.",
+    "currency": "TND",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "MAC": {
+    "countryId": "MAC",
+    "nameEn": "Macao Financial",
+    "nameKo": "마카오 금융시장",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Macao financial exchange data is restricted.",
+    "fallbackReasonKo": "마카오 금융시장 데이터 조회가 제한됩니다.",
+    "currency": "MOP",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "BHR": {
+    "countryId": "BHR",
+    "nameEn": "Bahrain BSEX",
+    "nameKo": "바레인 BSEX",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Bahrain Bourse data is restricted.",
+    "fallbackReasonKo": "바레인 거래소(BSEX) 데이터 조회가 제한됩니다.",
+    "currency": "BHD",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "LVA": {
+    "countryId": "LVA",
+    "nameEn": "OMX Riga",
+    "nameKo": "OMX 리가",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Nasdaq Riga data is restricted.",
+    "fallbackReasonKo": "나스닥 리가(라트비아) 데이터 조회가 제한됩니다.",
+    "currency": "EUR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "EST": {
+    "countryId": "EST",
+    "nameEn": "OMX Tallinn",
+    "nameKo": "OMX 탈린",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Nasdaq Tallinn data is restricted.",
+    "fallbackReasonKo": "나스닥 탈린(에스토니아) 데이터 조회가 제한됩니다.",
+    "currency": "EUR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "ISL": {
+    "countryId": "ISL",
+    "nameEn": "OMX Iceland",
+    "nameKo": "OMX 아이슬란드",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Nasdaq Iceland data is restricted.",
+    "fallbackReasonKo": "나스닥 아이슬란드 데이터 조회가 제한됩니다.",
+    "currency": "ISK",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
+  },
+  "CYP": {
+    "countryId": "CYP",
+    "nameEn": "Cyprus CSE",
+    "nameKo": "키프로스 CSE 지수",
+    "ticker": "",
+    "isSupported": false,
+    "fallbackReasonEn": "Cyprus Stock Exchange data is restricted.",
+    "fallbackReasonKo": "키프로스 증권거래소(CSE) 데이터 조회가 제한됩니다.",
+    "currency": "EUR",
+    "currentPrice": 0,
+    "changePct": 0,
+    "points": [
+      
+    ]
   }
 }
