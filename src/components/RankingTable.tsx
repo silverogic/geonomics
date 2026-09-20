@@ -176,13 +176,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       )}
 
       {/* Datatable */}
-      <div className="rounded-xl border border-slate-800 overflow-x-clip md:overflow-visible">
+      <div className="rounded-xl border border-slate-800 overflow-x-auto md:overflow-visible scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
         <table className="w-full text-left border-separate border-spacing-0 text-sm">
-          <thead className="sticky top-16 sm:top-20 z-30">
+          <thead className="sticky top-[100px] sm:top-[116px] md:top-20 z-30">
             <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
               <th
                 onClick={() => handleSort('rank')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors"
               >
                 <div className="flex items-center gap-1.5">
                   <span>{t.colRank}</span>
@@ -192,7 +192,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('countryName')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center gap-1.5">
                   <span>{t.colCountry}</span>
@@ -200,13 +200,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 </div>
               </th>
 
-              <th className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 hidden md:table-cell border-b border-slate-800 shadow-sm text-slate-400">
+              <th className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 hidden md:table-cell border-b border-slate-800 shadow-sm text-slate-400">
                 {t.colCurrency}
               </th>
 
               <th
                 onClick={() => handleSort('fxRate')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
@@ -216,7 +216,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('stockChangePct')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colStockIndex}</span>
@@ -226,7 +226,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('totalGdpUsd')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colTotalGdp.replace('{base}', baseCurrency)}</span>
@@ -236,7 +236,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('gdpPerCapitaUsd')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden lg:table-cell border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden lg:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colPerCapita}</span>
@@ -246,7 +246,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('growthRatePct')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colGrowth}</span>
@@ -256,7 +256,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('inflationRatePct')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colInflation}</span>
@@ -266,7 +266,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('debtRatioPct')}
-                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden md:table-cell border-b border-slate-800 shadow-sm transition-colors"
+                className="sticky top-[100px] sm:top-[116px] md:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden md:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colDebt}</span>
