@@ -822,20 +822,20 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
                 {/* Growth Rate, Inflation Rate & Debt Ratio Grid */}
                 <div className="grid grid-cols-3 gap-1.5">
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
                     <div
-                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 ${(inspectedCountryItem.growthRatePct ?? 0) >= 0
+                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 min-w-0 ${(inspectedCountryItem.growthRatePct ?? 0) >= 0
                         ? 'text-emerald-400'
                         : 'text-rose-400'
                         }`}
                     >
                       {(inspectedCountryItem.growthRatePct ?? 0) >= 0 ? (
-                        <TrendingUp className="w-3 h-3" />
+                        <TrendingUp className="w-3 h-3 shrink-0" />
                       ) : (
-                        <TrendingDown className="w-3 h-3" />
+                        <TrendingDown className="w-3 h-3 shrink-0" />
                       )}
-                      <span>
+                      <span className="truncate">
                         {inspectedCountryItem.growthRatePct !== null
                           ? inspectedCountryItem.growthRatePct > 0
                             ? `+${inspectedCountryItem.growthRatePct.toFixed(1)}%`
@@ -845,10 +845,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     </div>
                   </div>
 
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricInflation}</div>
                     <div
-                      className={`text-sm font-bold font-mono mt-0.5 ${inspectedCountryItem.inflationRatePct === null || inspectedCountryItem.inflationRatePct === undefined
+                      className={`text-sm font-bold font-mono mt-0.5 truncate ${inspectedCountryItem.inflationRatePct === null || inspectedCountryItem.inflationRatePct === undefined
                         ? 'text-slate-400'
                         : inspectedCountryItem.inflationRatePct < 0
                           ? 'text-purple-400'
@@ -867,9 +867,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     </div>
                   </div>
 
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
-                    <div className="text-sm font-bold text-slate-200 font-mono mt-0.5">
+                    <div className="text-sm font-bold text-slate-200 font-mono mt-0.5 truncate">
                       {inspectedCountryItem.debtRatioPct !== null &&
                         inspectedCountryItem.debtRatioPct !== undefined
                         ? `${inspectedCountryItem.debtRatioPct.toFixed(1)}%`
@@ -927,7 +927,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               <div className="font-bold text-xs text-slate-200 truncate group-hover:text-white">
                 {getCountryName(item.country, lang)}
               </div>
-              <div className="text-[11px] font-mono text-indigo-400 font-semibold mt-0.5">
+              <div className="text-[11px] font-mono text-indigo-400 font-semibold mt-0.5 truncate">
                 {formatGdpCompact(item.totalGdpUsd, baseCurrency, usdToBase, lang)}
               </div>
             </button>

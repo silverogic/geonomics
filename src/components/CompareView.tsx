@@ -160,15 +160,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
         {/* Selectors */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-3 items-center">
           {/* Country A Picker */}
-          <div className="bg-slate-950/80 border border-indigo-500/40 rounded-xl p-3">
-            <label htmlFor="countryASelect" className="text-xs font-semibold text-indigo-400 block mb-1">
+          <div className="bg-slate-950/80 border border-indigo-500/40 rounded-xl p-3 min-w-0 overflow-hidden">
+            <label htmlFor="countryASelect" className="text-xs font-semibold text-indigo-400 block mb-1 truncate">
               {t.compareBaseCountry}
             </label>
             <select
               id="countryASelect"
               value={countryAId}
               onChange={(e) => setCountryAId(e.target.value)}
-              className="w-full bg-transparent text-lg font-bold text-white focus:outline-none cursor-pointer"
+              className="w-full bg-transparent text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
             >
               {COUNTRIES.map((c) => (
                 <option key={c.id} value={c.id} className="bg-slate-900 text-white">
@@ -188,15 +188,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </button>
 
           {/* Country B Picker */}
-          <div className="bg-slate-950/80 border border-emerald-500/40 rounded-xl p-3">
-            <label htmlFor="countryBSelect" className="text-xs font-semibold text-emerald-400 block mb-1">
+          <div className="bg-slate-950/80 border border-emerald-500/40 rounded-xl p-3 min-w-0 overflow-hidden">
+            <label htmlFor="countryBSelect" className="text-xs font-semibold text-emerald-400 block mb-1 truncate">
               {t.compareTargetCountry}
             </label>
             <select
               id="countryBSelect"
               value={countryBId}
               onChange={(e) => setCountryBId(e.target.value)}
-              className="w-full bg-transparent text-lg font-bold text-white focus:outline-none cursor-pointer"
+              className="w-full bg-transparent text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
             >
               {COUNTRIES.map((c) => (
                 <option key={c.id} value={c.id} className="bg-slate-900 text-white">

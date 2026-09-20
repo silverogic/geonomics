@@ -45,7 +45,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
   onSelectCountry,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number; containerWidth: number } | null>(null)
 
   const t = translations[lang]
 
@@ -75,6 +75,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
     setTooltipPos({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
+      containerWidth: rect.width,
     })
     onHoverCountry(countryId)
   }
@@ -199,15 +200,21 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
       </div>
 
       {/* Floating Dynamic Tooltip HUD */}
-      {activeHoveredItem && tooltipPos && (
-        <div
-          className="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-3 transition-transform duration-75"
-          style={{
-            left: `${tooltipPos.x}px`,
-            top: `${tooltipPos.y}px`,
-          }}
-        >
-          <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[210px] text-xs space-y-2">
+      {activeHoveredItem && tooltipPos && (() => {
+        // Clamp tooltip horizontally so it never exits the container boundary
+        const ratio = tooltipPos.containerWidth > 0 ? tooltipPos.x / tooltipPos.containerWidth : 0.5
+        const xShift = ratio < 0.2 ? '0%' : ratio > 0.8 ? '-100%' : '-50%'
+        return (
+          <div
+            className="absolute z-30 pointer-events-none transition-transform duration-75"
+            style={{
+              left: `${tooltipPos.x}px`,
+              top: `${tooltipPos.y}px`,
+              transform: `translateX(${xShift}) translateY(-100%)`,
+              marginBottom: '0.75rem',
+            }}
+          >
+            <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[210px] max-w-[280px] text-xs space-y-2">
             {/* Header: Flag + Name + Rank */}
             <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-2">
               <div className="flex items-center gap-2">
@@ -303,7 +310,8 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
             </div>
           </div>
         </div>
-      )}
+        )
+      })()}
 
       {/* Mobile Swipe Hint */}
       <div className="sm:hidden text-center text-[10px] text-slate-500 mt-2">

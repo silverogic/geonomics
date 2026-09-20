@@ -106,64 +106,66 @@ export const CountryModal: React.FC<CountryModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
             {/* Total GDP */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
-              <span className="text-xs font-semibold text-slate-400 block mb-1">
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+              <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalTotalGdpTitle} ({detail?.latestYear ?? selectedYear})
               </span>
-              <div className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate">
                 {detail ? formatGdpCompact(detail.totalGdpUsd, baseCurrency, usdToBase, lang) : t.loadingData}
               </div>
-              <span className="text-xs text-indigo-400 font-mono">
+              <span className="text-xs text-indigo-400 font-mono truncate block">
                 {detail ? `$${(detail.totalGdpUsd / 1e12).toFixed(2)}T USD` : ''}
               </span>
             </div>
 
             {/* GDP Per Capita */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
-              <span className="text-xs font-semibold text-slate-400 block mb-1">
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+              <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalPerCapitaTitle}
               </span>
-              <div className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate">
                 {detail ? formatPerCapita(detail.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : t.loadingData}
               </div>
-              <span className="text-xs text-indigo-400 font-mono">
+              <span className="text-xs text-indigo-400 font-mono truncate block">
                 {detail ? `$${Math.round(detail.gdpPerCapitaUsd).toLocaleString()} USD` : ''}
               </span>
             </div>
 
             {/* Annual Growth Rate */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
-              <span className="text-xs font-semibold text-slate-400 block mb-1">
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+              <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalGrowthTitle}
               </span>
               <div
-                className={`text-lg sm:text-xl font-bold flex items-center gap-1 ${
+                className={`text-base lg:text-lg font-bold flex items-center gap-1 min-w-0 ${
                   detail?.growthRatePct !== null && (detail?.growthRatePct ?? 0) >= 0
                     ? 'text-emerald-400'
                     : 'text-rose-400'
                 }`}
               >
                 {detail?.growthRatePct !== null && (detail?.growthRatePct ?? 0) >= 0 ? (
-                  <TrendingUp className="w-4 h-4" />
+                  <TrendingUp className="w-4 h-4 shrink-0" />
                 ) : (
-                  <TrendingDown className="w-4 h-4" />
+                  <TrendingDown className="w-4 h-4 shrink-0" />
                 )}
-                {detail?.growthRatePct !== null && detail?.growthRatePct !== undefined
-                  ? `${detail.growthRatePct > 0 ? '+' : ''}${detail.growthRatePct.toFixed(2)}%`
-                  : 'N/A'}
+                <span className="truncate">
+                  {detail?.growthRatePct !== null && detail?.growthRatePct !== undefined
+                    ? `${detail.growthRatePct > 0 ? '+' : ''}${detail.growthRatePct.toFixed(2)}%`
+                    : 'N/A'}
+                </span>
               </div>
-              <span className="text-[11px] text-slate-500">{t.modalRealGrowth}</span>
+              <span className="text-[11px] text-slate-500 truncate block">{t.modalRealGrowth}</span>
             </div>
 
             {/* Inflation Rate */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
-              <span className="text-xs font-semibold text-slate-400 block mb-1">
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+              <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalInflationTitle}
               </span>
               <div
-                className={`text-lg sm:text-xl font-bold flex items-center gap-1 font-mono ${
+                className={`text-base lg:text-lg font-bold flex items-center gap-1 font-mono truncate ${
                   detail?.inflationRatePct === null || detail?.inflationRatePct === undefined
                     ? 'text-slate-400'
                     : detail.inflationRatePct < 0
@@ -187,12 +189,12 @@ export const CountryModal: React.FC<CountryModalProps> = ({
             </div>
 
             {/* National Debt Ratio */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
-              <span className="text-xs font-semibold text-slate-400 block mb-1">
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+              <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalDebtTitle}
               </span>
               <div
-                className={`text-lg sm:text-xl font-bold flex items-center gap-1 font-mono ${
+                className={`text-base lg:text-lg font-bold flex items-center gap-1 font-mono truncate ${
                   detail?.debtRatioPct === null || detail?.debtRatioPct === undefined
                     ? 'text-slate-400'
                     : detail.debtRatioPct < 60
