@@ -35,7 +35,6 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   baseCurrency,
   exchangeRates,
   lang,
-  selectedYear = '2026',
   onSelect,
 }) => {
   const t = translations[lang]
