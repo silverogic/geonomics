@@ -1823,12 +1823,12 @@
     "ticker": "^TASI.SR",
     "isSupported": true,
     "currency": "SAR",
-    "currentPrice": 10777.94,
+    "currentPrice": 10749.51,
     "changePct": 0,
     "points": [
       {
-        "date": "2026-09-17",
-        "close": 10777.94
+        "date": "2026-09-20",
+        "close": 10749.51
       }
     ]
   },
@@ -3063,12 +3063,12 @@
     "ticker": "^CASE30",
     "isSupported": true,
     "currency": "EGP",
-    "currentPrice": 55498.7,
+    "currentPrice": 55371.5,
     "changePct": 0,
     "points": [
       {
-        "date": "2026-09-17",
-        "close": 55498.7
+        "date": "2026-09-20",
+        "close": 55371.5
       }
     ]
   },
