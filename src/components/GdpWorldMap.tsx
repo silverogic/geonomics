@@ -13,6 +13,7 @@ import {
   ExternalLink,
   LayoutGrid,
   Globe,
+  Activity,
 } from 'lucide-react'
 import { TileWorldMap } from './TileWorldMap'
 import { WORLD_MAP_PATHS } from '../data/worldMapData'
@@ -266,7 +267,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
             />
           </div>
         </div>
@@ -274,34 +275,50 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         {/* Lower Row: Filter HUD (Metric, Year, Continent) */}
         <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 pt-4 border-t border-slate-800/80">
           <div className="flex flex-wrap items-center gap-3">
-            {/* Metric Selector (Total GDP, Per Capita, Growth, Debt) */}
-            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
-              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                {t.mapMetricLabel}:
+            {/* Metric Selector Combobox (Converted from 5-option toggle per UX/UI guideline) */}
+            <div className="flex items-center gap-2 bg-slate-950/90 border border-slate-800 hover:border-slate-700 focus-within:border-indigo-500 rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-colors">
+              <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
+                <Activity className="w-3.5 h-3.5 text-indigo-400" />
+                <span>{t.mapMetricLabel}:</span>
               </span>
-              {(
-                [
-                  { id: 'gdp', label: t.metricTotalGdp },
-                  { id: 'perCapita', label: t.metricPerCapita },
-                  { id: 'growth', label: t.metricGrowth },
-                  { id: 'debt', label: t.metricDebt },
-                  { id: 'inflation', label: t.metricInflation },
-                ] as const
-              ).map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => setMetric(m.id)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${metric === m.id
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                    }`}
-                >
-                  {m.label}
-                </button>
-              ))}
+              <select
+                id="mapMetricSelect"
+                value={metric}
+                onChange={(e) => setMetric(e.target.value as MapMetric)}
+                aria-label={t.mapMetricLabel}
+                className="bg-transparent text-slate-100 font-bold focus:outline-none cursor-pointer pr-1"
+              >
+                <option value="gdp" className="bg-slate-900 text-white">{t.metricTotalGdp}</option>
+                <option value="perCapita" className="bg-slate-900 text-white">{t.metricPerCapita}</option>
+                <option value="growth" className="bg-slate-900 text-white">{t.metricGrowth}</option>
+                <option value="debt" className="bg-slate-900 text-white">{t.metricDebt}</option>
+                <option value="inflation" className="bg-slate-900 text-white">{t.metricInflation}</option>
+              </select>
             </div>
 
-            {/* Year Switcher */}
+            {/* Region Filter Combobox (Converted from 6-option toggle per UX/UI guideline) */}
+            <div className="flex items-center gap-2 bg-slate-950/90 border border-slate-800 hover:border-slate-700 focus-within:border-indigo-500 rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-colors">
+              <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
+                <Filter className="w-3.5 h-3.5 text-indigo-400" />
+                <span>{lang === 'ko' ? '대륙' : lang === 'ja' ? '地域' : lang === 'es' ? 'Región' : lang === 'zh' ? '大洲' : 'Region'}:</span>
+              </span>
+              <select
+                id="mapRegionSelect"
+                value={selectedRegion}
+                onChange={(e) => handleRegionSelect(e.target.value as Region | 'All')}
+                aria-label="Filter by region"
+                className="bg-transparent text-slate-100 font-bold focus:outline-none cursor-pointer pr-1"
+              >
+                <option value="All" className="bg-slate-900 text-white">{t.filterAll}</option>
+                <option value="Asia" className="bg-slate-900 text-white">{t.filterAsia}</option>
+                <option value="Europe" className="bg-slate-900 text-white">{t.filterEurope}</option>
+                <option value="Americas" className="bg-slate-900 text-white">{t.filterAmericas}</option>
+                <option value="Africa" className="bg-slate-900 text-white">{t.filterAfrica}</option>
+                <option value="Oceania" className="bg-slate-900 text-white">{t.filterOceania}</option>
+              </select>
+            </div>
+
+            {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
             <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
               <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
                 {t.yearLabel}:
@@ -320,7 +337,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               ))}
             </div>
 
-            {/* Map Style Switcher (Tile Map vs Detailed Vector Map) */}
+            {/* Map Style Switcher (2 options - toggle switch permitted under 4 options) */}
             <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
               <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
                 {t.mapStyleLabel}
@@ -350,33 +367,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <span>{t.mapStyleVector}</span>
               </button>
             </div>
-          </div>
-
-          {/* Region Filter Buttons */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0 scrollbar-none text-xs font-semibold">
-            <Filter className="w-3.5 h-3.5 text-slate-500 mr-1 hidden sm:inline" />
-            {(['All', 'Asia', 'Europe', 'Americas', 'Africa', 'Oceania'] as const).map((reg) => (
-              <button
-                key={reg}
-                onClick={() => handleRegionSelect(reg)}
-                className={`px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap ${selectedRegion === reg
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                  : 'bg-slate-950/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-slate-800/80'
-                  }`}
-              >
-                {reg === 'All'
-                  ? t.filterAll
-                  : reg === 'Asia'
-                    ? t.filterAsia
-                    : reg === 'Europe'
-                      ? t.filterEurope
-                      : reg === 'Americas'
-                        ? t.filterAmericas
-                        : reg === 'Africa'
-                          ? t.filterAfrica
-                          : t.filterOceania}
-              </button>
-            ))}
           </div>
         </div>
       </div>

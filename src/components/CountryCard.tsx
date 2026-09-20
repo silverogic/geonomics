@@ -1,5 +1,5 @@
 import React from 'react'
-import { TrendingUp, TrendingDown, ArrowRight, LineChart } from 'lucide-react'
+import { TrendingUp, TrendingDown, ArrowRight, LineChart, AlertCircle } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
@@ -78,7 +78,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
           <div className="flex items-center gap-1.5 shrink-0">
             {inflationRatePct !== undefined && inflationRatePct !== null && (
               <span
-                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
                   inflationRatePct < 0
                     ? 'text-purple-300 bg-purple-950/60 border-purple-500/30'
                     : inflationRatePct <= 2.5
@@ -91,12 +91,15 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                 }`}
                 title={`${t.modalInflationTitle}: ${inflationRatePct.toFixed(1)}%`}
               >
+                {inflationRatePct > 7.0 && (
+                  <AlertCircle className="w-2.5 h-2.5 text-rose-400 shrink-0" />
+                )}
                 {t.cardInflationRate} {inflationRatePct.toFixed(1)}%
               </span>
             )}
             {debtRatioPct !== null && (
               <span
-                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
                   debtRatioPct < 60
                     ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
                     : debtRatioPct <= 100
@@ -105,6 +108,9 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                 }`}
                 title={`${t.modalDebtTitle}: ${debtRatioPct.toFixed(1)}%`}
               >
+                {debtRatioPct > 100 && (
+                  <AlertCircle className="w-2.5 h-2.5 text-rose-400 shrink-0" />
+                )}
                 {t.cardDebtRatio} {debtRatioPct.toFixed(1)}%
               </span>
             )}
@@ -132,7 +138,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
               <span className="text-base sm:text-lg font-bold text-slate-200 tracking-tight block">
                 {formatPerCapita(gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">
+              <span className="text-[10px] text-slate-400 font-mono">
                 ${Math.round(gdpPerCapitaUsd).toLocaleString()} USD
               </span>
             </div>
@@ -154,7 +160,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                       {stockData.currentPrice.toLocaleString()} {stockData.currency}
                     </span>
                   ) : (
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-[10px] text-slate-400 font-mono">
                       {lang === 'ko'
                         ? '제재/조회제한'
                         : lang === 'ja'
@@ -203,7 +209,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                 1 {country.currencyCode} = {formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} {baseCurrency}
               </span>
             ) : (
-              <span className="text-slate-500 animate-pulse">{t.loadingData}</span>
+              <span className="text-slate-400 animate-pulse">{t.loadingData}</span>
             )}
           </div>
 

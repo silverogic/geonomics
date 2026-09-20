@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Coins, Award, LineChart } from 'lucide-react'
+import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Coins, Award, LineChart, AlertCircle } from 'lucide-react'
 import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
@@ -156,7 +156,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                     : 'N/A'}
                 </span>
               </div>
-              <span className="text-[11px] text-slate-500 truncate block">{t.modalRealGrowth}</span>
+              <span className="text-[11px] text-slate-400 truncate block">{t.modalRealGrowth}</span>
             </div>
 
             {/* Inflation Rate */}
@@ -179,11 +179,14 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                             : 'text-rose-400'
                 }`}
               >
+                {detail?.inflationRatePct !== null && detail?.inflationRatePct !== undefined && detail.inflationRatePct > 7.0 && (
+                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                )}
                 {detail?.inflationRatePct !== null && detail?.inflationRatePct !== undefined
                   ? `${detail.inflationRatePct.toFixed(1)}%`
                   : 'N/A'}
               </div>
-              <span className="text-[11px] text-slate-500 truncate block" title={t.modalInflationSub}>
+              <span className="text-[11px] text-slate-400 truncate block" title={t.modalInflationSub}>
                 {t.modalInflationSub}
               </span>
             </div>
@@ -204,11 +207,14 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                         : 'text-rose-400'
                 }`}
               >
+                {detail?.debtRatioPct !== null && detail?.debtRatioPct !== undefined && detail.debtRatioPct > 100 && (
+                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                )}
                 {detail?.debtRatioPct !== null && detail?.debtRatioPct !== undefined
                   ? `${detail.debtRatioPct.toFixed(1)}%`
                   : 'N/A'}
               </div>
-              <span className="text-[11px] text-slate-500 truncate block" title={t.modalDebtSub}>
+              <span className="text-[11px] text-slate-400 truncate block" title={t.modalDebtSub}>
                 {t.modalDebtSub}
               </span>
             </div>
