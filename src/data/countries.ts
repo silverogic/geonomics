@@ -1196,10 +1196,11 @@ export const COUNTRIES: CountryMeta[] = [
 ]
 
 export const BASE_CURRENCIES = [
-  { code: 'USD', nameEn: 'US Dollar (USD)', nameKo: '미국 달러 (USD)', nameJa: '米ドル (USD)', symbol: '$' },
-  { code: 'EUR', nameEn: 'Euro (EUR)', nameKo: '유로 (EUR)', nameJa: 'ユーロ (EUR)', symbol: '€' },
-  { code: 'KRW', nameEn: 'Korean Won (KRW)', nameKo: '원화 (KRW)', nameJa: '韓国ウォン (KRW)', symbol: '₩' },
-  { code: 'JPY', nameEn: 'Japanese Yen (JPY)', nameKo: '일본 엔 (JPY)', nameJa: '日本円 (JPY)', symbol: '¥' },
-  { code: 'GBP', nameEn: 'British Pound (GBP)', nameKo: '영국 파운드 (GBP)', nameJa: '英ポンド (GBP)', symbol: '£' },
-  { code: 'CNY', nameEn: 'Chinese Yuan (CNY)', nameKo: '중국 위안 (CNY)', nameJa: '中国人民元 (CNY)', symbol: '¥' },
+  { code: 'USD', nameEn: 'US Dollar (USD)', nameKo: '미국 달러 (USD)', nameJa: '米ドル (USD)', nameEs: 'Dólar estadounidense (USD)', nameZh: '美元 (USD)', symbol: '$' },
+  { code: 'EUR', nameEn: 'Euro (EUR)', nameKo: '유로 (EUR)', nameJa: 'ユーロ (EUR)', nameEs: 'Euro (EUR)', nameZh: '欧元 (EUR)', symbol: '€' },
+  { code: 'KRW', nameEn: 'Korean Won (KRW)', nameKo: '원화 (KRW)', nameJa: '韓国ウォン (KRW)', nameEs: 'Won surcoreano (KRW)', nameZh: '韩元 (KRW)', symbol: '₩' },
+  { code: 'JPY', nameEn: 'Japanese Yen (JPY)', nameKo: '일본 엔 (JPY)', nameJa: '日本円 (JPY)', nameEs: 'Yen japonés (JPY)', nameZh: '日元 (JPY)', symbol: '¥' },
+  { code: 'GBP', nameEn: 'British Pound (GBP)', nameKo: '영국 파운드 (GBP)', nameJa: '英ポンド (GBP)', nameEs: 'Libra esterlina (GBP)', nameZh: '英镑 (GBP)', symbol: '£' },
+  { code: 'CNY', nameEn: 'Chinese Yuan (CNY)', nameKo: '중국 위안 (CNY)', nameJa: '中国人民元 (CNY)', nameEs: 'Yuan chino (CNY)', nameZh: '人民币 (CNY)', symbol: '¥' },
 ] as const
+

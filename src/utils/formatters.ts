@@ -40,7 +40,20 @@ export function formatGdpCompact(
     return `${Math.round(converted).toLocaleString('ja-JP')}円`
   }
 
-  // Western / English format
+  // Chinese localized format
+  if (lang === 'zh' && baseCurrency === 'CNY') {
+    const wanyi = converted / 1_000_000_000_000
+    if (wanyi >= 1) {
+      return `${wanyi.toLocaleString('zh-CN', { maximumFractionDigits: 1 })}万亿元`
+    }
+    const yi = converted / 100_000_000
+    if (yi >= 1) {
+      return `${yi.toLocaleString('zh-CN', { maximumFractionDigits: 0 })}亿元`
+    }
+    return `${Math.round(converted).toLocaleString('zh-CN')}元`
+  }
+
+  // Western / English / Spanish format
   const symbol = getCurrencySymbol(baseCurrency)
   if (converted >= 1e12) {
     return `${symbol}${(converted / 1e12).toFixed(2)}T`
@@ -81,6 +94,14 @@ export function formatPerCapita(
       return `${man.toLocaleString('ja-JP', { maximumFractionDigits: 0 })}万円`
     }
     return `${Math.round(converted).toLocaleString('ja-JP')}円`
+  }
+
+  if (lang === 'zh' && baseCurrency === 'CNY') {
+    const wan = converted / 10_000
+    if (wan >= 1) {
+      return `${wan.toLocaleString('zh-CN', { maximumFractionDigits: 0 })}万元`
+    }
+    return `${Math.round(converted).toLocaleString('zh-CN')}元`
   }
 
   return `${getCurrencySymbol(baseCurrency)}${Math.round(converted).toLocaleString()}`

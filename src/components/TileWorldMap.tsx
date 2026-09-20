@@ -13,6 +13,7 @@ import { CountryFlag } from './CountryFlag'
 import { getCountryName } from '../utils/countryNames'
 import type { MapMetric } from './GdpWorldMap'
 import { ChevronRight } from 'lucide-react'
+import { translations } from '../i18n/translations'
 
 interface TileWorldMapProps {
   items: CountryRowItem[]
@@ -45,6 +46,8 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
+
+  const t = translations[lang]
 
   // Fast country lookup
   const countryItemMap = useMemo(() => {
@@ -226,7 +229,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   metric === 'gdp' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
                 }`}
               >
-                <span>{lang === 'ko' ? '총 GDP' : lang === 'ja' ? '名目GDP' : 'Total GDP'}:</span>
+                <span>{t.metricTotalGdp}:</span>
                 <span className={`font-mono font-bold ${metric === 'gdp' ? 'text-white' : 'text-slate-100'}`}>
                   {formatGdpCompact(activeHoveredItem.totalGdpUsd, baseCurrency, usdToBase, lang)}
                 </span>
@@ -236,7 +239,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   metric === 'perCapita' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
                 }`}
               >
-                <span>{lang === 'ko' ? '1인당 GDP' : lang === 'ja' ? '1人当たりGDP' : 'GDP Per Capita'}:</span>
+                <span>{t.metricPerCapita}:</span>
                 <span className={`font-mono ${metric === 'perCapita' ? 'font-bold text-white' : 'text-slate-300'}`}>
                   {formatPerCapita(activeHoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                 </span>
@@ -247,7 +250,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                     metric === 'growth' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
                   }`}
                 >
-                  <span>{lang === 'ko' ? '성장률' : lang === 'ja' ? '成長率' : 'Growth'}:</span>
+                  <span>{t.metricGrowth}:</span>
                   <span
                     className={`font-mono font-semibold ${
                       activeHoveredItem.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
@@ -265,7 +268,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                     metric === 'inflation' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
                   }`}
                 >
-                  <span>{lang === 'ko' ? '인플레이션' : lang === 'ja' ? 'インフレ率' : 'Inflation'}:</span>
+                  <span>{t.metricInflation}:</span>
                   <span
                     className={`font-mono font-semibold ${
                       activeHoveredItem.inflationRatePct < 0
@@ -285,7 +288,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
               )}
               {metric === 'debt' && activeHoveredItem.debtRatioPct !== null && (
                 <div className="flex items-center justify-between text-indigo-300 font-semibold">
-                  <span>{lang === 'ko' ? '국가 부채' : lang === 'ja' ? '政府債務' : 'Gov Debt'}:</span>
+                  <span>{t.metricDebt}:</span>
                   <span className="font-mono font-bold text-amber-400">
                     {activeHoveredItem.debtRatioPct.toFixed(1)}%
                   </span>
@@ -295,7 +298,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
 
             {/* Hint */}
             <div className="text-[10px] text-indigo-400 font-medium pt-1 border-t border-slate-800 flex items-center justify-between">
-              <span>{lang === 'ko' ? '클릭하여 10개년 상세 차트 보기' : lang === 'ja' ? 'クリックして10年チャートを表示' : 'Click for 10-Yr Chart & Details'}</span>
+              <span>{t.viewDetailsBtn}</span>
               <ChevronRight className="w-3 h-3" />
             </div>
           </div>
@@ -308,7 +311,11 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
           ? '← 좌우로 스크롤하여 세계 지도를 확인하세요 →'
           : lang === 'ja'
             ? '← 左右にスクロールして世界地図を確認できます →'
-            : '← Scroll horizontally to explore the pixel world map →'}
+            : lang === 'es'
+              ? '← Desplácese horizontalmente para explorar el mapa →'
+              : lang === 'zh'
+                ? '← 左右滑动以探索世界地图 →'
+                : '← Scroll horizontally to explore the pixel world map →'}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-export type Language = 'en' | 'ko' | 'ja'
+export type Language = 'en' | 'ko' | 'ja' | 'es' | 'zh'
 
 export const translations = {
   en: {
@@ -469,4 +469,317 @@ export const translations = {
     footerEcb: '欧州中央銀行 (ECB) 公式為替レート',
     footerGithub: 'GitHub Pages でホスティング中',
   },
+  es: {
+    // Header & Nav
+    appTitle: 'Geonomics',
+    appSubtitle: 'Tipos de cambio en tiempo real y estadísticas oficiales del Banco Mundial y el FMI',
+    liveBadge: 'LIVE',
+    navExplorer: 'Explorador de países',
+    navCompare: 'Comparación 1:1',
+    baseCurrencyLabel: 'Moneda base:',
+    refreshBtn: 'Actualizar',
+    refreshTooltip: 'Actualizar datos en tiempo real',
+
+    // Ticker
+    tickerTitle: 'Principales tipos de cambio en tiempo real',
+    asOf: 'Actualizado:',
+
+    // Hero Section
+    heroBadge: 'Estadísticas oficiales Banco Mundial · FMI WEO × Tipos de cambio en vivo',
+    heroTitle: 'Análisis global de tipos de cambio y PIB en tiempo real',
+    heroDescription:
+      'Plataforma de inteligencia económica bajo demanda y sin base de datos. Consulta directamente las APIs oficiales de instituciones públicas internacionales (Banco Mundial, FMI WEO y Banco Central Europeo) para ofrecer indicadores macroeconómicos de alta precisión y tipos de cambio en tiempo real.',
+    statCountriesTracked: 'Países monitorizados',
+    statBaseCurrency: 'Moneda base actual',
+    statTopEconomy: 'Primera economía mundial',
+    statLocalEconomy: 'Economía local ({country})',
+
+    // Filters & Search
+    searchPlaceholder: 'Buscar por país, código o moneda...',
+    filterAll: 'Todos',
+    filterAsia: 'Asia',
+    filterEurope: 'Europa',
+    filterAmericas: 'América',
+    filterAfrica: 'África',
+    filterOceania: 'Oceanía',
+    viewCards: 'Vista de tarjetas',
+    viewTable: 'Vista de tabla',
+
+    // Map View
+    mapTitle: 'Explorador del mapa mundial de PIB',
+    mapSubtitle: 'Inteligencia macroeconómica oficial del Banco Mundial y el FMI con divisas en vivo',
+    mapMetricLabel: 'Indicador',
+    metricTotalGdp: 'PIB total',
+    metricPerCapita: 'PIB per cápita',
+    metricGrowth: 'Crecimiento real',
+    metricDebt: '% Deuda pública',
+    metricInflation: 'Tasa de inflación',
+    mapResetZoom: 'Restablecer',
+    mapZoomIn: 'Acercar',
+    mapZoomOut: 'Alejar',
+    top10Title: 'Top 10 economías mundiales',
+    legendTitle: 'Escala del indicador',
+    clickCountryHint: 'Haz clic en cualquier país para ver su trayectoria de 10 años y divisas',
+    selectedCountryBadge: 'Economía seleccionada',
+    viewDetailsBtn: 'Análisis detallado y gráfico de 10 años',
+    viewMap: 'Vista de mapa mundial',
+    mapStyleLabel: 'Estilo de mapa',
+    mapStyleTile: 'Mapa de cuadrícula',
+    mapStyleVector: 'Mapa detallado',
+
+    // Year Switcher
+    yearLabel: 'Horizonte económico',
+    yearActual: 'Real {year}',
+    yearEstimate: 'Est. {year}',
+    yearProjection: 'Proy. {year}',
+
+    // Country Card
+    cardTotalGdp: 'PIB total',
+    cardPerCapita: 'PIB per cápita',
+    cardStockIndex: 'Índice bursátil',
+    cardFxRate: 'Tipo de cambio en vivo',
+    cardGrowthRate: 'Tasa de crecimiento',
+    cardDebtRatio: 'Deuda pública',
+    cardInflationRate: 'Tasa de inflación',
+    cardViewDetails: 'Métricas detalladas y gráfico de 10 años',
+    loadingData: 'Cargando datos...',
+    noCountriesFound: 'No se encontraron países que coincidan con la búsqueda.',
+
+    // Modal
+    modalContinent: 'Región',
+    modalCurrency: 'Moneda',
+    modalTotalGdpTitle: 'PIB total',
+    modalPerCapitaTitle: 'PIB per cápita',
+    modalGrowthTitle: 'Crecimiento anual del PIB',
+    modalRealGrowth: 'Crecimiento real del PIB',
+    modalDebtTitle: 'Ratio de deuda pública',
+    modalDebtSub: 'Deuda bruta del gobierno general (% del PIB, FMI WEO)',
+    modalInflationTitle: 'Tasa de inflación',
+    modalInflationSub: 'Precios al consumidor promedio (Variación anual %, FMI WEO)',
+    modalRankTitle: 'Posición global',
+    modalRankValue: 'Mundial #{rank}',
+    modalRankSub: 'por PIB total',
+    modalFxSectionTitle: 'Tipo de cambio oficial en vivo',
+    modalOnDemandBadge: 'ON-DEMAND',
+    modalForexTimestamp: 'Marca de tiempo del mercado de divisas',
+    modalStockIndexTitle: 'Índice de referencia del mercado bursátil nacional',
+    modalStockIndexSub: 'Datos en vivo de la bolsa oficial y gráfico interactivo',
+    modalChartTitle: 'Trayectoria del PIB en 10 años ({startYear} - {year})',
+    modalChartUnit: 'Unidad: convertida a {base}',
+    modalChartLoading: 'Cargando datos temporales del Banco Mundial...',
+    modalAccuracyTitle: 'Integridad de los datos y fuentes oficiales',
+    modalAccuracyGdp:
+      'Estadísticas del PIB: obtenidas directamente de Open Data del Banco Mundial (NY.GDP.MKTP.CD, NY.GDP.PCAP.CD) y de Perspectivas de la economía mundial del FMI (WEO).',
+    modalAccuracyDebt:
+      'Estadísticas de deuda pública: obtenidas del indicador de deuda bruta del gobierno general de Perspectivas de la economía mundial del FMI (WEO) (GGXWDG_NGDP).',
+    modalAccuracyInflation:
+      'Estadísticas de inflación: obtenidas del indicador de inflación de precios al consumidor promedio de Perspectivas de la economía mundial del FMI (WEO) (PCPIPCH).',
+    modalAccuracyFx:
+      'Tipos de cambio: recopilados bajo demanda a partir de los tipos de referencia del Banco Central Europeo (BCE) y feeds de divisas globales en vivo.',
+    modalWorldBankLink: 'Visitar el portal de datos del Banco Mundial',
+    modalImfLink: 'Visitar el portal de datos del FMI',
+    modalClose: 'Cerrar',
+
+    // Currency Converter
+    converterTitle: 'Conversor de divisas en tiempo real',
+    converterSending: 'Cantidad',
+    converterConverted: 'Valor estimado',
+    swapCurrencies: 'Intercambiar monedas',
+
+    // 1:1 Compare View
+    compareTitle: 'Comparación 1:1 de escala económica y divisas',
+    compareDescription:
+      'Compare las tendencias macroeconómicas oficiales del Banco Mundial y el FMI y los tipos de cambio en tiempo real cara a cara.',
+    compareRecommended: 'Comparaciones populares:',
+    compareBaseCountry: 'País base (A)',
+    compareTargetCountry: 'País de comparación (B)',
+    compareInsightTitle: 'Resumen comparativo:',
+    compareInsightText:
+      'El PIB total de {countryA} es {gdpRatio} veces el de {countryB}, y su PIB per cápita es {perCapitaRatio} veces mayor.',
+    compareDebtRatio: 'Deuda pública (% PIB, FMI)',
+    compareInflationRate: 'Tasa de inflación (IPC medio, FMI)',
+    compareChartTitle: 'Superposición de trayectoria del PIB en 10 años',
+    compareChartLoading: 'Agregando datos comparativos...',
+
+    // Ranking Table
+    tableTitle: 'Clasificación mundial de PIB y tipos de cambio',
+    tableSubtitle: 'Estadísticas macroeconómicas oficiales del Banco Mundial y el FMI que cubren {count} economías principales',
+    colRank: 'Puesto',
+    colCountry: 'País',
+    colCurrency: 'Moneda',
+    colFxRate: 'Tipo de cambio ({base})',
+    colTotalGdp: 'PIB total ({base})',
+    colPerCapita: 'PIB per cápita',
+    colGrowth: 'Crecimiento',
+    colDebt: 'Deuda pública (% PIB, FMI)',
+    colInflation: 'Inflación (FMI)',
+
+    // Footer
+    footerZeroStorageTitle: 'Arquitectura bajo demanda sin almacenamiento',
+    footerZeroStorageDesc:
+      'Este sitio web funciona sin almacenamiento persistente ni bases de datos en el servidor. Los datos son obtenidos directamente por su navegador desde las APIs públicas oficiales internacionales (Banco Mundial, FMI WEO y BCE).',
+    footerDisclaimer:
+      'Las estadísticas macroeconómicas y los tipos de cambio se proporcionan con fines informativos y analíticos. Las decisiones financieras y de inversión son responsabilidad exclusiva del usuario.',
+    footerWorldBank: 'World Bank Open Data',
+    footerImf: 'IMF DataMapper (WEO)',
+    footerEcb: 'Banco Central Europeo (ECB)',
+    footerGithub: 'Alojado en GitHub Pages',
+  },
+  zh: {
+    // Header & Nav
+    appTitle: 'Geonomics',
+    appSubtitle: '实时汇率与世界银行 · 国际货币基金组织 (IMF) 官方宏观经济统计',
+    liveBadge: 'LIVE',
+    navExplorer: '国家探索',
+    navCompare: '1:1 对比',
+    baseCurrencyLabel: '基准货币:',
+    refreshBtn: '刷新',
+    refreshTooltip: '重新获取实时数据',
+
+    // Ticker
+    tickerTitle: '主要实时汇率行情',
+    asOf: '更新时间:',
+
+    // Hero Section
+    heroBadge: '世界银行 · IMF 官方权威统计 × 实时外汇行情联动',
+    heroTitle: '全球各国实时汇率与 GDP 宏观经济分析',
+    heroDescription:
+      '无需数据库的纯即时请求 (On-Demand) 宏观经济数据平台。直接连通世界银行 (World Bank)、国际货币基金组织 (IMF WEO) 及欧洲中央银行 (ECB) 官方接口，呈现高精度的宏观经济指标与全球实时外汇数据。',
+    statCountriesTracked: '追踪国家/地区',
+    statBaseCurrency: '当前基准货币',
+    statTopEconomy: '全球第一大经济体',
+    statLocalEconomy: '访问地区经济规模 ({country})',
+
+    // Filters & Search
+    searchPlaceholder: '搜索国家名称、英文代码或货币...',
+    filterAll: '全部',
+    filterAsia: '亚洲',
+    filterEurope: '欧洲',
+    filterAmericas: '美洲',
+    filterAfrica: '非洲',
+    filterOceania: '大洋洲',
+    viewCards: '卡片视图',
+    viewTable: '表格视图',
+
+    // Map View
+    mapTitle: '全球 GDP 可视化地图',
+    mapSubtitle: '基于世界银行 · IMF 官方宏观经济统计与实时汇率的全球经济地图',
+    mapMetricLabel: '分析指标',
+    metricTotalGdp: '名义 GDP',
+    metricPerCapita: '人均 GDP',
+    metricGrowth: '实际增长率',
+    metricDebt: '政府负债率',
+    metricInflation: '通胀率',
+    mapResetZoom: '重置',
+    mapZoomIn: '放大',
+    mapZoomOut: '缩小',
+    top10Title: '全球 TOP 10 经济大国',
+    legendTitle: '指标规模图例',
+    clickCountryHint: '点击任意国家即可查看10年历史走势与外汇详情',
+    selectedCountryBadge: '已选国家/地区',
+    viewDetailsBtn: '详细指标与10年图表',
+    viewMap: '世界地图视图',
+    mapStyleLabel: '地图样式',
+    mapStyleTile: '点阵瓦片地图',
+    mapStyleVector: '矢量精细地图',
+
+    // Year Switcher
+    yearLabel: '基准年份',
+    yearActual: '{year}年 实际',
+    yearEstimate: '{year}年 估算',
+    yearProjection: '{year}年 预测',
+
+    // Country Card
+    cardTotalGdp: '名义 GDP',
+    cardPerCapita: '人均 GDP',
+    cardStockIndex: '主要股指',
+    cardFxRate: '实时汇率',
+    cardGrowthRate: '经济增长率',
+    cardDebtRatio: '政府负债率',
+    cardInflationRate: '通胀率',
+    cardViewDetails: '详细指标与10年走势',
+    loadingData: '正在加载数据...',
+    noCountriesFound: '没有找到符合搜索条件的国家。',
+
+    // Modal
+    modalContinent: '大洲/地区',
+    modalCurrency: '法定货币',
+    modalTotalGdpTitle: '名义 GDP 总量',
+    modalPerCapitaTitle: '人均 GDP',
+    modalGrowthTitle: '年实际 GDP 增长率',
+    modalRealGrowth: '实际 GDP 增长率',
+    modalDebtTitle: '国家负债率',
+    modalDebtSub: '广义政府总债务占 GDP 比重 (%, IMF WEO 官方数据)',
+    modalInflationTitle: '居民消费价格通胀率',
+    modalInflationSub: '年均消费者物价指数变动率 (同比 %, IMF WEO PCPIPCH)',
+    modalRankTitle: '全球排名',
+    modalRankValue: '全球第 {rank} 位',
+    modalRankSub: '按名义 GDP 统计',
+    modalFxSectionTitle: '官方实时汇率数据',
+    modalOnDemandBadge: 'ON-DEMAND',
+    modalForexTimestamp: '外汇市场时间戳',
+    modalStockIndexTitle: '国家代表性股票市场基准指数',
+    modalStockIndexSub: '官方交易所实时行情与交互式走势图',
+    modalChartTitle: '过去10年 GDP 走势轨迹 ({startYear} - {year})',
+    modalChartUnit: '单位: 折合 {base}',
+    modalChartLoading: '正在加载世界银行时间序列数据...',
+    modalAccuracyTitle: '数据权威性与官方来源验证',
+    modalAccuracyGdp:
+      'GDP 统计: 直接来源于世界银行 Open Data (NY.GDP.MKTP.CD, NY.GDP.PCAP.CD) 及国际货币基金组织 (IMF WEO) 官方统计。',
+    modalAccuracyDebt:
+      '政府债务统计: 来源于国际货币基金组织 (IMF) 世界经济展望 (WEO) 广义政府总债务指标 (GGXWDG_NGDP)。',
+    modalAccuracyInflation:
+      '通胀率统计: 来源于国际货币基金组织 (IMF) 世界经济展望 (WEO) 平均消费者物价上涨率指标 (PCPIPCH)。',
+    modalAccuracyFx:
+      '外汇汇率: 实时直连欧洲中央银行 (ECB) 官方基准汇率及全球外汇市场实时数据流。',
+    modalWorldBankLink: '访问世界银行国家数据门户',
+    modalImfLink: '访问 IMF 数据门户',
+    modalClose: '关闭',
+
+    // Currency Converter
+    converterTitle: '实时汇率换算计算器',
+    converterSending: '兑换金额',
+    converterConverted: '换算结果',
+    swapCurrencies: '对调货币',
+
+    // 1:1 Compare View
+    compareTitle: '国别 1:1 经济规模与外汇对比',
+    compareDescription:
+      '直观并排对比两国世界银行与 IMF 官方宏观经济走势及实时汇率数据。',
+    compareRecommended: '热门对比:',
+    compareBaseCountry: '基准国家 (A)',
+    compareTargetCountry: '对比国家 (B)',
+    compareInsightTitle: '对比结论:',
+    compareInsightText:
+      '{countryA} 的名义 GDP 总量是 {countryB} 的 {gdpRatio} 倍，人均 GDP 为其 {perCapitaRatio} 倍。',
+    compareDebtRatio: '政府负债率 (% GDP, IMF)',
+    compareInflationRate: '通胀率 (年均 CPI, IMF)',
+    compareChartTitle: '10年 GDP 走势轨迹并排对比',
+    compareChartLoading: '正在汇总对比数据...',
+
+    // Ranking Table
+    tableTitle: '全球 GDP 与实时汇率排行榜',
+    tableSubtitle: '基于世界银行及 IMF WEO 官方宏观经济数据 (收录全球主要 {count} 个经济体)',
+    colRank: '排名',
+    colCountry: '国家/地区',
+    colCurrency: '货币',
+    colFxRate: '实时汇率 ({base})',
+    colTotalGdp: '名义 GDP ({base})',
+    colPerCapita: '人均 GDP',
+    colGrowth: '增长率',
+    colDebt: '负债率 (% GDP, IMF)',
+    colInflation: '通胀率 (IMF)',
+
+    // Footer
+    footerZeroStorageTitle: '零持久化存储 · 纯即时响应架构',
+    footerZeroStorageDesc:
+      '本站不设立任何持久化后端数据库或缓存服务器，所有数据均由用户浏览器端直接连通国际公法机构 (世界银行、IMF WEO、欧洲央行) 官方接口进行即时渲染。',
+    footerDisclaimer:
+      '所展示的汇率与宏观经济数据仅供信息参考与学术分析之用。用户基于本平台数据作出的各项金融交易与投资决策，其法律后果自负。',
+    footerWorldBank: '世界银行 (World Bank) Open Data',
+    footerImf: '国际货币基金组织 (IMF) DataMapper',
+    footerEcb: '欧洲中央银行 (ECB) 官方汇率',
+    footerGithub: 'GitHub Pages 托管运行',
+  },
 } as const
+

@@ -72,33 +72,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Controls: Base Currency, Language Switcher, and Refresh */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Language Selector */}
-            <div className="flex items-center bg-slate-800/80 border border-slate-700/60 rounded-xl p-1 text-xs font-bold">
-              <Languages className="w-3.5 h-3.5 text-slate-400 mx-1.5" />
-              <button
-                onClick={() => setLang('en')}
-                className={`px-2 py-1 rounded-lg transition-colors ${
-                  lang === 'en' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                }`}
+            {/* Language Combobox */}
+            <div className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-medium">
+              <Languages className="w-4 h-4 text-indigo-400" />
+              <select
+                id="languageSelect"
+                value={lang}
+                onChange={(e) => setLang(e.target.value as Language)}
+                aria-label="Select language"
+                className="bg-transparent text-slate-100 font-semibold focus:outline-none cursor-pointer"
               >
-                EN
-              </button>
-              <button
-                onClick={() => setLang('ko')}
-                className={`px-2 py-1 rounded-lg transition-colors ${
-                  lang === 'ko' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                KO
-              </button>
-              <button
-                onClick={() => setLang('ja')}
-                className={`px-2 py-1 rounded-lg transition-colors ${
-                  lang === 'ja' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                JA
-              </button>
+                <option value="en" className="bg-slate-900 text-white">English (EN)</option>
+                <option value="ko" className="bg-slate-900 text-white">한국어 (KO)</option>
+                <option value="ja" className="bg-slate-900 text-white">日本語 (JA)</option>
+                <option value="es" className="bg-slate-900 text-white">Español (ES)</option>
+                <option value="zh" className="bg-slate-900 text-white">中文 (ZH)</option>
+              </select>
             </div>
 
             {/* Base Currency Select */}
@@ -115,7 +104,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 {BASE_CURRENCIES.map((bc) => (
                   <option key={bc.code} value={bc.code} className="bg-slate-900 text-white">
-                    {lang === 'ko' ? bc.nameKo : lang === 'ja' ? bc.nameJa : bc.nameEn}
+                    {lang === 'ko'
+                      ? bc.nameKo
+                      : lang === 'ja'
+                      ? bc.nameJa
+                      : lang === 'es'
+                      ? bc.nameEs
+                      : lang === 'zh'
+                      ? bc.nameZh
+                      : bc.nameEn}
                   </option>
                 ))}
               </select>

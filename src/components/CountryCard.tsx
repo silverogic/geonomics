@@ -7,6 +7,7 @@ import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { StockSparkline } from './StockSparkline'
 import { getStockPriceData } from '../data/stockPrices'
+import { getCountryName, getCountrySecondaryName } from '../utils/countryNames'
 
 interface CountryCardProps {
   country: CountryMeta
@@ -34,6 +35,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   baseCurrency,
   exchangeRates,
   lang,
+  selectedYear = '2026',
   onSelect,
 }) => {
   const t = translations[lang]
@@ -47,8 +49,8 @@ export const CountryCard: React.FC<CountryCardProps> = ({
 
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
 
-  const displayName = lang === 'ko' ? country.nameKo : country.nameEn
-  const secondaryName = lang === 'ko' ? country.nameEn : country.nameKo
+  const displayName = getCountryName(country, lang)
+  const secondaryName = getCountrySecondaryName(country, lang)
   const stockData = getStockPriceData(country.id)
 
   return (
@@ -154,7 +156,15 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                     </span>
                   ) : (
                     <span className="text-[10px] text-slate-500 font-mono">
-                      {lang === 'ko' ? '제재/조회제한' : 'Restricted'}
+                      {lang === 'ko'
+                        ? '제재/조회제한'
+                        : lang === 'ja'
+                        ? '制限地域'
+                        : lang === 'es'
+                        ? 'Restringido'
+                        : lang === 'zh'
+                        ? '限制区域'
+                        : 'Restricted'}
                     </span>
                   )}
                 </div>

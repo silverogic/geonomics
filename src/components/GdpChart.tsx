@@ -48,7 +48,15 @@ export const GdpChart: React.FC<GdpChartProps> = ({
   if (!dataPoints || dataPoints.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-slate-500 text-sm bg-slate-900/50 rounded-xl border border-slate-800">
-        {lang === 'ko' ? '시계열 데이터가 없습니다.' : 'No time-series data available.'}
+        {lang === 'ko'
+          ? '시계열 데이터가 없습니다.'
+          : lang === 'ja'
+          ? '時系列データがありません。'
+          : lang === 'es'
+          ? 'No hay datos de series temporales disponibles.'
+          : lang === 'zh'
+          ? '无可用时间序列数据。'
+          : 'No time-series data available.'}
       </div>
     )
   }
@@ -150,6 +158,14 @@ export const GdpChart: React.FC<GdpChartProps> = ({
             if (lang === 'ko' && baseCurrency === 'KRW') {
               const jo = num / 1e12
               return jo >= 1 ? `${jo.toFixed(0)}조` : `${(num / 1e8).toFixed(0)}억`
+            }
+            if (lang === 'ja' && baseCurrency === 'JPY') {
+              const cho = num / 1e12
+              return cho >= 1 ? `${cho.toFixed(0)}兆` : `${(num / 1e8).toFixed(0)}億`
+            }
+            if (lang === 'zh' && baseCurrency === 'CNY') {
+              const wanyi = num / 1e12
+              return wanyi >= 1 ? `${wanyi.toFixed(0)}万亿` : `${(num / 1e8).toFixed(0)}亿`
             }
             if (num >= 1e12) return `${(num / 1e12).toFixed(1)}T`
             if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`

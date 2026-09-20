@@ -10,7 +10,7 @@ const STORAGE_CURRENCY_KEY = 'geonomics_base_currency'
 export function detectBrowserLanguage(): Language {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem(STORAGE_LANG_KEY)
-    if (saved === 'ko' || saved === 'en' || saved === 'ja') {
+    if (saved === 'ko' || saved === 'en' || saved === 'ja' || saved === 'es' || saved === 'zh') {
       return saved
     }
 
@@ -28,6 +28,29 @@ export function detectBrowserLanguage(): Language {
         if (lower.startsWith('ja')) {
           return 'ja'
         }
+        if (lower.startsWith('zh')) {
+          return 'zh'
+        }
+        if (lower.startsWith('es')) {
+          return 'es'
+        }
+      }
+
+      // TimeZone & geographic hints for automatic language selection
+      const timeZone = (Intl?.DateTimeFormat?.()?.resolvedOptions?.()?.timeZone || '').toLowerCase()
+      if (timeZone.includes('seoul')) return 'ko'
+      if (timeZone.includes('tokyo')) return 'ja'
+      if (timeZone.includes('shanghai') || timeZone.includes('beijing') || timeZone.includes('taipei') || timeZone.includes('hong_kong')) return 'zh'
+      if (
+        timeZone.includes('madrid') ||
+        timeZone.includes('mexico') ||
+        timeZone.includes('buenos_aires') ||
+        timeZone.includes('bogota') ||
+        timeZone.includes('santiago') ||
+        timeZone.includes('lima') ||
+        timeZone.includes('caracas')
+      ) {
+        return 'es'
       }
     }
   }
@@ -159,10 +182,18 @@ export function detectLocalCountryId(): string {
     if (timeZone.includes('sao_paulo')) return 'BRA'
     if (timeZone.includes('kolkata')) return 'IND'
 
+    if (timeZone.includes('madrid')) return 'ESP'
+    if (timeZone.includes('mexico')) return 'MEX'
+    if (timeZone.includes('buenos_aires')) return 'ARG'
+    if (timeZone.includes('bogota')) return 'COL'
+    if (timeZone.includes('santiago')) return 'CHL'
+    if (timeZone.includes('lima')) return 'PER'
+
     // Language prefix hints
     if (locale.startsWith('ko')) return 'KOR'
     if (locale.startsWith('ja')) return 'JPN'
     if (locale.startsWith('zh')) return 'CHN'
+    if (locale.startsWith('es')) return 'ESP'
     if (locale.startsWith('de')) return 'DEU'
     if (locale.startsWith('fr')) return 'FRA'
   }

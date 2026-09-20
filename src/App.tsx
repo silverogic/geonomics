@@ -87,7 +87,11 @@ export function App() {
           ? '데이터를 동기화하는 중 네트워크 지연이 발생했습니다. 다시 시도해 주세요.'
           : lang === 'ja'
             ? 'データの同期中にネットワーク遅延が発生しました。再試行してください。'
-            : 'A network timeout occurred while synchronizing data. Please try again.'
+            : lang === 'es'
+              ? 'Se produjo un retraso en la red al sincronizar los datos. Por favor, inténtelo de nuevo.'
+              : lang === 'zh'
+                ? '同步数据时发生网络延迟，请重试。'
+                : 'A network timeout occurred while synchronizing data. Please try again.'
       )
     } finally {
       setIsLoading(false)

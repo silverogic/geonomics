@@ -339,7 +339,11 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                     ? 'GDP 통계: 세계은행 미수록 국가로 국제통화기금(IMF WEO) 및 대만 행정원 주계총처(DGBAS) 공식 집계치 기준.'
                     : lang === 'ja'
                       ? 'GDP統計: 世界銀行未収録のため、国際通貨基金(IMF WEO)および台湾行政院主計総処(DGBAS)公式統計基準。'
-                      : 'GDP Statistics: Sourced from IMF World Economic Outlook (WEO) & DGBAS Taiwan official data.')
+                      : lang === 'es'
+                        ? 'Estadísticas del PIB: no registradas en el Banco Mundial; basadas en las estadísticas oficiales del FMI (WEO) y la DGBAS de Taiwán.'
+                        : lang === 'zh'
+                          ? 'GDP 统计: 鉴于世行未收录，数据来源于国际货币基金组织 (IMF WEO) 与台湾地区统计部门官方数据。'
+                          : 'GDP Statistics: Sourced from IMF World Economic Outlook (WEO) & DGBAS Taiwan official data.')
                 : t.modalAccuracyGdp}
             </p>
             <p>• {t.modalAccuracyDebt}</p>
@@ -358,7 +362,11 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                       ? 'IMF 대만 공식 경제 포털 바로가기'
                       : lang === 'ja'
                         ? 'IMF 台湾公式経済ポータル'
-                        : 'Visit IMF Taiwan Data Portal'
+                        : lang === 'es'
+                          ? 'Visitar el portal de datos del FMI sobre Taiwán'
+                          : lang === 'zh'
+                            ? '访问 IMF 台湾地区数据门户'
+                            : 'Visit IMF Taiwan Data Portal'
                     : t.modalWorldBankLink}
                 </span>
                 <ExternalLink className="w-3 h-3" />
