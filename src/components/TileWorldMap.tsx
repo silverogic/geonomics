@@ -221,20 +221,32 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
 
             {/* Stats List */}
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-slate-400">
+              <div
+                className={`flex items-center justify-between ${
+                  metric === 'gdp' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
+                }`}
+              >
                 <span>{lang === 'ko' ? '총 GDP' : lang === 'ja' ? '名目GDP' : 'Total GDP'}:</span>
-                <span className="font-mono font-bold text-slate-100">
+                <span className={`font-mono font-bold ${metric === 'gdp' ? 'text-white' : 'text-slate-100'}`}>
                   {formatGdpCompact(activeHoveredItem.totalGdpUsd, baseCurrency, usdToBase, lang)}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-slate-400">
+              <div
+                className={`flex items-center justify-between ${
+                  metric === 'perCapita' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
+                }`}
+              >
                 <span>{lang === 'ko' ? '1인당 GDP' : lang === 'ja' ? '1人当たりGDP' : 'GDP Per Capita'}:</span>
-                <span className="font-mono text-slate-300">
+                <span className={`font-mono ${metric === 'perCapita' ? 'font-bold text-white' : 'text-slate-300'}`}>
                   {formatPerCapita(activeHoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                 </span>
               </div>
               {activeHoveredItem.growthRatePct !== null && (
-                <div className="flex items-center justify-between text-slate-400">
+                <div
+                  className={`flex items-center justify-between ${
+                    metric === 'growth' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
+                  }`}
+                >
                   <span>{lang === 'ko' ? '성장률' : lang === 'ja' ? '成長率' : 'Growth'}:</span>
                   <span
                     className={`font-mono font-semibold ${
@@ -244,6 +256,14 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                     {activeHoveredItem.growthRatePct > 0
                       ? `+${activeHoveredItem.growthRatePct.toFixed(1)}%`
                       : `${activeHoveredItem.growthRatePct.toFixed(1)}%`}
+                  </span>
+                </div>
+              )}
+              {metric === 'debt' && activeHoveredItem.debtRatioPct !== null && (
+                <div className="flex items-center justify-between text-indigo-300 font-semibold">
+                  <span>{lang === 'ko' ? '국가 부채' : lang === 'ja' ? '政府債務' : 'Gov Debt'}:</span>
+                  <span className="font-mono font-bold text-amber-400">
+                    {activeHoveredItem.debtRatioPct.toFixed(1)}%
                   </span>
                 </div>
               )}
