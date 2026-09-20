@@ -40,7 +40,7 @@ export const translations = {
     // Map View
     mapTitle: 'Global GDP Map Explorer',
     mapSubtitle: 'Real-time Forex & Official World Bank · IMF Macroeconomic Intelligence',
-    mapMetricLabel: 'Indicator:',
+    mapMetricLabel: 'Indicator',
     metricTotalGdp: 'Total GDP',
     metricPerCapita: 'GDP Per Capita',
     metricGrowth: 'Real Growth',
@@ -54,8 +54,8 @@ export const translations = {
     selectedCountryBadge: 'Selected Economy',
     viewDetailsBtn: 'Deep Dive & 10-Yr Chart',
     viewMap: 'World Map View',
-    mapStyleLabel: 'Map Style:',
-    mapStyleTile: 'Cute Tile Map',
+    mapStyleLabel: 'Map Style',
+    mapStyleTile: 'Tile Map',
     mapStyleVector: 'Detailed Map',
 
     // Year Switcher
@@ -188,7 +188,7 @@ export const translations = {
     // Map View
     mapTitle: '세계 GDP 시각화 지도',
     mapSubtitle: '실시간 환율 및 세계은행(World Bank) · IMF 공식 데이터 기반 경제 지도',
-    mapMetricLabel: '분석 지표:',
+    mapMetricLabel: '분석 지표',
     metricTotalGdp: '총 GDP',
     metricPerCapita: '1인당 GDP',
     metricGrowth: '실질 성장률',
@@ -202,8 +202,8 @@ export const translations = {
     selectedCountryBadge: '선택된 국가',
     viewDetailsBtn: '상세 지표 및 10개년 차트',
     viewMap: '세계 지도 뷰',
-    mapStyleLabel: '지도 형태:',
-    mapStyleTile: '귀여운 타일맵',
+    mapStyleLabel: '지도 형태',
+    mapStyleTile: '타일맵',
     mapStyleVector: '정밀 지도',
 
     // Year Switcher
@@ -336,7 +336,7 @@ export const translations = {
     // Map View
     mapTitle: '世界GDP可視化マップ',
     mapSubtitle: 'リアルタイム為替レートおよび世界銀行・IMF公式統計による世界各国の経済規模マップ',
-    mapMetricLabel: '分析指標:',
+    mapMetricLabel: '分析指標',
     metricTotalGdp: '名目GDP',
     metricPerCapita: '1人当たりGDP',
     metricGrowth: '実質成長率',
@@ -350,7 +350,7 @@ export const translations = {
     selectedCountryBadge: '選択された国',
     viewDetailsBtn: '詳細指標と10年チャートを見る',
     viewMap: '世界地図ビュー',
-    mapStyleLabel: 'マップ形式:',
+    mapStyleLabel: 'マップ形式',
     mapStyleTile: 'タイルマップ',
     mapStyleVector: '詳細地図',
 
