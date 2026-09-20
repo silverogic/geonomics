@@ -3,7 +3,29 @@
 @layer base {
   :root {
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Navbar height tokens (used for sticky offset + scroll-padding-top)
+       Mobile  (< 640px):  top-bar(64px)  + bottom-tabs(36px) = 100px
+       sm      (640-767px): top-bar(80px)  + bottom-tabs(36px) = 116px
+       md+     (≥ 768px):  top-bar(80px)  only                 = 80px  */
+    --navbar-h: 100px;
+    --thead-h: 44px; /* sticky thead (dock) row height */
   }
+
+  @media (min-width: 640px) {
+    :root { --navbar-h: 116px; }
+  }
+
+  @media (min-width: 768px) {
+    :root { --navbar-h: 80px; }
+  }
+
+  /* Ensure data rows are always positioned below the dock when anchor-scrolling.
+     Rule: scroll-padding-top = Navbar height + thead(dock) height + small gap */
+  html {
+    scroll-padding-top: calc(var(--navbar-h) + var(--thead-h) + 8px);
+  }
+
 
   /* Disable blinking caret and text selection globally on UI */
   * {

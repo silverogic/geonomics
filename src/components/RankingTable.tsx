@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ArrowUpDown, Search, ArrowUp, ArrowDown } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
@@ -56,6 +56,17 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   const [searchTerm, setSearchTerm] = useState('')
   const [sortField, setSortField] = useState<SortField>('rank')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+
+  // Ref to the table wrapper — used to scroll data rows into view below the dock
+  const tableWrapperRef = useRef<HTMLDivElement>(null)
+
+  // When searchTerm changes (and has content), scroll the table into view so that
+  // the first matching data row appears below the sticky thead (dock), not behind it.
+  // scroll-padding-top in index.css ensures the dock offset is respected.
+  useEffect(() => {
+    if (!searchTerm || !tableWrapperRef.current) return
+    tableWrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [searchTerm])
 
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
 
@@ -127,7 +138,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
+    <div ref={tableWrapperRef} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
       {/* Header & Search */}
       {!hideHeader && (
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
