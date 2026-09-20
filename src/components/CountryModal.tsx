@@ -106,7 +106,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {/* Total GDP */}
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
               <span className="text-xs font-semibold text-slate-400 block mb-1">
@@ -155,6 +155,35 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                   : 'N/A'}
               </div>
               <span className="text-[11px] text-slate-500">{t.modalRealGrowth}</span>
+            </div>
+
+            {/* Inflation Rate */}
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
+              <span className="text-xs font-semibold text-slate-400 block mb-1">
+                {t.modalInflationTitle}
+              </span>
+              <div
+                className={`text-lg sm:text-xl font-bold flex items-center gap-1 font-mono ${
+                  detail?.inflationRatePct === null || detail?.inflationRatePct === undefined
+                    ? 'text-slate-400'
+                    : detail.inflationRatePct < 0
+                      ? 'text-purple-400'
+                      : detail.inflationRatePct <= 2.5
+                        ? 'text-emerald-400'
+                        : detail.inflationRatePct <= 4.0
+                          ? 'text-cyan-400'
+                          : detail.inflationRatePct <= 7.0
+                            ? 'text-amber-400'
+                            : 'text-rose-400'
+                }`}
+              >
+                {detail?.inflationRatePct !== null && detail?.inflationRatePct !== undefined
+                  ? `${detail.inflationRatePct.toFixed(1)}%`
+                  : 'N/A'}
+              </div>
+              <span className="text-[11px] text-slate-500 truncate block" title={t.modalInflationSub}>
+                {t.modalInflationSub}
+              </span>
             </div>
 
             {/* National Debt Ratio */}
@@ -298,6 +327,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 : t.modalAccuracyGdp}
             </p>
             <p>• {t.modalAccuracyDebt}</p>
+            <p>• {t.modalAccuracyInflation}</p>
             <p>• {t.modalAccuracyFx}</p>
             <div className="pt-1 flex flex-wrap items-center gap-4 text-indigo-400">
               <a

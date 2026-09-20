@@ -15,6 +15,7 @@ export interface CountryRowItem {
   gdpPerCapitaUsd: number
   growthRatePct: number | null
   debtRatioPct: number | null
+  inflationRatePct: number | null
 }
 
 interface RankingTableProps {
@@ -28,7 +29,15 @@ interface RankingTableProps {
   onYearChange?: (year: EconomicYear) => void
 }
 
-type SortField = 'rank' | 'countryName' | 'totalGdpUsd' | 'gdpPerCapitaUsd' | 'growthRatePct' | 'debtRatioPct' | 'fxRate'
+type SortField =
+  | 'rank'
+  | 'countryName'
+  | 'totalGdpUsd'
+  | 'gdpPerCapitaUsd'
+  | 'growthRatePct'
+  | 'debtRatioPct'
+  | 'inflationRatePct'
+  | 'fxRate'
 
 export const RankingTable: React.FC<RankingTableProps> = ({
   items,
@@ -52,7 +61,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
       setSortField(field)
-      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct'].includes(field)) {
+      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct'].includes(field)) {
         setSortDirection('desc')
       } else {
         setSortDirection('asc')
@@ -226,6 +235,16 @@ export const RankingTable: React.FC<RankingTableProps> = ({
               </th>
 
               <th
+                onClick={() => handleSort('inflationRatePct')}
+                className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors"
+              >
+                <div className="flex items-center justify-end gap-1.5">
+                  <span>{t.colInflation}</span>
+                  {renderSortIcon('inflationRatePct')}
+                </div>
+              </th>
+
+              <th
                 onClick={() => handleSort('debtRatioPct')}
                 className="sticky top-16 sm:top-20 z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden md:table-cell border-b border-slate-800 shadow-sm transition-colors"
               >
@@ -240,7 +259,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           <tbody className="divide-y divide-slate-800/60 bg-slate-900/50">
             {filteredAndSorted.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-12 text-center text-slate-500">
+                <td colSpan={9} className="py-12 text-center text-slate-500">
                   {t.noCountriesFound}
                 </td>
               </tr>
@@ -305,12 +324,34 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
                   <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right hidden sm:table-cell">
                     {item.growthRatePct !== null ? (
-                      <span
+                       <span
                         className={`font-mono font-semibold ${
                           item.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
                         }`}
                       >
                         {item.growthRatePct > 0 ? `+${item.growthRatePct.toFixed(1)}%` : `${item.growthRatePct.toFixed(1)}%`}
+                      </span>
+                    ) : (
+                      <span className="text-slate-600 font-mono">-</span>
+                    )}
+                  </td>
+
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right hidden sm:table-cell">
+                    {item.inflationRatePct !== null ? (
+                      <span
+                        className={`inline-block font-mono font-semibold px-1.5 py-0.5 rounded text-xs ${
+                          item.inflationRatePct < 0
+                            ? 'text-purple-400 bg-purple-500/10'
+                            : item.inflationRatePct <= 2.5
+                            ? 'text-emerald-400 bg-emerald-500/10'
+                            : item.inflationRatePct <= 4.0
+                            ? 'text-cyan-400 bg-cyan-500/10'
+                            : item.inflationRatePct <= 7.0
+                            ? 'text-amber-400 bg-amber-500/10'
+                            : 'text-rose-400 bg-rose-500/10'
+                        }`}
+                      >
+                        {item.inflationRatePct.toFixed(1)}%
                       </span>
                     ) : (
                       <span className="text-slate-600 font-mono">-</span>

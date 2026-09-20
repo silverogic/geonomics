@@ -29,10 +29,11 @@ export interface GlobalEconomicOverview {
   perCapitaMap: Map<string, { perCapita: number; year: number }>
   growthMap: Map<string, { growth: number; year: number }>
   debtMap: Map<string, { debtRatio: number | null; year: number }>
+  inflationMap: Map<string, { inflation: number | null; year: number }>
 }
 
 /**
- * Loads macroeconomic indicators (Total GDP, GDP per capita, Growth rate, Debt % of GDP)
+ * Loads macroeconomic indicators (Total GDP, GDP per capita, Growth rate, Debt % of GDP, Inflation %)
  * for all countries for the selected year (dynamically anchored to current year).
  */
 export async function loadGlobalGdpOverview(
@@ -48,15 +49,17 @@ export async function loadGlobalGdpOverview(
     const perCapitaMap = new Map<string, { perCapita: number; year: number }>()
     const growthMap = new Map<string, { growth: number; year: number }>()
     const debtMap = new Map<string, { debtRatio: number | null; year: number }>()
+    const inflationMap = new Map<string, { inflation: number | null; year: number }>()
 
     for (const [id, m] of imfMap.entries()) {
       gdpMap.set(id, { totalGdp: m.totalGdpUsd, year: yrNum })
       perCapitaMap.set(id, { perCapita: m.gdpPerCapitaUsd, year: yrNum })
       growthMap.set(id, { growth: m.growthRatePct ?? 0, year: yrNum })
       debtMap.set(id, { debtRatio: m.debtRatioPct, year: yrNum })
+      inflationMap.set(id, { inflation: m.inflationRatePct, year: yrNum })
     }
 
-    return { gdpMap, perCapitaMap, growthMap, debtMap }
+    return { gdpMap, perCapitaMap, growthMap, debtMap, inflationMap }
   }
 
   // Populate Debt Map from IMF WEO for all countries if available
@@ -210,6 +213,7 @@ export async function fetchCountryGdpDetail(
         gdpPerCapitaUsd: yearMetrics.gdpPerCapitaUsd,
         growthRatePct: yearMetrics.growthRatePct,
         debtRatioPct: yearMetrics.debtRatioPct,
+        inflationRatePct: yearMetrics.inflationRatePct,
         historical: imfRecord.historical,
         source: 'IMF World Economic Outlook (WEO)',
         lastUpdated: 'IMF WEO Official Database',
@@ -294,6 +298,7 @@ export async function fetchCountryGdpDetail(
       const existing = historyMap.get(p.year)
       if (existing) {
         existing.debtRatio = p.debtRatio
+        existing.inflationRate = p.inflationRate
       } else {
         historyMap.set(p.year, { ...p })
       }
@@ -316,6 +321,7 @@ export async function fetchCountryGdpDetail(
     gdpPerCapitaUsd: latestPerCapita,
     growthRatePct: latestGrowth,
     debtRatioPct: imf2024?.debtRatioPct ?? null,
+    inflationRatePct: imf2024?.inflationRatePct ?? null,
     historical: sortedPoints,
     source: 'World Bank Open Data (NY.GDP.MKTP.CD) & IMF WEO',
     lastUpdated,

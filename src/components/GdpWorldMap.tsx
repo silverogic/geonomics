@@ -25,7 +25,7 @@ import { translations } from '../i18n/translations'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
 import { getCountryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
 
-export type MapMetric = 'gdp' | 'perCapita' | 'growth' | 'debt'
+export type MapMetric = 'gdp' | 'perCapita' | 'growth' | 'debt' | 'inflation'
 
 interface GdpWorldMapProps {
   items: CountryRowItem[]
@@ -172,6 +172,16 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         return '#f43f5e' // Very high debt
       }
 
+      if (metric === 'inflation') {
+        const inf = item.inflationRatePct
+        if (inf === null || inf === undefined) return '#334155'
+        if (inf < 0) return '#8b5cf6' // Deflation (Purple)
+        if (inf <= 2.5) return '#10b981' // Target / Optimal (0 - 2.5%, Emerald)
+        if (inf <= 4.0) return '#06b6d4' // Moderate (2.5 - 4.0%, Cyan)
+        if (inf <= 7.0) return '#f59e0b' // Elevated (4.0 - 7.0%, Amber)
+        return '#f43f5e' // High Inflation (> 7.0%, Rose)
+      }
+
       return '#334155'
     },
     [countryItemMap, metric]
@@ -275,6 +285,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   { id: 'perCapita', label: t.metricPerCapita },
                   { id: 'growth', label: t.metricGrowth },
                   { id: 'debt', label: t.metricDebt },
+                  { id: 'inflation', label: t.metricInflation },
                 ] as const
               ).map((m) => (
                 <button
@@ -582,6 +593,26 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                             </span>
                           </div>
                         )}
+                        {hoveredItem.inflationRatePct !== null && (
+                          <div className="flex items-center justify-between text-slate-400">
+                            <span>{t.metricInflation}:</span>
+                            <span
+                              className={`font-mono font-semibold ${
+                                hoveredItem.inflationRatePct < 0
+                                  ? 'text-purple-400'
+                                  : hoveredItem.inflationRatePct <= 2.5
+                                  ? 'text-emerald-400'
+                                  : hoveredItem.inflationRatePct <= 4.0
+                                  ? 'text-cyan-400'
+                                  : hoveredItem.inflationRatePct <= 7.0
+                                  ? 'text-amber-400'
+                                  : 'text-rose-400'
+                              }`}
+                            >
+                              {hoveredItem.inflationRatePct.toFixed(1)}%
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Hint */}
@@ -612,7 +643,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       ? t.metricPerCapita
                       : metric === 'growth'
                         ? t.metricGrowth
-                        : t.metricDebt}
+                        : metric === 'debt'
+                          ? t.metricDebt
+                          : t.metricInflation}
                 </span>
               </div>
 
@@ -705,6 +738,31 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     </div>
                   </>
                 )}
+
+                {metric === 'inflation' && (
+                  <>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-3.5 rounded bg-[#8b5cf6]"></span>
+                      <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
+                      <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
+                      <span className="text-slate-300 font-mono font-medium">2.5% ~ 4.0%</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-3.5 rounded bg-[#f59e0b]"></span>
+                      <span className="text-slate-300 font-mono font-medium">4.0% ~ 7.0%</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
+                      <span className="text-slate-300 font-mono font-medium">&gt; 7.0%</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -770,21 +828,21 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     </div>
                   </div>
 
-                  {/* Growth Rate & Debt Ratio Grid */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5">
-                      <div className="text-[10px] text-slate-400 font-medium">{t.metricGrowth}</div>
+                  {/* Growth Rate, Inflation Rate & Debt Ratio Grid */}
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
                       <div
-                        className={`text-base font-bold font-mono mt-0.5 flex items-center gap-1 ${
+                        className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 ${
                           (inspectedCountryItem.growthRatePct ?? 0) >= 0
                             ? 'text-emerald-400'
                             : 'text-rose-400'
                         }`}
                       >
                         {(inspectedCountryItem.growthRatePct ?? 0) >= 0 ? (
-                          <TrendingUp className="w-3.5 h-3.5" />
+                          <TrendingUp className="w-3 h-3" />
                         ) : (
-                          <TrendingDown className="w-3.5 h-3.5" />
+                          <TrendingDown className="w-3 h-3" />
                         )}
                         <span>
                           {inspectedCountryItem.growthRatePct !== null
@@ -796,9 +854,32 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5">
-                      <div className="text-[10px] text-slate-400 font-medium">{t.metricDebt}</div>
-                      <div className="text-base font-bold text-slate-200 font-mono mt-0.5">
+                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricInflation}</div>
+                      <div
+                        className={`text-sm font-bold font-mono mt-0.5 ${
+                          inspectedCountryItem.inflationRatePct === null || inspectedCountryItem.inflationRatePct === undefined
+                            ? 'text-slate-400'
+                            : inspectedCountryItem.inflationRatePct < 0
+                            ? 'text-purple-400'
+                            : inspectedCountryItem.inflationRatePct <= 2.5
+                            ? 'text-emerald-400'
+                            : inspectedCountryItem.inflationRatePct <= 4.0
+                            ? 'text-cyan-400'
+                            : inspectedCountryItem.inflationRatePct <= 7.0
+                            ? 'text-amber-400'
+                            : 'text-rose-400'
+                        }`}
+                      >
+                        {inspectedCountryItem.inflationRatePct !== null && inspectedCountryItem.inflationRatePct !== undefined
+                          ? `${inspectedCountryItem.inflationRatePct.toFixed(1)}%`
+                          : '-'}
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2">
+                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
+                      <div className="text-sm font-bold text-slate-200 font-mono mt-0.5">
                         {inspectedCountryItem.debtRatioPct !== null &&
                         inspectedCountryItem.debtRatioPct !== undefined
                           ? `${inspectedCountryItem.debtRatioPct.toFixed(1)}%`

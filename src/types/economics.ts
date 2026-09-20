@@ -25,6 +25,7 @@ export interface GdpYearPoint {
   gdpPerCapita?: number // Current US$
   growthRate?: number // Annual %
   debtRatio?: number // % of GDP
+  inflationRate?: number // Annual %
 }
 
 export interface CountryGdpDetail {
@@ -34,6 +35,7 @@ export interface CountryGdpDetail {
   gdpPerCapitaUsd: number
   growthRatePct: number | null
   debtRatioPct: number | null
+  inflationRatePct: number | null
   historical: GdpYearPoint[]
   source: string
   lastUpdated: string
@@ -51,6 +53,7 @@ export interface EconomySummary {
   gdpPerCapitaUsd: number
   growthRatePct: number | null
   debtRatioPct: number | null
+  inflationRatePct: number | null
   rank: number
   latestYear: number
   exchangeRateVsBase: number

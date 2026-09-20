@@ -264,6 +264,29 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </div>
 
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+              <span className="text-xs text-slate-400">{t.compareInflationRate}</span>
+              <span
+                className={`text-sm font-mono font-bold ${
+                  detailA?.inflationRatePct === null || detailA?.inflationRatePct === undefined
+                    ? 'text-slate-400'
+                    : detailA.inflationRatePct < 0
+                      ? 'text-purple-400'
+                      : detailA.inflationRatePct <= 2.5
+                        ? 'text-emerald-400'
+                        : detailA.inflationRatePct <= 4.0
+                          ? 'text-cyan-400'
+                          : detailA.inflationRatePct <= 7.0
+                            ? 'text-amber-400'
+                            : 'text-rose-400'
+                }`}
+              >
+                {detailA?.inflationRatePct !== null && detailA?.inflationRatePct !== undefined
+                  ? `${detailA.inflationRatePct.toFixed(1)}%`
+                  : 'N/A'}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.compareDebtRatio}</span>
               <span
                 className={`text-sm font-mono font-bold ${
@@ -333,6 +356,29 @@ export const CompareView: React.FC<CompareViewProps> = ({
               <span className="text-sm font-mono font-bold text-emerald-400">
                 {detailB?.growthRatePct !== null && detailB?.growthRatePct !== undefined
                   ? `${detailB.growthRatePct > 0 ? '+' : ''}${detailB.growthRatePct.toFixed(2)}%`
+                  : 'N/A'}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+              <span className="text-xs text-slate-400">{t.compareInflationRate}</span>
+              <span
+                className={`text-sm font-mono font-bold ${
+                  detailB?.inflationRatePct === null || detailB?.inflationRatePct === undefined
+                    ? 'text-slate-400'
+                    : detailB.inflationRatePct < 0
+                      ? 'text-purple-400'
+                      : detailB.inflationRatePct <= 2.5
+                        ? 'text-emerald-400'
+                        : detailB.inflationRatePct <= 4.0
+                          ? 'text-cyan-400'
+                          : detailB.inflationRatePct <= 7.0
+                            ? 'text-amber-400'
+                            : 'text-rose-400'
+                }`}
+              >
+                {detailB?.inflationRatePct !== null && detailB?.inflationRatePct !== undefined
+                  ? `${detailB.inflationRatePct.toFixed(1)}%`
                   : 'N/A'}
               </span>
             </div>

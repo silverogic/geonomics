@@ -4,7 +4,22 @@ import { fileURLToPath } from 'url'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
-const XLSX = require('xlsx')
+let XLSX
+try {
+  XLSX = require('xlsx')
+} catch {
+  console.log('Local xlsx module not found, loading from SheetJS CDN...')
+  const res = await fetch('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js')
+  const code = await res.text()
+  const fn = new Function('module', 'exports', code)
+  const m = { exports: {} }
+  fn(m, m.exports)
+  XLSX = m.exports
+  XLSX.readFile = (filename) => {
+    const buf = fs.readFileSync(filename)
+    return XLSX.read(buf)
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -22,11 +37,13 @@ function getExcelPath(fileName) {
 const gdpFilePath = getExcelPath('gdp-20260913.xls')
 const debtFilePath = getExcelPath('debt-20260913.xls')
 const growthFilePath = getExcelPath('gdp-growth-20260913.xls')
+const inflationFilePath = getExcelPath('inflation-20260919.xls')
 
 console.log('Using Excel sources:')
 console.log(' - GDP:', gdpFilePath)
 console.log(' - Debt:', debtFilePath)
 console.log(' - Growth:', growthFilePath)
+console.log(' - Inflation:', inflationFilePath)
 
 const countriesPath = path.join(projectRoot, 'src', 'data', 'countries.ts')
 const countriesContent = fs.readFileSync(countriesPath, 'utf8')
@@ -69,6 +86,10 @@ const growthWb = XLSX.readFile(growthFilePath)
 const growthRows = XLSX.utils.sheet_to_json(growthWb.Sheets[growthWb.SheetNames[0]], { header: 1 })
 const growthHeader = growthRows[0]
 
+const inflationWb = XLSX.readFile(inflationFilePath)
+const inflationRows = XLSX.utils.sheet_to_json(inflationWb.Sheets[inflationWb.SheetNames[0]], { header: 1 })
+const inflationHeader = inflationRows[0]
+
 // Read existing json to preserve population reference ratios
 const existingJsonPath = path.join(projectRoot, 'src', 'data', 'excelEconomicData.json')
 let existing = {}
@@ -99,6 +120,9 @@ for (const c of COUNTRIES) {
   const grRow = growthRows.find(
     (r) => r && r[0] && (r[0].toLowerCase() === target || r[0].toLowerCase().includes(target))
   )
+  const infRow = inflationRows.find(
+    (r) => r && r[0] && (r[0].toLowerCase() === target || r[0].toLowerCase().includes(target))
+  )
 
   const yearsObj = {}
   const historicalList = []
@@ -108,6 +132,7 @@ for (const c of COUNTRIES) {
     const gCol = gdpHeader.indexOf(yNum)
     const dCol = debtHeader.indexOf(yNum)
     const grCol = growthHeader.indexOf(yNum)
+    const infCol = inflationHeader.indexOf(yNum)
 
     const rawGdpBillion =
       gCol !== -1 && gRow && typeof gRow[gCol] === 'number'
@@ -134,6 +159,11 @@ for (const c of COUNTRIES) {
         ? Math.round(grRow[grCol] * 10) / 10
         : existing[c.id]?.years?.[y]?.growthRatePct ?? null
 
+    const inflationRatePct =
+      infCol !== -1 && infRow && typeof infRow[infCol] === 'number'
+        ? Math.round(infRow[infCol] * 10) / 10
+        : existing[c.id]?.years?.[y]?.inflationRatePct ?? null
+
     let gdpPerCapitaUsd = existing[c.id]?.years?.[y]?.gdpPerCapitaUsd ?? 0
     if (existing[c.id]?.years?.[y]?.totalGdpUsd && gdpPerCapitaUsd > 0) {
       const pop = existing[c.id].years[y].totalGdpUsd / gdpPerCapitaUsd
@@ -145,6 +175,7 @@ for (const c of COUNTRIES) {
       gdpPerCapitaUsd,
       growthRatePct,
       debtRatioPct,
+      inflationRatePct,
     }
 
     historicalList.push({
@@ -153,6 +184,7 @@ for (const c of COUNTRIES) {
       gdpPerCapita: gdpPerCapitaUsd,
       growthRate: growthRatePct,
       debtRatio: debtRatioPct,
+      inflationRate: inflationRatePct,
     })
   }
 

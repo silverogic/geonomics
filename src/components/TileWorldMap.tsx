@@ -259,6 +259,30 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   </span>
                 </div>
               )}
+              {activeHoveredItem.inflationRatePct !== null && (
+                <div
+                  className={`flex items-center justify-between ${
+                    metric === 'inflation' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
+                  }`}
+                >
+                  <span>{lang === 'ko' ? '인플레이션' : lang === 'ja' ? 'インフレ率' : 'Inflation'}:</span>
+                  <span
+                    className={`font-mono font-semibold ${
+                      activeHoveredItem.inflationRatePct < 0
+                        ? 'text-purple-400'
+                        : activeHoveredItem.inflationRatePct <= 2.5
+                        ? 'text-emerald-400'
+                        : activeHoveredItem.inflationRatePct <= 4.0
+                        ? 'text-cyan-400'
+                        : activeHoveredItem.inflationRatePct <= 7.0
+                        ? 'text-amber-400'
+                        : 'text-rose-400'
+                    }`}
+                  >
+                    {activeHoveredItem.inflationRatePct.toFixed(1)}%
+                  </span>
+                </div>
+              )}
               {metric === 'debt' && activeHoveredItem.debtRatioPct !== null && (
                 <div className="flex items-center justify-between text-indigo-300 font-semibold">
                   <span>{lang === 'ko' ? '국가 부채' : lang === 'ja' ? '政府債務' : 'Gov Debt'}:</span>

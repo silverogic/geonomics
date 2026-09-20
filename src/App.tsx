@@ -56,6 +56,7 @@ export function App() {
   const [perCapitaMap, setPerCapitaMap] = useState<Map<string, { perCapita: number; year: number }>>(new Map())
   const [growthMap, setGrowthMap] = useState<Map<string, { growth: number; year: number }>>(new Map())
   const [debtMap, setDebtMap] = useState<Map<string, { debtRatio: number | null; year: number }>>(new Map())
+  const [inflationMap, setInflationMap] = useState<Map<string, { inflation: number | null; year: number }>>(new Map())
 
   const [isLoading, setIsLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -78,6 +79,7 @@ export function App() {
       setPerCapitaMap(new Map(gdpData.perCapitaMap))
       setGrowthMap(new Map(gdpData.growthMap))
       setDebtMap(new Map(gdpData.debtMap))
+      setInflationMap(new Map(gdpData.inflationMap))
     } catch (err: any) {
       console.error('Error synchronizing economic data:', err)
       setErrorMsg(
@@ -109,6 +111,7 @@ export function App() {
       const pcapObj = perCapitaMap.get(country.id)
       const growthObj = growthMap.get(country.id)
       const debtObj = debtMap.get(country.id)
+      const infObj = inflationMap.get(country.id)
 
       return {
         country,
@@ -117,6 +120,7 @@ export function App() {
         gdpPerCapitaUsd: pcapObj?.perCapita || 0,
         growthRatePct: growthObj?.growth ?? null,
         debtRatioPct: debtObj?.debtRatio ?? null,
+        inflationRatePct: infObj?.inflation ?? null,
       }
     })
 
@@ -126,7 +130,7 @@ export function App() {
     })
 
     return list
-  }, [gdpMap, perCapitaMap, growthMap, debtMap])
+  }, [gdpMap, perCapitaMap, growthMap, debtMap, inflationMap])
 
   // Selected country rank for modal
   const selectedRank = useMemo(() => {

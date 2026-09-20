@@ -45,6 +45,7 @@ export const translations = {
     metricPerCapita: 'GDP Per Capita',
     metricGrowth: 'Real Growth',
     metricDebt: 'Gov Debt %',
+    metricInflation: 'Inflation Rate',
     mapResetZoom: 'Reset',
     mapZoomIn: 'Zoom In',
     mapZoomOut: 'Zoom Out',
@@ -71,6 +72,7 @@ export const translations = {
     cardFxRate: 'Live FX Rate',
     cardGrowthRate: 'Growth Rate',
     cardDebtRatio: 'Gov Debt',
+    cardInflationRate: 'Inflation Rate',
     cardViewDetails: 'Detailed Metrics & 10-Yr Chart',
     loadingData: 'Loading data...',
     noCountriesFound: 'No countries match your search criteria.',
@@ -84,6 +86,8 @@ export const translations = {
     modalRealGrowth: 'Real GDP Growth',
     modalDebtTitle: 'National Debt Ratio',
     modalDebtSub: 'General Government Gross Debt (% of GDP, IMF WEO)',
+    modalInflationTitle: 'Inflation Rate',
+    modalInflationSub: 'Avg. Consumer Prices (Annual % Change, IMF WEO)',
     modalRankTitle: 'Global Rank',
     modalRankValue: 'World #{rank}',
     modalRankSub: 'by Total GDP',
@@ -100,6 +104,8 @@ export const translations = {
       'GDP Statistics: Sourced directly from World Bank Open Data (Indicators: Total GDP NY.GDP.MKTP.CD, GDP Per Capita NY.GDP.PCAP.CD) and IMF World Economic Outlook (WEO).',
     modalAccuracyDebt:
       'Government Debt Statistics: Sourced from International Monetary Fund (IMF) World Economic Outlook (WEO) General Government Gross Debt indicator (GGXWDG_NGDP).',
+    modalAccuracyInflation:
+      'Inflation Rate Statistics: Sourced from International Monetary Fund (IMF) World Economic Outlook (WEO) Inflation rate, average consumer prices indicator (PCPIPCH).',
     modalAccuracyFx:
       'Exchange Rates: Collected on-demand from European Central Bank (ECB) reference rates and global live forex feeds.',
     modalWorldBankLink: 'Visit World Bank Country Data Portal',
@@ -123,6 +129,7 @@ export const translations = {
     compareInsightText:
       '{countryA}\'s Total GDP is {gdpRatio}x that of {countryB}, and its GDP per capita is {perCapitaRatio}x.',
     compareDebtRatio: 'Gov Debt (% GDP, IMF)',
+    compareInflationRate: 'Inflation Rate (Avg. CPI, IMF)',
     compareChartTitle: '10-Year GDP Trajectory Overlay',
     compareChartLoading: 'Aggregating comparative data...',
 
@@ -137,6 +144,7 @@ export const translations = {
     colPerCapita: 'GDP Per Capita',
     colGrowth: 'Growth Rate',
     colDebt: 'Gov Debt (% GDP, IMF)',
+    colInflation: 'Inflation (IMF)',
 
     // Footer
     footerZeroStorageTitle: 'Zero-Storage On-Demand Architecture',
@@ -193,6 +201,7 @@ export const translations = {
     metricPerCapita: '1인당 GDP',
     metricGrowth: '실질 성장률',
     metricDebt: '국가 부채 비율',
+    metricInflation: '인플레이션율',
     mapResetZoom: '초기화',
     mapZoomIn: '확대',
     mapZoomOut: '축소',
@@ -219,6 +228,7 @@ export const translations = {
     cardFxRate: '실시간 환율',
     cardGrowthRate: '성장률',
     cardDebtRatio: '국가 부채',
+    cardInflationRate: '인플레이션',
     cardViewDetails: '상세 지표 및 10개년 차트',
     loadingData: '데이터 로딩 중...',
     noCountriesFound: '검색 조건에 맞는 국가가 없습니다.',
@@ -232,6 +242,8 @@ export const translations = {
     modalRealGrowth: '실질 GDP 성장률',
     modalDebtTitle: '국가 부채 비율',
     modalDebtSub: '일반정부 총 부채 비율 (GDP 대비 %, IMF WEO 공식)',
+    modalInflationTitle: '소비자물가 인플레이션율',
+    modalInflationSub: '연평균 소비자물가 변동률 (전년 대비 %, IMF WEO PCPIPCH)',
     modalRankTitle: '전 세계 순위',
     modalRankValue: '세계 {rank}위',
     modalRankSub: '총 GDP 기준',
@@ -248,6 +260,8 @@ export const translations = {
       'GDP 통계: 세계은행 Open Data API(총 GDP NY.GDP.MKTP.CD, 1인당 GDP NY.GDP.PCAP.CD) 및 국제통화기금(IMF WEO) 공식 집계치 기준.',
     modalAccuracyDebt:
       '국가 부채 비율: 국제통화기금(IMF) World Economic Outlook (WEO) 공식 일반정부 총부채(GGXWDG_NGDP, % of GDP) 통계 기준.',
+    modalAccuracyInflation:
+      '인플레이션 통계: 국제통화기금(IMF) World Economic Outlook (WEO) 연평균 소비자물가 변동률(PCPIPCH, Annual % Change) 공식 지표 기준.',
     modalAccuracyFx:
       '환율 데이터: 유럽중앙은행(ECB) 공식 고시 기준 환율 및 글로벌 외환 시장 실시간 피드 기준.',
     modalWorldBankLink: '세계은행 공식 데이터 포털 바로가기',
@@ -271,6 +285,7 @@ export const translations = {
     compareInsightText:
       '{countryA}의 총 GDP는 {countryB}의 {gdpRatio}배이며, 1인당 GDP는 {perCapitaRatio}배 수준입니다.',
     compareDebtRatio: '국가 부채 비율 (% GDP, IMF)',
+    compareInflationRate: '인플레이션율 (평균 CPI, IMF)',
     compareChartTitle: '10개년 GDP 궤적 동시 비교',
     compareChartLoading: '비교 데이터를 집계 중입니다...',
 
@@ -285,6 +300,7 @@ export const translations = {
     colPerCapita: '1인당 GDP',
     colGrowth: '성장률',
     colDebt: '부채 비율 (% GDP, IMF)',
+    colInflation: '인플레이션 (IMF)',
 
     // Footer
     footerZeroStorageTitle: '무보관 온디맨드(Zero-Storage On-Demand) 시스템',
@@ -341,6 +357,7 @@ export const translations = {
     metricPerCapita: '1人当たりGDP',
     metricGrowth: '実質成長率',
     metricDebt: '政府債務比率',
+    metricInflation: 'インフレ率',
     mapResetZoom: 'リセット',
     mapZoomIn: '拡大',
     mapZoomOut: '縮小',
@@ -367,6 +384,7 @@ export const translations = {
     cardFxRate: 'リアルタイム為替',
     cardGrowthRate: '成長率',
     cardDebtRatio: '政府債務',
+    cardInflationRate: 'インフレ率',
     cardViewDetails: '詳細指標 & 10年チャート',
     loadingData: 'データを読み込み中...',
     noCountriesFound: '検索条件に一致する国が見つかりません。',
@@ -380,6 +398,8 @@ export const translations = {
     modalRealGrowth: '実質GDP成長率',
     modalDebtTitle: '政府総債務残高比率',
     modalDebtSub: '一般政府総債務 (対GDP比 %, IMF WEO)',
+    modalInflationTitle: '消費者物価インフレ率',
+    modalInflationSub: '平均消費者物価上昇率 (前年比 %, IMF WEO PCPIPCH)',
     modalRankTitle: '世界順位',
     modalRankValue: '世界第{rank}位',
     modalRankSub: '名目GDP基準',
@@ -396,6 +416,8 @@ export const translations = {
       'GDP統計: 世界銀行オープンデータ (NY.GDP.MKTP.CD, NY.GDP.PCAP.CD) およびIMF世界経済見通し (WEO) から直接取得。',
     modalAccuracyDebt:
       '政府債務統計: 国際通貨基金 (IMF) 世界経済見通し (WEO) 一般政府総債務指標 (GGXWDG_NGDP) より取得。',
+    modalAccuracyInflation:
+      'インフレ率統計：国際通貨基金 (IMF) 世界経済見通し (WEO) 平均消費者物価上昇率指標 (PCPIPCH) より取得。',
     modalAccuracyFx:
       '為替レート: 欧州中央銀行 (ECB) 基準金利およびグローバル為替フィードからオンデマンドで直接取得。',
     modalWorldBankLink: '世界銀行 国別データポータルへ移動',
@@ -419,6 +441,7 @@ export const translations = {
     compareInsightText:
       '{countryA}の名目GDPは{countryB}の{gdpRatio}倍、1人当たりGDPは{perCapitaRatio}倍の水準です。',
     compareDebtRatio: '政府債務比率 (% GDP, IMF)',
+    compareInflationRate: 'インフレ率 (平均CPI, IMF)',
     compareChartTitle: '10年間GDP推移の同時比較',
     compareChartLoading: '比較データを集計中...',
 
@@ -433,6 +456,7 @@ export const translations = {
     colPerCapita: '1人当たりGDP',
     colGrowth: '成長率',
     colDebt: '債務比率 (% GDP, IMF)',
+    colInflation: 'インフレ率 (IMF)',
 
     // Footer
     footerZeroStorageTitle: 'ゼロストレージ・オンデマンドシステム',

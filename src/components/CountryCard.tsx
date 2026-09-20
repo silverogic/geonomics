@@ -15,6 +15,7 @@ interface CountryCardProps {
   gdpPerCapitaUsd: number
   growthRatePct: number | null
   debtRatioPct: number | null
+  inflationRatePct?: number | null
   baseCurrency: BaseCurrency
   exchangeRates: ExchangeRates | null
   lang: Language
@@ -29,6 +30,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   gdpPerCapitaUsd,
   growthRatePct,
   debtRatioPct,
+  inflationRatePct,
   baseCurrency,
   exchangeRates,
   lang,
@@ -73,6 +75,24 @@ export const CountryCard: React.FC<CountryCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
+            {inflationRatePct !== undefined && inflationRatePct !== null && (
+              <span
+                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                  inflationRatePct < 0
+                    ? 'text-purple-300 bg-purple-950/60 border-purple-500/30'
+                    : inflationRatePct <= 2.5
+                    ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
+                    : inflationRatePct <= 4.0
+                    ? 'text-cyan-300 bg-cyan-950/60 border-cyan-500/30'
+                    : inflationRatePct <= 7.0
+                    ? 'text-amber-300 bg-amber-950/60 border-amber-500/30'
+                    : 'text-rose-300 bg-rose-950/60 border-rose-500/30'
+                }`}
+                title={`${t.modalInflationTitle}: ${inflationRatePct.toFixed(1)}%`}
+              >
+                {t.cardInflationRate} {inflationRatePct.toFixed(1)}%
+              </span>
+            )}
             {debtRatioPct !== null && (
               <span
                 className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${

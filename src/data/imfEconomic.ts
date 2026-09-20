@@ -6,6 +6,7 @@ export interface ImfYearMetrics {
   gdpPerCapitaUsd: number
   growthRatePct: number | null
   debtRatioPct: number | null
+  inflationRatePct: number | null
 }
 
 export interface ImfCountryRecord {
@@ -40,6 +41,7 @@ export const getImfYearMap = (year: EconomicYear): Map<string, ImfYearMetrics> =
           gdpPerCapitaUsd: pt.gdpPerCapita ?? 0,
           growthRatePct: pt.growthRate ?? null,
           debtRatioPct: pt.debtRatio ?? null,
+          inflationRatePct: pt.inflationRate ?? null,
         })
       }
     }
