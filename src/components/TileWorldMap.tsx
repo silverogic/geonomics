@@ -111,7 +111,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
       {/* Horizontal Scrollable Container for Mobile */}
       <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-800">
         <div
-          className="min-w-[720px] md:min-w-0 w-full aspect-[46/23] grid gap-[2px] sm:gap-[3px] p-2"
+          className="min-w-[720px] md:min-w-0 w-full aspect-[46/26] grid gap-[2px] sm:gap-[3px] p-2"
           style={{
             gridTemplateColumns: `repeat(${PIXEL_MAP_COLS}, minmax(0, 1fr))`,
             gridTemplateRows: `repeat(${PIXEL_MAP_ROWS}, minmax(0, 1fr))`,
