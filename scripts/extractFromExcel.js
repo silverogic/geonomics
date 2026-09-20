@@ -65,13 +65,26 @@ const ALIAS_MAP = {
   'South Korea': 'Korea, Republic of',
   'Turkey': 'Türkiye, Republic of',
   'Taiwan': 'Taiwan Province of China',
-  'Egypt': 'Egypt, Arab Republic of',
+  'Egypt': 'Egypt',
   'United Arab Emirates': 'United Arab Emirates',
   'Russia': 'Russian Federation',
   'Vietnam': 'Vietnam',
   'Iran': 'Islamic Republic of Iran',
   'Hong Kong': 'Hong Kong SAR',
   'Czech Republic': 'Czech Republic',
+}
+
+function findRow(rows, target) {
+  if (!rows || !Array.isArray(rows)) return undefined
+  // 1. Exact match first (prevents "India" matching "British Indian Ocean Territories")
+  const exact = rows.find(
+    (r) => r && r[0] && typeof r[0] === 'string' && r[0].trim().toLowerCase() === target
+  )
+  if (exact) return exact
+  // 2. Partial match fallback
+  return rows.find(
+    (r) => r && r[0] && typeof r[0] === 'string' && r[0].toLowerCase().includes(target)
+  )
 }
 
 const gdpWb = XLSX.readFile(gdpFilePath)
@@ -111,18 +124,10 @@ const result = {}
 
 for (const c of COUNTRIES) {
   const target = (ALIAS_MAP[c.nameEn] || c.nameEn).toLowerCase()
-  const gRow = gdpRows.find(
-    (r) => r && r[0] && (r[0].toLowerCase() === target || r[0].toLowerCase().includes(target))
-  )
-  const dRow = debtRows.find(
-    (r) => r && r[0] && (r[0].toLowerCase() === target || r[0].toLowerCase().includes(target))
-  )
-  const grRow = growthRows.find(
-    (r) => r && r[0] && (r[0].toLowerCase() === target || r[0].toLowerCase().includes(target))
-  )
-  const infRow = inflationRows.find(
-    (r) => r && r[0] && (r[0].toLowerCase() === target || r[0].toLowerCase().includes(target))
-  )
+  const gRow = findRow(gdpRows, target)
+  const dRow = findRow(debtRows, target)
+  const grRow = findRow(growthRows, target)
+  const infRow = findRow(inflationRows, target)
 
   const yearsObj = {}
   const historicalList = []
