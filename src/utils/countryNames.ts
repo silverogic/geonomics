@@ -62,6 +62,19 @@ export const COUNTRY_NAMES_JA: Record<string, string> = {
   HKG: '香港',
   TWN: '台湾',
   PAK: 'パキスタン',
+  IRN: 'イラン',
+  IRQ: 'イラク',
+  ETH: 'エチオピア',
+  SVK: 'スロバキア',
+  PRI: 'プエルトリコ',
+  DOM: 'ドミニカ共和国',
+  ECU: 'エクアドル',
+  UZB: 'ウズベキスタン',
+  VEN: 'ベネズエラ',
+  AGO: 'アンゴラ',
+  KEN: 'ケニア',
+  BGR: 'ブルガリア',
+  GTM: 'グアテマラ',
 }
 
 /**

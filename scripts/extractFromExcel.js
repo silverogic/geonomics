@@ -69,9 +69,10 @@ const ALIAS_MAP = {
   'United Arab Emirates': 'United Arab Emirates',
   'Russia': 'Russian Federation',
   'Vietnam': 'Vietnam',
-  'Iran': 'Islamic Republic of Iran',
+  'Iran': 'Iran',
   'Hong Kong': 'Hong Kong SAR',
   'Czech Republic': 'Czech Republic',
+  'Slovakia': 'Slovak Republic',
 }
 
 function findRow(rows, target) {

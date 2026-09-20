@@ -164,6 +164,21 @@ async function main() {
     AUS: { c: 44, r: 21 },
     ARG: { c: 14, r: 23 },
     NZL: { c: 48, r: 24 },
+    IRN: { c: 32, r: 9 },
+    IRQ: { c: 30, r: 9 },
+    DZA: { c: 24, r: 10 },
+    MAR: { c: 21, r: 10 },
+    ETH: { c: 29, r: 14 },
+    SVK: { c: 27, r: 6 },
+    PRI: { c: 15, r: 12 },
+    DOM: { c: 14, r: 12 },
+    ECU: { c: 11, r: 16 },
+    UZB: { c: 32, r: 6 },
+    VEN: { c: 14, r: 14 },
+    AGO: { c: 25, r: 18 },
+    KEN: { c: 28, r: 16 },
+    BGR: { c: 28, r: 8 },
+    GTM: { c: 9, r: 12 },
   }
 
   for (const [id, coord] of Object.entries(trackedAnchors)) {

@@ -78,6 +78,139 @@ const COUNTRY_TICKERS = [
   { id: 'TWN', nameEn: 'Taiwan TAIEX', nameKo: '대만 가권지수 (TAIEX)', ticker: '^TWII', isSupported: true },
   { id: 'PAK', nameEn: 'Karachi KSE (OGDC Proxy)', nameKo: '카라치 KSE (OGDC 대표주)', ticker: 'OGDC.KA', isSupported: true },
   { id: 'KAZ', nameEn: 'Kaspi.kz (Kazakhstan Tech Index)', nameKo: '카스피.kz (카자흐스탄 대표주)', ticker: 'KSPI', isSupported: true },
+  {
+    id: 'IRN',
+    nameEn: 'Tehran TEDPIX',
+    nameKo: '테헤란 TEDPIX',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Market data is restricted due to international financial sanctions.',
+    fallbackReasonKo: '국제 금융 제재 및 거래소 규제로 인해 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'IRQ',
+    nameEn: 'Iraq ISX',
+    nameKo: '이라크 ISX',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Local exchange data is restricted.',
+    fallbackReasonKo: '이라크 증권거래소(ISX) 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'DZA',
+    nameEn: 'Algeria SGBV',
+    nameKo: '알제리 SGBV',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Algiers Stock Exchange data is not publicly accessible.',
+    fallbackReasonKo: '알제 증권거래소 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'MAR',
+    nameEn: 'MASI Index (Morocco)',
+    nameKo: 'MASI 지수 (모로코)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Casablanca Stock Exchange live feed is restricted.',
+    fallbackReasonKo: '카사블랑카 증권거래소 실시간 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'ETH',
+    nameEn: 'Ethiopia ESX',
+    nameKo: '에티오피아 ESX',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Ethiopian Securities Exchange is establishing live data feeds.',
+    fallbackReasonKo: '에티오피아 증권거래소 데이터 연동 준비 중입니다.'
+  },
+  {
+    id: 'SVK',
+    nameEn: 'SAX Index (Slovakia)',
+    nameKo: 'SAX 지수 (슬로바키아)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Bratislava Stock Exchange live feed is restricted.',
+    fallbackReasonKo: '브라티슬라바 증권거래소 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'PRI',
+    nameEn: 'Popular Inc (Puerto Rico Proxy)',
+    nameKo: '포퓰러 (푸에르토리코 대표주)',
+    ticker: 'BPOP',
+    isSupported: true
+  },
+  {
+    id: 'DOM',
+    nameEn: 'BVRD (Dominican Republic)',
+    nameKo: 'BVRD (도미니카 공화국)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Dominican Republic Stock Exchange live feed is restricted.',
+    fallbackReasonKo: '도미니카 증권거래소 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'ECU',
+    nameEn: 'Bolsa de Valores de Quito',
+    nameKo: '키토 증권거래소 (에콰도르)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Quito Stock Exchange live feed is restricted.',
+    fallbackReasonKo: '에콰도르 증권거래소 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'UZB',
+    nameEn: 'Tashkent Stock Exchange',
+    nameKo: '타슈켄트 증권거래소',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Tashkent Stock Exchange live feed is restricted.',
+    fallbackReasonKo: '타슈켄트 증권거래소 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'VEN',
+    nameEn: 'Caracas Stock Exchange (IBC)',
+    nameKo: '카라카스 증권거래소 (IBC)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Market data is restricted due to international sanctions.',
+    fallbackReasonKo: '국제 금융 제재로 인해 실시간 데이터 조회가 불가합니다.'
+  },
+  {
+    id: 'AGO',
+    nameEn: 'BODIVA (Angola)',
+    nameKo: 'BODIVA (앙골라)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'BODIVA Angola live feed is restricted.',
+    fallbackReasonKo: '앙골라 증권거래소(BODIVA) 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'KEN',
+    nameEn: 'NSE 20 (Kenya)',
+    nameKo: 'NSE 20 (케냐)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Nairobi Securities Exchange live feed is restricted.',
+    fallbackReasonKo: '나이로비 증권거래소 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'BGR',
+    nameEn: 'SOFIX Index (Bulgaria)',
+    nameKo: 'SOFIX 지수 (불가리아)',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Bulgarian Stock Exchange live feed is restricted.',
+    fallbackReasonKo: '불가리아 증권거래소 데이터 조회가 제한됩니다.'
+  },
+  {
+    id: 'GTM',
+    nameEn: 'Bolsa Nacional de Valores',
+    nameKo: '과테말라 증권거래소',
+    ticker: '',
+    isSupported: false,
+    fallbackReasonEn: 'Guatemala Stock Exchange live feed is restricted.',
+    fallbackReasonKo: '과테말라 증권거래소 데이터 조회가 제한됩니다.'
+  },
 ]
 
 async function fetchTicker(item) {
