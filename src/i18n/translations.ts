@@ -54,6 +54,9 @@ export const translations = {
     selectedCountryBadge: 'Selected Economy',
     viewDetailsBtn: 'Deep Dive & 10-Yr Chart',
     viewMap: 'World Map View',
+    mapStyleLabel: 'Map Style:',
+    mapStyleTile: 'Cute Tile Map',
+    mapStyleVector: 'Detailed Map',
 
     // Year Switcher
     yearLabel: 'Economic Horizon',
@@ -199,6 +202,9 @@ export const translations = {
     selectedCountryBadge: '선택된 국가',
     viewDetailsBtn: '상세 지표 및 10개년 차트',
     viewMap: '세계 지도 뷰',
+    mapStyleLabel: '지도 형태:',
+    mapStyleTile: '귀여운 타일맵',
+    mapStyleVector: '정밀 지도',
 
     // Year Switcher
     yearLabel: '기준 연도',
@@ -344,6 +350,9 @@ export const translations = {
     selectedCountryBadge: '選択された国',
     viewDetailsBtn: '詳細指標と10年チャートを見る',
     viewMap: '世界地図ビュー',
+    mapStyleLabel: 'マップ形式:',
+    mapStyleTile: 'タイルマップ',
+    mapStyleVector: '詳細地図',
 
     // Year Switcher
     yearLabel: '対象年度',

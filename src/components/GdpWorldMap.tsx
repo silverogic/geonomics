@@ -11,7 +11,10 @@ import {
   Filter,
   ChevronRight,
   ExternalLink,
+  LayoutGrid,
+  Globe,
 } from 'lucide-react'
+import { TileWorldMap } from './TileWorldMap'
 import { WORLD_MAP_PATHS } from '../data/worldMapData'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Region, Language, EconomicYear } from '../types/economics'
 import { CountryFlag } from './CountryFlag'
@@ -57,6 +60,23 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   const [metric, setMetric] = useState<MapMetric>('gdp')
   const [selectedRegion, setSelectedRegion] = useState<Region | 'All'>('All')
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Map Style: 'tile' (default cute tile grid) or 'vector' (detailed geographic map)
+  const [mapStyle, setMapStyle] = useState<'tile' | 'vector'>(() => {
+    try {
+      const saved = localStorage.getItem('geonomics_map_style')
+      return saved === 'vector' ? 'vector' : 'tile'
+    } catch {
+      return 'tile'
+    }
+  })
+
+  const handleMapStyleChange = (style: 'tile' | 'vector') => {
+    setMapStyle(style)
+    try {
+      localStorage.setItem('geonomics_map_style', style)
+    } catch {}
+  }
 
   // Hover & Tooltip state
   const [hoveredCountryId, setHoveredCountryId] = useState<string | null>(null)
@@ -290,6 +310,39 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 </button>
               ))}
             </div>
+
+            {/* Map Style Switcher (Tile Map vs Detailed Vector Map) */}
+            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
+              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
+                {t.mapStyleLabel}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleMapStyleChange('tile')}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  mapStyle === 'tile'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
+                title={t.mapStyleTile}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>{t.mapStyleTile}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMapStyleChange('vector')}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  mapStyle === 'vector'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
+                title={t.mapStyleVector}
+              >
+                <Globe className="w-3.5 h-3.5" />
+                <span>{t.mapStyleVector}</span>
+              </button>
+            </div>
           </div>
 
           {/* Region Filter Buttons */}
@@ -326,210 +379,227 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* MAP CANVAS (Takes 3 columns on wide screens) */}
           <div className="xl:col-span-3 space-y-4">
-            <div
-              ref={mapContainerRef}
-              className="relative w-full aspect-[1000/540] bg-slate-950 rounded-3xl border border-slate-800/90 overflow-hidden shadow-2xl select-none group"
-            >
-              {/* Decorative Subtle Gridlines */}
-              <div
-                className="absolute inset-0 opacity-20 pointer-events-none"
-                style={{
-                  backgroundImage: `radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1px, transparent 0)`,
-                  backgroundSize: '24px 24px',
-                }}
+            {mapStyle === 'tile' ? (
+              <TileWorldMap
+                items={items}
+                metric={metric}
+                baseCurrency={baseCurrency}
+                usdToBase={usdToBase}
+                lang={lang}
+                selectedRegion={selectedRegion}
+                searchQuery={searchQuery}
+                hoveredCountryId={hoveredCountryId}
+                pinnedCountryId={pinnedCountryId}
+                getCountryFill={getCountryFill}
+                onHoverCountry={(id) => setHoveredCountryId(id)}
+                onSelectCountry={onSelectCountry}
               />
-
-              {/* Ocean glow background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950 pointer-events-none" />
-
-              {/* Map Zoom Controls HUD */}
-              <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800 shadow-xl">
-                <button
-                  onClick={handleZoomIn}
-                  title={t.mapZoomIn}
-                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                >
-                  <ZoomIn className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleZoomOut}
-                  title={t.mapZoomOut}
-                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                >
-                  <ZoomOut className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleResetZoom}
-                  title={t.mapResetZoom}
-                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Interactive SVG Canvas */}
-              <svg
-                viewBox={currentViewBox}
-                className="w-full h-full cursor-grab active:cursor-grabbing transition-[viewBox] duration-500 ease-out"
-                style={{ filter: 'drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4))' }}
+            ) : (
+              <div
+                ref={mapContainerRef}
+                className="relative w-full aspect-[1000/540] bg-slate-950 rounded-3xl border border-slate-800/90 overflow-hidden shadow-2xl select-none group"
               >
-                <defs>
-                  {/* Subtle drop shadow filter for active/hovered country */}
-                  <filter id="country-glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-
-                {/* Country Polygons */}
-                <g className="transition-all duration-300">
-                  {WORLD_MAP_PATHS.map((countryPath) => {
-                    const countryId = countryPath.id
-                    const isTracked = countryItemMap.has(countryId)
-                    const isHovered = hoveredCountryId === countryId
-                    const isPinned = pinnedCountryId === countryId
-                    const isSearchMatch = searchMatchedCountry?.country.id === countryId
-                    const fill = getCountryFill(countryId)
-
-                    return (
-                      <path
-                        key={countryId}
-                        id={`map-country-${countryId}`}
-                        d={countryPath.d}
-                        fill={fill}
-                        stroke={
-                          isSearchMatch
-                            ? '#38bdf8'
-                            : isHovered || isPinned
-                              ? '#ffffff'
-                              : isTracked
-                                ? '#1e293b'
-                                : '#0f172a'
-                        }
-                        strokeWidth={
-                          isSearchMatch ? '2.5' : isHovered || isPinned ? '1.8' : isTracked ? '0.75' : '0.4'
-                        }
-                        opacity={
-                          isTracked
-                            ? 1
-                            : selectedRegion !== 'All'
-                              ? 0.35
-                              : 0.65
-                        }
-                        className={`transition-all duration-200 ${
-                          isTracked
-                            ? 'cursor-pointer hover:brightness-125'
-                            : 'cursor-default pointer-events-none'
-                        }`}
-                        onMouseMove={(e) => {
-                          if (isTracked) handleCountryMouseMove(e, countryId)
-                        }}
-                        onMouseLeave={handleCountryMouseLeave}
-                        onClick={() => {
-                          if (isTracked) handleCountryClick(countryId)
-                        }}
-                      />
-                    )
-                  })}
-
-                  {/* Top 5 Beacon Markers */}
-                  {top10Items.slice(0, 5).map((topItem) => {
-                    const pathData = WORLD_MAP_PATHS.find((p) => p.id === topItem.country.id)
-                    if (!pathData) return null
-                    const [cx, cy] = pathData.centroid
-                    return (
-                      <g
-                        key={`beacon-${topItem.country.id}`}
-                        className="pointer-events-none transition-opacity duration-300"
-                        opacity={zoomLevel >= 1 ? 0.9 : 0}
-                      >
-                        <circle cx={cx} cy={cy} r="3.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
-                        <text
-                          x={cx}
-                          y={cy - 6}
-                          fill="#ffffff"
-                          fontSize="7"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          className="select-none font-mono"
-                          style={{ textShadow: '0 1px 3px rgba(0,0,0,0.9)' }}
-                        >
-                          #{topItem.rank}
-                        </text>
-                      </g>
-                    )
-                  })}
-                </g>
-              </svg>
-
-              {/* Floating Dynamic Tooltip HUD */}
-              {hoveredItem && tooltipPos && (
+                {/* Decorative Subtle Gridlines */}
                 <div
-                  className="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-3 transition-transform duration-75"
+                  className="absolute inset-0 opacity-20 pointer-events-none"
                   style={{
-                    left: `${tooltipPos.x}px`,
-                    top: `${tooltipPos.y}px`,
+                    backgroundImage: `radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1px, transparent 0)`,
+                    backgroundSize: '24px 24px',
                   }}
-                >
-                  <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[200px] text-xs space-y-2">
-                    {/* Header */}
-                    <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-2">
-                      <div className="flex items-center gap-2">
-                        <CountryFlag iso2={hoveredItem.country.iso2} className="w-5 h-3.5 rounded-sm" />
-                        <span className="font-bold text-white text-sm">
-                          {getCountryName(hoveredItem.country, lang)}
-                        </span>
-                      </div>
-                      <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px]">
-                        #{hoveredItem.rank}
-                      </span>
-                    </div>
+                />
 
-                    {/* Stats List */}
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-slate-400">
-                        <span>{t.cardTotalGdp}:</span>
-                        <span className="font-mono font-bold text-slate-100">
-                          {formatGdpCompact(hoveredItem.totalGdpUsd, baseCurrency, usdToBase, lang)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-400">
-                        <span>{t.cardPerCapita}:</span>
-                        <span className="font-mono text-slate-300">
-                          {formatPerCapita(hoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
-                        </span>
-                      </div>
-                      {hoveredItem.growthRatePct !== null && (
-                        <div className="flex items-center justify-between text-slate-400">
-                          <span>{t.metricGrowth}:</span>
-                          <span
-                            className={`font-mono font-semibold ${
-                              hoveredItem.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
-                            }`}
+                {/* Ocean glow background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950 pointer-events-none" />
+
+                {/* Map Zoom Controls HUD */}
+                <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800 shadow-xl">
+                  <button
+                    onClick={handleZoomIn}
+                    title={t.mapZoomIn}
+                    className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleZoomOut}
+                    title={t.mapZoomOut}
+                    className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleResetZoom}
+                    title={t.mapResetZoom}
+                    className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Interactive SVG Canvas */}
+                <svg
+                  viewBox={currentViewBox}
+                  className="w-full h-full cursor-grab active:cursor-grabbing transition-[viewBox] duration-500 ease-out"
+                  style={{ filter: 'drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4))' }}
+                >
+                  <defs>
+                    {/* Subtle drop shadow filter for active/hovered country */}
+                    <filter id="country-glow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="3" result="blur" />
+                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                  </defs>
+
+                  {/* Country Polygons */}
+                  <g className="transition-all duration-300">
+                    {WORLD_MAP_PATHS.map((countryPath) => {
+                      const countryId = countryPath.id
+                      const isTracked = countryItemMap.has(countryId)
+                      const isHovered = hoveredCountryId === countryId
+                      const isPinned = pinnedCountryId === countryId
+                      const isSearchMatch = searchMatchedCountry?.country.id === countryId
+                      const fill = getCountryFill(countryId)
+
+                      return (
+                        <path
+                          key={countryId}
+                          id={`map-country-${countryId}`}
+                          d={countryPath.d}
+                          fill={fill}
+                          stroke={
+                            isSearchMatch
+                              ? '#38bdf8'
+                              : isHovered || isPinned
+                                ? '#ffffff'
+                                : isTracked
+                                  ? '#1e293b'
+                                  : '#0f172a'
+                          }
+                          strokeWidth={
+                            isSearchMatch ? '2.5' : isHovered || isPinned ? '1.8' : isTracked ? '0.75' : '0.4'
+                          }
+                          opacity={
+                            isTracked
+                              ? 1
+                              : selectedRegion !== 'All'
+                                ? 0.35
+                                : 0.65
+                          }
+                          className={`transition-all duration-200 ${
+                            isTracked
+                              ? 'cursor-pointer hover:brightness-125'
+                              : 'cursor-default pointer-events-none'
+                          }`}
+                          onMouseMove={(e) => {
+                            if (isTracked) handleCountryMouseMove(e, countryId)
+                          }}
+                          onMouseLeave={handleCountryMouseLeave}
+                          onClick={() => {
+                            if (isTracked) handleCountryClick(countryId)
+                          }}
+                        />
+                      )
+                    })}
+
+                    {/* Top 5 Beacon Markers */}
+                    {top10Items.slice(0, 5).map((topItem) => {
+                      const pathData = WORLD_MAP_PATHS.find((p) => p.id === topItem.country.id)
+                      if (!pathData) return null
+                      const [cx, cy] = pathData.centroid
+                      return (
+                        <g
+                          key={`beacon-${topItem.country.id}`}
+                          className="pointer-events-none transition-opacity duration-300"
+                          opacity={zoomLevel >= 1 ? 0.9 : 0}
+                        >
+                          <circle cx={cx} cy={cy} r="3.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
+                          <text
+                            x={cx}
+                            y={cy - 6}
+                            fill="#ffffff"
+                            fontSize="7"
+                            fontWeight="bold"
+                            textAnchor="middle"
+                            className="select-none font-mono"
+                            style={{ textShadow: '0 1px 3px rgba(0,0,0,0.9)' }}
                           >
-                            {hoveredItem.growthRatePct > 0
-                              ? `+${hoveredItem.growthRatePct.toFixed(1)}%`
-                              : `${hoveredItem.growthRatePct.toFixed(1)}%`}
+                            #{topItem.rank}
+                          </text>
+                        </g>
+                      )
+                    })}
+                  </g>
+                </svg>
+
+                {/* Floating Dynamic Tooltip HUD */}
+                {hoveredItem && tooltipPos && (
+                  <div
+                    className="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-3 transition-transform duration-75"
+                    style={{
+                      left: `${tooltipPos.x}px`,
+                      top: `${tooltipPos.y}px`,
+                    }}
+                  >
+                    <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[200px] text-xs space-y-2">
+                      {/* Header */}
+                      <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <CountryFlag iso2={hoveredItem.country.iso2} className="w-5 h-3.5 rounded-sm" />
+                          <span className="font-bold text-white text-sm">
+                            {getCountryName(hoveredItem.country, lang)}
                           </span>
                         </div>
-                      )}
-                    </div>
+                        <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px]">
+                          #{hoveredItem.rank}
+                        </span>
+                      </div>
 
-                    {/* Hint */}
-                    <div className="text-[10px] text-indigo-400 font-medium pt-1 border-t border-slate-800 flex items-center justify-between">
-                      <span>{t.clickCountryHint}</span>
-                      <ChevronRight className="w-3 h-3" />
+                      {/* Stats List */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-slate-400">
+                          <span>{t.cardTotalGdp}:</span>
+                          <span className="font-mono font-bold text-slate-100">
+                            {formatGdpCompact(hoveredItem.totalGdpUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-slate-400">
+                          <span>{t.cardPerCapita}:</span>
+                          <span className="font-mono text-slate-300">
+                            {formatPerCapita(hoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                        </div>
+                        {hoveredItem.growthRatePct !== null && (
+                          <div className="flex items-center justify-between text-slate-400">
+                            <span>{t.metricGrowth}:</span>
+                            <span
+                              className={`font-mono font-semibold ${
+                                hoveredItem.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                              }`}
+                            >
+                              {hoveredItem.growthRatePct > 0
+                                ? `+${hoveredItem.growthRatePct.toFixed(1)}%`
+                                : `${hoveredItem.growthRatePct.toFixed(1)}%`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Hint */}
+                      <div className="text-[10px] text-indigo-400 font-medium pt-1 border-t border-slate-800 flex items-center justify-between">
+                        <span>{t.clickCountryHint}</span>
+                        <ChevronRight className="w-3 h-3" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Bottom Map Info Footer */}
-              <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-                <Info className="w-3.5 h-3.5 text-indigo-400" />
-                <span>{t.clickCountryHint}</span>
+                {/* Bottom Map Info Footer */}
+                <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+                  <Info className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>{t.clickCountryHint}</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* CHOROPLETH COLOR SCALE LEGEND */}
             <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
