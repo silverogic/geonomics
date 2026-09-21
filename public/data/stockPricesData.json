@@ -1180,20 +1180,8 @@
     "isSupported": true,
     "currency": "AUD",
     "currentPrice": 8731.2,
-    "changePct": -3.74,
+    "changePct": -3.62,
     "points": [
-      {
-        "date": "2026-08-18",
-        "close": 9070
-      },
-      {
-        "date": "2026-08-19",
-        "close": 9053.8
-      },
-      {
-        "date": "2026-08-20",
-        "close": 9083.8
-      },
       {
         "date": "2026-08-21",
         "close": 9058.9
@@ -1288,20 +1276,8 @@
     "isSupported": true,
     "currency": "KRW",
     "currentPrice": 6894.23,
-    "changePct": 0.36,
+    "changePct": -0.27,
     "points": [
-      {
-        "date": "2026-08-18",
-        "close": 6869.83
-      },
-      {
-        "date": "2026-08-19",
-        "close": 6471.17
-      },
-      {
-        "date": "2026-08-20",
-        "close": 6852.58
-      },
       {
         "date": "2026-08-21",
         "close": 6912.95
@@ -3503,21 +3479,9 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13739.14,
-    "changePct": -0.92,
+    "currentPrice": 13728.42,
+    "changePct": -1.75,
     "points": [
-      {
-        "date": "2026-08-17",
-        "close": 13866.18
-      },
-      {
-        "date": "2026-08-18",
-        "close": 13929.67
-      },
-      {
-        "date": "2026-08-19",
-        "close": 13919.82
-      },
       {
         "date": "2026-08-20",
         "close": 13972.66
@@ -3603,8 +3567,8 @@
         "close": 13739.14
       },
       {
-        "date": "2026-09-18",
-        "close": 13739.14
+        "date": "2026-09-20",
+        "close": 13728.42
       }
     ]
   },
