@@ -32,7 +32,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         <div className="flex items-center gap-4 sm:gap-6">
           <div className="flex items-center gap-2 text-indigo-400 font-semibold uppercase tracking-wider shrink-0">
             <TrendingUp className="w-4 h-4" />
-            <span>{t.tickerTitle} ({baseCurrency})</span>
+            <span>{t.tickerTitle}</span>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">

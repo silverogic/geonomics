@@ -913,50 +913,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         </div>
       </div>
 
-      {/* 4. GLOBAL TOP 10 LEADERBOARD QUICK BAR */}
-      <div className="bg-slate-900/80 border border-slate-800/80 rounded-3xl p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-amber-400 font-bold text-sm">🏆</span>
-            <h3 className="text-sm font-bold text-white tracking-tight">{t.top10Title}</h3>
-          </div>
-          <span className="text-[11px] text-slate-400 font-medium">
-            {t.yearLabel}: {selectedYear}
-          </span>
-        </div>
-
-        {/* Scrollable quick country pills */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 xl:grid-cols-10 gap-2.5">
-          {top10Items.map((item) => (
-            <button
-              key={`top10-${item.country.id}`}
-              onClick={() => {
-                setPinnedCountryId(item.country.id)
-                onSelectCountry(item.country)
-              }}
-              className={`flex flex-col p-2.5 rounded-2xl border transition-all text-left group ${pinnedCountryId === item.country.id
-                ? 'bg-indigo-950/60 border-indigo-500/80 shadow-md shadow-indigo-500/20'
-                : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/40'
-                }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <CountryFlag iso2={item.country.iso2} className="w-4 h-3 rounded-sm" />
-                <span className="text-[10px] font-bold font-mono px-1 rounded bg-slate-800 text-slate-300">
-                  #{item.rank}
-                </span>
-              </div>
-              <div className="font-bold text-xs text-slate-200 truncate group-hover:text-white">
-                {getCountryName(item.country, lang)}
-              </div>
-              <div className="text-[11px] font-mono text-indigo-400 font-semibold mt-0.5 truncate">
-                {formatGdpCompact(item.totalGdpUsd, baseCurrency, usdToBase, lang)}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 5. FULL RANKING LIST TABLE */}
+      {/* 4. FULL RANKING LIST TABLE */}
       <div className="pt-2">
         <RankingTable
           items={items}
