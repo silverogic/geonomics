@@ -140,11 +140,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       if (metric === 'gdp') {
         const gdp = item.totalGdpUsd
-        if (gdp >= 10_000_000_000_000) return '#f59e0b' // $10T+ Amber Gold (USA, China)
-        if (gdp >= 2_000_000_000_000) return '#10b981' // $2T-$10T Emerald Green
-        if (gdp >= 500_000_000_000) return '#06b6d4' // $500B-$2T Cyan
-        if (gdp >= 100_000_000_000) return '#6366f1' // $100B-$500B Indigo
-        return '#475569' // < $100B Slate
+        if (gdp >= 10_000_000_000_000) return '#fbbf24' // $10T+ Vivid Gold (USA, China)
+        if (gdp >= 2_000_000_000_000) return '#34d399' // $2T-$10T Bright Mint/Emerald (Germany, Japan, India, UK, France, Italy, Brazil, Canada)
+        if (gdp >= 500_000_000_000) return '#10b981' // $500B-$2T Medium Emerald (South Korea, Australia, Mexico, Spain, Indonesia, etc.)
+        if (gdp >= 100_000_000_000) return '#047857' // $100B-$500B Deep Forest (Netherlands, Saudi, Switzerland, Poland, etc.)
+        return '#064e3b' // < $100B Dark Forest Slate
       }
 
       if (metric === 'perCapita') {
@@ -507,7 +507,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         className="pointer-events-none transition-opacity duration-300"
                         opacity={zoomLevel >= 1 ? 0.9 : 0}
                       >
-                        <circle cx={cx} cy={cy} r="3.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
+                        <circle cx={cx} cy={cy} r="3.5" fill="#fbbf24" stroke="#ffffff" strokeWidth="1" />
                         <text
                           x={cx}
                           y={cy - 6}
@@ -636,23 +636,23 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               {metric === 'gdp' && (
                 <>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#fbbf24] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">$10T+</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">$2T ~ $10T</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">$500B ~ $2T</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">$100B ~ $500B</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#475569] shadow-sm"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#064e3b] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">&lt; $100B</span>
                   </div>
                 </>
