@@ -63,6 +63,133 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   // Ref to the table wrapper — used to scroll data rows into view below the dock
   const tableWrapperRef = useRef<HTMLDivElement>(null)
 
+  // Ref to the datatable scroll container, table, and mobile floating dock
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const mobileDockRef = useRef<HTMLDivElement>(null)
+
+  // Mobile dock state
+  const [isMobileDockActive, setIsMobileDockActive] = useState(false)
+  const [dockTop, setDockTop] = useState(100)
+  const [dockGeometry, setDockGeometry] = useState<{
+    left: number
+    width: number
+    tableWidth: number
+    colWidths: number[]
+  }>({
+    left: 0,
+    width: 0,
+    tableWidth: 0,
+    colWidths: [],
+  })
+
+  // Prevent circular scroll sync between table container and mobile dock
+  const isSyncingFromDock = useRef(false)
+  const isSyncingFromContainer = useRef(false)
+
+  const handleContainerScroll = () => {
+    if (isSyncingFromDock.current) return
+    if (mobileDockRef.current && tableContainerRef.current) {
+      isSyncingFromContainer.current = true
+      mobileDockRef.current.scrollLeft = tableContainerRef.current.scrollLeft
+      requestAnimationFrame(() => {
+        isSyncingFromContainer.current = false
+      })
+    }
+  }
+
+  const handleDockScroll = () => {
+    if (isSyncingFromContainer.current) return
+    if (mobileDockRef.current && tableContainerRef.current) {
+      isSyncingFromDock.current = true
+      tableContainerRef.current.scrollLeft = mobileDockRef.current.scrollLeft
+      requestAnimationFrame(() => {
+        isSyncingFromDock.current = false
+      })
+    }
+  }
+
+  const setDockRef = (node: HTMLDivElement | null) => {
+    mobileDockRef.current = node
+    if (node && tableContainerRef.current) {
+      node.scrollLeft = tableContainerRef.current.scrollLeft
+    }
+  }
+
+  const updateGeometry = () => {
+    if (!tableRef.current || !tableContainerRef.current) return
+    const ths = tableRef.current.querySelectorAll<HTMLTableCellElement>('thead:first-of-type tr th')
+    if (ths.length === 0) return
+    const widths = Array.from(ths).map((th) => th.getBoundingClientRect().width)
+    const cRect = tableContainerRef.current.getBoundingClientRect()
+    const tRect = tableRef.current.getBoundingClientRect()
+    setDockGeometry({
+      left: cRect.left,
+      width: cRect.width,
+      tableWidth: tRect.width,
+      colWidths: widths,
+    })
+  }
+
+  useEffect(() => {
+    const checkDockVisibility = () => {
+      if (typeof window === 'undefined' || window.innerWidth >= 768) {
+        setIsMobileDockActive((prev) => (prev ? false : prev))
+        return
+      }
+      if (!tableContainerRef.current) return
+      const rect = tableContainerRef.current.getBoundingClientRect()
+      const navbarH = window.innerWidth < 640 ? 100 : 116
+      const dockHeight = 44
+
+      const shouldDock = rect.top <= navbarH && rect.bottom > navbarH
+
+      if (shouldDock) {
+        const calculatedTop = Math.min(navbarH, rect.bottom - dockHeight)
+        setDockTop((prev) => (prev !== calculatedTop ? calculatedTop : prev))
+        setIsMobileDockActive((prev) => (!prev ? true : prev))
+      } else {
+        setIsMobileDockActive((prev) => (prev ? false : prev))
+      }
+    }
+
+    const onScroll = () => {
+      checkDockVisibility()
+    }
+
+    const onResize = () => {
+      updateGeometry()
+      checkDockVisibility()
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
+
+    updateGeometry()
+    checkDockVisibility()
+
+    let ro: ResizeObserver | null = null
+    if (tableContainerRef.current) {
+      ro = new ResizeObserver(() => {
+        updateGeometry()
+        checkDockVisibility()
+      })
+      ro.observe(tableContainerRef.current)
+    }
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onResize)
+      if (ro) ro.disconnect()
+    }
+  }, [items.length, lang, baseCurrency])
+
+  useEffect(() => {
+    if (isMobileDockActive && mobileDockRef.current && tableContainerRef.current) {
+      mobileDockRef.current.scrollLeft = tableContainerRef.current.scrollLeft
+    }
+  }, [isMobileDockActive])
+
   // When searchTerm changes (and has content), scroll the table into view so that
   // the first matching data row appears below the sticky thead (dock), not behind it.
   // scroll-padding-top in index.css ensures the dock offset is respected.
@@ -145,6 +272,127 @@ export const RankingTable: React.FC<RankingTableProps> = ({
     )
   }
 
+  const renderHeaderCells = (isDock: boolean) => (
+    <>
+      <th
+        onClick={() => handleSort('rank')}
+        style={isDock && dockGeometry.colWidths[0] ? { width: `${dockGeometry.colWidths[0]}px`, minWidth: `${dockGeometry.colWidths[0]}px`, maxWidth: `${dockGeometry.colWidths[0]}px` } : undefined}
+        className={`${isDock ? 'sticky' : 'sticky md:static'} left-0 z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-12 min-w-[48px] max-w-[48px] text-center`}
+      >
+        <div className="flex items-center justify-center gap-1">
+          <span>{t.colRank}</span>
+          {renderSortIcon('rank')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('countryName')}
+        style={isDock && dockGeometry.colWidths[1] ? { width: `${dockGeometry.colWidths[1]}px`, minWidth: `${dockGeometry.colWidths[1]}px`, maxWidth: `${dockGeometry.colWidths[1]}px` } : undefined}
+        className={`${isDock ? 'sticky' : 'sticky md:static'} left-12 z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 ${isDock ? 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80' : 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0'} transition-colors whitespace-nowrap min-w-[145px] sm:min-w-[170px]`}
+      >
+        <div className="flex items-center gap-1.5">
+          <span>{t.colCountry}</span>
+          {renderSortIcon('countryName')}
+        </div>
+      </th>
+
+      <th
+        style={isDock && dockGeometry.colWidths[2] ? { width: `${dockGeometry.colWidths[2]}px`, minWidth: `${dockGeometry.colWidths[2]}px`, maxWidth: `${dockGeometry.colWidths[2]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[75px] sm:min-w-[85px]"
+      >
+        {t.colCurrency}
+      </th>
+
+      <th
+        onClick={() => handleSort('fxRate')}
+        style={isDock && dockGeometry.colWidths[3] ? { width: `${dockGeometry.colWidths[3]}px`, minWidth: `${dockGeometry.colWidths[3]}px`, maxWidth: `${dockGeometry.colWidths[3]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[110px] sm:min-w-[125px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
+          {renderSortIcon('fxRate')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('stockChangePct')}
+        style={isDock && dockGeometry.colWidths[4] ? { width: `${dockGeometry.colWidths[4]}px`, minWidth: `${dockGeometry.colWidths[4]}px`, maxWidth: `${dockGeometry.colWidths[4]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[140px] sm:min-w-[160px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colStockIndex}</span>
+          {renderSortIcon('stockChangePct')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('interestRatePct')}
+        style={isDock && dockGeometry.colWidths[5] ? { width: `${dockGeometry.colWidths[5]}px`, minWidth: `${dockGeometry.colWidths[5]}px`, maxWidth: `${dockGeometry.colWidths[5]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[115px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colInterestRate}</span>
+          {renderSortIcon('interestRatePct')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('totalGdpUsd')}
+        style={isDock && dockGeometry.colWidths[6] ? { width: `${dockGeometry.colWidths[6]}px`, minWidth: `${dockGeometry.colWidths[6]}px`, maxWidth: `${dockGeometry.colWidths[6]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colTotalGdp}</span>
+          {renderSortIcon('totalGdpUsd')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('gdpPerCapitaUsd')}
+        style={isDock && dockGeometry.colWidths[7] ? { width: `${dockGeometry.colWidths[7]}px`, minWidth: `${dockGeometry.colWidths[7]}px`, maxWidth: `${dockGeometry.colWidths[7]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colPerCapita}</span>
+          {renderSortIcon('gdpPerCapitaUsd')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('growthRatePct')}
+        style={isDock && dockGeometry.colWidths[8] ? { width: `${dockGeometry.colWidths[8]}px`, minWidth: `${dockGeometry.colWidths[8]}px`, maxWidth: `${dockGeometry.colWidths[8]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[85px] sm:min-w-[95px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colGrowth}</span>
+          {renderSortIcon('growthRatePct')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('inflationRatePct')}
+        style={isDock && dockGeometry.colWidths[9] ? { width: `${dockGeometry.colWidths[9]}px`, minWidth: `${dockGeometry.colWidths[9]}px`, maxWidth: `${dockGeometry.colWidths[9]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colInflation}</span>
+          {renderSortIcon('inflationRatePct')}
+        </div>
+      </th>
+
+      <th
+        onClick={() => handleSort('debtRatioPct')}
+        style={isDock && dockGeometry.colWidths[10] ? { width: `${dockGeometry.colWidths[10]}px`, minWidth: `${dockGeometry.colWidths[10]}px`, maxWidth: `${dockGeometry.colWidths[10]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm rounded-tr-xl last:rounded-tr-xl transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colDebt}</span>
+          {renderSortIcon('debtRatioPct')}
+        </div>
+      </th>
+    </>
+  )
+
   return (
     <div ref={tableWrapperRef} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
       {/* Header & Search */}
@@ -204,114 +452,46 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         </span>
       </div>
 
+      {/* Mobile Floating Sticky Header Dock */}
+      {isMobileDockActive && dockGeometry.colWidths.length > 0 && (
+        <div
+          ref={setDockRef}
+          onScroll={handleDockScroll}
+          className="fixed z-40 md:hidden overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-slate-950 border-x border-b border-slate-800 shadow-2xl transition-[top] duration-75"
+          style={{
+            top: `${dockTop}px`,
+            left: `${dockGeometry.left}px`,
+            width: `${dockGeometry.width}px`,
+          }}
+        >
+          <table
+            style={{ width: `${dockGeometry.tableWidth}px` }}
+            className="text-left border-separate border-spacing-0 text-sm table-fixed"
+          >
+            <colgroup>
+              {dockGeometry.colWidths.map((w, idx) => (
+                <col key={idx} style={{ width: `${w}px` }} />
+              ))}
+            </colgroup>
+            <thead>
+              <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
+                {renderHeaderCells(true)}
+              </tr>
+            </thead>
+          </table>
+        </div>
+      )}
+
       {/* Datatable */}
-      <div className="rounded-xl border border-slate-800 overflow-x-auto md:overflow-visible scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-        <table className="w-full text-left border-separate border-spacing-0 text-sm">
+      <div
+        ref={tableContainerRef}
+        onScroll={handleContainerScroll}
+        className="rounded-xl border border-slate-800 overflow-x-auto md:overflow-visible scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent"
+      >
+        <table ref={tableRef} className="w-full text-left border-separate border-spacing-0 text-sm">
           <thead className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950">
             <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
-              <th
-                onClick={() => handleSort('rank')}
-                className="sticky md:static left-0 z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-12 min-w-[48px] max-w-[48px] text-center"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>{t.colRank}</span>
-                  {renderSortIcon('rank')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('countryName')}
-                className="sticky md:static left-12 z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0 transition-colors whitespace-nowrap min-w-[145px] sm:min-w-[170px]"
-              >
-                <div className="flex items-center gap-1.5">
-                  <span>{t.colCountry}</span>
-                  {renderSortIcon('countryName')}
-                </div>
-              </th>
-
-              <th className="bg-slate-950 py-3 px-2 sm:px-2.5 border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[75px] sm:min-w-[85px]">
-                {t.colCurrency}
-              </th>
-
-              <th
-                onClick={() => handleSort('fxRate')}
-                className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[110px] sm:min-w-[125px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
-                  {renderSortIcon('fxRate')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('stockChangePct')}
-                className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[140px] sm:min-w-[160px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colStockIndex}</span>
-                  {renderSortIcon('stockChangePct')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('interestRatePct')}
-                className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[115px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colInterestRate}</span>
-                  {renderSortIcon('interestRatePct')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('totalGdpUsd')}
-                className="bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colTotalGdp}</span>
-                  {renderSortIcon('totalGdpUsd')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('gdpPerCapitaUsd')}
-                className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colPerCapita}</span>
-                  {renderSortIcon('gdpPerCapitaUsd')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('growthRatePct')}
-                className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[85px] sm:min-w-[95px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colGrowth}</span>
-                  {renderSortIcon('growthRatePct')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('inflationRatePct')}
-                className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colInflation}</span>
-                  {renderSortIcon('inflationRatePct')}
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort('debtRatioPct')}
-                className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm rounded-tr-xl last:rounded-tr-xl transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
-              >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colDebt}</span>
-                  {renderSortIcon('debtRatioPct')}
-                </div>
-              </th>
+              {renderHeaderCells(false)}
             </tr>
           </thead>
 
