@@ -152,6 +152,8 @@ export const translations = {
     colGrowth: 'Growth Rate',
     colDebt: 'Gov Debt',
     colInflation: 'Inflation',
+    tableMobileHint: 'Swipe horizontally to explore all 11 economic indicators',
+    tableMobileAllMetrics: '11 Indicators',
 
     // Footer
     footerZeroStorageTitle: 'Zero-Storage On-Demand Architecture',
@@ -316,6 +318,8 @@ export const translations = {
     colGrowth: '성장률',
     colDebt: '부채비율',
     colInflation: '인플레이션',
+    tableMobileHint: '좌우로 스크롤하여 11개 전체 경제 지표 탐색',
+    tableMobileAllMetrics: '11개 지표',
 
     // Footer
     footerZeroStorageTitle: '무보관 온디맨드(Zero-Storage On-Demand) 시스템',
@@ -480,6 +484,8 @@ export const translations = {
     colGrowth: '成長率',
     colDebt: '債務比率',
     colInflation: 'インフレ率',
+    tableMobileHint: '左右にスクロールして全11指標を確認',
+    tableMobileAllMetrics: '11指標',
 
     // Footer
     footerZeroStorageTitle: 'ゼロストレージ・オンデマンドシステム',
@@ -644,6 +650,8 @@ export const translations = {
     colGrowth: 'Crecimiento',
     colDebt: 'Deuda pública',
     colInflation: 'Inflación',
+    tableMobileHint: 'Desliza horizontalmente para ver los 11 indicadores',
+    tableMobileAllMetrics: '11 Indicadores',
 
     // Footer
     footerZeroStorageTitle: 'Arquitectura bajo demanda sin almacenamiento',
@@ -808,6 +816,8 @@ export const translations = {
     colGrowth: '增长率',
     colDebt: '负债率',
     colInflation: '通胀率',
+    tableMobileHint: '左右滑动即可查看全部 11 项经济指标',
+    tableMobileAllMetrics: '11项指标',
 
     // Footer
     footerZeroStorageTitle: '零持久化存储 · 纯即时响应架构',
