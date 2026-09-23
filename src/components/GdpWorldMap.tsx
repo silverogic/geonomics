@@ -291,9 +291,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
             <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
               {t.mapTitle}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              {t.mapSubtitle}
-            </p>
           </div>
 
           {/* Quick Country Search */}
@@ -355,25 +352,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               </select>
             </div>
 
-            {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
-            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
-              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                {t.yearLabel}:
-              </span>
-              {ECONOMIC_YEAR_OPTIONS.map((opt) => (
-                <button
-                  key={opt.year}
-                  onClick={() => onYearChange(opt.year)}
-                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                    }`}
-                >
-                  {t[opt.labelKey].replace('{year}', opt.year)}
-                </button>
-              ))}
-            </div>
-
             {/* Map Style Switcher (2 options - toggle switch permitted under 4 options) */}
             <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
               <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
@@ -403,6 +381,25 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <Globe className="w-3.5 h-3.5" />
                 <span>{t.mapStyleVector}</span>
               </button>
+            </div>
+
+            {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
+            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
+              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
+                {t.yearLabel}:
+              </span>
+              {ECONOMIC_YEAR_OPTIONS.map((opt) => (
+                <button
+                  key={opt.year}
+                  onClick={() => onYearChange(opt.year)}
+                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    }`}
+                >
+                  {t[opt.labelKey].replace('{year}', opt.year)}
+                </button>
+              ))}
             </div>
           </div>
         </div>
