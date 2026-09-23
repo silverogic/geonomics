@@ -277,9 +277,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <th
         onClick={() => handleSort('rank')}
         style={isDock && dockGeometry.colWidths[0] ? { width: `${dockGeometry.colWidths[0]}px`, minWidth: `${dockGeometry.colWidths[0]}px`, maxWidth: `${dockGeometry.colWidths[0]}px` } : undefined}
-        className={`${isDock ? 'sticky' : 'sticky md:static'} left-0 z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-12 min-w-[48px] max-w-[48px] text-center`}
+        className={`${isDock ? 'sticky' : 'sticky md:static'} left-0 z-30 bg-slate-950 py-3 px-1 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center`}
       >
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-0.5 sm:gap-1">
           <span>{t.colRank}</span>
           {renderSortIcon('rank')}
         </div>
@@ -288,9 +288,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <th
         onClick={() => handleSort('countryName')}
         style={isDock && dockGeometry.colWidths[1] ? { width: `${dockGeometry.colWidths[1]}px`, minWidth: `${dockGeometry.colWidths[1]}px`, maxWidth: `${dockGeometry.colWidths[1]}px` } : undefined}
-        className={`${isDock ? 'sticky' : 'sticky md:static'} left-12 z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 ${isDock ? 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80' : 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0'} transition-colors whitespace-nowrap min-w-[145px] sm:min-w-[170px]`}
+        className={`${isDock ? 'sticky' : 'sticky md:static'} ${isDock ? 'left-10 sm:left-12' : 'left-10 sm:left-12 md:static'} z-30 bg-slate-950 py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 ${isDock ? 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80' : 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0'} transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}
       >
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <span>{t.colCountry}</span>
           {renderSortIcon('countryName')}
         </div>
@@ -517,19 +517,19 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                   onClick={() => onSelectCountry(item.country)}
                   className="hover:bg-slate-800/70 transition-colors cursor-pointer group"
                 >
-                  <td className="sticky md:static left-0 z-20 md:z-auto bg-slate-900 group-hover:bg-slate-800/95 py-3 px-2 sm:px-3 border-b border-slate-800/60 font-mono font-bold text-slate-400 group-hover:text-indigo-400 whitespace-nowrap w-12 min-w-[48px] max-w-[48px] text-center transition-colors">
+                  <td className="sticky md:static left-0 z-20 md:z-auto bg-slate-900 group-hover:bg-slate-800/95 py-3 px-1 sm:px-3 border-b border-slate-800/60 font-mono font-bold text-slate-400 group-hover:text-indigo-400 whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center transition-colors">
                     #{item.rank}
                   </td>
 
-                  <td className="sticky md:static left-12 z-20 md:z-auto bg-slate-900 group-hover:bg-slate-800/95 py-3 px-2 sm:px-3 border-b border-slate-800/60 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0 transition-colors whitespace-nowrap min-w-[145px] sm:min-w-[170px]">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                      <CountryFlag iso2={item.country.iso2} className="w-6 h-4 sm:w-7 sm:h-5 shrink-0" alt={displayName} />
+                  <td className="sticky md:static left-10 sm:left-12 z-20 md:z-auto bg-slate-900 group-hover:bg-slate-800/95 py-3 px-1.5 sm:px-3 border-b border-slate-800/60 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]">
+                    <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+                      <CountryFlag iso2={item.country.iso2} className="w-5 h-3.5 sm:w-7 sm:h-5 shrink-0" alt={displayName} />
                       <div className="min-w-0">
-                        <div className="font-bold text-slate-100 group-hover:text-white flex items-center gap-1.5 truncate">
-                          <span>{displayName}</span>
-                          <span className="text-[11px] font-mono text-slate-500">{item.country.id}</span>
+                        <div className="font-bold text-slate-100 group-hover:text-white flex items-center gap-1 sm:gap-1.5 min-w-0">
+                          <span className="truncate max-w-[68px] sm:max-w-none">{displayName}</span>
+                          <span className="text-[11px] font-mono text-slate-500 hidden md:inline shrink-0">{item.country.id}</span>
                         </div>
-                        <span className="text-xs text-slate-400 truncate block">{secondaryName}</span>
+                        <span className="text-xs text-slate-400 truncate hidden md:block">{secondaryName}</span>
                       </div>
                     </div>
                   </td>
