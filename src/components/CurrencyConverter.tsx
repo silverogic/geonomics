@@ -57,18 +57,18 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto,1fr] gap-3 items-center">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Input Box */}
-        <div className="bg-slate-950/80 border border-slate-700/60 rounded-lg p-2.5 focus-within:border-indigo-500 transition-colors">
-          <div className="text-[11px] font-semibold text-slate-400 mb-1 flex justify-between">
-            <span>{t.converterSending}</span>
-            <span className="text-slate-300 font-bold font-mono">{fromCurrency}</span>
+        <div className="flex-1 min-w-0 bg-slate-950/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3 focus-within:border-indigo-500 transition-colors">
+          <div className="text-[11px] font-semibold text-slate-400 mb-0.5 flex justify-between items-center">
+            <span className="truncate">{t.converterSending}</span>
+            <span className="text-slate-300 font-bold font-mono shrink-0 ml-1">{fromCurrency}</span>
           </div>
           <input
             type="number"
             value={amount === 0 ? '' : amount}
             onChange={(e) => setAmount(Number(e.target.value) || 0)}
-            className="w-full bg-transparent text-lg font-mono font-bold text-white focus:outline-none"
+            className="w-full bg-transparent text-base sm:text-lg font-mono font-bold text-white focus:outline-none"
             placeholder="0"
           />
         </div>
@@ -76,20 +76,22 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         {/* Swap Button */}
         <button
           onClick={handleSwap}
-          className="mx-auto p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-all transform hover:rotate-180 duration-200"
+          className="shrink-0 p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-all transform hover:rotate-180 duration-200"
           title={t.swapCurrencies}
+          aria-label={t.swapCurrencies}
         >
           <ArrowLeftRight className="w-4 h-4" />
         </button>
 
         {/* Output Box */}
-        <div className="bg-slate-950/80 border border-slate-700/60 rounded-lg p-2.5">
-          <div className="text-[11px] font-semibold text-slate-400 mb-1 flex justify-between">
-            <span>{t.converterConverted}</span>
-            <span className="text-indigo-400 font-bold font-mono">{toCurrency}</span>
+        <div className="flex-1 min-w-0 bg-slate-950/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3">
+          <div className="text-[11px] font-semibold text-slate-400 mb-0.5 flex justify-between items-center">
+            <span className="truncate">{t.converterConverted}</span>
+            <span className="text-indigo-400 font-bold font-mono shrink-0 ml-1">{toCurrency}</span>
           </div>
-          <div className="text-lg font-mono font-bold text-emerald-400 overflow-x-auto truncate">
-            {formatExchangeRate(convertedAmount, 2)} {toCurrency}
+          <div className="text-base sm:text-lg font-mono font-bold text-emerald-400 truncate flex items-baseline gap-1.5">
+            <span>{formatExchangeRate(convertedAmount, 2)}</span>
+            <span className="text-xs font-normal text-slate-400 font-sans">{toCurrency}</span>
           </div>
         </div>
       </div>
