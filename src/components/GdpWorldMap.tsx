@@ -3,7 +3,6 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
-  Sparkles,
   TrendingUp,
   TrendingDown,
   Info,
