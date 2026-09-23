@@ -255,7 +255,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('totalGdpUsd')}
-                className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap"
+                className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm max-sm:rounded-tr-xl transition-colors whitespace-nowrap"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colTotalGdp}</span>
@@ -275,7 +275,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('growthRatePct')}
-                className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap"
+                className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right hidden sm:table-cell border-b border-slate-800 shadow-sm sm:max-lg:rounded-tr-xl transition-colors whitespace-nowrap"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colGrowth}</span>
@@ -295,7 +295,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
               <th
                 onClick={() => handleSort('debtRatioPct')}
-                className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right hidden lg:table-cell border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap"
+                className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right hidden lg:table-cell border-b border-slate-800 shadow-sm rounded-tr-xl last:rounded-tr-xl transition-colors whitespace-nowrap"
               >
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colDebt}</span>
