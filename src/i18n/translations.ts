@@ -150,7 +150,7 @@ export const translations = {
     colTotalGdp: 'Total GDP ({base})',
     colPerCapita: 'GDP Per Capita',
     colGrowth: 'Growth Rate',
-    colDebt: 'Gov Debt (% GDP, IMF)',
+    colDebt: 'Gov Debt (% GDP)',
     colInflation: 'Inflation (IMF)',
 
     // Footer
@@ -314,7 +314,7 @@ export const translations = {
     colTotalGdp: '총 GDP ({base})',
     colPerCapita: '1인당 GDP',
     colGrowth: '성장률',
-    colDebt: '부채 비율 (% GDP, IMF)',
+    colDebt: '부채 비율 (% GDP)',
     colInflation: '인플레이션 (IMF)',
 
     // Footer
@@ -478,7 +478,7 @@ export const translations = {
     colTotalGdp: '名目GDP ({base})',
     colPerCapita: '1人当たりGDP',
     colGrowth: '成長率',
-    colDebt: '債務比率 (% GDP, IMF)',
+    colDebt: '債務比率 (% GDP)',
     colInflation: 'インフレ率 (IMF)',
 
     // Footer
@@ -642,7 +642,7 @@ export const translations = {
     colTotalGdp: 'PIB total ({base})',
     colPerCapita: 'PIB per cápita',
     colGrowth: 'Crecimiento',
-    colDebt: 'Deuda pública (% PIB, FMI)',
+    colDebt: 'Deuda pública (% PIB)',
     colInflation: 'Inflación (FMI)',
 
     // Footer
@@ -806,7 +806,7 @@ export const translations = {
     colTotalGdp: '名义 GDP ({base})',
     colPerCapita: '人均 GDP',
     colGrowth: '增长率',
-    colDebt: '负债率 (% GDP, IMF)',
+    colDebt: '负债率 (% GDP)',
     colInflation: '通胀率 (IMF)',
 
     // Footer
