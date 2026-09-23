@@ -1,5 +1,12 @@
 import type { ExchangeRates } from '../types/economics'
 
+interface CoinbaseApiResponse {
+  data?: {
+    currency: string
+    rates: Record<string, string>
+  }
+}
+
 interface ErApiResponse {
   result: string
   time_last_update_utc: string
@@ -8,10 +15,14 @@ interface ErApiResponse {
 
 let cachedRates: ExchangeRates | null = null
 let cacheTimestamp = 0
-const CACHE_DURATION_MS = 10 * 60 * 1000 // 10 minutes cache
+const CACHE_DURATION_MS = 60 * 1000 // 1 minute cache for real-time market spot rates
+let inFlightRequest: Promise<ExchangeRates> | null = null
 
 /**
- * Fetches real-time exchange rates on-demand with in-memory caching and fallback mechanism.
+ * Fetches real-time exchange rates on-demand with multi-tier failover:
+ * 1. Coinbase Public Exchange Rates API (real-time live spot rates, covers 600+ currencies, CORS open, no key)
+ * 2. open.er-api.com (daily official benchmark rates fallback)
+ * 3. api.frankfurter.dev (European Central Bank reference rates fallback)
  */
 export async function fetchExchangeRates(forceRefresh = false): Promise<ExchangeRates> {
   const now = Date.now()
@@ -19,31 +30,73 @@ export async function fetchExchangeRates(forceRefresh = false): Promise<Exchange
     return cachedRates
   }
 
-  try {
-    // Primary source: open.er-api.com (Supports 160+ fiat currencies, open CORS, no API key required)
-    const response = await fetch('https://open.er-api.com/v6/latest/USD')
-    if (!response.ok) {
-      throw new Error(`Exchange rate API error: ${response.statusText}`)
-    }
-    const data: ErApiResponse = await response.json()
+  if (inFlightRequest) {
+    return inFlightRequest
+  }
 
-    if (data.result === 'success' && data.rates) {
-      cachedRates = {
-        base: 'USD',
-        timeLastUpdateUtc: data.time_last_update_utc || new Date().toUTCString(),
-        rates: data.rates,
-      }
-      cacheTimestamp = now
-      return cachedRates
-    }
-    throw new Error('Invalid exchange API response format')
-  } catch (primaryErr) {
-    console.warn('Primary exchange API failed, attempting fallback to European Central Bank...', primaryErr)
-
-    // Secondary backup: Frankfurter API (European Central Bank reference rates)
+  inFlightRequest = (async () => {
     try {
+      // Tier 1: Coinbase Public Exchange Rates API (Real-time live market feed)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 6000)
+
+      try {
+        const cbRes = await fetch('https://api.coinbase.com/v2/exchange-rates?currency=USD', {
+          signal: controller.signal,
+          headers: { Accept: 'application/json' },
+        })
+        clearTimeout(timeoutId)
+
+        if (cbRes.ok) {
+          const cbData: CoinbaseApiResponse = await cbRes.json()
+          if (cbData.data?.rates) {
+            const numRates: Record<string, number> = { USD: 1 }
+            for (const [key, val] of Object.entries(cbData.data.rates)) {
+              const num = parseFloat(val)
+              if (!isNaN(num) && num > 0) {
+                numRates[key] = num
+              }
+            }
+
+            // Ensure essential benchmark currencies are present
+            if (numRates.KRW && numRates.EUR && numRates.JPY) {
+              const nowUtc = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC'
+              cachedRates = {
+                base: 'USD',
+                timeLastUpdateUtc: nowUtc,
+                rates: numRates,
+              }
+              cacheTimestamp = Date.now()
+              return cachedRates
+            }
+          }
+        }
+      } catch (cbErr) {
+        console.warn('Coinbase real-time API failed or timed out, trying Tier 2 (open.er-api.com)...', cbErr)
+      }
+
+      // Tier 2: open.er-api.com (Daily benchmark rates)
+      try {
+        const erRes = await fetch('https://open.er-api.com/v6/latest/USD')
+        if (erRes.ok) {
+          const erData: ErApiResponse = await erRes.json()
+          if (erData.result === 'success' && erData.rates) {
+            cachedRates = {
+              base: 'USD',
+              timeLastUpdateUtc: erData.time_last_update_utc || new Date().toUTCString(),
+              rates: erData.rates,
+            }
+            cacheTimestamp = Date.now()
+            return cachedRates
+          }
+        }
+      } catch (erErr) {
+        console.warn('Tier 2 exchange API failed, trying Tier 3 (ECB / Frankfurter)...', erErr)
+      }
+
+      // Tier 3: Frankfurter API (European Central Bank reference rates)
       const fbResponse = await fetch('https://api.frankfurter.dev/v1/latest?base=USD')
-      if (!fbResponse.ok) throw new Error('Backup API error')
+      if (!fbResponse.ok) throw new Error('All exchange rate providers failed')
       const fbData = await fbResponse.json()
 
       const ratesWithUsd = {
@@ -56,14 +109,18 @@ export async function fetchExchangeRates(forceRefresh = false): Promise<Exchange
         timeLastUpdateUtc: `${fbData.date} 16:00 CET (ECB)`,
         rates: ratesWithUsd,
       }
-      cacheTimestamp = now
+      cacheTimestamp = Date.now()
       return cachedRates
-    } catch (backupErr) {
-      console.error('All exchange rate providers failed:', backupErr)
+    } catch (finalErr) {
+      console.error('All exchange rate providers failed:', finalErr)
       if (cachedRates) return cachedRates // Return stale cached rates if available
       throw new Error('Failed to retrieve exchange rate data from public providers.')
+    } finally {
+      inFlightRequest = null
     }
-  }
+  })()
+
+  return inFlightRequest
 }
 
 /**

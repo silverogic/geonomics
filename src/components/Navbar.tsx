@@ -1,5 +1,5 @@
 import React from 'react'
-import { Globe, Layers, GitCompare, DollarSign, Languages } from 'lucide-react'
+import { Globe, Layers, GitCompare, DollarSign, Languages, RefreshCw } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language } from '../types/economics'
 import { translations } from '../i18n/translations'
@@ -11,6 +11,8 @@ interface NavbarProps {
   setBaseCurrency: (c: BaseCurrency) => void
   lang: Language
   setLang: (l: Language) => void
+  onRefresh?: () => void
+  isRefreshing?: boolean
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,6 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setBaseCurrency,
   lang,
   setLang,
+  onRefresh,
+  isRefreshing = false,
 }) => {
   const t = translations[lang]
 
@@ -117,6 +121,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ))}
               </select>
             </div>
+
+            {/* Refresh Button */}
+            {onRefresh && (
+              <button
+                onClick={onRefresh}
+                disabled={isRefreshing}
+                title={t.refreshTooltip}
+                className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-200 hover:text-white transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-indigo-400 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">{t.refreshBtn}</span>
+              </button>
+            )}
           </div>
         </div>
 

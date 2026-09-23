@@ -84,9 +84,15 @@ export const TickerBar: React.FC<TickerBarProps> = ({
           )}
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] text-slate-400 shrink-0">
-          <Clock className="w-3 h-3" />
-          <span>{t.asOf} {exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}</span>
+        <div className="flex items-center gap-2 text-[11px] text-slate-400 shrink-0">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            {t.liveBadge || 'LIVE'}
+          </span>
+          <div className="flex items-center gap-1">
+            <Clock className="w-3 h-3 text-slate-500" />
+            <span>{t.asOf} {exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}</span>
+          </div>
         </div>
       </div>
     </div>
