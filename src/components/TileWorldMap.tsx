@@ -167,7 +167,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   style={{
                     backgroundColor: fillColor,
                   }}
-                  className={`w-full h-full aspect-square rounded-[3px] sm:rounded-[4px] flex items-center justify-center relative transition-all duration-150 ${
+                  className={`w-full h-full aspect-square rounded-[3px] sm:rounded-[4px] flex items-center justify-center relative transition-[transform,filter,opacity] duration-150 ${
                     isTracked
                       ? 'cursor-pointer'
                       : 'cursor-default opacity-40 pointer-events-none'

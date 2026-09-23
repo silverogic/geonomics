@@ -447,7 +447,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 </defs>
 
                 {/* Country Polygons */}
-                <g className="transition-all duration-300">
+                <g className="transition-opacity duration-300">
                   {WORLD_MAP_PATHS.map((countryPath) => {
                     const countryId = countryPath.id
                     const isTracked = countryItemMap.has(countryId)
@@ -481,7 +481,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                               ? 0.35
                               : 0.65
                         }
-                        className={`transition-all duration-200 ${isTracked
+                        className={`transition-[fill,stroke,opacity,filter] duration-200 ${isTracked
                           ? 'cursor-pointer hover:brightness-125'
                           : 'cursor-default pointer-events-none'
                           }`}
