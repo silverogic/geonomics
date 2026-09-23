@@ -117,21 +117,43 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   }
 
   const updateGeometry = () => {
+    // 1. If on desktop (>= 768px), mobile dock is not needed at all! Skip completely.
+    if (typeof window === 'undefined' || window.innerWidth >= 768) return
+
     if (!tableRef.current || !tableContainerRef.current) return
     const ths = tableRef.current.querySelectorAll<HTMLTableCellElement>('thead:first-of-type tr th')
     if (ths.length === 0) return
-    const widths = Array.from(ths).map((th) => th.getBoundingClientRect().width)
+
+    const widths = Array.from(ths).map((th) => Math.round(th.getBoundingClientRect().width))
     const cRect = tableContainerRef.current.getBoundingClientRect()
     const tRect = tableRef.current.getBoundingClientRect()
-    setDockGeometry({
-      left: cRect.left,
-      width: cRect.width,
-      tableWidth: tRect.width,
-      colWidths: widths,
+    const newLeft = Math.round(cRect.left)
+    const newWidth = Math.round(cRect.width)
+    const newTableWidth = Math.round(tRect.width)
+
+    // Only update state if geometry actually changed! Prevents unnecessary re-renders.
+    setDockGeometry((prev) => {
+      if (
+        prev.left === newLeft &&
+        prev.width === newWidth &&
+        prev.tableWidth === newTableWidth &&
+        prev.colWidths.length === widths.length &&
+        prev.colWidths.every((w, i) => Math.abs(w - widths[i]) < 1)
+      ) {
+        return prev // Same reference, React skips re-rendering!
+      }
+      return {
+        left: newLeft,
+        width: newWidth,
+        tableWidth: newTableWidth,
+        colWidths: widths,
+      }
     })
   }
 
   useEffect(() => {
+    let resizeRaf: number | null = null
+
     const checkDockVisibility = () => {
       if (typeof window === 'undefined' || window.innerWidth >= 768) {
         setIsMobileDockActive((prev) => (prev ? false : prev))
@@ -157,29 +179,50 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       checkDockVisibility()
     }
 
-    const onResize = () => {
-      updateGeometry()
-      checkDockVisibility()
+    const handleResize = () => {
+      if (typeof window === 'undefined') return
+
+      // If resized to desktop, immediately disable mobile dock without DOM measurement
+      if (window.innerWidth >= 768) {
+        setIsMobileDockActive((prev) => (prev ? false : prev))
+        return
+      }
+
+      // On mobile, throttle with requestAnimationFrame to prevent layout thrashing
+      if (resizeRaf) cancelAnimationFrame(resizeRaf)
+      resizeRaf = requestAnimationFrame(() => {
+        updateGeometry()
+        checkDockVisibility()
+      })
     }
 
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onResize, { passive: true })
+    window.addEventListener('resize', handleResize, { passive: true })
 
-    updateGeometry()
+    // Initial check (runs once on mount or when items/lang change)
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      updateGeometry()
+    }
     checkDockVisibility()
 
     let ro: ResizeObserver | null = null
-    if (tableContainerRef.current) {
+    if (tableContainerRef.current && typeof window !== 'undefined' && window.innerWidth < 768) {
       ro = new ResizeObserver(() => {
-        updateGeometry()
-        checkDockVisibility()
+        if (window.innerWidth < 768) {
+          if (resizeRaf) cancelAnimationFrame(resizeRaf)
+          resizeRaf = requestAnimationFrame(() => {
+            updateGeometry()
+            checkDockVisibility()
+          })
+        }
       })
       ro.observe(tableContainerRef.current)
     }
 
     return () => {
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onResize)
+      window.removeEventListener('resize', handleResize)
+      if (resizeRaf) cancelAnimationFrame(resizeRaf)
       if (ro) ro.disconnect()
     }
   }, [items.length, lang, baseCurrency])
