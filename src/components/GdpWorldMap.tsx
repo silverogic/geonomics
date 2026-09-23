@@ -284,10 +284,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         {/* Upper Row: Title & Search Spotlight */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{t.heroBadge}</span>
-            </div>
             <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
               {t.mapTitle}
             </h1>
