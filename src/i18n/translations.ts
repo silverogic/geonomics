@@ -147,11 +147,11 @@ export const translations = {
     colFxRate: 'Live FX Rate ({base})',
     colStockIndex: 'Stock Benchmark',
     colInterestRate: 'Policy Rate',
-    colTotalGdp: 'Total GDP ({base})',
+    colTotalGdp: 'Total GDP',
     colPerCapita: 'GDP Per Capita',
     colGrowth: 'Growth Rate',
-    colDebt: 'Gov Debt (% GDP)',
-    colInflation: 'Inflation (IMF)',
+    colDebt: 'Gov Debt',
+    colInflation: 'Inflation',
 
     // Footer
     footerZeroStorageTitle: 'Zero-Storage On-Demand Architecture',
@@ -311,11 +311,11 @@ export const translations = {
     colFxRate: '실시간 환율 ({base})',
     colStockIndex: '주요 증시',
     colInterestRate: '기준금리',
-    colTotalGdp: '총 GDP ({base})',
+    colTotalGdp: '총 GDP',
     colPerCapita: '1인당 GDP',
     colGrowth: '성장률',
-    colDebt: '부채 비율 (% GDP)',
-    colInflation: '인플레이션 (IMF)',
+    colDebt: '부채비율',
+    colInflation: '인플레이션',
 
     // Footer
     footerZeroStorageTitle: '무보관 온디맨드(Zero-Storage On-Demand) 시스템',
@@ -475,11 +475,11 @@ export const translations = {
     colFxRate: 'リアルタイム為替 ({base})',
     colStockIndex: '主要株価',
     colInterestRate: '政策金利',
-    colTotalGdp: '名目GDP ({base})',
+    colTotalGdp: '名目GDP',
     colPerCapita: '1人当たりGDP',
     colGrowth: '成長率',
-    colDebt: '債務比率 (% GDP)',
-    colInflation: 'インフレ率 (IMF)',
+    colDebt: '債務比率',
+    colInflation: 'インフレ率',
 
     // Footer
     footerZeroStorageTitle: 'ゼロストレージ・オンデマンドシステム',
@@ -639,11 +639,11 @@ export const translations = {
     colFxRate: 'Tipo de cambio ({base})',
     colStockIndex: 'Índice Bursátil',
     colInterestRate: 'Tasa de Política',
-    colTotalGdp: 'PIB total ({base})',
+    colTotalGdp: 'PIB total',
     colPerCapita: 'PIB per cápita',
     colGrowth: 'Crecimiento',
-    colDebt: 'Deuda pública (% PIB)',
-    colInflation: 'Inflación (FMI)',
+    colDebt: 'Deuda pública',
+    colInflation: 'Inflación',
 
     // Footer
     footerZeroStorageTitle: 'Arquitectura bajo demanda sin almacenamiento',
@@ -803,11 +803,11 @@ export const translations = {
     colFxRate: '实时汇率 ({base})',
     colStockIndex: '主要股市',
     colInterestRate: '基准利率',
-    colTotalGdp: '名义 GDP ({base})',
+    colTotalGdp: '名义 GDP',
     colPerCapita: '人均 GDP',
     colGrowth: '增长率',
-    colDebt: '负债率 (% GDP)',
-    colInflation: '通胀率 (IMF)',
+    colDebt: '负债率',
+    colInflation: '通胀率',
 
     // Footer
     footerZeroStorageTitle: '零持久化存储 · 纯即时响应架构',

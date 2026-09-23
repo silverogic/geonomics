@@ -258,7 +258,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap"
               >
                 <div className="flex items-center justify-end gap-1.5">
-                  <span>{t.colTotalGdp.replace('{base}', baseCurrency)}</span>
+                  <span>{t.colTotalGdp}</span>
                   {renderSortIcon('totalGdpUsd')}
                 </div>
               </th>
