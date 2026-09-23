@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Coins, Award, LineChart, AlertCircle } from 'lucide-react'
+import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Award, LineChart, AlertCircle } from 'lucide-react'
 import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita } from '../utils/formatters'
 import { DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { GdpChart } from './GdpChart'
 import { CurrencyConverter } from './CurrencyConverter'
@@ -77,12 +77,6 @@ export const CountryModal: React.FC<CountryModalProps> = ({
 
   // Conversion rates
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
-  const countryToBase = exchangeRates
-    ? getConversionRate(exchangeRates, country.currencyCode, baseCurrency)
-    : 0
-  const baseToCountry = exchangeRates
-    ? getConversionRate(exchangeRates, baseCurrency, country.currencyCode)
-    : 0
 
   const displayName = getCountryName(country, lang)
   const secondaryName = getCountrySecondaryName(country, lang)
@@ -276,35 +270,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
             </div>
           </div>
 
-          {/* Real-time Exchange Rate Banner */}
-          <div className="bg-gradient-to-r from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-900/40 rounded-xl p-4 sm:p-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-200 mb-1">
-                  <Coins className="w-4 h-4 text-indigo-400" />
-                  <span>{t.modalFxSectionTitle}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-medium">
-                    {t.modalOnDemandBadge}
-                  </span>
-                </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-white">
-                  1 {country.currencyCode} = {formatExchangeRate(countryToBase, 4)} {baseCurrency}
-                  <span className="text-xs text-slate-400 font-normal ml-3">
-                    (1 {baseCurrency} = {formatExchangeRate(baseToCountry, 2)} {country.currencyCode})
-                  </span>
-                </div>
-              </div>
-
-              <div className="text-xs text-slate-400 sm:text-right">
-                <span className="block text-slate-500">{t.modalForexTimestamp}</span>
-                <span className="font-mono text-slate-300">
-                  {exchangeRates?.timeLastUpdateUtc || 'Live Feed'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Real-time Currency Converter */}
+          {/* Real-time Currency Converter (includes exchange rate info) */}
           <CurrencyConverter
             country={country}
             baseCurrency={baseCurrency}
