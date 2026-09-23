@@ -28,7 +28,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
 
   return (
     <div className="bg-slate-900 border-b border-slate-800/80 py-2.5 px-4 overflow-x-auto text-xs text-slate-300 scrollbar-none">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-6 min-w-max">
+      <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-6 min-w-max">
         <div className="flex items-center gap-4 sm:gap-6">
           <div className="flex items-center gap-2 text-indigo-400 font-semibold uppercase tracking-wider shrink-0">
             <TrendingUp className="w-4 h-4" />

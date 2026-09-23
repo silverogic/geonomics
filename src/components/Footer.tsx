@@ -12,7 +12,7 @@ export const Footer: React.FC<FooterProps> = ({ lang }) => {
 
   return (
     <footer className="mt-16 border-t border-slate-800/80 bg-slate-950 py-10 text-slate-400 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-slate-200 font-bold text-base">
             <Globe className="w-5 h-5 text-indigo-400" />
