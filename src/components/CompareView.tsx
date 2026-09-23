@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { GitCompare, ArrowRightLeft, TrendingUp } from 'lucide-react'
 import { COUNTRIES } from '../data/countries'
-import type { CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
+import type { CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
+import { getCountryInterestRate } from '../services/interestRateApi'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
@@ -14,6 +15,7 @@ import { getCountryName, getCountrySecondaryName } from '../utils/countryNames'
 interface CompareViewProps {
   baseCurrency: BaseCurrency
   exchangeRates: ExchangeRates | null
+  interestRates?: Record<string, InterestRateInfo> | null
   lang: Language
   selectedYear?: EconomicYear
   onYearChange?: (year: EconomicYear) => void
@@ -22,6 +24,7 @@ interface CompareViewProps {
 export const CompareView: React.FC<CompareViewProps> = ({
   baseCurrency,
   exchangeRates,
+  interestRates,
   lang,
   selectedYear = DEFAULT_ECONOMIC_YEAR,
   onYearChange,
@@ -76,6 +79,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
   const rateA = exchangeRates ? getConversionRate(exchangeRates, countryA.currencyCode, baseCurrency) : 0
   const rateB = exchangeRates ? getConversionRate(exchangeRates, countryB.currencyCode, baseCurrency) : 0
+
+  const interestA = getCountryInterestRate(interestRates, countryA)
+  const interestB = getCountryInterestRate(interestRates, countryB)
+  const interestSpread = interestA && interestB ? interestA.ratePct - interestB.ratePct : null
 
   const gdpRatio = detailA && detailB && detailB.totalGdpUsd > 0 ? detailA.totalGdpUsd / detailB.totalGdpUsd : 1
   const perCapitaRatio = detailA && detailB && detailB.gdpPerCapitaUsd > 0 ? detailA.gdpPerCapitaUsd / detailB.gdpPerCapitaUsd : 1
@@ -254,6 +261,16 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </span>
             </div>
 
+            {interestA && (
+              <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+                <span className="text-xs text-slate-400">{t.compareInterestRate}</span>
+                <span className="text-sm font-mono font-bold text-indigo-300">
+                  {interestA.ratePct.toFixed(2)}%
+                  <span className="ml-1 text-[11px] text-slate-400 font-normal">({interestA.centralBankName})</span>
+                </span>
+              </div>
+            )}
+
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
               <span className="text-sm font-mono font-bold text-emerald-400">
@@ -351,6 +368,16 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </span>
             </div>
 
+            {interestB && (
+              <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+                <span className="text-xs text-slate-400">{t.compareInterestRate}</span>
+                <span className="text-sm font-mono font-bold text-indigo-300">
+                  {interestB.ratePct.toFixed(2)}%
+                  <span className="ml-1 text-[11px] text-slate-400 font-normal">({interestB.centralBankName})</span>
+                </span>
+              </div>
+            )}
+
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
               <span className="text-sm font-mono font-bold text-emerald-400">
@@ -411,6 +438,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
           <TrendingUp className="w-5 h-5 text-indigo-400 flex-shrink-0" />
           <div>
             <strong>{t.compareInsightTitle}</strong> {insightFormatted}
+            {interestSpread !== null && (
+              <span className="ml-2 font-mono text-xs px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700 inline-block mt-1 sm:mt-0">
+                {t.compareSpread}: {interestSpread > 0 ? `+${interestSpread.toFixed(2)}` : interestSpread.toFixed(2)}%p
+              </span>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { TrendingUp, TrendingDown, ArrowRight, LineChart, AlertCircle } from 'lucide-react'
-import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
+import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
@@ -17,6 +17,7 @@ interface CountryCardProps {
   growthRatePct: number | null
   debtRatioPct: number | null
   inflationRatePct?: number | null
+  interestRateInfo?: InterestRateInfo | null
   baseCurrency: BaseCurrency
   exchangeRates: ExchangeRates | null
   lang: Language
@@ -32,6 +33,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   growthRatePct,
   debtRatioPct,
   inflationRatePct,
+  interestRateInfo,
   baseCurrency,
   exchangeRates,
   lang,
@@ -199,9 +201,9 @@ export const CountryCard: React.FC<CountryCardProps> = ({
         </div>
       </div>
 
-      {/* Card Footer: Exchange Rate & Growth Rate */}
+      {/* Card Footer: Exchange Rate, Interest Rate & Growth Rate */}
       <div>
-        <div className="flex items-center justify-between text-xs py-1">
+        <div className="flex items-center justify-between text-xs py-1 gap-2">
           <div>
             <span className="text-[11px] text-slate-400 block">{t.cardFxRate}</span>
             {isRateLoaded ? (
@@ -212,6 +214,16 @@ export const CountryCard: React.FC<CountryCardProps> = ({
               <span className="text-slate-400 animate-pulse">{t.loadingData}</span>
             )}
           </div>
+
+          {interestRateInfo && (
+            <div className="text-center px-1">
+              <span className="text-[11px] text-slate-400 block">{t.cardInterestRate}</span>
+              <span className="font-mono font-bold text-indigo-300">
+                {interestRateInfo.ratePct.toFixed(2)}%
+                <span className="ml-1 text-[10px] text-slate-400 font-normal">({interestRateInfo.centralBankName})</span>
+              </span>
+            </div>
+          )}
 
           {growthRatePct !== null && (
             <div className="text-right">

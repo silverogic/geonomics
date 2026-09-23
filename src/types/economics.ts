@@ -65,3 +65,11 @@ export interface EconomySummary {
 }
 
 export type BaseCurrency = 'USD' | 'EUR' | 'KRW' | 'JPY' | 'GBP' | 'CNY'
+
+export interface InterestRateInfo {
+  countryCode: string // ISO2 e.g. 'US', 'KR' or 'XM'
+  ratePct: number // Policy interest rate in percent, e.g. 3.00
+  date?: string // Last updated date string e.g. '2026-09-15'
+  centralBankName: string // e.g. 'Fed', 'BOK', 'ECB', 'BOJ', 'BOE', 'PBOC'
+  source?: string // 'BIS' or fallback
+}

@@ -50,6 +50,16 @@ export const Footer: React.FC<FooterProps> = ({ lang }) => {
             </a>
             <span>•</span>
             <a
+              href="https://www.bis.org/statistics/cbpol.htm"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 hover:text-indigo-400 transition-colors"
+            >
+              <span>{t.footerBis}</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+            <span>•</span>
+            <a
               href="https://pages.github.com/"
               target="_blank"
               rel="noreferrer"
@@ -66,7 +76,7 @@ export const Footer: React.FC<FooterProps> = ({ lang }) => {
         </div>
 
         <div className="text-center text-slate-600 text-[11px]">
-          (C) {new Date().getFullYear()} Geonomics. Powered by World Bank Open API, IMF World Economic Outlook (WEO) & ECB Reference Rates. Hosted on GitHub Pages.
+          (C) {new Date().getFullYear()} Geonomics. Powered by World Bank Open API, IMF World Economic Outlook (WEO), BIS SDMX & ECB Reference Rates. Hosted on GitHub Pages.
         </div>
       </div>
     </footer>

@@ -102,8 +102,8 @@
     "ticker": "000001.SS",
     "isSupported": true,
     "currency": "CNY",
-    "currentPrice": 3952.13,
-    "changePct": 1.81,
+    "currentPrice": 3939.92,
+    "changePct": 1.49,
     "points": [
       {
         "date": "2026-08-24",
@@ -188,6 +188,10 @@
       {
         "date": "2026-09-21",
         "close": 3949.91
+      },
+      {
+        "date": "2026-09-23",
+        "close": 3939.92
       }
     ]
   },
@@ -198,7 +202,7 @@
     "ticker": "^GDAXI",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 25578.85,
+    "currentPrice": 25578.8,
     "changePct": -2.02,
     "points": [
       {
@@ -860,10 +864,6 @@
       {
         "date": "2026-09-21",
         "close": 186596
-      },
-      {
-        "date": "2026-09-22",
-        "close": 187422.92
       }
     ]
   },
@@ -1079,8 +1079,8 @@
     "ticker": "^AXJO",
     "isSupported": true,
     "currency": "AUD",
-    "currentPrice": 8757.8,
-    "changePct": -3.79,
+    "currentPrice": 8755.3,
+    "changePct": -3.82,
     "points": [
       {
         "date": "2026-08-24",
@@ -1165,6 +1165,10 @@
       {
         "date": "2026-09-21",
         "close": 8731.9
+      },
+      {
+        "date": "2026-09-23",
+        "close": 8755.3
       }
     ]
   },
@@ -1175,8 +1179,8 @@
     "ticker": "^KS11",
     "isSupported": true,
     "currency": "KRW",
-    "currentPrice": 7017.91,
-    "changePct": 4.79,
+    "currentPrice": 7036.3,
+    "changePct": 5.07,
     "points": [
       {
         "date": "2026-08-24",
@@ -1261,6 +1265,10 @@
       {
         "date": "2026-09-21",
         "close": 7007.72
+      },
+      {
+        "date": "2026-09-23",
+        "close": 7036.3
       }
     ]
   },
@@ -1367,8 +1375,8 @@
     "ticker": "^JKSE",
     "isSupported": true,
     "currency": "IDR",
-    "currentPrice": 6277.04,
-    "changePct": -3.45,
+    "currentPrice": 6301.54,
+    "changePct": -3.08,
     "points": [
       {
         "date": "2026-08-24",
@@ -1449,6 +1457,10 @@
       {
         "date": "2026-09-21",
         "close": 6384.73
+      },
+      {
+        "date": "2026-09-23",
+        "close": 6301.54
       }
     ]
   },
@@ -2057,10 +2069,6 @@
       {
         "date": "2026-09-21",
         "close": 2998956
-      },
-      {
-        "date": "2026-09-22",
-        "close": 2997659.5
       }
     ]
   },
@@ -2379,8 +2387,8 @@
     "ticker": "^STI",
     "isSupported": true,
     "currency": "SGD",
-    "currentPrice": 5723.76,
-    "changePct": 0.76,
+    "currentPrice": 5720.04,
+    "changePct": 0.7,
     "points": [
       {
         "date": "2026-08-24",
@@ -2465,6 +2473,10 @@
       {
         "date": "2026-09-21",
         "close": 5675.23
+      },
+      {
+        "date": "2026-09-23",
+        "close": 5720.04
       }
     ]
   },
@@ -2475,8 +2487,8 @@
     "ticker": "^KLSE",
     "isSupported": true,
     "currency": "MYR",
-    "currentPrice": 1683.5,
-    "changePct": -3.04,
+    "currentPrice": 1681.76,
+    "changePct": -3.14,
     "points": [
       {
         "date": "2026-08-24",
@@ -2549,6 +2561,10 @@
       {
         "date": "2026-09-21",
         "close": 1666.94
+      },
+      {
+        "date": "2026-09-23",
+        "close": 1681.76
       }
     ]
   },
@@ -2655,12 +2671,12 @@
     "ticker": "PSEI.PS",
     "isSupported": true,
     "currency": "PHP",
-    "currentPrice": 5814.56,
+    "currentPrice": 5819.67,
     "changePct": 0,
     "points": [
       {
-        "date": "2026-09-22",
-        "close": 5814.56
+        "date": "2026-09-23",
+        "close": 5819.67
       }
     ]
   },
@@ -3059,12 +3075,12 @@
     "ticker": "^SET.BK",
     "isSupported": true,
     "currency": "THB",
-    "currentPrice": 1604.44,
+    "currentPrice": 1609.05,
     "changePct": 0,
     "points": [
       {
-        "date": "2026-09-22",
-        "close": 1604.44
+        "date": "2026-09-23",
+        "close": 1609.05
       }
     ]
   },
@@ -3075,8 +3091,8 @@
     "ticker": "^HSI",
     "isSupported": true,
     "currency": "HKD",
-    "currentPrice": 25087.75,
-    "changePct": -1.68,
+    "currentPrice": 24889.6,
+    "changePct": -2.46,
     "points": [
       {
         "date": "2026-08-24",
@@ -3161,6 +3177,10 @@
       {
         "date": "2026-09-21",
         "close": 25042.71
+      },
+      {
+        "date": "2026-09-23",
+        "close": 24889.6
       }
     ]
   },
@@ -3171,8 +3191,8 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13877.44,
-    "changePct": -0.03,
+    "currentPrice": 13852.55,
+    "changePct": -0.21,
     "points": [
       {
         "date": "2026-08-23",
@@ -3259,8 +3279,8 @@
         "close": 13821.2
       },
       {
-        "date": "2026-09-22",
-        "close": 13877.44
+        "date": "2026-09-23",
+        "close": 13852.55
       }
     ]
   },
@@ -4320,8 +4340,8 @@
     "ticker": "^TWII",
     "isSupported": true,
     "currency": "TWD",
-    "currentPrice": 47800.17,
-    "changePct": 6.79,
+    "currentPrice": 48187.89,
+    "changePct": 7.65,
     "points": [
       {
         "date": "2026-08-24",
@@ -4406,6 +4426,10 @@
       {
         "date": "2026-09-21",
         "close": 47718.84
+      },
+      {
+        "date": "2026-09-23",
+        "close": 48187.89
       }
     ]
   },

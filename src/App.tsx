@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AlertCircle } from 'lucide-react'
 import { COUNTRIES } from './data/countries'
-import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from './types/economics'
+import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from './types/economics'
 import { DEFAULT_ECONOMIC_YEAR } from './utils/economicYears'
 import { fetchExchangeRates } from './services/exchangeApi'
+import { fetchInterestRates, getCountryInterestRate } from './services/interestRateApi'
 import { loadGlobalGdpOverview } from './services/worldBankApi'
 import { translations } from './i18n/translations'
 import { Navbar } from './components/Navbar'
@@ -52,6 +53,7 @@ export function App() {
 
   // Remote data state
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null)
+  const [interestRates, setInterestRates] = useState<Record<string, InterestRateInfo> | null>(null)
   const [gdpMap, setGdpMap] = useState<Map<string, { totalGdp: number; year: number }>>(new Map())
   const [perCapitaMap, setPerCapitaMap] = useState<Map<string, { perCapita: number; year: number }>>(new Map())
   const [growthMap, setGrowthMap] = useState<Map<string, { growth: number; year: number }>>(new Map())
@@ -69,12 +71,14 @@ export function App() {
     const yr = yearToLoad ?? selectedYear
 
     try {
-      const [fx, gdpData] = await Promise.all([
+      const [fx, gdpData, rates] = await Promise.all([
         fetchExchangeRates(isRefresh),
         loadGlobalGdpOverview(isRefresh, yr),
+        fetchInterestRates(isRefresh),
       ])
 
       setExchangeRates(fx)
+      setInterestRates(rates)
       setGdpMap(new Map(gdpData.gdpMap))
       setPerCapitaMap(new Map(gdpData.perCapitaMap))
       setGrowthMap(new Map(gdpData.growthMap))
@@ -116,6 +120,7 @@ export function App() {
       const growthObj = growthMap.get(country.id)
       const debtObj = debtMap.get(country.id)
       const infObj = inflationMap.get(country.id)
+      const rateInfo = getCountryInterestRate(interestRates, country)
 
       return {
         country,
@@ -125,6 +130,8 @@ export function App() {
         growthRatePct: growthObj?.growth ?? null,
         debtRatioPct: debtObj?.debtRatio ?? null,
         inflationRatePct: infObj?.inflation ?? null,
+        interestRatePct: rateInfo?.ratePct ?? null,
+        centralBankName: rateInfo?.centralBankName ?? null,
       }
     })
 
@@ -134,7 +141,7 @@ export function App() {
     })
 
     return list
-  }, [gdpMap, perCapitaMap, growthMap, debtMap, inflationMap])
+  }, [gdpMap, perCapitaMap, growthMap, debtMap, inflationMap, interestRates])
 
   // Selected country rank for modal
   const selectedRank = useMemo(() => {
@@ -158,7 +165,12 @@ export function App() {
       />
 
       {/* Real-time FX Ticker */}
-      <TickerBar exchangeRates={exchangeRates} baseCurrency={baseCurrency} lang={lang} />
+      <TickerBar
+        exchangeRates={exchangeRates}
+        interestRates={interestRates}
+        baseCurrency={baseCurrency}
+        lang={lang}
+      />
 
       {/* Main Content Area */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
@@ -201,6 +213,7 @@ export function App() {
           <CompareView
             baseCurrency={baseCurrency}
             exchangeRates={exchangeRates}
+            interestRates={interestRates}
             lang={lang}
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
@@ -215,6 +228,7 @@ export function App() {
           rank={selectedRank}
           baseCurrency={baseCurrency}
           exchangeRates={exchangeRates}
+          interestRates={interestRates}
           lang={lang}
           selectedYear={selectedYear}
           onClose={() => setSelectedCountry(null)}

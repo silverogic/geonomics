@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Coins, Award, LineChart, AlertCircle } from 'lucide-react'
-import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
+import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
+import { getCountryInterestRate } from '../services/interestRateApi'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
 import { DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { GdpChart } from './GdpChart'
@@ -18,6 +19,7 @@ interface CountryModalProps {
   rank: number
   baseCurrency: BaseCurrency
   exchangeRates: ExchangeRates | null
+  interestRates?: Record<string, InterestRateInfo> | null
   lang: Language
   selectedYear?: EconomicYear
   onClose: () => void
@@ -28,11 +30,13 @@ export const CountryModal: React.FC<CountryModalProps> = ({
   rank,
   baseCurrency,
   exchangeRates,
+  interestRates,
   lang,
   selectedYear = DEFAULT_ECONOMIC_YEAR,
   onClose,
 }) => {
   const t = translations[lang]
+  const interestRateInfo = getCountryInterestRate(interestRates, country)
   const [detail, setDetail] = useState<CountryGdpDetail | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const stockData = getStockPriceData(country.id)
@@ -106,7 +110,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4">
             {/* Total GDP */}
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
@@ -216,6 +220,28 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               </div>
               <span className="text-[11px] text-slate-400 truncate block" title={t.modalDebtSub}>
                 {t.modalDebtSub}
+              </span>
+            </div>
+
+            {/* Central Bank Policy Rate */}
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+              <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
+                {t.modalInterestRateTitle}
+              </span>
+              <div className="text-base lg:text-lg font-bold text-indigo-300 font-mono flex items-center gap-1.5 truncate">
+                {interestRateInfo ? (
+                  <>
+                    <span>{interestRateInfo.ratePct.toFixed(2)}%</span>
+                    <span className="text-[10px] text-indigo-400 bg-indigo-950/70 border border-indigo-700/50 px-1.5 py-0.5 rounded font-normal">
+                      {interestRateInfo.centralBankName}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-slate-500 font-mono text-sm">-</span>
+                )}
+              </div>
+              <span className="text-[11px] text-slate-400 truncate block" title={t.modalInterestRateSub}>
+                {interestRateInfo?.date ? `${interestRateInfo.date} (${interestRateInfo.source})` : t.modalInterestRateSub}
               </span>
             </div>
 

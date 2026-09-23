@@ -18,6 +18,8 @@ export interface CountryRowItem {
   growthRatePct: number | null
   debtRatioPct: number | null
   inflationRatePct: number | null
+  interestRatePct?: number | null
+  centralBankName?: string | null
 }
 
 interface RankingTableProps {
@@ -41,6 +43,7 @@ type SortField =
   | 'inflationRatePct'
   | 'fxRate'
   | 'stockChangePct'
+  | 'interestRatePct'
 
 export const RankingTable: React.FC<RankingTableProps> = ({
   items,
@@ -75,7 +78,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
       setSortField(field)
-      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct', 'stockChangePct'].includes(field)) {
+      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct', 'stockChangePct', 'interestRatePct'].includes(field)) {
         setSortDirection('desc')
       } else {
         setSortDirection('asc')
@@ -117,6 +120,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           const sB = getStockPriceData(b.country.id)
           valA = sA && sA.isSupported ? sA.changePct : -Infinity
           valB = sB && sB.isSupported ? sB.changePct : -Infinity
+        }
+
+        if (sortField === 'interestRatePct') {
+          valA = a.interestRatePct !== null && a.interestRatePct !== undefined ? a.interestRatePct : -Infinity
+          valB = b.interestRatePct !== null && b.interestRatePct !== undefined ? b.interestRatePct : -Infinity
         }
 
         valA = valA ?? -Infinity
@@ -232,6 +240,16 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 <div className="flex items-center justify-end gap-1.5">
                   <span>{t.colStockIndex}</span>
                   {renderSortIcon('stockChangePct')}
+                </div>
+              </th>
+
+              <th
+                onClick={() => handleSort('interestRatePct')}
+                className="sticky top-[var(--navbar-h)] z-30 bg-slate-950 py-3.5 px-3.5 cursor-pointer hover:text-slate-200 text-right hidden md:table-cell border-b border-slate-800 shadow-sm transition-colors"
+              >
+                <div className="flex items-center justify-end gap-1.5">
+                  <span>{t.colInterestRate}</span>
+                  {renderSortIcon('interestRatePct')}
                 </div>
               </th>
 
@@ -390,6 +408,27 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                         </div>
                       )
                     })()}
+                  </td>
+
+                  {/* Central Bank Policy Rate (Right of Stock Benchmark) */}
+                  <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right hidden md:table-cell">
+                    {item.interestRatePct !== null && item.interestRatePct !== undefined ? (
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                          {item.interestRatePct.toFixed(2)}%
+                        </span>
+                        {item.centralBankName && (
+                          <span
+                            className="text-[10px] font-mono text-indigo-300 bg-indigo-950/70 border border-indigo-500/30 px-1.5 py-0.5 rounded"
+                            title={item.centralBankName}
+                          >
+                            {item.centralBankName}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-slate-600 font-mono text-xs">-</span>
+                    )}
                   </td>
 
                   <td className="py-3.5 px-3.5 border-b border-slate-800/60 text-right">
