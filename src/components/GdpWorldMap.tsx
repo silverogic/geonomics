@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react'
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import {
   ZoomIn,
   ZoomOut,
@@ -82,7 +82,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   // Hover & Tooltip state
   const [hoveredCountryId, setHoveredCountryId] = useState<string | null>(null)
   const [pinnedCountryId, setPinnedCountryId] = useState<string | null>(null)
-  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
+  // Tooltip position managed via ref + direct DOM for zero re-render on mouse move
+  const tooltipRef = useRef<HTMLDivElement>(null)
+  const tooltipPosRef = useRef<{ x: number; y: number } | null>(null)
+  const rafIdRef = useRef<number>(0)
 
   // Zoom / Pan state
   const [zoomLevel, setZoomLevel] = useState(1)
@@ -213,21 +216,55 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     setViewBoxOffset({ x: 0, y: 0 })
   }
 
+  // Direct DOM update for vector map tooltip position via rAF — zero React re-renders
+  const updateVectorTooltipDOM = useCallback(() => {
+    const el = tooltipRef.current
+    const pos = tooltipPosRef.current
+    if (!el) return
+    if (!pos) {
+      el.style.display = 'none'
+      return
+    }
+    el.style.display = ''
+    el.style.left = `${pos.x}px`
+    el.style.top = `${pos.y}px`
+    el.style.transform = 'translateX(-50%) translateY(-100%)'
+  }, [])
+
   // Hover handlers
-  const handleCountryMouseMove = (e: React.MouseEvent, countryId: string) => {
+  const handleCountryMouseMove = useCallback((e: React.MouseEvent, countryId: string) => {
     if (!mapContainerRef.current) return
     const rect = mapContainerRef.current.getBoundingClientRect()
-    setTooltipPos({
+    tooltipPosRef.current = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
-    })
+    }
+    // Schedule a single rAF for tooltip position update (no React state change)
+    if (!rafIdRef.current) {
+      rafIdRef.current = requestAnimationFrame(() => {
+        updateVectorTooltipDOM()
+        rafIdRef.current = 0
+      })
+    }
     setHoveredCountryId(countryId)
-  }
+  }, [updateVectorTooltipDOM])
 
-  const handleCountryMouseLeave = () => {
+  const handleCountryMouseLeave = useCallback(() => {
+    tooltipPosRef.current = null
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current)
+      rafIdRef.current = 0
+    }
+    updateVectorTooltipDOM()
     setHoveredCountryId(null)
-    setTooltipPos(null)
-  }
+  }, [updateVectorTooltipDOM])
+
+  // Cleanup rAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
+    }
+  }, [])
 
   const handleCountryClick = (countryId: string) => {
     const item = countryItemMap.get(countryId)
@@ -526,13 +563,15 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 </g>
               </svg>
 
-              {/* Floating Dynamic Tooltip HUD */}
-              {hoveredItem && tooltipPos && (
+              {/* Floating Dynamic Tooltip HUD — positioned via direct DOM control */}
+              {hoveredItem && (
                 <div
-                  className="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-3 transition-transform duration-75"
+                  ref={tooltipRef}
+                  className="absolute z-30 pointer-events-none"
                   style={{
-                    left: `${tooltipPos.x}px`,
-                    top: `${tooltipPos.y}px`,
+                    display: 'none',
+                    marginBottom: '0.75rem',
+                    willChange: 'transform',
                   }}
                 >
                   <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[200px] text-xs space-y-2">

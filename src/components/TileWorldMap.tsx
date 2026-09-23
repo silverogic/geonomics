@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react'
+import React, { useMemo, useRef, useCallback, useEffect } from 'react'
 import {
   PIXEL_MAP_TILES,
   PIXEL_MAP_COLS,
@@ -45,7 +45,10 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
   onSelectCountry,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number; containerWidth: number } | null>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
+  // Store tooltip position in a ref to avoid re-renders on mouse move
+  const tooltipPosRef = useRef<{ x: number; y: number; containerWidth: number } | null>(null)
+  const rafIdRef = useRef<number>(0)
 
   const t = translations[lang]
 
@@ -69,21 +72,70 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
 
   const searchLower = searchQuery.toLowerCase().trim()
 
-  const handleTileMouseMove = (e: React.MouseEvent, countryId: string) => {
+  // Direct DOM update for tooltip position via rAF — zero React re-renders
+  const updateTooltipDOM = useCallback(() => {
+    const el = tooltipRef.current
+    const pos = tooltipPosRef.current
+    if (!el) return
+    if (!pos) {
+      el.style.display = 'none'
+      return
+    }
+    el.style.display = ''
+    el.style.left = `${pos.x}px`
+    el.style.top = `${pos.y}px`
+    // Clamp tooltip horizontally so it never exits the container boundary
+    const ratio = pos.containerWidth > 0 ? pos.x / pos.containerWidth : 0.5
+    const xShift = ratio < 0.2 ? '0%' : ratio > 0.8 ? '-100%' : '-50%'
+    el.style.transform = `translateX(${xShift}) translateY(-100%)`
+  }, [])
+
+  const handleTileMouseMove = useCallback((e: React.MouseEvent, countryId: string) => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
-    setTooltipPos({
+    tooltipPosRef.current = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
       containerWidth: rect.width,
-    })
+    }
+    // Schedule a single rAF for tooltip position update (no React state change)
+    if (!rafIdRef.current) {
+      rafIdRef.current = requestAnimationFrame(() => {
+        updateTooltipDOM()
+        rafIdRef.current = 0
+      })
+    }
+    // Only trigger React re-render when the hovered country actually changes
     onHoverCountry(countryId)
-  }
+  }, [onHoverCountry, updateTooltipDOM])
 
-  const handleTileMouseLeave = () => {
-    setTooltipPos(null)
+  const handleTileMouseLeave = useCallback(() => {
+    tooltipPosRef.current = null
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current)
+      rafIdRef.current = 0
+    }
+    updateTooltipDOM()
     onHoverCountry(null)
-  }
+  }, [onHoverCountry, updateTooltipDOM])
+
+  // Cleanup rAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
+    }
+  }, [])
+
+  // Sync tooltip visibility when hoveredCountryId changes externally
+  useEffect(() => {
+    if (!hoveredCountryId) {
+      tooltipPosRef.current = null
+      updateTooltipDOM()
+    } else {
+      // When tooltip mounts for the first time, apply stored position immediately
+      updateTooltipDOM()
+    }
+  }, [hoveredCountryId, updateTooltipDOM])
 
   // Active hovered item for tooltip
   const activeHoveredItem = hoveredCountryId ? countryItemMap.get(hoveredCountryId) : null
@@ -199,22 +251,18 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
         </div>
       </div>
 
-      {/* Floating Dynamic Tooltip HUD */}
-      {activeHoveredItem && tooltipPos && (() => {
-        // Clamp tooltip horizontally so it never exits the container boundary
-        const ratio = tooltipPos.containerWidth > 0 ? tooltipPos.x / tooltipPos.containerWidth : 0.5
-        const xShift = ratio < 0.2 ? '0%' : ratio > 0.8 ? '-100%' : '-50%'
-        return (
-          <div
-            className="absolute z-30 pointer-events-none transition-transform duration-75"
-            style={{
-              left: `${tooltipPos.x}px`,
-              top: `${tooltipPos.y}px`,
-              transform: `translateX(${xShift}) translateY(-100%)`,
-              marginBottom: '0.75rem',
-            }}
-          >
-            <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[210px] max-w-[280px] text-xs space-y-2">
+      {/* Floating Dynamic Tooltip HUD — positioned via direct DOM control (no state re-render) */}
+      {activeHoveredItem && (
+        <div
+          ref={tooltipRef}
+          className="absolute z-30 pointer-events-none"
+          style={{
+            display: 'none',
+            marginBottom: '0.75rem',
+            willChange: 'transform',
+          }}
+        >
+          <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[210px] max-w-[280px] text-xs space-y-2">
             {/* Header: Flag + Name + Rank */}
             <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-2">
               <div className="flex items-center gap-2">
@@ -310,8 +358,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
             </div>
           </div>
         </div>
-        )
-      })()}
+      )}
 
       {/* Mobile Swipe Hint */}
       <div className="sm:hidden text-center text-[10px] text-slate-500 mt-2">
@@ -328,3 +375,4 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
     </div>
   )
 }
+
