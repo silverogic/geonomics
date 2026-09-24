@@ -273,7 +273,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
-              <span className="text-sm font-mono font-bold text-emerald-400">
+              <span
+                className={`text-sm font-mono font-bold ${
+                  detailA?.growthRatePct === null || detailA?.growthRatePct === undefined
+                    ? 'text-slate-400'
+                    : detailA.growthRatePct >= 0
+                      ? 'text-emerald-400'
+                      : 'text-rose-400'
+                }`}
+              >
                 {detailA?.growthRatePct !== null && detailA?.growthRatePct !== undefined
                   ? `${detailA.growthRatePct > 0 ? '+' : ''}${detailA.growthRatePct.toFixed(2)}%`
                   : 'N/A'}
@@ -380,7 +388,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
-              <span className="text-sm font-mono font-bold text-emerald-400">
+              <span
+                className={`text-sm font-mono font-bold ${
+                  detailB?.growthRatePct === null || detailB?.growthRatePct === undefined
+                    ? 'text-slate-400'
+                    : detailB.growthRatePct >= 0
+                      ? 'text-emerald-400'
+                      : 'text-rose-400'
+                }`}
+              >
                 {detailB?.growthRatePct !== null && detailB?.growthRatePct !== undefined
                   ? `${detailB.growthRatePct > 0 ? '+' : ''}${detailB.growthRatePct.toFixed(2)}%`
                   : 'N/A'}

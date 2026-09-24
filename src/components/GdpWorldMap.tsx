@@ -160,10 +160,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       if (metric === 'growth') {
         const g = item.growthRatePct
         if (g === null || g === undefined) return '#334155'
-        if (g >= 5.0) return '#10b981' // Strong Growth
-        if (g >= 2.5) return '#06b6d4' // Solid
-        if (g >= 0.0) return '#6366f1' // Modest
-        return '#f43f5e' // Negative growth (Rose)
+        if (g >= 5.0) return '#34d399' // > 5.0% (Light Mint Emerald)
+        if (g >= 2.5) return '#10b981' // 2.5% ~ 5.0% (Medium Emerald)
+        if (g >= 0.0) return '#047857' // 0% ~ 2.5% (Deep Forest Emerald)
+        return '#f43f5e' // < 0% Negative growth (Rose)
       }
 
       if (metric === 'debt') {
@@ -727,19 +727,19 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               {metric === 'growth' && (
                 <>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">&gt; 5.0%</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">2.5% ~ 5.0%</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
                   </div>
                 </>
@@ -871,18 +871,23 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
                     <div
-                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 min-w-0 ${(inspectedCountryItem.growthRatePct ?? 0) >= 0
-                        ? 'text-emerald-400'
-                        : 'text-rose-400'
-                        }`}
+                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 min-w-0 ${
+                        inspectedCountryItem.growthRatePct === null || inspectedCountryItem.growthRatePct === undefined
+                          ? 'text-slate-400'
+                          : inspectedCountryItem.growthRatePct >= 0
+                            ? 'text-emerald-400'
+                            : 'text-rose-400'
+                      }`}
                     >
-                      {(inspectedCountryItem.growthRatePct ?? 0) >= 0 ? (
-                        <TrendingUp className="w-3 h-3 shrink-0" />
-                      ) : (
-                        <TrendingDown className="w-3 h-3 shrink-0" />
-                      )}
+                      {inspectedCountryItem.growthRatePct !== null && inspectedCountryItem.growthRatePct !== undefined ? (
+                        inspectedCountryItem.growthRatePct >= 0 ? (
+                          <TrendingUp className="w-3 h-3 shrink-0" />
+                        ) : (
+                          <TrendingDown className="w-3 h-3 shrink-0" />
+                        )
+                      ) : null}
                       <span className="truncate">
-                        {inspectedCountryItem.growthRatePct !== null
+                        {inspectedCountryItem.growthRatePct !== null && inspectedCountryItem.growthRatePct !== undefined
                           ? inspectedCountryItem.growthRatePct > 0
                             ? `+${inspectedCountryItem.growthRatePct.toFixed(1)}%`
                             : `${inspectedCountryItem.growthRatePct.toFixed(1)}%`
