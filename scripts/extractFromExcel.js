@@ -176,6 +176,19 @@ for (const c of COUNTRIES) {
     }
   }
 
+  // Fallback population reference for newly added economies
+  const DEFAULT_POP_MAP = {
+    GUY: 814000,
+    PNG: 10330000,
+    GEO: 3695000,
+    MNG: 3500000,
+    SLV: 6365000,
+    LBY: 6960000,
+  }
+  if (refPop === 0 && DEFAULT_POP_MAP[c.id]) {
+    refPop = DEFAULT_POP_MAP[c.id]
+  }
+
   let lastKnownTotalGdp = 0
   let lastKnownGrowthRate = 3.5
 

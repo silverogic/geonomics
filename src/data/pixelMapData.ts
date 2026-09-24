@@ -1878,19 +1878,19 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 39,
     "r": 7,
     "id": "MNG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 40,
     "r": 7,
     "id": "MNG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 41,
     "r": 7,
     "id": "MNG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 42,
@@ -2033,7 +2033,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 31,
     "r": 8,
-    "id": "RUS",
+    "id": "GEO",
     "isTracked": true
   },
   {
@@ -2094,7 +2094,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 41,
     "r": 8,
     "id": "MNG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 42,
@@ -2550,7 +2550,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 27,
     "r": 11,
     "id": "LBY",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 28,
@@ -2874,7 +2874,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 29,
     "r": 13,
     "id": "LBY",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 30,
@@ -2952,6 +2952,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 44,
     "r": 13,
     "id": "PHL",
+    "isTracked": true
+  },
+  {
+    "c": 10,
+    "r": 14,
+    "id": "SLV",
     "isTracked": true
   },
   {
@@ -3101,7 +3107,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 16,
     "r": 15,
-    "id": "VEN",
+    "id": "GUY",
     "isTracked": true
   },
   {
@@ -3402,7 +3408,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 47,
     "r": 17,
     "id": "PNG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 13,
@@ -3504,7 +3510,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 47,
     "r": 18,
     "id": "PNG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 13,
@@ -4134,5 +4140,11 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   "PRY": { "c": 16, "r": 20 },
   "KHM": { "c": 41, "r": 14 },
   "NPL": { "c": 37, "r": 11 },
-  "SEN": { "c": 22, "r": 13 }
+  "SEN": { "c": 22, "r": 13 },
+  "GUY": { "c": 16, "r": 15 },
+  "PNG": { "c": 47, "r": 17 },
+  "GEO": { "c": 31, "r": 8 },
+  "MNG": { "c": 40, "r": 7 },
+  "SLV": { "c": 10, "r": 14 },
+  "LBY": { "c": 27, "r": 11 }
 }

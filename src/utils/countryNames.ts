@@ -108,6 +108,12 @@ export const COUNTRY_NAMES_JA: Record<string, string> = {
   KHM: 'カンボジア',
   NPL: 'ネパール',
   SEN: 'セネガル',
+  GUY: 'ガイアナ',
+  PNG: 'パプアニューギニア',
+  GEO: 'ジョージア',
+  MNG: 'モンゴル',
+  SLV: 'エルサルバドル',
+  LBY: 'リビア',
 }
 
 /**
@@ -186,6 +192,11 @@ export const CURRENCY_NAMES_JA: Record<string, string> = {
   PYG: 'パラグアイグアラニー',
   KHR: 'カンボジアリエル',
   NPR: 'ネパールルピー',
+  GYD: 'ガイアナドル',
+  PGK: 'パプアニューギニアキナ',
+  GEL: 'ジョージアラリ',
+  MNT: 'モンゴルトゥグルグ',
+  LYD: 'リビアディナール',
 }
 
 /**
@@ -296,6 +307,12 @@ export const COUNTRY_NAMES_ES: Record<string, string> = {
   KHM: 'Camboya',
   NPL: 'Nepal',
   SEN: 'Senegal',
+  GUY: 'Guyana',
+  PNG: 'Papúa Nueva Guinea',
+  GEO: 'Georgia',
+  MNG: 'Mongolia',
+  SLV: 'El Salvador',
+  LBY: 'Libia',
 }
 
 /**
@@ -406,6 +423,12 @@ export const COUNTRY_NAMES_ZH: Record<string, string> = {
   KHM: '柬埔寨',
   NPL: '尼泊尔',
   SEN: '塞内加尔',
+  GUY: '圭亚那',
+  PNG: '巴布亚新几内亚',
+  GEO: '格鲁吉亚',
+  MNG: '蒙古',
+  SLV: '萨尔瓦多',
+  LBY: '利比亚',
 }
 
 /**
@@ -484,6 +507,11 @@ export const CURRENCY_NAMES_ES: Record<string, string> = {
   PYG: 'Guaraní paraguayo',
   KHR: 'Riel camboyano',
   NPR: 'Rupia nepalí',
+  GYD: 'Dólar guyanés',
+  PGK: 'Kina de Papúa Nueva Guinea',
+  GEL: 'Lari georgiano',
+  MNT: 'Tugrik mongol',
+  LYD: 'Dinar libio',
 }
 
 /**
@@ -562,6 +590,11 @@ export const CURRENCY_NAMES_ZH: Record<string, string> = {
   PYG: '巴拉圭瓜拉尼',
   KHR: '柬埔寨瑞尔',
   NPR: '尼泊尔卢比',
+  GYD: '圭亚那元',
+  PGK: '巴布亚新几内亚基那',
+  GEL: '格鲁吉亚拉里',
+  MNT: '蒙古图格里克',
+  LYD: '利比亚第纳尔',
 }
 
 /**
