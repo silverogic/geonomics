@@ -21,7 +21,8 @@ interface TileWorldMapProps {
   baseCurrency: BaseCurrency
   usdToBase: number
   lang: Language
-  selectedRegion: Region | 'All'
+  selectedRegions?: Region[]
+  selectedRegion?: Region | 'All'
   searchQuery: string
   hoveredCountryId: string | null
   pinnedCountryId: string | null
@@ -36,6 +37,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
   baseCurrency,
   usdToBase,
   lang,
+  selectedRegions,
   selectedRegion,
   searchQuery,
   hoveredCountryId,
@@ -71,6 +73,14 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
   }, [])
 
   const searchLower = searchQuery.toLowerCase().trim()
+
+  const activeRegions = useMemo(() => {
+    if (selectedRegions && selectedRegions.length > 0) return selectedRegions
+    if (selectedRegion && selectedRegion !== 'All') return [selectedRegion]
+    return []
+  }, [selectedRegions, selectedRegion])
+
+  const isAllRegions = activeRegions.length === 0 || activeRegions.length === 5
 
   // Direct DOM update for tooltip position via rAF — zero React re-renders
   const updateTooltipDOM = useCallback(() => {
@@ -183,7 +193,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
             const isHighlighted = isHovered || isPinned
 
             // Region filter check
-            const isRegionMatch = !item || selectedRegion === 'All' || item.country.region === selectedRegion
+            const isRegionMatch = !item || isAllRegions || activeRegions.includes(item.country.region)
 
             // Search query check
             const isSearchMatch =

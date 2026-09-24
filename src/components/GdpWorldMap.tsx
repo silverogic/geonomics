@@ -9,6 +9,8 @@ import {
   Search,
   Filter,
   ChevronRight,
+  ChevronDown,
+  Check,
   ExternalLink,
   LayoutGrid,
   Globe,
@@ -47,6 +49,8 @@ const REGION_VIEWBOXES: Record<Region | 'All', { x: number; y: number; w: number
   Oceania: { x: 740, y: 260, w: 250, h: 220 },
 }
 
+const ALL_REGIONS: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania']
+
 export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   items,
   baseCurrency,
@@ -58,8 +62,34 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 }) => {
   const t = translations[lang]
   const [metric, setMetric] = useState<MapMetric>('gdp')
-  const [selectedRegion, setSelectedRegion] = useState<Region | 'All'>('All')
+  const [selectedRegions, setSelectedRegions] = useState<Region[]>([])
+  const [isRegionMenuOpen, setIsRegionMenuOpen] = useState(false)
+  const regionMenuRef = useRef<HTMLDivElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
+
+  const isAllRegions = selectedRegions.length === 0 || selectedRegions.length === ALL_REGIONS.length
+
+  // Click outside and ESC key listener to close region dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (regionMenuRef.current && !regionMenuRef.current.contains(e.target as Node)) {
+        setIsRegionMenuOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsRegionMenuOpen(false)
+      }
+    }
+    if (isRegionMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isRegionMenuOpen])
 
   // Map Style: 'tile' (default cute tile grid) or 'vector' (detailed geographic map)
   const [mapStyle, setMapStyle] = useState<'tile' | 'vector'>(() => {
@@ -128,8 +158,31 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     return items[0] // Default to #1 economy (US)
   }, [searchMatchedCountry, hoveredCountryId, pinnedCountryId, countryItemMap, items])
 
-  // Top 10 economies
-  const top10Items = useMemo(() => items.slice(0, 10), [items])
+  // Country count per region for informative multi-select badges
+  const regionCountryCounts = useMemo(() => {
+    const counts: Record<Region, number> = {
+      Asia: 0,
+      Europe: 0,
+      Americas: 0,
+      Africa: 0,
+      Oceania: 0,
+    }
+    for (const item of items) {
+      if (counts[item.country.region] !== undefined) {
+        counts[item.country.region]++
+      }
+    }
+    return counts
+  }, [items])
+
+  // Filtered items when continent multi-selection is active
+  const filteredItems = useMemo(() => {
+    if (isAllRegions) return items
+    return items.filter((item) => selectedRegions.includes(item.country.region))
+  }, [items, selectedRegions, isAllRegions])
+
+  // Top 10 economies (reflecting active region filter)
+  const top10Items = useMemo(() => filteredItems.slice(0, 10), [filteredItems])
 
   // Color generator based on selected metric
   const getCountryFill = useCallback(
@@ -191,27 +244,82 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
   // Current viewBox with zoom & region offsets
   const currentViewBox = useMemo(() => {
-    const base = REGION_VIEWBOXES[selectedRegion]
+    let base = REGION_VIEWBOXES['All']
+    if (selectedRegions.length === 1) {
+      base = REGION_VIEWBOXES[selectedRegions[0]] || REGION_VIEWBOXES['All']
+    }
     const w = base.w / zoomLevel
     const h = base.h / zoomLevel
     const cx = base.x + base.w / 2 + viewBoxOffset.x
     const cy = base.y + base.h / 2 + viewBoxOffset.y
     return `${Math.max(0, cx - w / 2)} ${Math.max(0, cy - h / 2)} ${w} ${h}`
-  }, [selectedRegion, zoomLevel, viewBoxOffset])
+  }, [selectedRegions, zoomLevel, viewBoxOffset])
 
   const handleZoomIn = () => setZoomLevel((z) => Math.min(3.5, z * 1.3))
   const handleZoomOut = () => setZoomLevel((z) => Math.max(1, z / 1.3))
   const handleResetZoom = () => {
     setZoomLevel(1)
     setViewBoxOffset({ x: 0, y: 0 })
-    setSelectedRegion('All')
+    setSelectedRegions([])
     setPinnedCountryId(null)
   }
 
-  const handleRegionSelect = (reg: Region | 'All') => {
-    setSelectedRegion(reg)
+  const handleToggleRegion = (reg: Region) => {
+    setSelectedRegions((prev) => {
+      // If currently all (empty or 5), clicking a specific region isolates that region
+      if (prev.length === 0 || prev.length === ALL_REGIONS.length) {
+        return [reg]
+      }
+      if (prev.includes(reg)) {
+        const next = prev.filter((r) => r !== reg)
+        return next
+      } else {
+        const next = [...prev, reg]
+        return next.length === ALL_REGIONS.length ? [] : next
+      }
+    })
     setZoomLevel(1)
     setViewBoxOffset({ x: 0, y: 0 })
+  }
+
+  const handleSelectAllRegions = () => {
+    setSelectedRegions([])
+    setZoomLevel(1)
+    setViewBoxOffset({ x: 0, y: 0 })
+  }
+
+  const getRegionButtonLabel = () => {
+    if (isAllRegions) return t.filterAll
+    if (selectedRegions.length === 1) {
+      const reg = selectedRegions[0]
+      return reg === 'Asia'
+        ? t.filterAsia
+        : reg === 'Europe'
+          ? t.filterEurope
+          : reg === 'Americas'
+            ? t.filterAmericas
+            : reg === 'Africa'
+              ? t.filterAfrica
+              : t.filterOceania
+    }
+    if (selectedRegions.length === 2) {
+      const getRegName = (r: Region) =>
+        r === 'Asia'
+          ? t.filterAsia
+          : r === 'Europe'
+            ? t.filterEurope
+            : r === 'Americas'
+              ? t.filterAmericas
+              : r === 'Africa'
+                ? t.filterAfrica
+                : t.filterOceania
+      return `${getRegName(selectedRegions[0])}, ${getRegName(selectedRegions[1])}`
+    }
+    if (lang === 'ko') return `${selectedRegions.length}개 대륙`
+    if (lang === 'ja') return `${selectedRegions.length}地域`
+    if (lang === 'es') return `${selectedRegions.length} regiones`
+    if (lang === 'zh') return `${selectedRegions.length}个大洲`
+    return `${selectedRegions.length} Regions`
   }
 
   // Direct DOM update for vector map tooltip position via rAF — zero React re-renders
@@ -324,26 +432,124 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               </select>
             </div>
 
-            {/* Region Filter Combobox (Converted from 6-option toggle per UX/UI guideline) */}
-            <div className="flex items-center gap-2 bg-slate-950/90 border border-slate-800 hover:border-slate-700 focus-within:border-indigo-500 rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-colors">
-              <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
-                <Filter className="w-3.5 h-3.5 text-indigo-400" />
-                <span>{lang === 'ko' ? '대륙' : lang === 'ja' ? '地域' : lang === 'es' ? 'Región' : lang === 'zh' ? '大洲' : 'Region'}:</span>
-              </span>
-              <select
-                id="mapRegionSelect"
-                value={selectedRegion}
-                onChange={(e) => handleRegionSelect(e.target.value as Region | 'All')}
-                aria-label="Filter by region"
-                className="bg-transparent text-slate-100 font-bold focus:outline-none cursor-pointer pr-1"
+            {/* Region Filter Multi-select Combobox */}
+            <div className="relative" ref={regionMenuRef}>
+              <button
+                type="button"
+                id="mapRegionMultiSelect"
+                onClick={() => setIsRegionMenuOpen((prev) => !prev)}
+                aria-haspopup="listbox"
+                aria-expanded={isRegionMenuOpen}
+                className={`flex items-center gap-2 bg-slate-950/90 border rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${
+                  isRegionMenuOpen
+                    ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
+                    : 'border-slate-800 hover:border-slate-700'
+                }`}
               >
-                <option value="All" className="bg-slate-900 text-white">{t.filterAll}</option>
-                <option value="Asia" className="bg-slate-900 text-white">{t.filterAsia}</option>
-                <option value="Europe" className="bg-slate-900 text-white">{t.filterEurope}</option>
-                <option value="Americas" className="bg-slate-900 text-white">{t.filterAmericas}</option>
-                <option value="Africa" className="bg-slate-900 text-white">{t.filterAfrica}</option>
-                <option value="Oceania" className="bg-slate-900 text-white">{t.filterOceania}</option>
-              </select>
+                <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
+                  <Filter className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>{lang === 'ko' ? '대륙' : lang === 'ja' ? '地域' : lang === 'es' ? 'Región' : lang === 'zh' ? '大洲' : 'Region'}:</span>
+                </span>
+                <span className="text-slate-100 font-bold max-w-[130px] sm:max-w-[180px] truncate">
+                  {getRegionButtonLabel()}
+                </span>
+                {!isAllRegions && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px] font-bold">
+                    {selectedRegions.length}
+                  </span>
+                )}
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isRegionMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Multi-select Dropdown Menu */}
+              {isRegionMenuOpen && (
+                <div className="absolute left-0 top-full mt-2 w-64 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/80 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  {/* 'All' Option */}
+                  <button
+                    type="button"
+                    onClick={handleSelectAllRegions}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                      isAllRegions
+                        ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 font-bold'
+                        : 'text-slate-300 hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
+                        isAllRegions ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-950'
+                      }`}>
+                        {isAllRegions && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                      <span>{t.filterAll} ({lang === 'ko' ? '전체 대륙' : 'All Regions'})</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">{items.length}</span>
+                  </button>
+
+                  <div className="h-px bg-slate-800/80 my-1.5" />
+
+                  {/* 5 Region Options with Checkboxes & Counts */}
+                  <div className="space-y-1">
+                    {ALL_REGIONS.map((reg) => {
+                      const isChecked = isAllRegions || selectedRegions.includes(reg)
+                      const isIsolated = !isAllRegions && selectedRegions.includes(reg)
+                      const count = regionCountryCounts[reg] || 0
+                      const regLabel =
+                        reg === 'Asia'
+                          ? t.filterAsia
+                          : reg === 'Europe'
+                            ? t.filterEurope
+                            : reg === 'Americas'
+                              ? t.filterAmericas
+                              : reg === 'Africa'
+                                ? t.filterAfrica
+                                : t.filterOceania
+
+                      return (
+                        <button
+                          key={reg}
+                          type="button"
+                          onClick={() => handleToggleRegion(reg)}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                            isIsolated
+                              ? 'bg-indigo-600/20 text-white border border-indigo-500/30'
+                              : 'text-slate-300 hover:bg-slate-800/60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
+                              isChecked ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-950'
+                            }`}>
+                              {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                            </div>
+                            <span>{regLabel}</span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-mono">{count}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  {/* Quick Actions Footer */}
+                  <div className="pt-2 mt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] px-1">
+                    <button
+                      type="button"
+                      onClick={handleSelectAllRegions}
+                      className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors py-1 px-1.5 rounded hover:bg-indigo-950/40"
+                    >
+                      {lang === 'ko' ? '전체 선택' : lang === 'ja' ? '全選択' : lang === 'es' ? 'Seleccionar todo' : lang === 'zh' ? '全选' : 'Select All'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedRegions(['Asia'])
+                      }}
+                      className="text-slate-400 hover:text-slate-200 transition-colors py-1 px-1.5 rounded hover:bg-slate-800/40"
+                    >
+                      {lang === 'ko' ? '초기화' : lang === 'ja' ? 'リセット' : lang === 'es' ? 'Restablecer' : lang === 'zh' ? '重置' : 'Reset'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Map Style Switcher (2 options - toggle switch permitted under 4 options) */}
@@ -410,7 +616,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               baseCurrency={baseCurrency}
               usdToBase={usdToBase}
               lang={lang}
-              selectedRegion={selectedRegion}
+              selectedRegions={selectedRegions}
+              selectedRegion={selectedRegions.length === 1 ? selectedRegions[0] : 'All'}
               searchQuery={searchQuery}
               hoveredCountryId={hoveredCountryId}
               pinnedCountryId={pinnedCountryId}
@@ -478,11 +685,13 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <g className="transition-opacity duration-300">
                   {WORLD_MAP_PATHS.map((countryPath) => {
                     const countryId = countryPath.id
-                    const isTracked = countryItemMap.has(countryId)
+                    const item = countryItemMap.get(countryId)
+                    const isTracked = !!item
                     const isHovered = hoveredCountryId === countryId
                     const isPinned = pinnedCountryId === countryId
                     const isSearchMatch = searchMatchedCountry?.country.id === countryId
                     const fill = getCountryFill(countryId)
+                    const isRegionMatch = !item || isAllRegions || selectedRegions.includes(item.country.region)
 
                     return (
                       <path
@@ -496,7 +705,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                             : isHovered || isPinned
                               ? '#ffffff'
                               : isTracked
-                                ? '#1e293b'
+                                ? isRegionMatch
+                                  ? '#1e293b'
+                                  : '#0f172a'
                                 : '#0f172a'
                         }
                         strokeWidth={
@@ -504,13 +715,17 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         }
                         opacity={
                           isTracked
-                            ? 1
-                            : selectedRegion !== 'All'
-                              ? 0.35
-                              : 0.65
+                            ? isRegionMatch
+                              ? 1
+                              : 0.25
+                            : isAllRegions
+                              ? 0.65
+                              : 0.25
                         }
                         className={`transition-[fill,stroke,opacity,filter] duration-200 ${isTracked
-                          ? 'cursor-pointer hover:brightness-125'
+                          ? isRegionMatch
+                            ? 'cursor-pointer hover:brightness-125'
+                            : 'cursor-pointer opacity-30 hover:opacity-80'
                           : 'cursor-default pointer-events-none'
                           }`}
                         onMouseMove={(e) => {
@@ -956,7 +1171,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       {/* 4. FULL RANKING LIST TABLE */}
       <div className="pt-2">
         <RankingTable
-          items={items}
+          items={filteredItems}
           baseCurrency={baseCurrency}
           exchangeRates={exchangeRates}
           lang={lang}
