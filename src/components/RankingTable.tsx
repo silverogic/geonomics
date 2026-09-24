@@ -770,13 +770,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                         className={`inline-flex items-center gap-1 font-mono font-semibold px-2 py-0.5 rounded text-xs border ${
                           item.debtRatioPct < 60
                             ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
-                            : item.debtRatioPct <= 100
+                            : item.debtRatioPct < 90
                             ? 'text-amber-300 bg-amber-950/60 border-amber-500/30'
                             : 'text-rose-300 bg-rose-950/60 border-rose-500/30'
                         }`}
                         title={`${t.modalDebtTitle}: ${item.debtRatioPct.toFixed(1)}%`}
                       >
-                        {item.debtRatioPct > 100 && (
+                        {item.debtRatioPct >= 90 && (
                           <AlertCircle className="w-3 h-3 text-rose-400 shrink-0" />
                         )}
                         {item.debtRatioPct.toFixed(1)}%

@@ -344,7 +344,15 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
               {metric === 'debt' && activeHoveredItem.debtRatioPct !== null && (
                 <div className="flex items-center justify-between text-indigo-300 font-semibold">
                   <span>{t.metricDebt}:</span>
-                  <span className="font-mono font-bold text-amber-400">
+                  <span
+                    className={`font-mono font-bold ${
+                      activeHoveredItem.debtRatioPct < 60
+                        ? 'text-emerald-400'
+                        : activeHoveredItem.debtRatioPct < 90
+                          ? 'text-amber-400'
+                          : 'text-rose-400'
+                    }`}
+                  >
                     {activeHoveredItem.debtRatioPct.toFixed(1)}%
                   </span>
                 </div>

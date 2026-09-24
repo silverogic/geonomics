@@ -169,10 +169,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       if (metric === 'debt') {
         const d = item.debtRatioPct
         if (d === null || d === undefined) return '#334155'
-        if (d < 50) return '#10b981' // Low debt
-        if (d < 80) return '#06b6d4' // Moderate
-        if (d < 110) return '#f59e0b' // High
-        return '#f43f5e' // Very high debt
+        if (d < 60) return '#10b981' // 좋음 (< 60%, Emerald)
+        if (d < 90) return '#f59e0b' // 주의 (60% ~ 90%, Amber)
+        return '#f43f5e' // 위험 (>= 90%, Rose)
       }
 
       if (metric === 'inflation') {
@@ -626,6 +625,21 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                           </span>
                         </div>
                       )}
+                      {hoveredItem.debtRatioPct !== null && (
+                        <div className="flex items-center justify-between text-slate-400">
+                          <span>{t.metricDebt}:</span>
+                          <span
+                            className={`font-mono font-semibold ${hoveredItem.debtRatioPct < 60
+                              ? 'text-emerald-400'
+                              : hoveredItem.debtRatioPct < 90
+                                ? 'text-amber-400'
+                                : 'text-rose-400'
+                              }`}
+                          >
+                            {hoveredItem.debtRatioPct.toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Hint */}
@@ -734,20 +748,31 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               {metric === 'debt' && (
                 <>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
-                    <span className="text-slate-300 font-mono font-medium">&lt; 50%</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">
+                      &lt; 60%
+                      <span className="text-[10px] text-emerald-400 ml-1 font-sans font-semibold">
+                        ({lang === 'ko' ? '좋음' : lang === 'ja' ? '良好' : lang === 'es' ? 'Bueno' : lang === 'zh' ? '良好' : 'Good'})
+                      </span>
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
-                    <span className="text-slate-300 font-mono font-medium">50% ~ 80%</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">
+                      60% ~ 90%
+                      <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
+                        ({lang === 'ko' ? '주의' : lang === 'ja' ? '注意' : lang === 'es' ? 'Precaución' : lang === 'zh' ? '注意' : 'Caution'})
+                      </span>
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b]"></span>
-                    <span className="text-slate-300 font-mono font-medium">80% ~ 110%</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
-                    <span className="text-slate-300 font-mono font-medium">&gt; 110%</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">
+                      &ge; 90%
+                      <span className="text-[10px] text-rose-400 ml-1 font-sans font-semibold">
+                        ({lang === 'ko' ? '위험' : lang === 'ja' ? '危険' : lang === 'es' ? 'Peligro' : lang === 'zh' ? '危险' : 'Danger'})
+                      </span>
+                    </span>
                   </div>
                 </>
               )}
@@ -890,7 +915,17 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
                   <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
-                    <div className="text-sm font-bold text-slate-200 font-mono mt-0.5 truncate">
+                    <div
+                      className={`text-sm font-bold font-mono mt-0.5 truncate ${
+                        inspectedCountryItem.debtRatioPct === null || inspectedCountryItem.debtRatioPct === undefined
+                          ? 'text-slate-400'
+                          : inspectedCountryItem.debtRatioPct < 60
+                            ? 'text-emerald-400'
+                            : inspectedCountryItem.debtRatioPct < 90
+                              ? 'text-amber-400'
+                              : 'text-rose-400'
+                      }`}
+                    >
                       {inspectedCountryItem.debtRatioPct !== null &&
                         inspectedCountryItem.debtRatioPct !== undefined
                         ? `${inspectedCountryItem.debtRatioPct.toFixed(1)}%`

@@ -218,12 +218,12 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                     ? 'text-slate-400'
                     : detail.debtRatioPct < 60
                       ? 'text-emerald-400'
-                      : detail.debtRatioPct <= 100
+                      : detail.debtRatioPct < 90
                         ? 'text-amber-400'
                         : 'text-rose-400'
                 }`}
               >
-                {detail?.debtRatioPct !== null && detail?.debtRatioPct !== undefined && detail.debtRatioPct > 100 && (
+                {detail?.debtRatioPct !== null && detail?.debtRatioPct !== undefined && detail.debtRatioPct >= 90 && (
                   <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
                 )}
                 {detail?.debtRatioPct !== null && detail?.debtRatioPct !== undefined

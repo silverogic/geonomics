@@ -311,7 +311,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                     ? 'text-slate-400'
                     : detailA.debtRatioPct < 60
                       ? 'text-emerald-400'
-                      : detailA.debtRatioPct <= 100
+                      : detailA.debtRatioPct < 90
                         ? 'text-amber-400'
                         : 'text-rose-400'
                 }`}
@@ -418,7 +418,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                     ? 'text-slate-400'
                     : detailB.debtRatioPct < 60
                       ? 'text-emerald-400'
-                      : detailB.debtRatioPct <= 100
+                      : detailB.debtRatioPct < 90
                         ? 'text-amber-400'
                         : 'text-rose-400'
                 }`}
