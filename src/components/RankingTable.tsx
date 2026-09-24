@@ -68,7 +68,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   const tableRef = useRef<HTMLTableElement>(null)
   const mobileDockRef = useRef<HTMLDivElement>(null)
 
-  // Mobile dock state
+  // State to track if table content exceeds container width
+  const [isTableOverflowing, setIsTableOverflowing] = useState(false)
+  const isFrozen = isTableOverflowing
+
+  // Mobile/desktop floating dock state
   const [isMobileDockActive, setIsMobileDockActive] = useState(false)
   const [dockTop, setDockTop] = useState(100)
   const [dockGeometry, setDockGeometry] = useState<{
@@ -117,16 +121,22 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   }
 
   const updateGeometry = () => {
-    // 1. If on desktop (>= 768px), mobile dock is not needed at all! Skip completely.
-    if (typeof window === 'undefined' || window.innerWidth >= 768) return
-
+    if (typeof window === 'undefined') return
     if (!tableRef.current || !tableContainerRef.current) return
-    const ths = tableRef.current.querySelectorAll<HTMLTableCellElement>('thead:first-of-type tr th')
+
+    // 1. Detect if table content actually exceeds container width
+    const container = tableContainerRef.current
+    const table = tableRef.current
+    const overflowing = table.scrollWidth > container.clientWidth + 2
+    setIsTableOverflowing((prev) => (prev !== overflowing ? overflowing : prev))
+
+    // 2. Measure geometry for the floating dock
+    const ths = table.querySelectorAll<HTMLTableCellElement>('thead:first-of-type tr th')
     if (ths.length === 0) return
 
     const widths = Array.from(ths).map((th) => Math.round(th.getBoundingClientRect().width))
-    const cRect = tableContainerRef.current.getBoundingClientRect()
-    const tRect = tableRef.current.getBoundingClientRect()
+    const cRect = container.getBoundingClientRect()
+    const tRect = table.getBoundingClientRect()
     const newLeft = Math.round(cRect.left)
     const newWidth = Math.round(cRect.width)
     const newTableWidth = Math.round(tRect.width)
@@ -155,13 +165,29 @@ export const RankingTable: React.FC<RankingTableProps> = ({
     let resizeRaf: number | null = null
 
     const checkDockVisibility = () => {
-      if (typeof window === 'undefined' || window.innerWidth >= 768) {
+      if (typeof window === 'undefined') {
         setIsMobileDockActive((prev) => (prev ? false : prev))
         return
       }
-      if (!tableContainerRef.current) return
+      if (!tableContainerRef.current || !tableRef.current) return
+
+      // If table completely fits within container (e.g. wide desktop screen),
+      // native CSS sticky thead handles vertical pinning; dock is not needed!
+      const isOverflowing = tableRef.current.scrollWidth > tableContainerRef.current.clientWidth + 2
+      if (!isOverflowing) {
+        setIsMobileDockActive((prev) => (prev ? false : prev))
+        return
+      }
+
       const rect = tableContainerRef.current.getBoundingClientRect()
-      const navbarH = window.innerWidth < 640 ? 100 : 116
+      const navEl = document.querySelector('header')
+      const navbarH = navEl
+        ? Math.round(navEl.getBoundingClientRect().height)
+        : window.innerWidth < 640
+        ? 100
+        : window.innerWidth < 768
+        ? 116
+        : 80
       const dockHeight = 44
 
       const shouldDock = rect.top <= navbarH && rect.bottom > navbarH
@@ -182,13 +208,6 @@ export const RankingTable: React.FC<RankingTableProps> = ({
     const handleResize = () => {
       if (typeof window === 'undefined') return
 
-      // If resized to desktop, immediately disable mobile dock without DOM measurement
-      if (window.innerWidth >= 768) {
-        setIsMobileDockActive((prev) => (prev ? false : prev))
-        return
-      }
-
-      // On mobile, throttle with requestAnimationFrame to prevent layout thrashing
       if (resizeRaf) cancelAnimationFrame(resizeRaf)
       resizeRaf = requestAnimationFrame(() => {
         updateGeometry()
@@ -200,21 +219,19 @@ export const RankingTable: React.FC<RankingTableProps> = ({
     window.addEventListener('resize', handleResize, { passive: true })
 
     // Initial check (runs once on mount or when items/lang change)
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    if (typeof window !== 'undefined') {
       updateGeometry()
     }
     checkDockVisibility()
 
     let ro: ResizeObserver | null = null
-    if (tableContainerRef.current && typeof window !== 'undefined' && window.innerWidth < 768) {
+    if (tableContainerRef.current && typeof window !== 'undefined') {
       ro = new ResizeObserver(() => {
-        if (window.innerWidth < 768) {
-          if (resizeRaf) cancelAnimationFrame(resizeRaf)
-          resizeRaf = requestAnimationFrame(() => {
-            updateGeometry()
-            checkDockVisibility()
-          })
-        }
+        if (resizeRaf) cancelAnimationFrame(resizeRaf)
+        resizeRaf = requestAnimationFrame(() => {
+          updateGeometry()
+          checkDockVisibility()
+        })
       })
       ro.observe(tableContainerRef.current)
     }
@@ -320,7 +337,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <th
         onClick={() => handleSort('rank')}
         style={isDock && dockGeometry.colWidths[0] ? { width: `${dockGeometry.colWidths[0]}px`, minWidth: `${dockGeometry.colWidths[0]}px`, maxWidth: `${dockGeometry.colWidths[0]}px` } : undefined}
-        className={`${isDock ? 'sticky' : 'sticky md:static'} left-0 z-30 bg-slate-950 py-3 px-1 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center`}
+        className={`${isDock || isFrozen ? 'sticky left-0 z-30' : 'static'} bg-slate-950 py-3 px-1 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center`}
       >
         <div className="flex items-center justify-center gap-0.5 sm:gap-1">
           <span>{t.colRank}</span>
@@ -331,7 +348,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <th
         onClick={() => handleSort('countryName')}
         style={isDock && dockGeometry.colWidths[1] ? { width: `${dockGeometry.colWidths[1]}px`, minWidth: `${dockGeometry.colWidths[1]}px`, maxWidth: `${dockGeometry.colWidths[1]}px` } : undefined}
-        className={`${isDock ? 'sticky' : 'sticky md:static'} ${isDock ? 'left-10 sm:left-12' : 'left-10 sm:left-12 md:static'} z-30 bg-slate-950 py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 ${isDock ? 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80' : 'shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0'} transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}
+        className={`${
+          isDock || isFrozen
+            ? 'sticky left-10 sm:left-12 z-30 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
+            : 'static shadow-none border-r-0'
+        } bg-slate-950 py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}
       >
         <div className="flex items-center gap-1 sm:gap-1.5">
           <span>{t.colCountry}</span>
@@ -495,12 +516,12 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         </span>
       </div>
 
-      {/* Mobile Floating Sticky Header Dock */}
+      {/* Floating Sticky Header Dock */}
       {isMobileDockActive && dockGeometry.colWidths.length > 0 && (
         <div
           ref={setDockRef}
           onScroll={handleDockScroll}
-          className="fixed z-40 md:hidden overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-slate-950 border-x border-b border-slate-800 shadow-2xl transition-[top] duration-75"
+          className="fixed z-40 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-slate-950 border-x border-b border-slate-800 shadow-2xl transition-[top] duration-75"
           style={{
             top: `${dockTop}px`,
             left: `${dockGeometry.left}px`,
@@ -529,10 +550,22 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <div
         ref={tableContainerRef}
         onScroll={handleContainerScroll}
-        className="rounded-xl border border-slate-800 overflow-x-auto md:overflow-visible scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent"
+        className={`rounded-xl border border-slate-800 ${
+          isTableOverflowing
+            ? 'overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent'
+            : 'overflow-visible'
+        }`}
       >
         <table ref={tableRef} className="w-full text-left border-separate border-spacing-0 text-sm">
-          <thead className="sticky top-0 md:top-[var(--navbar-h)] z-30 bg-slate-950">
+          <thead
+            className={`sticky z-30 bg-slate-950 transition-opacity duration-150 ${
+              isTableOverflowing
+                ? isMobileDockActive
+                  ? 'opacity-0 pointer-events-none top-0'
+                  : 'top-0'
+                : 'top-0 md:top-[var(--navbar-h)]'
+            }`}
+          >
             <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
               {renderHeaderCells(false)}
             </tr>
@@ -560,11 +593,15 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                   onClick={() => onSelectCountry(item.country)}
                   className="hover:bg-slate-800/70 transition-colors cursor-pointer group"
                 >
-                  <td className="sticky md:static left-0 z-20 md:z-auto bg-slate-900 group-hover:bg-slate-800/95 py-3 px-1 sm:px-3 border-b border-slate-800/60 font-mono font-bold text-slate-400 group-hover:text-indigo-400 whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center transition-colors">
+                  <td className={`${isFrozen ? 'sticky left-0 z-20' : 'static'} bg-slate-900 group-hover:bg-slate-800/95 py-3 px-1 sm:px-3 border-b border-slate-800/60 font-mono font-bold text-slate-400 group-hover:text-indigo-400 whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center transition-colors`}>
                     #{item.rank}
                   </td>
 
-                  <td className="sticky md:static left-10 sm:left-12 z-20 md:z-auto bg-slate-900 group-hover:bg-slate-800/95 py-3 px-1.5 sm:px-3 border-b border-slate-800/60 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] md:shadow-none border-r border-slate-800/80 md:border-r-0 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]">
+                  <td className={`${
+                    isFrozen
+                      ? 'sticky left-10 sm:left-12 z-20 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
+                      : 'static shadow-none border-r-0'
+                  } bg-slate-900 group-hover:bg-slate-800/95 py-3 px-1.5 sm:px-3 border-b border-slate-800/60 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}>
                     <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
                       <CountryFlag iso2={item.country.iso2} className="w-5 h-3.5 sm:w-7 sm:h-5 shrink-0" alt={displayName} />
                       <div className="min-w-0">
