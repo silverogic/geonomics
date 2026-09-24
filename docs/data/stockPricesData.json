@@ -2764,12 +2764,8 @@
     "isSupported": true,
     "currency": "DKK",
     "currentPrice": 1838.42,
-    "changePct": -4.27,
+    "changePct": -4.99,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 1920.33
-      },
       {
         "date": "2026-08-25",
         "close": 1935.07
@@ -2805,10 +2801,6 @@
       {
         "date": "2026-09-04",
         "close": 1912.14
-      },
-      {
-        "date": "2026-09-07",
-        "close": 1911.87
       },
       {
         "date": "2026-09-08",
@@ -2853,6 +2845,10 @@
       {
         "date": "2026-09-23",
         "close": 1849.85
+      },
+      {
+        "date": "2026-09-24",
+        "close": 1838.42
       }
     ]
   },
@@ -3283,8 +3279,8 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13824.83,
-    "changePct": -1.2,
+    "currentPrice": 13774.66,
+    "changePct": -1.56,
     "points": [
       {
         "date": "2026-08-24",
@@ -3369,6 +3365,10 @@
       {
         "date": "2026-09-22",
         "close": 13821.76
+      },
+      {
+        "date": "2026-09-24",
+        "close": 13774.66
       }
     ]
   },
