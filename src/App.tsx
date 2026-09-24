@@ -153,7 +153,7 @@ export function App() {
 
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans pb-16 md:pb-0">
       {/* Navigation Header */}
       <Navbar
         activeTab={activeTab}

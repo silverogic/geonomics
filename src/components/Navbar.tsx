@@ -28,7 +28,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const t = translations[lang]
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-slate-100">
+    <>
+      <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-slate-100">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           {/* Brand Logo */}
@@ -136,29 +137,39 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
         </div>
+      </div>
+    </header>
 
-        {/* Mobile Navigation Tabs */}
-        <div className="flex md:hidden items-center justify-around h-9 border-t border-slate-800/60 gap-1 text-xs">
+      {/* Mobile Bottom Navigation Tab Bar */}
+      <nav
+        aria-label="Mobile Bottom Navigation"
+        className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_25px_rgba(0,0,0,0.6)]"
+      >
+        <div className="max-w-md mx-auto grid grid-cols-2 gap-2">
           <button
             onClick={() => setActiveTab('cards')}
-            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg font-medium ${
-              activeTab === 'cards' ? 'bg-indigo-600 text-white' : 'text-slate-400'
+            className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+              activeTab === 'cards'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" />
-            {t.navExplorer}
+            <Layers className="w-4 h-4 shrink-0" />
+            <span className="text-xs font-bold tracking-tight">{t.navExplorer}</span>
           </button>
           <button
             onClick={() => setActiveTab('compare')}
-            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg font-medium ${
-              activeTab === 'compare' ? 'bg-indigo-600 text-white' : 'text-slate-400'
+            className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+              activeTab === 'compare'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
-            <GitCompare className="w-3.5 h-3.5" />
-            {t.navCompare}
+            <GitCompare className="w-4 h-4 shrink-0" />
+            <span className="text-xs font-bold tracking-tight">{t.navCompare}</span>
           </button>
         </div>
-      </div>
-    </header>
+      </nav>
+    </>
   )
 }
