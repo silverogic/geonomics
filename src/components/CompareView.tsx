@@ -165,17 +165,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
       </div>
 
         {/* Selectors */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-3 items-center">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Country A Picker */}
-          <div className="bg-slate-950/80 border border-indigo-500/40 rounded-xl p-3 min-w-0 overflow-hidden">
-            <label htmlFor="countryASelect" className="text-xs font-semibold text-indigo-400 block mb-1 truncate">
+          <div className="flex-1 min-w-0 bg-slate-950/80 border border-indigo-500/40 rounded-xl p-2 sm:p-3 overflow-hidden">
+            <label htmlFor="countryASelect" className="text-[10px] sm:text-xs font-semibold text-indigo-400 block mb-0.5 sm:mb-1 truncate">
               {t.compareBaseCountry}
             </label>
             <select
               id="countryASelect"
               value={countryAId}
               onChange={(e) => setCountryAId(e.target.value)}
-              className="w-full bg-transparent text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
+              className="w-full bg-transparent text-sm sm:text-base md:text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
             >
               {COUNTRIES.map((c) => (
                 <option key={c.id} value={c.id} className="bg-slate-900 text-white">
@@ -188,22 +188,22 @@ export const CompareView: React.FC<CompareViewProps> = ({
           {/* Swap Button */}
           <button
             onClick={handleSwap}
-            className="mx-auto p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-all transform hover:rotate-180 duration-200"
+            className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-all transform hover:rotate-180 duration-200 shrink-0"
             title={t.swapCurrencies}
           >
-            <ArrowRightLeft className="w-5 h-5 text-indigo-400" />
+            <ArrowRightLeft className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
           </button>
 
           {/* Country B Picker */}
-          <div className="bg-slate-950/80 border border-emerald-500/40 rounded-xl p-3 min-w-0 overflow-hidden">
-            <label htmlFor="countryBSelect" className="text-xs font-semibold text-emerald-400 block mb-1 truncate">
+          <div className="flex-1 min-w-0 bg-slate-950/80 border border-emerald-500/40 rounded-xl p-2 sm:p-3 overflow-hidden">
+            <label htmlFor="countryBSelect" className="text-[10px] sm:text-xs font-semibold text-emerald-400 block mb-0.5 sm:mb-1 truncate">
               {t.compareTargetCountry}
             </label>
             <select
               id="countryBSelect"
               value={countryBId}
               onChange={(e) => setCountryBId(e.target.value)}
-              className="w-full bg-transparent text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
+              className="w-full bg-transparent text-sm sm:text-base md:text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
             >
               {COUNTRIES.map((c) => (
                 <option key={c.id} value={c.id} className="bg-slate-900 text-white">
