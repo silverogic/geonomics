@@ -1063,9 +1063,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       lang
                     )}
                   </div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">
-                    (USD {formatGdpCompact(inspectedCountryItem.totalGdpUsd, 'USD', 1, lang)})
-                  </div>
+                  {baseCurrency !== 'USD' && (
+                    <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                      ${(inspectedCountryItem.totalGdpUsd / 1e12).toFixed(2)}T
+                    </div>
+                  )}
                 </div>
 
                 {/* GDP Per Capita */}
@@ -1079,6 +1081,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       lang
                     )}
                   </div>
+                  {baseCurrency !== 'USD' && (
+                    <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                      ${Math.round(inspectedCountryItem.gdpPerCapitaUsd).toLocaleString()}
+                    </div>
+                  )}
                 </div>
 
                 {/* Growth Rate, Inflation Rate & Debt Ratio Grid */}

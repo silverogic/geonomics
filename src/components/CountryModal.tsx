@@ -105,7 +105,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                {t.modalContinent}: {country.region} • {t.modalCurrency}: {currencyName} ({country.currencyCode}{country.currencySymbol && country.currencySymbol !== country.currencyCode ? ` ${country.currencySymbol}` : ''})
+                {t.modalContinent}: {country.region} • {t.modalCurrency}: {currencyName} ({country.currencyCode})
               </p>
             </div>
           </div>
@@ -134,7 +134,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               </div>
               {baseCurrency !== 'USD' && detail && (
                 <span className="text-xs text-indigo-400 font-mono truncate block">
-                  ${(detail.totalGdpUsd / 1e12).toFixed(2)}T USD
+                  ${(detail.totalGdpUsd / 1e12).toFixed(2)}T
                 </span>
               )}
             </div>
@@ -149,7 +149,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               </div>
               {baseCurrency !== 'USD' && detail && (
                 <span className="text-xs text-indigo-400 font-mono truncate block">
-                  ${Math.round(detail.gdpPerCapitaUsd).toLocaleString()} USD
+                  ${Math.round(detail.gdpPerCapitaUsd).toLocaleString()}
                 </span>
               )}
             </div>

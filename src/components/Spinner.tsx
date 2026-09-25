@@ -18,8 +18,9 @@ export const Spinner: React.FC<SpinnerProps> = ({
   label,
   showGlow = true,
 }) => {
-  const gradientId = useId()
-  const glowId = useId()
+  const rawId = useId().replace(/[^a-zA-Z0-9]/g, '') || 'spin'
+  const gradientId = `spinner-grad-${rawId}`
+  const glowId = `spinner-glow-${rawId}`
 
   const pixelSize =
     typeof size === 'number'

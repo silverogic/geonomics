@@ -132,7 +132,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
               </span>
               {baseCurrency !== 'USD' && (
                 <span className="text-[10px] text-slate-500 font-mono block">
-                  ${(totalGdpUsd / 1e12).toFixed(2)}T USD
+                  ${(totalGdpUsd / 1e12).toFixed(2)}T
                 </span>
               )}
             </div>
@@ -144,7 +144,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
               </span>
               {baseCurrency !== 'USD' && (
                 <span className="text-[10px] text-slate-400 font-mono block">
-                  ${Math.round(gdpPerCapitaUsd).toLocaleString()} USD
+                  ${Math.round(gdpPerCapitaUsd).toLocaleString()}
                 </span>
               )}
             </div>

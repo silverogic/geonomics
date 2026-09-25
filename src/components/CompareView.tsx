@@ -239,7 +239,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 </span>
                 {baseCurrency !== 'USD' && detailA && (
                   <span className="text-[11px] text-slate-500 font-mono block">
-                    ${(detailA.totalGdpUsd / 1e12).toFixed(2)}T USD
+                    ${(detailA.totalGdpUsd / 1e12).toFixed(2)}T
                   </span>
                 )}
               </div>
@@ -253,7 +253,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 </span>
                 {baseCurrency !== 'USD' && detailA && (
                   <span className="text-[11px] text-slate-500 font-mono block">
-                    ${Math.round(detailA.gdpPerCapitaUsd).toLocaleString()} USD
+                    ${Math.round(detailA.gdpPerCapitaUsd).toLocaleString()}
                   </span>
                 )}
               </div>
@@ -358,7 +358,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 </span>
                 {baseCurrency !== 'USD' && detailB && (
                   <span className="text-[11px] text-slate-500 font-mono block">
-                    ${(detailB.totalGdpUsd / 1e12).toFixed(2)}T USD
+                    ${(detailB.totalGdpUsd / 1e12).toFixed(2)}T
                   </span>
                 )}
               </div>
@@ -372,7 +372,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 </span>
                 {baseCurrency !== 'USD' && detailB && (
                   <span className="text-[11px] text-slate-500 font-mono block">
-                    ${Math.round(detailB.gdpPerCapitaUsd).toLocaleString()} USD
+                    ${Math.round(detailB.gdpPerCapitaUsd).toLocaleString()}
                   </span>
                 )}
               </div>
