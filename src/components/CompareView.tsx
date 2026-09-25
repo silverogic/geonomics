@@ -237,9 +237,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <span className="text-base font-bold text-indigo-400 block">
                   {detailA ? formatGdpCompact(detailA.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
                 </span>
-                <span className="text-[11px] text-slate-500 font-mono">
-                  {detailA ? `$${(detailA.totalGdpUsd / 1e12).toFixed(2)}T USD` : ''}
-                </span>
+                {baseCurrency !== 'USD' && detailA && (
+                  <span className="text-[11px] text-slate-500 font-mono block">
+                    ${(detailA.totalGdpUsd / 1e12).toFixed(2)}T USD
+                  </span>
+                )}
               </div>
             </div>
 
@@ -249,9 +251,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <span className="text-base font-bold text-white block">
                   {detailA ? formatPerCapita(detailA.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
                 </span>
-                <span className="text-[11px] text-slate-500 font-mono">
-                  {detailA ? `$${Math.round(detailA.gdpPerCapitaUsd).toLocaleString()} USD` : ''}
-                </span>
+                {baseCurrency !== 'USD' && detailA && (
+                  <span className="text-[11px] text-slate-500 font-mono block">
+                    ${Math.round(detailA.gdpPerCapitaUsd).toLocaleString()} USD
+                  </span>
+                )}
               </div>
             </div>
 
@@ -352,9 +356,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <span className="text-base font-bold text-emerald-400 block">
                   {detailB ? formatGdpCompact(detailB.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
                 </span>
-                <span className="text-[11px] text-slate-500 font-mono">
-                  {detailB ? `$${(detailB.totalGdpUsd / 1e12).toFixed(2)}T USD` : ''}
-                </span>
+                {baseCurrency !== 'USD' && detailB && (
+                  <span className="text-[11px] text-slate-500 font-mono block">
+                    ${(detailB.totalGdpUsd / 1e12).toFixed(2)}T USD
+                  </span>
+                )}
               </div>
             </div>
 
@@ -364,9 +370,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <span className="text-base font-bold text-white block">
                   {detailB ? formatPerCapita(detailB.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
                 </span>
-                <span className="text-[11px] text-slate-500 font-mono">
-                  {detailB ? `$${Math.round(detailB.gdpPerCapitaUsd).toLocaleString()} USD` : ''}
-                </span>
+                {baseCurrency !== 'USD' && detailB && (
+                  <span className="text-[11px] text-slate-500 font-mono block">
+                    ${Math.round(detailB.gdpPerCapitaUsd).toLocaleString()} USD
+                  </span>
+                )}
               </div>
             </div>
 

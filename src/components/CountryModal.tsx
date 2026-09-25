@@ -132,9 +132,11 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate">
                 {detail ? formatGdpCompact(detail.totalGdpUsd, baseCurrency, usdToBase, lang) : t.loadingData}
               </div>
-              <span className="text-xs text-indigo-400 font-mono truncate block">
-                {detail ? `$${(detail.totalGdpUsd / 1e12).toFixed(2)}T USD` : ''}
-              </span>
+              {baseCurrency !== 'USD' && detail && (
+                <span className="text-xs text-indigo-400 font-mono truncate block">
+                  ${(detail.totalGdpUsd / 1e12).toFixed(2)}T USD
+                </span>
+              )}
             </div>
 
             {/* GDP Per Capita */}
@@ -145,9 +147,11 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate">
                 {detail ? formatPerCapita(detail.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : t.loadingData}
               </div>
-              <span className="text-xs text-indigo-400 font-mono truncate block">
-                {detail ? `$${Math.round(detail.gdpPerCapitaUsd).toLocaleString()} USD` : ''}
-              </span>
+              {baseCurrency !== 'USD' && detail && (
+                <span className="text-xs text-indigo-400 font-mono truncate block">
+                  ${Math.round(detail.gdpPerCapitaUsd).toLocaleString()} USD
+                </span>
+              )}
             </div>
 
             {/* Annual Growth Rate */}
@@ -169,7 +173,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 )}
                 <span className="truncate">
                   {detail?.growthRatePct !== null && detail?.growthRatePct !== undefined
-                    ? `${detail.growthRatePct > 0 ? '+' : ''}${detail.growthRatePct.toFixed(2)}%`
+                    ? `${detail.growthRatePct.toFixed(2)}%`
                     : 'N/A'}
                 </span>
               </div>

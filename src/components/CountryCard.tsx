@@ -130,9 +130,11 @@ export const CountryCard: React.FC<CountryCardProps> = ({
               <span className="text-base sm:text-lg font-bold text-slate-100 tracking-tight block">
                 {formatGdpCompact(totalGdpUsd, baseCurrency, usdToBase, lang)}
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">
-                ${(totalGdpUsd / 1e12).toFixed(2)}T USD
-              </span>
+              {baseCurrency !== 'USD' && (
+                <span className="text-[10px] text-slate-500 font-mono block">
+                  ${(totalGdpUsd / 1e12).toFixed(2)}T USD
+                </span>
+              )}
             </div>
 
             <div>
@@ -140,9 +142,11 @@ export const CountryCard: React.FC<CountryCardProps> = ({
               <span className="text-base sm:text-lg font-bold text-slate-200 tracking-tight block">
                 {formatPerCapita(gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                ${Math.round(gdpPerCapitaUsd).toLocaleString()} USD
-              </span>
+              {baseCurrency !== 'USD' && (
+                <span className="text-[10px] text-slate-400 font-mono block">
+                  ${Math.round(gdpPerCapitaUsd).toLocaleString()} USD
+                </span>
+              )}
             </div>
           </div>
 
@@ -234,7 +238,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                 }`}
               >
                 {growthRatePct >= 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-                {growthRatePct > 0 ? `+${growthRatePct.toFixed(1)}%` : `${growthRatePct.toFixed(1)}%`}
+                {`${growthRatePct.toFixed(1)}%`}
               </span>
             </div>
           )}
