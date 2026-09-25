@@ -64,7 +64,7 @@ export interface EconomySummary {
   rateToBase: number
 }
 
-export type BaseCurrency = 'USD' | 'EUR' | 'KRW' | 'JPY' | 'GBP' | 'CNY'
+export type BaseCurrency = 'USD' | 'EUR' | 'KRW' | 'JPY' | 'GBP' | 'CNY' | 'CHF' | 'AUD'
 
 export interface InterestRateInfo {
   countryCode: string // ISO2 e.g. 'US', 'KR' or 'XM'

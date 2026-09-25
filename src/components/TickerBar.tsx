@@ -23,8 +23,8 @@ export const TickerBar: React.FC<TickerBarProps> = ({
   const t = translations[lang]
 
   // Key currency codes to display in top ticker bar
-  const keyCurrencies = ['USD', 'EUR', 'JPY', 'CNY', 'GBP', 'KRW'].filter((c) => c !== baseCurrency)
-  const keyRateCodes = ['US', 'KR', 'XM', 'JP', 'GB']
+  const keyCurrencies = ['USD', 'EUR', 'JPY', 'CNY', 'GBP', 'KRW', 'CHF', 'AUD'].filter((c) => c !== baseCurrency)
+  const keyRateCodes = ['US', 'KR', 'XM', 'JP', 'GB', 'CH', 'AU']
 
   return (
     <div className="bg-slate-900 border-b border-slate-800/80 py-2.5 px-4 overflow-x-auto text-xs text-slate-300 scrollbar-none">

@@ -141,6 +141,10 @@ export function getCurrencySymbol(code: string): string {
       return '£'
     case 'CNY':
       return '¥'
+    case 'CHF':
+      return 'CHF '
+    case 'AUD':
+      return 'A$'
     default:
       return code + ' '
   }

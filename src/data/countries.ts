@@ -1400,5 +1400,7 @@ export const BASE_CURRENCIES = [
   { code: 'JPY', nameEn: 'Japanese Yen (JPY)', nameKo: '일본 엔 (JPY)', nameJa: '日本円 (JPY)', nameEs: 'Yen japonés (JPY)', nameZh: '日元 (JPY)', symbol: '¥' },
   { code: 'GBP', nameEn: 'British Pound (GBP)', nameKo: '영국 파운드 (GBP)', nameJa: '英ポンド (GBP)', nameEs: 'Libra esterlina (GBP)', nameZh: '英镑 (GBP)', symbol: '£' },
   { code: 'CNY', nameEn: 'Chinese Yuan (CNY)', nameKo: '중국 위안 (CNY)', nameJa: '中国人民元 (CNY)', nameEs: 'Yuan chino (CNY)', nameZh: '人民币 (CNY)', symbol: '¥' },
+  { code: 'CHF', nameEn: 'Swiss Franc (CHF)', nameKo: '스위스 프랑 (CHF)', nameJa: 'スイス・フラン (CHF)', nameEs: 'Franco suizo (CHF)', nameZh: '瑞士法郎 (CHF)', symbol: 'CHF' },
+  { code: 'AUD', nameEn: 'Australian Dollar (AUD)', nameKo: '호주 달러 (AUD)', nameJa: '豪ドル (AUD)', nameEs: 'Dólar australiano (AUD)', nameZh: '澳元 (AUD)', symbol: 'A$' },
 ] as const
 

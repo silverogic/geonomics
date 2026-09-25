@@ -65,7 +65,7 @@ export function detectBrowserLanguage(): Language {
 export function detectBrowserBaseCurrency(): BaseCurrency {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem(STORAGE_CURRENCY_KEY)
-    if (saved && ['USD', 'EUR', 'KRW', 'JPY', 'GBP', 'CNY'].includes(saved)) {
+    if (saved && ['USD', 'EUR', 'KRW', 'JPY', 'GBP', 'CNY', 'CHF', 'AUD'].includes(saved)) {
       return saved as BaseCurrency
     }
 
@@ -91,6 +91,16 @@ export function detectBrowserBaseCurrency(): BaseCurrency {
       // China detection
       if (locale.includes('cn') || locale.startsWith('zh') || timeZone.includes('Shanghai')) {
         return 'CNY'
+      }
+
+      // Switzerland detection
+      if (locale.includes('ch') || locale.endsWith('-ch') || timeZone.toLowerCase().includes('zurich')) {
+        return 'CHF'
+      }
+
+      // Australia detection
+      if (locale.includes('au') || locale.endsWith('-au') || timeZone.toLowerCase().includes('sydney') || timeZone.toLowerCase().includes('melbourne')) {
+        return 'AUD'
       }
 
       // Eurozone countries detection
