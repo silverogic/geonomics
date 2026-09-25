@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ArrowUpDown, Search, ArrowUp, ArrowDown, AlertCircle, Sparkles } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColorClass } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
@@ -717,7 +717,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
                   {/* GDP Per Capita */}
                   <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[105px] sm:min-w-[120px]">
-                    <span className={`font-semibold block ${getPerCapitaColorClass(item.gdpPerCapitaUsd)}`}>
+                    <span className="font-semibold text-white block">
                       {formatPerCapita(item.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                     </span>
                     <span className="text-[11px] text-slate-500 font-mono">
