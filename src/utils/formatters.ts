@@ -145,3 +145,18 @@ export function getCurrencySymbol(code: string): string {
       return code + ' '
   }
 }
+
+/**
+ * Returns color classes for GDP per capita (Recommendation 2: Champagne Gold + Cyan + Indigo + Slate):
+ * >= $50,000: Gold (text-yellow-400) - Wealthy / Top tier economies
+ * >= $25,000: Cyan (text-cyan-400) - Advanced economies
+ * >= $12,000: Indigo (text-indigo-300) - Developing / Middle economies
+ * < $12,000: Slate (text-slate-400) - Emerging economies
+ */
+export function getPerCapitaColorClass(gdpPerCapitaUsd: number | null | undefined): string {
+  if (!gdpPerCapitaUsd || gdpPerCapitaUsd <= 0) return 'text-slate-400'
+  if (gdpPerCapitaUsd >= 50_000) return 'text-yellow-400'
+  if (gdpPerCapitaUsd >= 25_000) return 'text-cyan-400'
+  if (gdpPerCapitaUsd >= 12_000) return 'text-indigo-300'
+  return 'text-slate-400'
+}

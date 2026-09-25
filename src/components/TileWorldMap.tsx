@@ -8,7 +8,7 @@ import {
 } from '../data/pixelMapData'
 import type { CountryMeta, BaseCurrency, Region, Language } from '../types/economics'
 import type { CountryRowItem } from './RankingTable'
-import { formatGdpCompact, formatPerCapita } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass } from '../utils/formatters'
 import { CountryFlag } from './CountryFlag'
 import { getCountryName } from '../utils/countryNames'
 import type { MapMetric } from './GdpWorldMap'
@@ -305,7 +305,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                 }`}
               >
                 <span>{t.metricPerCapita}:</span>
-                <span className={`font-mono ${metric === 'perCapita' ? 'font-bold text-white' : 'text-slate-300'}`}>
+                <span className={`font-mono ${metric === 'perCapita' ? 'font-bold text-white' : getPerCapitaColorClass(activeHoveredItem.gdpPerCapitaUsd)}`}>
                   {formatPerCapita(activeHoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                 </span>
               </div>

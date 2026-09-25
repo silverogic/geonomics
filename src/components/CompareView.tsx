@@ -6,7 +6,7 @@ import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicY
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColorClass } from '../utils/formatters'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { GdpChart } from './GdpChart'
@@ -248,7 +248,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardPerCapita}</span>
               <div className="text-right">
-                <span className="text-base font-bold text-white block">
+                <span className={`text-base font-bold block ${getPerCapitaColorClass(detailA?.gdpPerCapitaUsd)}`}>
                   {detailA ? formatPerCapita(detailA.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
                 </span>
                 {baseCurrency !== 'USD' && detailA && (
@@ -367,7 +367,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardPerCapita}</span>
               <div className="text-right">
-                <span className="text-base font-bold text-white block">
+                <span className={`text-base font-bold block ${getPerCapitaColorClass(detailB?.gdpPerCapitaUsd)}`}>
                   {detailB ? formatPerCapita(detailB.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
                 </span>
                 {baseCurrency !== 'USD' && detailB && (

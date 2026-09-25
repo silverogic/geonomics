@@ -1,5 +1,5 @@
 import React from 'react'
-import { Globe, Layers, GitCompare, DollarSign, Languages, RefreshCw } from 'lucide-react'
+import { Globe, Layers, GitCompare, Coins, Languages, RefreshCw } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language } from '../types/economics'
 import { translations } from '../i18n/translations'
@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Base Currency Select */}
             <div className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-medium">
-              <DollarSign className="w-4 h-4 text-indigo-400" />
+              <Coins className="w-4 h-4 text-indigo-400" />
               <label htmlFor="baseCurrency" className="text-slate-400 hidden lg:inline">
                 {t.baseCurrencyLabel}
               </label>

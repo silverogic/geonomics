@@ -4,7 +4,7 @@ import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Langua
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
-import { formatGdpCompact, formatPerCapita } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass } from '../utils/formatters'
 import { DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { GdpChart } from './GdpChart'
 import { CurrencyConverter } from './CurrencyConverter'
@@ -101,11 +101,11 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 <h2 className="text-2xl font-black text-white">{displayName}</h2>
                 <span className="text-sm text-slate-400 font-medium">({secondaryName})</span>
                 <span className="text-xs px-2 py-0.5 rounded-md font-mono bg-slate-800 text-slate-300 border border-slate-700">
-                  {country.id} / {country.iso2}
+                  {country.id}
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                {t.modalContinent}: {country.region} • {t.modalCurrency}: {currencyName} ({country.currencyCode} {country.currencySymbol})
+                {t.modalContinent}: {country.region} • {t.modalCurrency}: {currencyName} ({country.currencyCode}{country.currencySymbol && country.currencySymbol !== country.currencyCode ? ` ${country.currencySymbol}` : ''})
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalPerCapitaTitle}
               </span>
-              <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate">
+              <div className={`text-base lg:text-lg font-bold tracking-tight truncate ${getPerCapitaColorClass(detail?.gdpPerCapitaUsd)}`}>
                 {detail ? formatPerCapita(detail.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : t.loadingData}
               </div>
               {baseCurrency !== 'USD' && detail && (

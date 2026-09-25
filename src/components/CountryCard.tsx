@@ -1,7 +1,7 @@
 import React from 'react'
 import { TrendingUp, TrendingDown, ArrowRight, LineChart, AlertCircle } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColorClass } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
@@ -139,7 +139,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
 
             <div>
               <span className="text-[11px] font-medium text-slate-400 block mb-0.5">{t.cardPerCapita}</span>
-              <span className="text-base sm:text-lg font-bold text-slate-200 tracking-tight block">
+              <span className={`text-base sm:text-lg font-bold tracking-tight block ${getPerCapitaColorClass(gdpPerCapitaUsd)}`}>
                 {formatPerCapita(gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
               </span>
               {baseCurrency !== 'USD' && (

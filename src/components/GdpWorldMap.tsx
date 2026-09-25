@@ -21,7 +21,7 @@ import { WORLD_MAP_PATHS } from '../data/worldMapData'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Region, Language, EconomicYear } from '../types/economics'
 import { CountryFlag } from './CountryFlag'
 import { RankingTable, type CountryRowItem } from './RankingTable'
-import { formatGdpCompact, formatPerCapita } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
@@ -204,10 +204,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       if (metric === 'perCapita') {
         const pcap = item.gdpPerCapitaUsd
-        if (pcap >= 60_000) return '#10b981' // Emerald
-        if (pcap >= 30_000) return '#06b6d4' // Cyan
-        if (pcap >= 12_000) return '#6366f1' // Indigo
-        return '#475569' // Slate
+        if (pcap >= 50_000) return '#facc15' // Champagne Gold ($50K+)
+        if (pcap >= 25_000) return '#06b6d4' // Cyan ($25K ~ $50K)
+        if (pcap >= 12_000) return '#6366f1' // Indigo ($12K ~ $25K)
+        return '#475569' // Slate (< $12K)
       }
 
       if (metric === 'growth') {
@@ -804,7 +804,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       </div>
                       <div className="flex items-center justify-between text-slate-400">
                         <span>{t.cardPerCapita}:</span>
-                        <span className="font-mono text-slate-300">
+                        <span className={`font-mono font-medium ${getPerCapitaColorClass(hoveredItem.gdpPerCapitaUsd)}`}>
                           {formatPerCapita(hoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                         </span>
                       </div>
@@ -921,19 +921,19 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               {metric === 'perCapita' && (
                 <>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
-                    <span className="text-slate-300 font-mono font-medium">&gt; $60K</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#facc15] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">&ge; $50K</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
-                    <span className="text-slate-300 font-mono font-medium">$30K ~ $60K</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">$25K ~ $50K</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1]"></span>
-                    <span className="text-slate-300 font-mono font-medium">$12K ~ $30K</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">$12K ~ $25K</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#475569]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#475569] shadow-sm"></span>
                     <span className="text-slate-300 font-mono font-medium">&lt; $12K</span>
                   </div>
                 </>
@@ -1071,7 +1071,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 {/* GDP Per Capita */}
                 <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
                   <div className="text-[11px] text-slate-400 font-medium">{t.cardPerCapita}</div>
-                  <div className="text-lg font-bold text-slate-200 font-mono mt-0.5">
+                  <div className={`text-lg font-bold font-mono mt-0.5 ${getPerCapitaColorClass(inspectedCountryItem.gdpPerCapitaUsd)}`}>
                     {formatPerCapita(
                       inspectedCountryItem.gdpPerCapitaUsd,
                       baseCurrency,
