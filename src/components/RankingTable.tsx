@@ -362,7 +362,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
       <th
         style={isDock && dockGeometry.colWidths[2] ? { width: `${dockGeometry.colWidths[2]}px`, minWidth: `${dockGeometry.colWidths[2]}px`, maxWidth: `${dockGeometry.colWidths[2]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[75px] sm:min-w-[85px]"
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[65px] sm:min-w-[75px]"
       >
         {t.colCurrency}
       </th>
@@ -614,9 +614,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </div>
                   </td>
 
-                  <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-xs text-slate-300 whitespace-nowrap min-w-[75px] sm:min-w-[85px]">
-                    <span className="font-mono font-bold">{item.country.currencyCode}</span>{' '}
-                    <span className="text-slate-500">({item.country.currencySymbol})</span>
+                  <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-xs whitespace-nowrap min-w-[65px] sm:min-w-[75px]">
+                    <span
+                      className="font-mono font-bold text-slate-200"
+                      title={`${item.country.currencyCode} (${item.country.currencySymbol})`}
+                    >
+                      {item.country.currencyCode}
+                    </span>
                   </td>
 
                   <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200 whitespace-nowrap min-w-[110px] sm:min-w-[125px]">
