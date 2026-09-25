@@ -69,12 +69,23 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 
       {/* Official Rate Info Row */}
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 bg-slate-950/40 rounded-lg px-3 py-2 border border-slate-800/60">
-        <span className="text-base sm:text-lg font-mono font-bold text-white">
-          1 {country.currencyCode} = {formatExchangeRate(countryToBase, 4)} {baseCurrency}
-        </span>
-        <span className="text-xs text-slate-400 font-mono">
-          (1 {baseCurrency} = {formatExchangeRate(baseToCountry, 2)} {country.currencyCode})
-        </span>
+        {country.currencyCode === baseCurrency ? (
+          <span className="text-base sm:text-lg font-mono font-bold text-white">
+            1 {country.currencyCode} = 1.00 {baseCurrency}
+            <span className="text-xs text-slate-400 font-normal ml-2">
+              ({lang === 'ko' ? '동일 기준 통화' : lang === 'ja' ? '同一基準通貨' : lang === 'es' ? 'Misma moneda base' : lang === 'zh' ? '相同基准货币' : 'Same Base Currency'})
+            </span>
+          </span>
+        ) : (
+          <>
+            <span className="text-base sm:text-lg font-mono font-bold text-white">
+              1 {country.currencyCode} = {formatExchangeRate(countryToBase, 4)} {baseCurrency}
+            </span>
+            <span className="text-xs text-slate-400 font-mono">
+              (1 {baseCurrency} = {formatExchangeRate(baseToCountry, 2)} {country.currencyCode})
+            </span>
+          </>
+        )}
       </div>
 
       {/* Converter Input/Output */}
@@ -110,9 +121,8 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             <span className="truncate">{t.converterConverted}</span>
             <span className="text-indigo-400 font-bold font-mono shrink-0 ml-1">{toCurrency}</span>
           </div>
-          <div className="text-base sm:text-lg font-mono font-bold text-emerald-400 truncate flex items-baseline gap-1.5">
-            <span>{formatExchangeRate(convertedAmount, 2)}</span>
-            <span className="text-xs font-normal text-slate-400 font-sans">{toCurrency}</span>
+          <div className="text-base sm:text-lg font-mono font-bold text-emerald-400 truncate">
+            {formatExchangeRate(convertedAmount, 2)}
           </div>
         </div>
       </div>
