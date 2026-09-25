@@ -13,6 +13,7 @@ import { CountryFlag } from './CountryFlag'
 import { StockChart } from './StockChart'
 import { getStockPriceData } from '../data/stockPrices'
 import { getCountryName, getCountrySecondaryName, getCurrencyName } from '../utils/countryNames'
+import { Spinner } from './Spinner'
 
 interface CountryModalProps {
   country: CountryMeta
@@ -326,10 +327,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
 
                   {isLoading ? (
                     <div className="h-72 flex items-center justify-center bg-slate-950/50 rounded-xl border border-slate-800">
-                      <div className="flex flex-col items-center gap-2 text-slate-400 text-sm">
-                        <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                        <span>{t.modalChartLoading}</span>
-                      </div>
+                      <Spinner size="md" label={t.modalChartLoading} />
                     </div>
                   ) : (
                     <GdpChart

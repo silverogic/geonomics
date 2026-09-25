@@ -14,6 +14,7 @@ import { CompareView } from './components/CompareView'
 import type { CountryRowItem } from './components/RankingTable'
 import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
+import { Spinner } from './components/Spinner'
 import {
   detectBrowserLanguage,
   detectBrowserBaseCurrency,
@@ -193,9 +194,8 @@ export function App() {
         {/* TAB 1: GDP WORLD MAP & EXPLORER */}
         {activeTab === 'cards' && (
           isLoading ? (
-            <div className="py-24 flex flex-col items-center justify-center gap-3 text-slate-400">
-              <div className="w-9 h-9 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-medium">{t.loadingData}</p>
+            <div className="py-24 flex items-center justify-center">
+              <Spinner size="lg" label={t.loadingData} />
             </div>
           ) : (
             <GdpWorldMap

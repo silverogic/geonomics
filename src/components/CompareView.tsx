@@ -11,6 +11,7 @@ import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { GdpChart } from './GdpChart'
 import { getCountryName, getCountrySecondaryName } from '../utils/countryNames'
+import { Spinner } from './Spinner'
 
 interface CompareViewProps {
   baseCurrency: BaseCurrency
@@ -491,8 +492,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </div>
 
               {loading ? (
-                <div className="h-80 flex items-center justify-center text-slate-500 text-sm">
-                  {t.compareChartLoading}
+                <div className="h-80 flex items-center justify-center bg-slate-950/40 rounded-xl border border-slate-800/60">
+                  <Spinner size="md" label={t.compareChartLoading} />
                 </div>
               ) : (
                 <GdpChart
