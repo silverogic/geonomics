@@ -5338,5 +5338,53 @@
     "currentPrice": 0,
     "changePct": 0,
     "points": []
+  },
+  "EST": {
+    "countryId": "EST",
+    "nameEn": "OMX Tallinn",
+    "nameKo": "OMX 탈린",
+    "ticker": "^OMXT",
+    "isSupported": true,
+    "currency": "EUR",
+    "currentPrice": 2204.22,
+    "changePct": 0,
+    "points": [
+      {
+        "date": "2026-09-25",
+        "close": 2204.22
+      }
+    ]
+  },
+  "LVA": {
+    "countryId": "LVA",
+    "nameEn": "OMX Riga",
+    "nameKo": "OMX 리가",
+    "ticker": "^OMXR",
+    "isSupported": true,
+    "currency": "EUR",
+    "currentPrice": 956.41,
+    "changePct": 0,
+    "points": [
+      {
+        "date": "2026-09-25",
+        "close": 956.41
+      }
+    ]
+  },
+  "LTU": {
+    "countryId": "LTU",
+    "nameEn": "OMX Vilnius",
+    "nameKo": "OMX 빌뉴스",
+    "ticker": "^OMXV",
+    "isSupported": true,
+    "currency": "EUR",
+    "currentPrice": 1505.59,
+    "changePct": 0,
+    "points": [
+      {
+        "date": "2026-09-25",
+        "close": 1505.59
+      }
+    ]
   }
 }
