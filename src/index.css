@@ -64,3 +64,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+@keyframes longPressBar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}

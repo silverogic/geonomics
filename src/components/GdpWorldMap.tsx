@@ -282,6 +282,45 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     setViewBoxOffset({ x: 0, y: 0 })
   }
 
+  // 1-second Long Press handler to isolate a single continent
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isLongPressTriggeredRef = useRef<boolean>(false)
+  const [pressingRegion, setPressingRegion] = useState<Region | null>(null)
+
+  const handleIsolateRegion = useCallback((reg: Region) => {
+    setSelectedRegions([reg])
+    setZoomLevel(1)
+    setViewBoxOffset({ x: 0, y: 0 })
+  }, [])
+
+  const handleRegionMouseDown = (reg: Region) => {
+    isLongPressTriggeredRef.current = false
+    setPressingRegion(reg)
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current)
+    longPressTimerRef.current = setTimeout(() => {
+      isLongPressTriggeredRef.current = true
+      handleIsolateRegion(reg)
+      setPressingRegion(null)
+    }, 1000)
+  }
+
+  const handleRegionMouseUpOrLeave = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+    setPressingRegion(null)
+  }
+
+  const handleRegionClick = (reg: Region) => {
+    if (isLongPressTriggeredRef.current) {
+      // Ignore click event if 1s long-press already triggered isolation
+      isLongPressTriggeredRef.current = false
+      return
+    }
+    handleToggleRegion(reg)
+  }
+
   const getRegionButtonLabel = () => {
     if (isAllRegions) return t.filterAll
     if (selectedRegions.length === 1) {
@@ -359,10 +398,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     setHoveredCountryId(null)
   }, [updateVectorTooltipDOM])
 
-  // Cleanup rAF on unmount
+  // Cleanup rAF & timers on unmount
   useEffect(() => {
     return () => {
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
+      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current)
     }
   }, [])
 
@@ -488,13 +528,36 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         <button
                           key={reg}
                           type="button"
-                          onClick={() => handleToggleRegion(reg)}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                          onMouseDown={() => handleRegionMouseDown(reg)}
+                          onMouseUp={handleRegionMouseUpOrLeave}
+                          onMouseLeave={handleRegionMouseUpOrLeave}
+                          onTouchStart={() => handleRegionMouseDown(reg)}
+                          onTouchEnd={handleRegionMouseUpOrLeave}
+                          onClick={() => handleRegionClick(reg)}
+                          title={
+                            lang === 'ko'
+                              ? '클릭: 다중 선택 토글 | 1초 이상 길게 누름: 이 대륙만 단독 선택'
+                              : 'Click: Toggle | Hold for 1s: Select only this region'
+                          }
+                          className={`relative overflow-hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none ${
+                            pressingRegion === reg ? 'scale-[0.98] bg-indigo-950/70 border-indigo-500/50' : ''
+                          } ${
                             isIsolated
                               ? 'bg-indigo-600/20 text-white border border-indigo-500/30'
                               : 'text-slate-300 hover:bg-slate-800/60'
                           }`}
                         >
+                          {/* 1s Long-press Progress Bar Indicator */}
+                          {pressingRegion === reg && (
+                            <div
+                              className="absolute bottom-0 left-0 h-[2.5px] bg-gradient-to-r from-indigo-500 via-sky-400 to-cyan-300 pointer-events-none rounded-full"
+                              style={{
+                                width: '100%',
+                                animation: 'longPressBar 1s linear forwards',
+                              }}
+                            />
+                          )}
+
                           <div className="flex items-center gap-2.5">
                             <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
                               isChecked ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-950'
@@ -507,6 +570,16 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         </button>
                       )
                     })}
+                  </div>
+
+                  {/* 1-second Long-press Discovery Tip */}
+                  <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-950/40 border border-indigo-900/30 text-[10px] text-indigo-300/80 flex items-center justify-center gap-1.5">
+                    <span>💡</span>
+                    <span>
+                      {lang === 'ko'
+                        ? '1초 이상 길게 누르면 해당 대륙만 단독 선택'
+                        : 'Hold for 1s to select only this region'}
+                    </span>
                   </div>
 
                   {/* Quick Actions Footer */}
