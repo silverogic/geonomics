@@ -143,7 +143,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                 {formatPerCapita(gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
               </span>
               {baseCurrency !== 'USD' && (
-                <span className="text-[10px] text-slate-400 font-mono block">
+                <span className="text-[10px] text-slate-500 font-mono block">
                   ${Math.round(gdpPerCapitaUsd).toLocaleString()}
                 </span>
               )}

@@ -804,7 +804,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       </div>
                       <div className="flex items-center justify-between text-slate-400">
                         <span>{t.cardPerCapita}:</span>
-                        <span className={`font-mono font-medium ${getPerCapitaColorClass(hoveredItem.gdpPerCapitaUsd)}`}>
+                        <span className={`font-mono font-bold ${getPerCapitaColorClass(hoveredItem.gdpPerCapitaUsd)}`}>
                           {formatPerCapita(hoveredItem.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                         </span>
                       </div>

@@ -707,7 +707,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
                   {/* Total GDP */}
                   <td className="py-3 px-2 sm:px-3 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[105px] sm:min-w-[120px]">
-                    <span className="font-bold text-slate-100 block">
+                    <span className="font-bold text-white block">
                       {formatGdpCompact(item.totalGdpUsd, baseCurrency, usdToBase, lang)}
                     </span>
                     <span className="text-[11px] text-slate-500 font-mono">
@@ -717,7 +717,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
                   {/* GDP Per Capita */}
                   <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[105px] sm:min-w-[120px]">
-                    <span className="font-semibold text-white block">
+                    <span className="font-bold text-white block">
                       {formatPerCapita(item.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                     </span>
                     <span className="text-[11px] text-slate-500 font-mono">
