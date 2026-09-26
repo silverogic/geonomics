@@ -21,7 +21,7 @@ import { WORLD_MAP_PATHS } from '../data/worldMapData'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Region, Language, EconomicYear } from '../types/economics'
 import { CountryFlag } from './CountryFlag'
 import { RankingTable, type CountryRowItem } from './RankingTable'
-import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass, getInflationColorClass, getInflationHexColor } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
@@ -228,13 +228,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       }
 
       if (metric === 'inflation') {
-        const inf = item.inflationRatePct
-        if (inf === null || inf === undefined) return '#334155'
-        if (inf < 0) return '#8b5cf6' // Deflation (Purple)
-        if (inf <= 2.5) return '#10b981' // Target / Optimal (0 - 2.5%, Emerald)
-        if (inf <= 4.0) return '#06b6d4' // Moderate (2.5 - 4.0%, Cyan)
-        if (inf <= 7.0) return '#f59e0b' // Elevated (4.0 - 7.0%, Amber)
-        return '#f43f5e' // High Inflation (> 7.0%, Rose)
+        return getInflationHexColor(item.inflationRatePct)
       }
 
       return '#334155'
@@ -825,16 +819,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         <div className="flex items-center justify-between text-slate-400">
                           <span>{t.metricInflation}:</span>
                           <span
-                            className={`font-mono font-semibold ${hoveredItem.inflationRatePct < 0
-                              ? 'text-purple-400'
-                              : hoveredItem.inflationRatePct <= 2.5
-                                ? 'text-emerald-400'
-                                : hoveredItem.inflationRatePct <= 4.0
-                                  ? 'text-cyan-400'
-                                  : hoveredItem.inflationRatePct <= 7.0
-                                    ? 'text-amber-400'
-                                    : 'text-rose-400'
-                              }`}
+                            className={`font-mono font-semibold ${getInflationColorClass(
+                              hoveredItem.inflationRatePct
+                            )}`}
                           >
                             {hoveredItem.inflationRatePct.toFixed(1)}%
                           </span>
@@ -995,24 +982,31 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               {metric === 'inflation' && (
                 <>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#8b5cf6]"></span>
-                    <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">
+                      &le; 2.5%
+                      <span className="text-[10px] text-cyan-400 ml-1 font-sans font-semibold">
+                        ({lang === 'ko' ? '안정' : lang === 'ja' ? '安定' : lang === 'es' ? 'Estable' : lang === 'zh' ? '稳定' : 'Stable'})
+                      </span>
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981]"></span>
-                    <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#fcd34d] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">
+                      2.5% ~ 4.5%
+                      <span className="text-[10px] text-amber-200 ml-1 font-sans font-semibold">
+                        ({lang === 'ko' ? '상승' : lang === 'ja' ? '上昇' : lang === 'es' ? 'Moderada' : lang === 'zh' ? '温和' : 'Moderate'})
+                      </span>
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
-                    <span className="text-slate-300 font-mono font-medium">2.5% ~ 4.0%</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b]"></span>
-                    <span className="text-slate-300 font-mono font-medium">4.0% ~ 7.0%</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e]"></span>
-                    <span className="text-slate-300 font-mono font-medium">&gt; 7.0%</span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
+                    <span className="text-slate-300 font-mono font-medium">
+                      &gt; 4.5%
+                      <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
+                        ({lang === 'ko' ? '과열' : lang === 'ja' ? '過熱' : lang === 'es' ? 'Alta' : lang === 'zh' ? '过热' : 'High'})
+                      </span>
+                    </span>
                   </div>
                 </>
               )}
@@ -1121,18 +1115,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricInflation}</div>
                     <div
-                      className={`text-sm font-bold font-mono mt-0.5 truncate ${inspectedCountryItem.inflationRatePct === null || inspectedCountryItem.inflationRatePct === undefined
-                        ? 'text-slate-400'
-                        : inspectedCountryItem.inflationRatePct < 0
-                          ? 'text-purple-400'
-                          : inspectedCountryItem.inflationRatePct <= 2.5
-                            ? 'text-emerald-400'
-                            : inspectedCountryItem.inflationRatePct <= 4.0
-                              ? 'text-cyan-400'
-                              : inspectedCountryItem.inflationRatePct <= 7.0
-                                ? 'text-amber-400'
-                                : 'text-rose-400'
-                        }`}
+                      className={`text-sm font-bold font-mono mt-0.5 truncate ${getInflationColorClass(
+                        inspectedCountryItem.inflationRatePct
+                      )}`}
                     >
                       {inspectedCountryItem.inflationRatePct !== null && inspectedCountryItem.inflationRatePct !== undefined
                         ? `${inspectedCountryItem.inflationRatePct.toFixed(1)}%`

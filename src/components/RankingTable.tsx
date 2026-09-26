@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ArrowUpDown, Search, ArrowUp, ArrowDown, AlertCircle, Sparkles } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, formatExchangeRate, getInflationBadgeClass } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
@@ -744,21 +744,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                   <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[90px] sm:min-w-[100px]">
                     {item.inflationRatePct !== null ? (
                       <span
-                        className={`inline-flex items-center gap-1 font-mono font-semibold px-2 py-0.5 rounded text-xs border ${
-                          item.inflationRatePct < 0
-                            ? 'text-purple-300 bg-purple-950/60 border-purple-500/30'
-                            : item.inflationRatePct <= 2.5
-                            ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
-                            : item.inflationRatePct <= 4.0
-                            ? 'text-cyan-300 bg-cyan-950/60 border-cyan-500/30'
-                            : item.inflationRatePct <= 7.0
-                            ? 'text-amber-300 bg-amber-950/60 border-amber-500/30'
-                            : 'text-rose-300 bg-rose-950/60 border-rose-500/30'
-                        }`}
+                        className={`inline-flex items-center gap-1 font-mono font-semibold px-2 py-0.5 rounded text-xs border ${getInflationBadgeClass(
+                          item.inflationRatePct
+                        )}`}
                         title={`${t.modalInflationTitle}: ${item.inflationRatePct.toFixed(1)}%`}
                       >
-                        {item.inflationRatePct > 7.0 && (
-                          <AlertCircle className="w-3 h-3 text-rose-400 shrink-0" />
+                        {item.inflationRatePct > 4.5 && (
+                          <AlertCircle className="w-3 h-3 text-amber-400 shrink-0" />
                         )}
                         {item.inflationRatePct.toFixed(1)}%
                       </span>

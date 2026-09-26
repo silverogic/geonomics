@@ -4,7 +4,7 @@ import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Langua
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
-import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass, getInflationColorClass } from '../utils/formatters'
 import { DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { GdpChart } from './GdpChart'
 import { CurrencyConverter } from './CurrencyConverter'
@@ -186,23 +186,15 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 {t.modalInflationTitle}
               </span>
               <div
-                className={`text-base lg:text-lg font-bold flex items-center gap-1 font-mono truncate ${
-                  detail?.inflationRatePct === null || detail?.inflationRatePct === undefined
-                    ? 'text-slate-400'
-                    : detail.inflationRatePct < 0
-                      ? 'text-purple-400'
-                      : detail.inflationRatePct <= 2.5
-                        ? 'text-emerald-400'
-                        : detail.inflationRatePct <= 4.0
-                          ? 'text-cyan-400'
-                          : detail.inflationRatePct <= 7.0
-                            ? 'text-amber-400'
-                            : 'text-rose-400'
-                }`}
+                className={`text-base lg:text-lg font-bold flex items-center gap-1 font-mono truncate ${getInflationColorClass(
+                  detail?.inflationRatePct
+                )}`}
               >
-                {detail?.inflationRatePct !== null && detail?.inflationRatePct !== undefined && detail.inflationRatePct > 7.0 && (
-                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                )}
+                {detail?.inflationRatePct !== null &&
+                  detail?.inflationRatePct !== undefined &&
+                  detail.inflationRatePct > 4.5 && (
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                  )}
                 {detail?.inflationRatePct !== null && detail?.inflationRatePct !== undefined
                   ? `${detail.inflationRatePct.toFixed(1)}%`
                   : 'N/A'}

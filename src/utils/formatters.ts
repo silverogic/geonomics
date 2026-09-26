@@ -159,3 +159,42 @@ export function getPerCapitaColorClass(gdpPerCapitaUsd: number | null | undefine
   return 'text-white'
 }
 
+/**
+ * Returns text color class for inflation rate (Idea 3: Cyan to Amber temperature gradient):
+ * <= 2.5%: Cyan (text-cyan-400) - Cool / Stable
+ * <= 4.5%: Pale Amber (text-amber-200) - Moderate / Heating up
+ * > 4.5%: Vibrant Amber (text-amber-400) - Hot / Overheated
+ */
+export function getInflationColorClass(inflationRatePct: number | null | undefined): string {
+  if (inflationRatePct === null || inflationRatePct === undefined) return 'text-slate-400'
+  if (inflationRatePct <= 2.5) return 'text-cyan-400'
+  if (inflationRatePct <= 4.5) return 'text-amber-200'
+  return 'text-amber-400'
+}
+
+/**
+ * Returns badge styling classes for inflation rate pill badges.
+ */
+export function getInflationBadgeClass(inflationRatePct: number | null | undefined): string {
+  if (inflationRatePct === null || inflationRatePct === undefined) {
+    return 'text-slate-400 bg-slate-900/60 border-slate-800'
+  }
+  if (inflationRatePct <= 2.5) {
+    return 'text-cyan-300 bg-cyan-950/60 border-cyan-500/30'
+  }
+  if (inflationRatePct <= 4.5) {
+    return 'text-amber-200 bg-amber-950/50 border-amber-500/25'
+  }
+  return 'text-amber-400 bg-amber-950/80 border-amber-500/40'
+}
+
+/**
+ * Returns hex color code for choropleth map fills (Cyan to Amber gradient).
+ */
+export function getInflationHexColor(inflationRatePct: number | null | undefined): string {
+  if (inflationRatePct === null || inflationRatePct === undefined) return '#334155'
+  if (inflationRatePct <= 2.5) return '#06b6d4'
+  if (inflationRatePct <= 4.5) return '#fcd34d'
+  return '#f59e0b'
+}
+

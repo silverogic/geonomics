@@ -6,7 +6,7 @@ import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicY
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColorClass } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColorClass, getInflationColorClass } from '../utils/formatters'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { GdpChart } from './GdpChart'
@@ -296,19 +296,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.compareInflationRate}</span>
               <span
-                className={`text-sm font-mono font-bold ${
-                  detailA?.inflationRatePct === null || detailA?.inflationRatePct === undefined
-                    ? 'text-slate-400'
-                    : detailA.inflationRatePct < 0
-                      ? 'text-purple-400'
-                      : detailA.inflationRatePct <= 2.5
-                        ? 'text-emerald-400'
-                        : detailA.inflationRatePct <= 4.0
-                          ? 'text-cyan-400'
-                          : detailA.inflationRatePct <= 7.0
-                            ? 'text-amber-400'
-                            : 'text-rose-400'
-                }`}
+                className={`text-sm font-mono font-bold ${getInflationColorClass(detailA?.inflationRatePct)}`}
               >
                 {detailA?.inflationRatePct !== null && detailA?.inflationRatePct !== undefined
                   ? `${detailA.inflationRatePct.toFixed(1)}%`
@@ -415,19 +403,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.compareInflationRate}</span>
               <span
-                className={`text-sm font-mono font-bold ${
-                  detailB?.inflationRatePct === null || detailB?.inflationRatePct === undefined
-                    ? 'text-slate-400'
-                    : detailB.inflationRatePct < 0
-                      ? 'text-purple-400'
-                      : detailB.inflationRatePct <= 2.5
-                        ? 'text-emerald-400'
-                        : detailB.inflationRatePct <= 4.0
-                          ? 'text-cyan-400'
-                          : detailB.inflationRatePct <= 7.0
-                            ? 'text-amber-400'
-                            : 'text-rose-400'
-                }`}
+                className={`text-sm font-mono font-bold ${getInflationColorClass(detailB?.inflationRatePct)}`}
               >
                 {detailB?.inflationRatePct !== null && detailB?.inflationRatePct !== undefined
                   ? `${detailB.inflationRatePct.toFixed(1)}%`
