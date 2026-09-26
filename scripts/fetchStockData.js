@@ -211,6 +211,9 @@ const COUNTRY_TICKERS = [
     fallbackReasonEn: 'Guatemala Stock Exchange live feed is restricted.',
     fallbackReasonKo: '과테말라 증권거래소 데이터 조회가 제한됩니다.'
   },
+  { id: 'EST', nameEn: 'OMX Tallinn', nameKo: 'OMX 탈린', ticker: '^OMXT', isSupported: true },
+  { id: 'LVA', nameEn: 'OMX Riga', nameKo: 'OMX 리가', ticker: '^OMXR', isSupported: true },
+  { id: 'LTU', nameEn: 'OMX Vilnius', nameKo: 'OMX 빌뉴스', ticker: '^OMXV', isSupported: true },
 ]
 
 async function fetchTicker(item) {
@@ -279,7 +282,7 @@ async function fetchTicker(item) {
 }
 
 async function main() {
-  console.log('Fetching Yahoo Finance stock data for 56 countries...')
+  console.log(`Fetching Yahoo Finance stock data for ${COUNTRY_TICKERS.length} countries...`)
   const outDirSrc = path.resolve(__dirname, '../src/data')
   const outDirPub = path.resolve(__dirname, '../public/data')
   const outDirDocs = path.resolve(__dirname, '../docs/data')
