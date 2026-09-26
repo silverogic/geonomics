@@ -38,7 +38,7 @@ export const translations = {
     viewTable: 'Table View',
 
     // Map View
-    mapTitle: 'Global GDP Map Explorer',
+    mapTitle: 'Global Economic Map',
     mapSubtitle: 'Real-time Forex & Official World Bank · IMF Macroeconomic Intelligence',
     mapMetricLabel: 'Indicator',
     metricTotalGdp: 'Total GDP',
@@ -211,7 +211,7 @@ export const translations = {
     viewTable: '리스트 테이블 뷰',
 
     // Map View
-    mapTitle: '세계 GDP 시각화 지도',
+    mapTitle: '세계 경제 시각화 지도',
     mapSubtitle: '실시간 환율 및 세계은행(World Bank) · IMF 공식 데이터 기반 경제 지도',
     mapMetricLabel: '분석 지표',
     metricTotalGdp: '총 GDP',
@@ -384,7 +384,7 @@ export const translations = {
     viewTable: 'テーブルビュー',
 
     // Map View
-    mapTitle: '世界GDP可視化マップ',
+    mapTitle: '世界経済マップ',
     mapSubtitle: 'リアルタイム為替レートおよび世界銀行・IMF公式統計による世界各国の経済規模マップ',
     mapMetricLabel: '分析指標',
     metricTotalGdp: '名目GDP',
@@ -557,7 +557,7 @@ export const translations = {
     viewTable: 'Vista de tabla',
 
     // Map View
-    mapTitle: 'Explorador del mapa mundial de PIB',
+    mapTitle: 'Mapa Económico Mundial',
     mapSubtitle: 'Inteligencia macroeconómica oficial del Banco Mundial y el FMI con divisas en vivo',
     mapMetricLabel: 'Indicador',
     metricTotalGdp: 'PIB total',
@@ -730,7 +730,7 @@ export const translations = {
     viewTable: '表格视图',
 
     // Map View
-    mapTitle: '全球 GDP 可视化地图',
+    mapTitle: '全球经济可视化地图',
     mapSubtitle: '基于世界银行 · IMF 官方宏观经济统计与实时汇率的全球经济地图',
     mapMetricLabel: '分析指标',
     metricTotalGdp: '名义 GDP',
