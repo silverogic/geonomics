@@ -32,27 +32,27 @@ const COUNTRY_TICKERS = [
   { id: 'IDN', nameEn: 'Jakarta Composite (IHSG)', nameKo: 'IDX 종합 (IHSG)', ticker: '^JKSE', isSupported: true },
   { id: 'TUR', nameEn: 'BIST 100', nameKo: 'BIST 100', ticker: 'XU100.IS', isSupported: true },
   { id: 'NLD', nameEn: 'AEX Index', nameKo: 'AEX 지수', ticker: '^AEX', isSupported: true },
-  { id: 'SAU', nameEn: 'Tadawul TASI', nameKo: '타다울 TASI', ticker: '^TASI.SR', isSupported: true },
+  { id: 'SAU', nameEn: 'iShares MSCI Saudi Arabia (TASI Proxy)', nameKo: 'iShares 사우디 (타다울 대표 ETF)', ticker: 'KSA', isSupported: true },
   { id: 'CHE', nameEn: 'Swiss Market Index (SMI)', nameKo: 'SMI 지수', ticker: '^SSMI', isSupported: true },
-  { id: 'POL', nameEn: 'WIG20', nameKo: 'WIG20', ticker: 'WIG20.WA', isSupported: true },
+  { id: 'POL', nameEn: 'iShares MSCI Poland (WIG20 Proxy)', nameKo: 'iShares 폴란드 (WIG20 대표 ETF)', ticker: 'EPOL', isSupported: true },
   { id: 'SWE', nameEn: 'OMX Stockholm 30', nameKo: 'OMXS30', ticker: '^OMX', isSupported: true },
   { id: 'BEL', nameEn: 'BEL 20', nameKo: 'BEL 20', ticker: '^BFX', isSupported: true },
   { id: 'ARG', nameEn: 'S&P Merval', nameKo: 'S&P 메르발', ticker: '^MERV', isSupported: true },
   { id: 'IRL', nameEn: 'ISEQ 20', nameKo: 'ISEQ 20', ticker: '^ISEQ', isSupported: true },
-  { id: 'NOR', nameEn: 'OBX Index', nameKo: 'OBX 지수', ticker: 'OBX.OL', isSupported: true },
+  { id: 'NOR', nameEn: 'iShares MSCI Norway (OBX Proxy)', nameKo: 'iShares 노르웨이 (OBX 대표 ETF)', ticker: 'ENOR', isSupported: true },
   { id: 'AUT', nameEn: 'ATX Index', nameKo: 'ATX 지수', ticker: '^ATX', isSupported: true },
   { id: 'ISR', nameEn: 'TA-125', nameKo: 'TA-125', ticker: '^TA125.TA', isSupported: true },
-  { id: 'ARE', nameEn: 'DFM General', nameKo: 'DFM 종합지수', ticker: 'DFMGI.AE', isSupported: true },
+  { id: 'ARE', nameEn: 'iShares MSCI UAE (DFM Proxy)', nameKo: 'iShares UAE (두바이 대표 ETF)', ticker: 'UAE', isSupported: true },
   { id: 'SGP', nameEn: 'Straits Times Index (STI)', nameKo: '스트레이츠 타임스 (STI)', ticker: '^STI', isSupported: true },
   { id: 'MYS', nameEn: 'FTSE Bursa Malaysia KLCI', nameKo: 'FTSE 버사 KLCI', ticker: '^KLSE', isSupported: true },
   { id: 'ZAF', nameEn: 'FTSE/JSE Top 40', nameKo: 'FTSE/JSE Top 40', ticker: '^J200.JO', isSupported: true },
-  { id: 'PHL', nameEn: 'PSEi Index', nameKo: 'PSEi 지수', ticker: 'PSEI.PS', isSupported: true },
+  { id: 'PHL', nameEn: 'iShares MSCI Philippines (PSEi Proxy)', nameKo: 'iShares 필리핀 (PSEi 대표 ETF)', ticker: 'EPHE', isSupported: true },
   { id: 'DNK', nameEn: 'OMX Copenhagen 25', nameKo: 'OMXC25', ticker: '^OMXC25', isSupported: true },
-  { id: 'EGY', nameEn: 'EGX 30', nameKo: 'EGX 30', ticker: '^CASE30', isSupported: true },
+  { id: 'EGY', nameEn: 'Commercial Intl Bank (EGX 30 Proxy)', nameKo: '상업국제은행 CIB (EGX30 대표주)', ticker: 'COMI.CA', isSupported: true },
   { id: 'BGD', nameEn: 'Dhaka DSEX (MSCI Frontier)', nameKo: '다카 DSEX (MSCI 프론티어)', ticker: 'EEM', isSupported: true },
   { id: 'VNM', nameEn: 'VN-Index (VanEck Vietnam)', nameKo: 'VN 지수 (VanEck 베트남)', ticker: 'VNM', isSupported: true },
   { id: 'NGA', nameEn: 'NGX ASI (VanEck Africa)', nameKo: 'NGX ASI (VanEck 아프리카)', ticker: 'AFK', isSupported: true },
-  { id: 'THA', nameEn: 'SET Index', nameKo: 'SET 지수', ticker: '^SET.BK', isSupported: true },
+  { id: 'THA', nameEn: 'iShares MSCI Thailand (SET Proxy)', nameKo: 'iShares 태국 (SET 대표 ETF)', ticker: 'THD', isSupported: true },
   { id: 'HKG', nameEn: 'Hang Seng Index (HSI)', nameKo: '항셍 지수 (HSI)', ticker: '^HSI', isSupported: true },
   { id: 'NZL', nameEn: 'S&P/NZX 50', nameKo: 'S&P/NZX 50', ticker: '^NZ50', isSupported: true },
   { id: 'FIN', nameEn: 'OMX Helsinki 25', nameKo: 'OMXH25', ticker: '^OMXH25', isSupported: true },
@@ -211,9 +211,9 @@ const COUNTRY_TICKERS = [
     fallbackReasonEn: 'Guatemala Stock Exchange live feed is restricted.',
     fallbackReasonKo: '과테말라 증권거래소 데이터 조회가 제한됩니다.'
   },
-  { id: 'EST', nameEn: 'OMX Tallinn', nameKo: 'OMX 탈린', ticker: '^OMXT', isSupported: true },
-  { id: 'LVA', nameEn: 'OMX Riga', nameKo: 'OMX 리가', ticker: '^OMXR', isSupported: true },
-  { id: 'LTU', nameEn: 'OMX Vilnius', nameKo: 'OMX 빌뉴스', ticker: '^OMXV', isSupported: true },
+  { id: 'EST', nameEn: 'LHV Group (Tallinn Proxy)', nameKo: 'LHV 그룹 (탈린 대표 금융주)', ticker: 'LHV1T.TL', isSupported: true },
+  { id: 'LVA', nameEn: 'SAF Tehnika (Riga Proxy)', nameKo: 'SAF 테크니카 (리가 대표 기술주)', ticker: 'SAF1R.RG', isSupported: true },
+  { id: 'LTU', nameEn: 'Ignitis Group (Vilnius Proxy)', nameKo: '이그니티스 (빌뉴스 대표 에너지주)', ticker: 'IGN1L.VS', isSupported: true },
 ]
 
 async function fetchTicker(item) {
@@ -233,7 +233,7 @@ async function fetchTicker(item) {
     }
   }
 
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(item.ticker)}?range=1mo&interval=1d`
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(item.ticker)}?range=3mo&interval=1d`
   try {
     const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
@@ -260,8 +260,11 @@ async function fetchTicker(item) {
 
     if (validPoints.length === 0) return null
 
-    const currentPrice = meta.regularMarketPrice || validPoints[validPoints.length - 1].close
-    const firstPrice = validPoints[0].close
+    // Extract the most recent 30 trading days
+    const recent30Points = validPoints.slice(-30)
+
+    const currentPrice = meta.regularMarketPrice || recent30Points[recent30Points.length - 1].close
+    const firstPrice = recent30Points[0].close
     const changePct = Number((((currentPrice - firstPrice) / firstPrice) * 100).toFixed(2))
 
     return {
@@ -273,7 +276,7 @@ async function fetchTicker(item) {
       currency: meta.currency || 'USD',
       currentPrice: Number(currentPrice.toFixed(2)),
       changePct,
-      points: validPoints
+      points: recent30Points
     }
   } catch (err) {
     console.error(`Error fetching ${item.id} (${item.ticker}):`, err.message)
