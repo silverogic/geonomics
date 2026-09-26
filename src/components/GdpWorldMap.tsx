@@ -36,15 +36,14 @@ const ALL_REGIONS: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania'
 interface MetricOptionConfig {
   id: MapMetric
   labelKey: 'metricTotalGdp' | 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation'
-  badge: string
 }
 
 const METRIC_OPTIONS: MetricOptionConfig[] = [
-  { id: 'gdp', labelKey: 'metricTotalGdp', badge: 'Total' },
-  { id: 'perCapita', labelKey: 'metricPerCapita', badge: 'Per Cap' },
-  { id: 'growth', labelKey: 'metricGrowth', badge: '%' },
-  { id: 'debt', labelKey: 'metricDebt', badge: '% GDP' },
-  { id: 'inflation', labelKey: 'metricInflation', badge: '%' },
+  { id: 'gdp', labelKey: 'metricTotalGdp' },
+  { id: 'perCapita', labelKey: 'metricPerCapita' },
+  { id: 'growth', labelKey: 'metricGrowth' },
+  { id: 'debt', labelKey: 'metricDebt' },
+  { id: 'inflation', labelKey: 'metricInflation' },
 ]
 
 export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
@@ -356,7 +355,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
               {/* Metric Dropdown Menu (Single-select) */}
               {isMetricMenuOpen && (
-                <div className="absolute left-0 top-full mt-2 w-52 sm:w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-1.5 shadow-2xl shadow-black/80 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-0 top-full mt-2 w-44 sm:w-48 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-1.5 shadow-2xl shadow-black/80 z-50 animate-in fade-in zoom-in-95 duration-150">
                   <div className="space-y-0.5">
                     {METRIC_OPTIONS.map((opt) => {
                       const isSelected = metric === opt.id
@@ -375,14 +374,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                             }`}
                         >
                           <span className={isSelected ? 'text-white font-bold' : 'text-slate-300'}>{label}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-slate-400 font-mono">{opt.badge}</span>
-                            {isSelected ? (
-                              <Check className="w-3.5 h-3.5 text-indigo-400 stroke-[2.5]" />
-                            ) : (
-                              <div className="w-3.5 h-3.5" />
-                            )}
-                          </div>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-indigo-400 stroke-[2.5]" />}
                         </button>
                       )
                     })}
