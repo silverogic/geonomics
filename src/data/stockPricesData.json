@@ -4244,8 +4244,12 @@
     "isSupported": true,
     "currency": "DKK",
     "currentPrice": 1836.48,
-    "changePct": -3.2,
+    "changePct": -3.3,
     "points": [
+      {
+        "date": "2026-08-14",
+        "close": 1899.24
+      },
       {
         "date": "2026-08-17",
         "close": 1897.25
@@ -4305,10 +4309,6 @@
       {
         "date": "2026-09-04",
         "close": 1912.14
-      },
-      {
-        "date": "2026-09-07",
-        "close": 1911.87
       },
       {
         "date": "2026-09-08",
