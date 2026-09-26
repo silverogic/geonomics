@@ -167,9 +167,9 @@ export function getPerCapitaColorClass(gdpPerCapitaUsd: number | null | undefine
  */
 export function getInflationColorClass(inflationRatePct: number | null | undefined): string {
   if (inflationRatePct === null || inflationRatePct === undefined) return 'text-slate-400'
-  if (inflationRatePct <= 2.5) return 'text-cyan-400'
-  if (inflationRatePct <= 4.5) return 'text-amber-200'
-  return 'text-amber-400'
+  if (inflationRatePct <= 2) return 'text-cyan-400'
+  if (inflationRatePct <= 4.5) return 'text-slate-300'
+  return 'text-red-400'
 }
 
 /**
@@ -179,13 +179,13 @@ export function getInflationBadgeClass(inflationRatePct: number | null | undefin
   if (inflationRatePct === null || inflationRatePct === undefined) {
     return 'text-slate-400 bg-slate-900/60 border-slate-800'
   }
-  if (inflationRatePct <= 2.5) {
+  if (inflationRatePct <= 2) {
     return 'text-cyan-300 bg-cyan-950/60 border-cyan-500/30'
   }
   if (inflationRatePct <= 4.5) {
-    return 'text-amber-200 bg-amber-950/50 border-amber-500/25'
+    return 'text-slate-300 bg-slate-800/60 border-slate-600/30'
   }
-  return 'text-amber-400 bg-amber-950/80 border-amber-500/40'
+  return 'text-red-400 bg-red-950/60 border-red-500/30'
 }
 
 /**
@@ -193,8 +193,8 @@ export function getInflationBadgeClass(inflationRatePct: number | null | undefin
  */
 export function getInflationHexColor(inflationRatePct: number | null | undefined): string {
   if (inflationRatePct === null || inflationRatePct === undefined) return '#334155'
-  if (inflationRatePct <= 2.5) return '#06b6d4'
-  if (inflationRatePct <= 4.5) return '#fcd34d'
-  return '#f59e0b'
+  if (inflationRatePct <= 2) return '#22d3ee'   // cyan-400
+  if (inflationRatePct <= 4.5) return '#94a3b8'  // slate-400 (neutral)
+  return '#f87171'                               // red-400
 }
 

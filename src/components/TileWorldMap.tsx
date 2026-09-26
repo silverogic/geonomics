@@ -337,15 +337,11 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   <span>{t.metricInflation}:</span>
                   <span
                     className={`font-mono font-semibold ${
-                      activeHoveredItem.inflationRatePct < 0
-                        ? 'text-purple-400'
-                        : activeHoveredItem.inflationRatePct <= 2.5
-                        ? 'text-emerald-400'
-                        : activeHoveredItem.inflationRatePct <= 4.0
+                      activeHoveredItem.inflationRatePct <= 2
                         ? 'text-cyan-400'
-                        : activeHoveredItem.inflationRatePct <= 7.0
-                        ? 'text-amber-400'
-                        : 'text-rose-400'
+                        : activeHoveredItem.inflationRatePct <= 4.5
+                        ? 'text-slate-300'
+                        : 'text-red-400'
                     }`}
                   >
                     {activeHoveredItem.inflationRatePct.toFixed(1)}%

@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
-import { ArrowUpDown, Search, ArrowUp, ArrowDown, AlertCircle, Sparkles } from 'lucide-react'
+import { ArrowUpDown, Search, ArrowUp, ArrowDown, Sparkles } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate, getInflationBadgeClass } from '../utils/formatters'
+import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
@@ -377,7 +377,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <th
         onClick={() => handleSort('fxRate')}
         style={isDock && dockGeometry.colWidths[3] ? { width: `${dockGeometry.colWidths[3]}px`, minWidth: `${dockGeometry.colWidths[3]}px`, maxWidth: `${dockGeometry.colWidths[3]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[110px] sm:min-w-[125px]"
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors min-w-[80px] sm:min-w-[90px]"
       >
         <div className="flex items-center justify-end gap-1.5">
           <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
@@ -411,7 +411,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <th
         onClick={() => handleSort('interestRatePct')}
         style={isDock && dockGeometry.colWidths[6] ? { width: `${dockGeometry.colWidths[6]}px`, minWidth: `${dockGeometry.colWidths[6]}px`, maxWidth: `${dockGeometry.colWidths[6]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[115px]"
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[75px] sm:min-w-[85px]"
       >
         <div className="flex items-center justify-end gap-1.5">
           <span>{t.colInterestRate}</span>
@@ -638,7 +638,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                       </span>
                     </td>
 
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200 whitespace-nowrap min-w-[110px] sm:min-w-[125px]">
+                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200 whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
                       {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
                     </td>
 
@@ -724,21 +724,14 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </td>
 
                     {/* Central Bank Policy Rate */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[100px] sm:min-w-[115px]">
+                    <td
+                      className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[75px] sm:min-w-[85px]"
+                      title={item.centralBankName ?? undefined}
+                    >
                       {item.interestRatePct !== null && item.interestRatePct !== undefined ? (
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
-                            {item.interestRatePct.toFixed(2)}%
-                          </span>
-                          {item.centralBankName && (
-                            <span
-                              className="text-[10px] font-mono text-indigo-300 bg-indigo-950/70 border border-indigo-500/30 px-1.5 py-0.5 rounded"
-                              title={item.centralBankName}
-                            >
-                              {item.centralBankName}
-                            </span>
-                          )}
-                        </div>
+                        <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                          {item.interestRatePct.toFixed(2)}%
+                        </span>
                       ) : (
                         <span className="text-slate-600 font-mono text-xs">-</span>
                       )}
@@ -779,17 +772,18 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </td>
 
                     {/* Inflation Rate */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[90px] sm:min-w-[100px]">
+                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
                       {item.inflationRatePct !== null ? (
                         <span
-                          className={`inline-flex items-center gap-1 font-mono font-semibold px-2 py-0.5 rounded text-xs border ${getInflationBadgeClass(
-                            item.inflationRatePct
-                          )}`}
+                          className={`font-mono font-semibold text-xs sm:text-sm ${
+                            item.inflationRatePct <= 2
+                              ? 'text-cyan-400'
+                              : item.inflationRatePct <= 4.5
+                                ? 'text-slate-300'
+                                : 'text-red-400'
+                          }`}
                           title={`${t.modalInflationTitle}: ${item.inflationRatePct.toFixed(1)}%`}
                         >
-                          {item.inflationRatePct > 4.5 && (
-                            <AlertCircle className="w-3 h-3 text-amber-400 shrink-0" />
-                          )}
                           {item.inflationRatePct.toFixed(1)}%
                         </span>
                       ) : (
@@ -798,20 +792,18 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </td>
 
                     {/* Debt Ratio */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[90px] sm:min-w-[100px]">
+                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
                       {item.debtRatioPct !== null ? (
                         <span
-                          className={`inline-flex items-center gap-1 font-mono font-semibold px-2 py-0.5 rounded text-xs border ${item.debtRatioPct < 60
-                            ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
-                            : item.debtRatioPct < 90
-                              ? 'text-amber-300 bg-amber-950/60 border-amber-500/30'
-                              : 'text-rose-300 bg-rose-950/60 border-rose-500/30'
-                            }`}
+                          className={`font-mono font-semibold text-xs sm:text-sm ${
+                            item.debtRatioPct < 60
+                              ? 'text-emerald-400'
+                              : item.debtRatioPct < 90
+                                ? 'text-amber-400'
+                                : 'text-rose-400'
+                          }`}
                           title={`${t.modalDebtTitle}: ${item.debtRatioPct.toFixed(1)}%`}
                         >
-                          {item.debtRatioPct >= 90 && (
-                            <AlertCircle className="w-3 h-3 text-rose-400 shrink-0" />
-                          )}
                           {item.debtRatioPct.toFixed(1)}%
                         </span>
                       ) : (
