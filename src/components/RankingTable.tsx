@@ -349,8 +349,8 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         onClick={() => handleSort('countryName')}
         style={isDock && dockGeometry.colWidths[1] ? { width: `${dockGeometry.colWidths[1]}px`, minWidth: `${dockGeometry.colWidths[1]}px`, maxWidth: `${dockGeometry.colWidths[1]}px` } : undefined}
         className={`${isDock || isFrozen
-            ? 'sticky left-10 sm:left-12 z-30 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
-            : 'static shadow-none border-r-0'
+          ? 'sticky left-10 sm:left-12 z-30 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
+          : 'static shadow-none border-r-0'
           } bg-slate-950 py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}
       >
         <div className="flex items-center gap-1 sm:gap-1.5">
@@ -472,15 +472,15 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             {onYearChange && (
               <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
                 <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                  {t.yearLabel}:
+                  {t.yearLabel}
                 </span>
                 {ECONOMIC_YEAR_OPTIONS.map((opt) => (
                   <button
                     key={opt.year}
                     onClick={() => onYearChange(opt.year)}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${selectedYear === opt.year
-                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                       }`}
                   >
                     {t[opt.labelKey].replace('{year}', opt.year)}
@@ -549,17 +549,17 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         ref={tableContainerRef}
         onScroll={handleContainerScroll}
         className={`rounded-xl border border-slate-800 ${isTableOverflowing
-            ? 'overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent'
-            : 'overflow-visible'
+          ? 'overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent'
+          : 'overflow-visible'
           }`}
       >
         <table ref={tableRef} className="w-full text-left border-separate border-spacing-0 text-sm">
           <thead
             className={`sticky z-30 bg-slate-950 transition-opacity duration-150 ${isTableOverflowing
-                ? isMobileDockActive
-                  ? 'opacity-0 pointer-events-none top-0'
-                  : 'top-0'
-                : 'top-0 md:top-[var(--navbar-h)]'
+              ? isMobileDockActive
+                ? 'opacity-0 pointer-events-none top-0'
+                : 'top-0'
+              : 'top-0 md:top-[var(--navbar-h)]'
               }`}
           >
             <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
@@ -594,8 +594,8 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     </td>
 
                     <td className={`${isFrozen
-                        ? 'sticky left-10 sm:left-12 z-20 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
-                        : 'static shadow-none border-r-0'
+                      ? 'sticky left-10 sm:left-12 z-20 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
+                      : 'static shadow-none border-r-0'
                       } bg-slate-900 group-hover:bg-slate-800/95 py-3 px-1.5 sm:px-3 border-b border-slate-800/60 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}>
                       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
                         <CountryFlag iso2={item.country.iso2} className="w-5 h-3.5 sm:w-7 sm:h-5 shrink-0" alt={displayName} />
@@ -667,8 +667,8 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                             )}
                             <span
                               className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${stockData.changePct >= 0
-                                  ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
-                                  : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+                                ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                                : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
                                 }`}
                             >
                               {stockData.changePct >= 0 ? '+' : ''}{stockData.changePct}%
@@ -754,10 +754,10 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                       {item.debtRatioPct !== null ? (
                         <span
                           className={`inline-flex items-center gap-1 font-mono font-semibold px-2 py-0.5 rounded text-xs border ${item.debtRatioPct < 60
-                              ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
-                              : item.debtRatioPct < 90
-                                ? 'text-amber-300 bg-amber-950/60 border-amber-500/30'
-                                : 'text-rose-300 bg-rose-950/60 border-rose-500/30'
+                            ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
+                            : item.debtRatioPct < 90
+                              ? 'text-amber-300 bg-amber-950/60 border-amber-500/30'
+                              : 'text-rose-300 bg-rose-950/60 border-rose-500/30'
                             }`}
                           title={`${t.modalDebtTitle}: ${item.debtRatioPct.toFixed(1)}%`}
                         >

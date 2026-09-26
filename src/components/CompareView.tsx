@@ -116,17 +116,16 @@ export const CompareView: React.FC<CompareViewProps> = ({
             {onYearChange && (
               <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
                 <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                  {t.yearLabel}:
+                  {t.yearLabel}
                 </span>
                 {ECONOMIC_YEAR_OPTIONS.map((opt) => (
                   <button
                     key={opt.year}
                     onClick={() => onYearChange(opt.year)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      selectedYear === opt.year
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${selectedYear === opt.year
                         ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
                         : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                    }`}
+                      }`}
                   >
                     {t[opt.labelKey].replace('{year}', opt.year)}
                   </button>
@@ -137,33 +136,33 @@ export const CompareView: React.FC<CompareViewProps> = ({
             {/* Preset Buttons with Vector Flags */}
             <div className="flex flex-wrap items-center gap-1.5 text-xs">
               <span className="text-slate-500 mr-1 font-medium">{t.compareRecommended}</span>
-            <button
-              onClick={() => setPreset('USA', 'CHN')}
-              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
-            >
-              <CountryFlag iso2="US" className="w-4 h-3" /> USA vs <CountryFlag iso2="CN" className="w-4 h-3" /> CHN
-            </button>
-            <button
-              onClick={() => setPreset('KOR', 'JPN')}
-              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
-            >
-              <CountryFlag iso2="KR" className="w-4 h-3" /> KOR vs <CountryFlag iso2="JP" className="w-4 h-3" /> JPN
-            </button>
-            <button
-              onClick={() => setPreset('DEU', 'GBR')}
-              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
-            >
-              <CountryFlag iso2="DE" className="w-4 h-3" /> DEU vs <CountryFlag iso2="GB" className="w-4 h-3" /> GBR
-            </button>
-            <button
-              onClick={() => setPreset('KOR', 'TWN')}
-              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
-            >
-              <CountryFlag iso2="KR" className="w-4 h-3" /> KOR vs <CountryFlag iso2="TW" className="w-4 h-3" /> TWN
-            </button>
+              <button
+                onClick={() => setPreset('USA', 'CHN')}
+                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
+              >
+                <CountryFlag iso2="US" className="w-4 h-3" /> USA vs <CountryFlag iso2="CN" className="w-4 h-3" /> CHN
+              </button>
+              <button
+                onClick={() => setPreset('KOR', 'JPN')}
+                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
+              >
+                <CountryFlag iso2="KR" className="w-4 h-3" /> KOR vs <CountryFlag iso2="JP" className="w-4 h-3" /> JPN
+              </button>
+              <button
+                onClick={() => setPreset('DEU', 'GBR')}
+                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
+              >
+                <CountryFlag iso2="DE" className="w-4 h-3" /> DEU vs <CountryFlag iso2="GB" className="w-4 h-3" /> GBR
+              </button>
+              <button
+                onClick={() => setPreset('KOR', 'TWN')}
+                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
+              >
+                <CountryFlag iso2="KR" className="w-4 h-3" /> KOR vs <CountryFlag iso2="TW" className="w-4 h-3" /> TWN
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
         {/* Selectors */}
         <div className="flex items-center gap-2 sm:gap-3">
@@ -279,13 +278,12 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
               <span
-                className={`text-sm font-mono font-bold ${
-                  detailA?.growthRatePct === null || detailA?.growthRatePct === undefined
+                className={`text-sm font-mono font-bold ${detailA?.growthRatePct === null || detailA?.growthRatePct === undefined
                     ? 'text-slate-400'
                     : detailA.growthRatePct >= 0
                       ? 'text-emerald-400'
                       : 'text-rose-400'
-                }`}
+                  }`}
               >
                 {detailA?.growthRatePct !== null && detailA?.growthRatePct !== undefined
                   ? `${detailA.growthRatePct > 0 ? '+' : ''}${detailA.growthRatePct.toFixed(2)}%`
@@ -307,15 +305,14 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.compareDebtRatio}</span>
               <span
-                className={`text-sm font-mono font-bold ${
-                  detailA?.debtRatioPct === null || detailA?.debtRatioPct === undefined
+                className={`text-sm font-mono font-bold ${detailA?.debtRatioPct === null || detailA?.debtRatioPct === undefined
                     ? 'text-slate-400'
                     : detailA.debtRatioPct < 60
                       ? 'text-emerald-400'
                       : detailA.debtRatioPct < 90
                         ? 'text-amber-400'
                         : 'text-rose-400'
-                }`}
+                  }`}
               >
                 {detailA?.debtRatioPct !== null && detailA?.debtRatioPct !== undefined
                   ? `${detailA.debtRatioPct.toFixed(1)}%`
@@ -386,13 +383,12 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
               <span
-                className={`text-sm font-mono font-bold ${
-                  detailB?.growthRatePct === null || detailB?.growthRatePct === undefined
+                className={`text-sm font-mono font-bold ${detailB?.growthRatePct === null || detailB?.growthRatePct === undefined
                     ? 'text-slate-400'
                     : detailB.growthRatePct >= 0
                       ? 'text-emerald-400'
                       : 'text-rose-400'
-                }`}
+                  }`}
               >
                 {detailB?.growthRatePct !== null && detailB?.growthRatePct !== undefined
                   ? `${detailB.growthRatePct > 0 ? '+' : ''}${detailB.growthRatePct.toFixed(2)}%`
@@ -414,15 +410,14 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
               <span className="text-xs text-slate-400">{t.compareDebtRatio}</span>
               <span
-                className={`text-sm font-mono font-bold ${
-                  detailB?.debtRatioPct === null || detailB?.debtRatioPct === undefined
+                className={`text-sm font-mono font-bold ${detailB?.debtRatioPct === null || detailB?.debtRatioPct === undefined
                     ? 'text-slate-400'
                     : detailB.debtRatioPct < 60
                       ? 'text-emerald-400'
                       : detailB.debtRatioPct < 90
                         ? 'text-amber-400'
                         : 'text-rose-400'
-                }`}
+                  }`}
               >
                 {detailB?.debtRatioPct !== null && detailB?.debtRatioPct !== undefined
                   ? `${detailB.debtRatioPct.toFixed(1)}%`

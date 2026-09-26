@@ -335,11 +335,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 onClick={() => setIsRegionMenuOpen((prev) => !prev)}
                 aria-haspopup="listbox"
                 aria-expanded={isRegionMenuOpen}
-                className={`flex items-center gap-2 bg-slate-950/90 border rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${
-                  isRegionMenuOpen
+                className={`flex items-center gap-2 bg-slate-950/90 border rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isRegionMenuOpen
                     ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                     : 'border-slate-800 hover:border-slate-700'
-                }`}
+                  }`}
               >
                 <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
                   <Filter className="w-3.5 h-3.5 text-indigo-400" />
@@ -363,16 +362,14 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <button
                     type="button"
                     onClick={handleSelectAllRegions}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                      isAllRegions
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${isAllRegions
                         ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 font-bold'
                         : 'text-slate-300 hover:bg-slate-800/60'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
-                        isAllRegions ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-950'
-                      }`}>
+                      <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${isAllRegions ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-950'
+                        }`}>
                         {isAllRegions && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
                       <span>{t.filterAll} ({lang === 'ko' ? '전체 대륙' : 'All Regions'})</span>
@@ -414,13 +411,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                               ? '클릭: 다중 선택 토글 | 1초 이상 길게 누름: 이 대륙만 단독 선택'
                               : 'Click: Toggle | Hold for 1s: Select only this region'
                           }
-                          className={`relative overflow-hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none ${
-                            pressingRegion === reg ? 'scale-[0.98] bg-indigo-950/70 border-indigo-500/50' : ''
-                          } ${
-                            isIsolated
+                          className={`relative overflow-hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none ${pressingRegion === reg ? 'scale-[0.98] bg-indigo-950/70 border-indigo-500/50' : ''
+                            } ${isIsolated
                               ? 'bg-indigo-600/20 text-white border border-indigo-500/30'
                               : 'text-slate-300 hover:bg-slate-800/60'
-                          }`}
+                            }`}
                         >
                           {/* 1s Long-press Progress Bar Indicator */}
                           {pressingRegion === reg && (
@@ -434,9 +429,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                           )}
 
                           <div className="flex items-center gap-2.5">
-                            <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
-                              isChecked ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-950'
-                            }`}>
+                            <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${isChecked ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-950'
+                              }`}>
                               {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
                             </div>
                             <span>{regLabel}</span>
@@ -483,7 +477,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
             {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
             <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
               <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                {t.yearLabel}:
+                {t.yearLabel}
               </span>
               {ECONOMIC_YEAR_OPTIONS.map((opt) => (
                 <button
@@ -761,13 +755,12 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
                     <div
-                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 min-w-0 ${
-                        inspectedCountryItem.growthRatePct === null || inspectedCountryItem.growthRatePct === undefined
+                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 min-w-0 ${inspectedCountryItem.growthRatePct === null || inspectedCountryItem.growthRatePct === undefined
                           ? 'text-slate-400'
                           : inspectedCountryItem.growthRatePct >= 0
                             ? 'text-emerald-400'
                             : 'text-rose-400'
-                      }`}
+                        }`}
                     >
                       {inspectedCountryItem.growthRatePct !== null && inspectedCountryItem.growthRatePct !== undefined ? (
                         inspectedCountryItem.growthRatePct >= 0 ? (
@@ -802,15 +795,14 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
                     <div
-                      className={`text-sm font-bold font-mono mt-0.5 truncate ${
-                        inspectedCountryItem.debtRatioPct === null || inspectedCountryItem.debtRatioPct === undefined
+                      className={`text-sm font-bold font-mono mt-0.5 truncate ${inspectedCountryItem.debtRatioPct === null || inspectedCountryItem.debtRatioPct === undefined
                           ? 'text-slate-400'
                           : inspectedCountryItem.debtRatioPct < 60
                             ? 'text-emerald-400'
                             : inspectedCountryItem.debtRatioPct < 90
                               ? 'text-amber-400'
                               : 'text-rose-400'
-                      }`}
+                        }`}
                     >
                       {inspectedCountryItem.debtRatioPct !== null &&
                         inspectedCountryItem.debtRatioPct !== undefined
