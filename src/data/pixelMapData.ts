@@ -2633,13 +2633,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 41,
     "r": 11,
-    "id": "MAC",
+    "id": "CHN",
     "isTracked": true
   },
   {
     "c": 42,
     "r": 11,
-    "id": "HKG",
+    "id": "CHN",
     "isTracked": true
   },
   {
@@ -2789,19 +2789,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 41,
     "r": 12,
-    "id": "CHN",
+    "id": "MAC",
     "isTracked": true
   },
   {
     "c": 42,
     "r": 12,
-    "id": "CHN",
-    "isTracked": true
-  },
-  {
-    "c": 43,
-    "r": 12,
-    "id": "CHN",
+    "id": "HKG",
     "isTracked": true
   },
   {
@@ -2943,13 +2937,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 43,
+    "c": 44,
     "r": 13,
     "id": "PHL",
     "isTracked": true
   },
   {
-    "c": 44,
+    "c": 45,
     "r": 13,
     "id": "PHL",
     "isTracked": true
@@ -3069,13 +3063,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 43,
+    "c": 44,
     "r": 14,
     "id": "PHL",
     "isTracked": true
   },
   {
-    "c": 44,
+    "c": 45,
     "r": 14,
     "id": "PHL",
     "isTracked": true
@@ -3183,7 +3177,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "isTracked": true
   },
   {
-    "c": 44,
+    "c": 45,
     "r": 15,
     "id": "PHL",
     "isTracked": true
@@ -4098,11 +4092,11 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   "CHN": { "c": 40, "r": 8 },
   "KOR": { "c": 44, "r": 8 },
   "JPN": { "c": 47, "r": 8 },
-  "HKG": { "c": 42, "r": 11 },
+  "HKG": { "c": 42, "r": 12 },
   "TWN": { "c": 44, "r": 11 },
   "THA": { "c": 40, "r": 13 },
   "VNM": { "c": 41, "r": 13 },
-  "PHL": { "c": 44, "r": 13 },
+  "PHL": { "c": 44, "r": 14 },
   "MYS": { "c": 40, "r": 15 },
   "SGP": { "c": 41, "r": 15 },
   "IDN": { "c": 42, "r": 17 },
@@ -4135,7 +4129,7 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   "TZA": { "c": 30, "r": 17 },
   "LKA": { "c": 37, "r": 15 },
   "MMR": { "c": 39, "r": 12 },
-  "MAC": { "c": 41, "r": 11 },
+  "MAC": { "c": 41, "r": 12 },
   "OMN": { "c": 34, "r": 13 },
   "PRY": { "c": 16, "r": 20 },
   "KHM": { "c": 41, "r": 14 },
