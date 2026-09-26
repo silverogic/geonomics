@@ -714,6 +714,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                       <span className="font-bold text-white block">
                         {formatPerCapita(item.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
                       </span>
+                      <span className="text-[11px] text-slate-500 font-mono">
+                        ${Math.round(item.gdpPerCapitaUsd).toLocaleString()}
+                      </span>
                     </td>
 
                     {/* Growth Rate */}
