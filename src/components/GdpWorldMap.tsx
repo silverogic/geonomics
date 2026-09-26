@@ -33,6 +33,20 @@ interface GdpWorldMapProps {
 
 const ALL_REGIONS: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania']
 
+interface MetricOptionConfig {
+  id: MapMetric
+  labelKey: 'metricTotalGdp' | 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation'
+  badge: string
+}
+
+const METRIC_OPTIONS: MetricOptionConfig[] = [
+  { id: 'gdp', labelKey: 'metricTotalGdp', badge: 'Total' },
+  { id: 'perCapita', labelKey: 'metricPerCapita', badge: 'Per Cap' },
+  { id: 'growth', labelKey: 'metricGrowth', badge: '%' },
+  { id: 'debt', labelKey: 'metricDebt', badge: '% GDP' },
+  { id: 'inflation', labelKey: 'metricInflation', badge: '%' },
+]
+
 export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   items,
   baseCurrency,
@@ -44,6 +58,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 }) => {
   const t = translations[lang]
   const [metric, setMetric] = useState<MapMetric>('gdp')
+  const [isMetricMenuOpen, setIsMetricMenuOpen] = useState(false)
+  const metricMenuRef = useRef<HTMLDivElement>(null)
   const [selectedRegions, setSelectedRegions] = useState<Region[]>([])
   const [isRegionMenuOpen, setIsRegionMenuOpen] = useState(false)
   const regionMenuRef = useRef<HTMLDivElement>(null)
@@ -51,19 +67,23 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
   const isAllRegions = selectedRegions.length === 0 || selectedRegions.length === ALL_REGIONS.length
 
-  // Click outside and ESC key listener to close region dropdown
+  // Click outside and ESC key listener to close dropdowns
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (regionMenuRef.current && !regionMenuRef.current.contains(e.target as Node)) {
         setIsRegionMenuOpen(false)
       }
+      if (metricMenuRef.current && !metricMenuRef.current.contains(e.target as Node)) {
+        setIsMetricMenuOpen(false)
+      }
     }
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsRegionMenuOpen(false)
+        setIsMetricMenuOpen(false)
       }
     }
-    if (isRegionMenuOpen) {
+    if (isRegionMenuOpen || isMetricMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       document.addEventListener('keydown', handleKeyDown)
     }
@@ -71,7 +91,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isRegionMenuOpen])
+  }, [isRegionMenuOpen, isMetricMenuOpen])
 
   // Hover state for HUD inspection
   const [hoveredCountryId, setHoveredCountryId] = useState<string | null>(null)
@@ -280,6 +300,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     return `${selectedRegions.length} Regions`
   }
 
+  const getMetricLabel = (m: MapMetric) => {
+    const opt = METRIC_OPTIONS.find((o) => o.id === m)
+    return opt ? t[opt.labelKey] : ''
+  }
+
   // Cleanup long-press timer on unmount
   useEffect(() => {
     return () => {
@@ -306,25 +331,64 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         {/* Lower Row: Filter HUD (Metric, Region, Year, Map Style & Search) */}
         <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 pt-4 border-t border-slate-800/80">
           <div className="flex flex-wrap items-center gap-3">
-            {/* Metric Selector Combobox (Converted from 5-option toggle per UX/UI guideline) */}
-            <div className="flex items-center gap-2 bg-slate-950/90 border border-slate-800 hover:border-slate-700 focus-within:border-indigo-500 rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-colors">
-              <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
-                <Activity className="w-3.5 h-3.5 text-indigo-400" />
-                <span>{t.mapMetricLabel}:</span>
-              </span>
-              <select
-                id="mapMetricSelect"
-                value={metric}
-                onChange={(e) => setMetric(e.target.value as MapMetric)}
-                aria-label={t.mapMetricLabel}
-                className="bg-transparent text-slate-100 font-bold focus:outline-none cursor-pointer pr-1"
+            {/* Metric Selector Combobox */}
+            <div className="relative" ref={metricMenuRef}>
+              <button
+                type="button"
+                id="mapMetricCombobox"
+                onClick={() => setIsMetricMenuOpen((prev) => !prev)}
+                aria-haspopup="listbox"
+                aria-expanded={isMetricMenuOpen}
+                className={`flex items-center gap-2 bg-slate-950/90 border rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isMetricMenuOpen
+                  ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
+                  : 'border-slate-800 hover:border-slate-700'
+                  }`}
               >
-                <option value="gdp" className="bg-slate-900 text-white">{t.metricTotalGdp}</option>
-                <option value="perCapita" className="bg-slate-900 text-white">{t.metricPerCapita}</option>
-                <option value="growth" className="bg-slate-900 text-white">{t.metricGrowth}</option>
-                <option value="debt" className="bg-slate-900 text-white">{t.metricDebt}</option>
-                <option value="inflation" className="bg-slate-900 text-white">{t.metricInflation}</option>
-              </select>
+                <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
+                  <Activity className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>{t.mapMetricLabel}:</span>
+                </span>
+                <span className="text-slate-100 font-bold max-w-[130px] sm:max-w-[180px] truncate">
+                  {getMetricLabel(metric)}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isMetricMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Metric Dropdown Menu (Single-select) */}
+              {isMetricMenuOpen && (
+                <div className="absolute left-0 top-full mt-2 w-52 sm:w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-1.5 shadow-2xl shadow-black/80 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="space-y-0.5">
+                    {METRIC_OPTIONS.map((opt) => {
+                      const isSelected = metric === opt.id
+                      const label = t[opt.labelKey]
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setMetric(opt.id)
+                            setIsMetricMenuOpen(false)
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none ${isSelected
+                            ? 'bg-indigo-600/20 text-white border border-indigo-500/30'
+                            : 'text-slate-300 hover:bg-slate-800/60 hover:text-white border border-transparent'
+                            }`}
+                        >
+                          <span className={isSelected ? 'text-white font-bold' : 'text-slate-300'}>{label}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-slate-400 font-mono">{opt.badge}</span>
+                            {isSelected ? (
+                              <Check className="w-3.5 h-3.5 text-indigo-400 stroke-[2.5]" />
+                            ) : (
+                              <div className="w-3.5 h-3.5" />
+                            )}
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Region Filter Multi-select Combobox */}
