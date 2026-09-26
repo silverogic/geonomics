@@ -381,28 +381,14 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     <div className="space-y-6">
       {/* 1. UNIFIED MAP HEADER & CONTROL BAR */}
       <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
-        {/* Upper Row: Title & Search Spotlight */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-              {t.mapTitle}
-            </h1>
-          </div>
-
-          {/* Quick Country Search */}
-          <div className="relative w-full md:w-72 shrink-0">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
-            />
-          </div>
+        {/* Upper Row: Title */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+            {t.mapTitle}
+          </h1>
         </div>
 
-        {/* Lower Row: Filter HUD (Metric, Year, Continent) */}
+        {/* Lower Row: Filter HUD (Metric, Region, Year, Map Style & Search) */}
         <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 pt-4 border-t border-slate-800/80">
           <div className="flex flex-wrap items-center gap-3">
             {/* Metric Selector Combobox (Converted from 5-option toggle per UX/UI guideline) */}
@@ -546,6 +532,25 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               )}
             </div>
 
+            {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
+            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
+              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
+                {t.yearLabel}:
+              </span>
+              {ECONOMIC_YEAR_OPTIONS.map((opt) => (
+                <button
+                  key={opt.year}
+                  onClick={() => onYearChange(opt.year)}
+                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    }`}
+                >
+                  {t[opt.labelKey].replace('{year}', opt.year)}
+                </button>
+              ))}
+            </div>
+
             {/* Map Style Switcher (2 options - toggle switch permitted under 4 options) */}
             <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
               <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
@@ -576,25 +581,18 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <span>{t.mapStyleVector}</span>
               </button>
             </div>
+          </div>
 
-            {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
-            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
-              <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                {t.yearLabel}:
-              </span>
-              {ECONOMIC_YEAR_OPTIONS.map((opt) => (
-                <button
-                  key={opt.year}
-                  onClick={() => onYearChange(opt.year)}
-                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                    }`}
-                >
-                  {t[opt.labelKey].replace('{year}', opt.year)}
-                </button>
-              ))}
-            </div>
+          {/* Quick Country Search (Alined with filter row) */}
+          <div className="relative w-full sm:w-64 xl:w-72 shrink-0">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
+            />
           </div>
         </div>
       </div>
