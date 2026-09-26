@@ -209,7 +209,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     setSelectedRegions([])
   }
 
-  // 1-second Long Press handler to isolate a single continent
+  // 0.7-second Long Press handler to isolate a single continent
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isLongPressTriggeredRef = useRef<boolean>(false)
   const [pressingRegion, setPressingRegion] = useState<Region | null>(null)
@@ -226,7 +226,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       isLongPressTriggeredRef.current = true
       handleIsolateRegion(reg)
       setPressingRegion(null)
-    }, 1000)
+    }, 700)
   }
 
   const handleRegionMouseUpOrLeave = () => {
@@ -239,7 +239,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
   const handleRegionClick = (reg: Region) => {
     if (isLongPressTriggeredRef.current) {
-      // Ignore click event if 1s long-press already triggered isolation
+      // Ignore click event if 0.7s long-press already triggered isolation
       isLongPressTriggeredRef.current = false
       return
     }
@@ -336,8 +336,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 aria-haspopup="listbox"
                 aria-expanded={isRegionMenuOpen}
                 className={`flex items-center gap-2 bg-slate-950/90 border rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isRegionMenuOpen
-                    ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
-                    : 'border-slate-800 hover:border-slate-700'
+                  ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
+                  : 'border-slate-800 hover:border-slate-700'
                   }`}
               >
                 <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
@@ -363,8 +363,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     type="button"
                     onClick={handleSelectAllRegions}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${isAllRegions
-                        ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 font-bold'
-                        : 'text-slate-300 hover:bg-slate-800/60'
+                      ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 font-bold'
+                      : 'text-slate-300 hover:bg-slate-800/60'
                       }`}
                   >
                     <div className="flex items-center gap-2.5">
@@ -408,8 +408,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                           onClick={() => handleRegionClick(reg)}
                           title={
                             lang === 'ko'
-                              ? '클릭: 다중 선택 토글 | 1초 이상 길게 누름: 이 대륙만 단독 선택'
-                              : 'Click: Toggle | Hold for 1s: Select only this region'
+                              ? '클릭: 다중 선택 토글 | 0.7초 이상 길게 누름: 이 대륙만 단독 선택'
+                              : 'Click: Toggle | Hold for 0.7s: Select only this region'
                           }
                           className={`relative overflow-hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none ${pressingRegion === reg ? 'scale-[0.98] bg-indigo-950/70 border-indigo-500/50' : ''
                             } ${isIsolated
@@ -417,13 +417,13 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                               : 'text-slate-300 hover:bg-slate-800/60'
                             }`}
                         >
-                          {/* 1s Long-press Progress Bar Indicator */}
+                          {/* 0.7s Long-press Progress Bar Indicator */}
                           {pressingRegion === reg && (
                             <div
                               className="absolute bottom-0 left-0 h-[2.5px] bg-gradient-to-r from-indigo-500 via-sky-400 to-cyan-300 pointer-events-none rounded-full"
                               style={{
                                 width: '100%',
-                                animation: 'longPressBar 1s linear forwards',
+                                animation: 'longPressBar 0.7s linear forwards',
                               }}
                             />
                           )}
@@ -446,8 +446,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     <span>💡</span>
                     <span>
                       {lang === 'ko'
-                        ? '1초 이상 길게 누르면 해당 대륙만 단독 선택'
-                        : 'Hold for 1s to select only this region'}
+                        ? '길게 누르면 해당 대륙만 단독 선택'
+                        : 'Hold for long to select only this region'}
                     </span>
                   </div>
 
@@ -756,10 +756,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
                     <div
                       className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 min-w-0 ${inspectedCountryItem.growthRatePct === null || inspectedCountryItem.growthRatePct === undefined
-                          ? 'text-slate-400'
-                          : inspectedCountryItem.growthRatePct >= 0
-                            ? 'text-emerald-400'
-                            : 'text-rose-400'
+                        ? 'text-slate-400'
+                        : inspectedCountryItem.growthRatePct >= 0
+                          ? 'text-emerald-400'
+                          : 'text-rose-400'
                         }`}
                     >
                       {inspectedCountryItem.growthRatePct !== null && inspectedCountryItem.growthRatePct !== undefined ? (
@@ -796,12 +796,12 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
                     <div
                       className={`text-sm font-bold font-mono mt-0.5 truncate ${inspectedCountryItem.debtRatioPct === null || inspectedCountryItem.debtRatioPct === undefined
-                          ? 'text-slate-400'
-                          : inspectedCountryItem.debtRatioPct < 60
-                            ? 'text-emerald-400'
-                            : inspectedCountryItem.debtRatioPct < 90
-                              ? 'text-amber-400'
-                              : 'text-rose-400'
+                        ? 'text-slate-400'
+                        : inspectedCountryItem.debtRatioPct < 60
+                          ? 'text-emerald-400'
+                          : inspectedCountryItem.debtRatioPct < 90
+                            ? 'text-amber-400'
+                            : 'text-rose-400'
                         }`}
                     >
                       {inspectedCountryItem.debtRatioPct !== null &&
