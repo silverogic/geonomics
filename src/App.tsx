@@ -15,6 +15,7 @@ import type { CountryRowItem } from './components/RankingTable'
 import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
 import { Spinner } from './components/Spinner'
+import { getFuelPriceUsd } from './data/fuelPrices'
 import {
   detectBrowserLanguage,
   detectBrowserBaseCurrency,
@@ -133,6 +134,7 @@ export function App() {
         inflationRatePct: infObj?.inflation ?? null,
         interestRatePct: rateInfo?.ratePct ?? null,
         centralBankName: rateInfo?.centralBankName ?? null,
+        fuelPriceUsd: getFuelPriceUsd(country.id),
       }
     })
 

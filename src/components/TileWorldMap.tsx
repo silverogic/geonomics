@@ -14,6 +14,7 @@ import { getCountryName } from '../utils/countryNames'
 import type { MapMetric } from './GdpWorldMap'
 import { ChevronRight } from 'lucide-react'
 import { translations } from '../i18n/translations'
+import { formatFuelPrice, getFuelPriceColor } from '../data/fuelPrices'
 
 interface TileWorldMapProps {
   items: CountryRowItem[]
@@ -364,6 +365,24 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                     }`}
                   >
                     {activeHoveredItem.debtRatioPct.toFixed(1)}%
+                  </span>
+                </div>
+              )}
+              {activeHoveredItem.fuelPriceUsd !== null && activeHoveredItem.fuelPriceUsd !== undefined && (
+                <div
+                  className={`flex items-center justify-between ${
+                    metric === 'fuelPrice' ? 'text-amber-300 font-semibold' : 'text-slate-400'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full shrink-0"
+                      style={{ backgroundColor: getFuelPriceColor(activeHoveredItem.fuelPriceUsd) }}
+                    />
+                    <span>{t.metricFuelPrice}:</span>
+                  </span>
+                  <span className="font-mono font-bold text-white">
+                    {formatFuelPrice(activeHoveredItem.fuelPriceUsd, baseCurrency, usdToBase, lang)}
                   </span>
                 </div>
               )}

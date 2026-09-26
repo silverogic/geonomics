@@ -18,8 +18,9 @@ import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
 import { getCountryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
+import { getFuelPriceColor, formatFuelPrice, FUEL_COLOR_LOW, FUEL_COLOR_MID, FUEL_COLOR_HIGH } from '../data/fuelPrices'
 
-export type MapMetric = 'gdp' | 'perCapita' | 'growth' | 'debt' | 'inflation'
+export type MapMetric = 'gdp' | 'perCapita' | 'growth' | 'debt' | 'inflation' | 'fuelPrice'
 
 interface GdpWorldMapProps {
   items: CountryRowItem[]
@@ -35,7 +36,7 @@ const ALL_REGIONS: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania'
 
 interface MetricOptionConfig {
   id: MapMetric
-  labelKey: 'metricTotalGdp' | 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation'
+  labelKey: 'metricTotalGdp' | 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation' | 'metricFuelPrice'
 }
 
 const METRIC_OPTIONS: MetricOptionConfig[] = [
@@ -44,6 +45,7 @@ const METRIC_OPTIONS: MetricOptionConfig[] = [
   { id: 'growth', labelKey: 'metricGrowth' },
   { id: 'debt', labelKey: 'metricDebt' },
   { id: 'inflation', labelKey: 'metricInflation' },
+  { id: 'fuelPrice', labelKey: 'metricFuelPrice' },
 ]
 
 export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
@@ -201,6 +203,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       if (metric === 'inflation') {
         return getInflationHexColor(item.inflationRatePct)
+      }
+
+      if (metric === 'fuelPrice') {
+        return getFuelPriceColor(item.fuelPriceUsd)
       }
 
       return '#334155'
@@ -598,7 +604,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       ? t.metricGrowth
                       : metric === 'debt'
                         ? t.metricDebt
-                        : t.metricInflation}
+                        : metric === 'inflation'
+                          ? t.metricInflation
+                          : t.metricFuelPrice}
               </span>
             </div>
 
@@ -734,6 +742,43 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   </div>
                 </>
               )}
+
+              {metric === 'fuelPrice' && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full md:w-auto">
+                  {/* Continuous Spectrum Bar (Option 3: Teal -> Amber -> Deep Orange) */}
+                  <div className="flex flex-col gap-1 w-full sm:w-60">
+                    <div
+                      className="h-2.5 rounded-full w-full shadow-inner border border-slate-700/60"
+                      style={{
+                        background: `linear-gradient(to right, ${FUEL_COLOR_LOW} 0%, ${FUEL_COLOR_MID} 50%, ${FUEL_COLOR_HIGH} 100%)`,
+                      }}
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400 font-semibold px-0.5">
+                      <span>$0.40</span>
+                      <span>$1.30</span>
+                      <span>$2.40+</span>
+                    </div>
+                  </div>
+                  {/* Range Labels */}
+                  <div className="flex items-center gap-3 text-[11px]">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#0d9488] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.fuelLowPrice}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#d97706] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.fuelMidPrice}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#ea580c] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.fuelHighPrice}</span>
+                    </div>
+                    <span className="hidden xl:inline text-[10px] text-slate-500 border-l border-slate-800 pl-2">
+                      {t.fuelPriceNote}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -867,6 +912,42 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Fuel Price Card in HUD */}
+                {inspectedCountryItem.fuelPriceUsd !== null && inspectedCountryItem.fuelPriceUsd !== undefined && (
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
+                        <span
+                          className="w-2 h-2 rounded-full shrink-0 shadow-sm"
+                          style={{ backgroundColor: getFuelPriceColor(inspectedCountryItem.fuelPriceUsd) }}
+                        />
+                        <span>{t.metricFuelPrice}</span>
+                      </div>
+                      <div className="text-base font-bold text-white font-mono mt-0.5">
+                        {formatFuelPrice(inspectedCountryItem.fuelPriceUsd, baseCurrency, usdToBase, lang)}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-slate-500 font-mono block">
+                        RON 95 / ${inspectedCountryItem.fuelPriceUsd.toFixed(2)}/L
+                      </span>
+                      <span
+                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5"
+                        style={{
+                          backgroundColor: `${getFuelPriceColor(inspectedCountryItem.fuelPriceUsd)}20`,
+                          color: getFuelPriceColor(inspectedCountryItem.fuelPriceUsd),
+                        }}
+                      >
+                        {inspectedCountryItem.fuelPriceUsd < 0.8
+                          ? t.fuelLowPrice
+                          : inspectedCountryItem.fuelPriceUsd <= 1.8
+                            ? t.fuelMidPrice
+                            : t.fuelHighPrice}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Open Modal CTA Button */}

@@ -9,6 +9,7 @@ import { CountryFlag } from './CountryFlag'
 import { getCountryName, getCountrySecondaryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
 import { StockSparkline } from './StockSparkline'
 import { getStockPriceData } from '../data/stockPrices'
+import { formatFuelPrice, getFuelPriceColor } from '../data/fuelPrices'
 
 export interface CountryRowItem {
   country: CountryMeta
@@ -20,6 +21,7 @@ export interface CountryRowItem {
   inflationRatePct: number | null
   interestRatePct?: number | null
   centralBankName?: string | null
+  fuelPriceUsd?: number | null
 }
 
 interface RankingTableProps {
@@ -43,6 +45,7 @@ type SortField =
   | 'inflationRatePct'
   | 'fxRate'
   | 'stockChangePct'
+  | 'fuelPriceUsd'
   | 'interestRatePct'
 
 export const RankingTable: React.FC<RankingTableProps> = ({
@@ -265,7 +268,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
       setSortField(field)
-      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct', 'stockChangePct', 'interestRatePct'].includes(field)) {
+      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct', 'stockChangePct', 'fuelPriceUsd', 'interestRatePct'].includes(field)) {
         setSortDirection('desc')
       } else {
         setSortDirection('asc')
@@ -307,6 +310,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           const sB = getStockPriceData(b.country.id)
           valA = sA && sA.isSupported ? sA.changePct : -Infinity
           valB = sB && sB.isSupported ? sB.changePct : -Infinity
+        }
+
+        if (sortField === 'fuelPriceUsd') {
+          valA = a.fuelPriceUsd !== null && a.fuelPriceUsd !== undefined ? a.fuelPriceUsd : -Infinity
+          valB = b.fuelPriceUsd !== null && b.fuelPriceUsd !== undefined ? b.fuelPriceUsd : -Infinity
         }
 
         if (sortField === 'interestRatePct') {
@@ -388,9 +396,21 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         </div>
       </th>
 
+      {/* Fuel Price (Between Stock Index and Policy Rate) */}
+      <th
+        onClick={() => handleSort('fuelPriceUsd')}
+        style={isDock && dockGeometry.colWidths[5] ? { width: `${dockGeometry.colWidths[5]}px`, minWidth: `${dockGeometry.colWidths[5]}px`, maxWidth: `${dockGeometry.colWidths[5]}px` } : undefined}
+        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[110px] sm:min-w-[125px]"
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          <span>{t.colFuelPrice}</span>
+          {renderSortIcon('fuelPriceUsd')}
+        </div>
+      </th>
+
       <th
         onClick={() => handleSort('interestRatePct')}
-        style={isDock && dockGeometry.colWidths[5] ? { width: `${dockGeometry.colWidths[5]}px`, minWidth: `${dockGeometry.colWidths[5]}px`, maxWidth: `${dockGeometry.colWidths[5]}px` } : undefined}
+        style={isDock && dockGeometry.colWidths[6] ? { width: `${dockGeometry.colWidths[6]}px`, minWidth: `${dockGeometry.colWidths[6]}px`, maxWidth: `${dockGeometry.colWidths[6]}px` } : undefined}
         className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[115px]"
       >
         <div className="flex items-center justify-end gap-1.5">
@@ -401,7 +421,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
       <th
         onClick={() => handleSort('totalGdpUsd')}
-        style={isDock && dockGeometry.colWidths[6] ? { width: `${dockGeometry.colWidths[6]}px`, minWidth: `${dockGeometry.colWidths[6]}px`, maxWidth: `${dockGeometry.colWidths[6]}px` } : undefined}
+        style={isDock && dockGeometry.colWidths[7] ? { width: `${dockGeometry.colWidths[7]}px`, minWidth: `${dockGeometry.colWidths[7]}px`, maxWidth: `${dockGeometry.colWidths[7]}px` } : undefined}
         className="bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
       >
         <div className="flex items-center justify-end gap-1.5">
@@ -412,7 +432,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
       <th
         onClick={() => handleSort('gdpPerCapitaUsd')}
-        style={isDock && dockGeometry.colWidths[7] ? { width: `${dockGeometry.colWidths[7]}px`, minWidth: `${dockGeometry.colWidths[7]}px`, maxWidth: `${dockGeometry.colWidths[7]}px` } : undefined}
+        style={isDock && dockGeometry.colWidths[8] ? { width: `${dockGeometry.colWidths[8]}px`, minWidth: `${dockGeometry.colWidths[8]}px`, maxWidth: `${dockGeometry.colWidths[8]}px` } : undefined}
         className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
       >
         <div className="flex items-center justify-end gap-1.5">
@@ -423,7 +443,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
       <th
         onClick={() => handleSort('growthRatePct')}
-        style={isDock && dockGeometry.colWidths[8] ? { width: `${dockGeometry.colWidths[8]}px`, minWidth: `${dockGeometry.colWidths[8]}px`, maxWidth: `${dockGeometry.colWidths[8]}px` } : undefined}
+        style={isDock && dockGeometry.colWidths[9] ? { width: `${dockGeometry.colWidths[9]}px`, minWidth: `${dockGeometry.colWidths[9]}px`, maxWidth: `${dockGeometry.colWidths[9]}px` } : undefined}
         className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[85px] sm:min-w-[95px]"
       >
         <div className="flex items-center justify-end gap-1.5">
@@ -434,7 +454,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
       <th
         onClick={() => handleSort('inflationRatePct')}
-        style={isDock && dockGeometry.colWidths[9] ? { width: `${dockGeometry.colWidths[9]}px`, minWidth: `${dockGeometry.colWidths[9]}px`, maxWidth: `${dockGeometry.colWidths[9]}px` } : undefined}
+        style={isDock && dockGeometry.colWidths[10] ? { width: `${dockGeometry.colWidths[10]}px`, minWidth: `${dockGeometry.colWidths[10]}px`, maxWidth: `${dockGeometry.colWidths[10]}px` } : undefined}
         className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
       >
         <div className="flex items-center justify-end gap-1.5">
@@ -445,7 +465,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
       <th
         onClick={() => handleSort('debtRatioPct')}
-        style={isDock && dockGeometry.colWidths[10] ? { width: `${dockGeometry.colWidths[10]}px`, minWidth: `${dockGeometry.colWidths[10]}px`, maxWidth: `${dockGeometry.colWidths[10]}px` } : undefined}
+        style={isDock && dockGeometry.colWidths[11] ? { width: `${dockGeometry.colWidths[11]}px`, minWidth: `${dockGeometry.colWidths[11]}px`, maxWidth: `${dockGeometry.colWidths[11]}px` } : undefined}
         className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm rounded-tr-xl last:rounded-tr-xl transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
       >
         <div className="flex items-center justify-end gap-1.5">
@@ -570,7 +590,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           <tbody className="divide-y divide-slate-800/60 bg-slate-900/50">
             {filteredAndSorted.length === 0 ? (
               <tr>
-                <td colSpan={11} className="py-12 text-center text-slate-500">
+                <td colSpan={12} className="py-12 text-center text-slate-500">
                   {t.noCountriesFound}
                 </td>
               </tr>
@@ -676,6 +696,31 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                           </div>
                         )
                       })()}
+                    </td>
+
+                    {/* Fuel Price (Between Stock Market and Policy Rate) */}
+                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[110px] sm:min-w-[125px]">
+                      {item.fuelPriceUsd !== null && item.fuelPriceUsd !== undefined ? (
+                        <div className="flex flex-col items-end">
+                          <div className="flex items-center gap-1.5 justify-end">
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0 shadow-sm"
+                              style={{ backgroundColor: getFuelPriceColor(item.fuelPriceUsd) }}
+                              title={`RON 95: $${item.fuelPriceUsd.toFixed(2)}/L`}
+                            />
+                            <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                              {formatFuelPrice(item.fuelPriceUsd, baseCurrency, usdToBase, lang)}
+                            </span>
+                          </div>
+                          {baseCurrency !== 'USD' && (
+                            <span className="text-[10px] font-mono text-slate-500">
+                              ${item.fuelPriceUsd.toFixed(2)}/L
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-slate-600 font-mono text-xs">-</span>
+                      )}
                     </td>
 
                     {/* Central Bank Policy Rate */}
