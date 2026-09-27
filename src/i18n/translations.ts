@@ -180,6 +180,7 @@ export const translations = {
     footerEcb: 'European Central Bank (ECB) Reference Rates',
     footerBis: 'Bank for International Settlements (BIS) Policy Rates',
     footerGithub: 'Hosted on GitHub Pages',
+    footerSupport: 'Customer Support',
   },
   ko: {
     // Header & Nav
@@ -360,6 +361,7 @@ export const translations = {
     footerEcb: '유럽중앙은행(ECB) 공식 환율',
     footerBis: '국제결제은행(BIS) 정책금리 통계',
     footerGithub: 'GitHub Pages 호스팅',
+    footerSupport: '고객센터',
   },
   ja: {
     // Header & Nav
@@ -540,6 +542,7 @@ export const translations = {
     footerEcb: '欧州中央銀行 (ECB) 公式為替レート',
     footerBis: '国際決済銀行 (BIS) 政策金利',
     footerGithub: 'GitHub Pages でホスティング中',
+    footerSupport: 'カスタマーサポート',
   },
   es: {
     // Header & Nav
@@ -720,6 +723,7 @@ export const translations = {
     footerEcb: 'Banco Central Europeo (ECB)',
     footerBis: 'Banco de Pagos Internacionales (BPI)',
     footerGithub: 'Alojado en GitHub Pages',
+    footerSupport: 'Centro de Ayuda',
   },
   zh: {
     // Header & Nav
@@ -900,6 +904,7 @@ export const translations = {
     footerEcb: '欧洲中央银行 (ECB) 官方汇率',
     footerBis: '国际清算银行 (BIS) 政策利率',
     footerGithub: 'GitHub Pages 托管运行',
+    footerSupport: '客服中心',
   },
 } as const
 

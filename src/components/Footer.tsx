@@ -1,5 +1,5 @@
 import React from 'react'
-import { ExternalLink, Globe } from 'lucide-react'
+import { ExternalLink, Globe, LifeBuoy } from 'lucide-react'
 import type { Language } from '../types/economics'
 import { translations } from '../i18n/translations'
 
@@ -66,6 +66,17 @@ export const Footer: React.FC<FooterProps> = ({ lang }) => {
               className="flex items-center gap-1 hover:text-indigo-400 transition-colors"
             >
               <span>{t.footerGithub}</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+            <span>•</span>
+            <a
+              href="https://github.com/silverogic/geonomics/issues"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 text-slate-300 hover:text-indigo-400 font-medium transition-colors"
+            >
+              <LifeBuoy className="w-3.5 h-3.5 text-indigo-400" />
+              <span>{t.footerSupport}</span>
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
