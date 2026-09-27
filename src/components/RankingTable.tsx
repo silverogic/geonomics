@@ -539,7 +539,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
-            {onYearChange && (
+            {onYearChange && activeCategory !== 'market' && (
               <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
                 <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
                   {t.yearLabel}
