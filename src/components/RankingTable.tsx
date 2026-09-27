@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
-import { ArrowUpDown, Search, ArrowUp, ArrowDown, Sparkles } from 'lucide-react'
+import { ArrowUpDown, Search, ArrowUp, ArrowDown, Sparkles, TrendingUp, Landmark, Layers } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
@@ -23,6 +23,8 @@ export interface CountryRowItem {
   centralBankName?: string | null
   fuelPriceUsd?: number | null
 }
+
+export type TableCategory = 'market' | 'macro' | 'all'
 
 interface RankingTableProps {
   items: CountryRowItem[]
@@ -62,6 +64,27 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   const [searchTerm, setSearchTerm] = useState('')
   const [sortField, setSortField] = useState<SortField>('rank')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [activeCategory, setActiveCategory] = useState<TableCategory>('macro')
+
+  const showMarket = activeCategory === 'market' || activeCategory === 'all'
+  const showMacro = activeCategory === 'macro' || activeCategory === 'all'
+
+  const handleCategoryChange = (category: TableCategory) => {
+    setActiveCategory(category)
+    if (category === 'market') {
+      const marketFields: SortField[] = ['rank', 'countryName', 'fxRate', 'stockChangePct', 'fuelPriceUsd', 'interestRatePct']
+      if (!marketFields.includes(sortField)) {
+        setSortField('rank')
+        setSortDirection('asc')
+      }
+    } else if (category === 'macro') {
+      const macroFields: SortField[] = ['rank', 'countryName', 'totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'inflationRatePct', 'debtRatioPct']
+      if (!macroFields.includes(sortField)) {
+        setSortField('rank')
+        setSortDirection('asc')
+      }
+    }
+  }
 
   // Ref to the table wrapper — used to scroll data rows into view below the dock
   const tableWrapperRef = useRef<HTMLDivElement>(null)
@@ -245,7 +268,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       if (resizeRaf) cancelAnimationFrame(resizeRaf)
       if (ro) ro.disconnect()
     }
-  }, [items.length, lang, baseCurrency])
+  }, [items.length, lang, baseCurrency, activeCategory])
 
   useEffect(() => {
     if (isMobileDockActive && mobileDockRef.current && tableContainerRef.current) {
@@ -340,141 +363,168 @@ export const RankingTable: React.FC<RankingTableProps> = ({
     )
   }
 
-  const renderHeaderCells = (isDock: boolean) => (
-    <>
-      <th
-        onClick={() => handleSort('rank')}
-        style={isDock && dockGeometry.colWidths[0] ? { width: `${dockGeometry.colWidths[0]}px`, minWidth: `${dockGeometry.colWidths[0]}px`, maxWidth: `${dockGeometry.colWidths[0]}px` } : undefined}
-        className={`${isDock || isFrozen ? 'sticky left-0 z-30' : 'static'} bg-slate-950 py-3 px-1 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center`}
-      >
-        <div className="flex items-center justify-center gap-0.5 sm:gap-1">
-          <span>{t.colRank}</span>
-          {renderSortIcon('rank')}
-        </div>
-      </th>
+  const renderHeaderCells = (isDock: boolean) => {
+    let colIdx = 0
+    const getColStyle = () => {
+      const idx = colIdx++
+      if (!isDock || !dockGeometry.colWidths[idx]) return undefined
+      return {
+        width: `${dockGeometry.colWidths[idx]}px`,
+        minWidth: `${dockGeometry.colWidths[idx]}px`,
+        maxWidth: `${dockGeometry.colWidths[idx]}px`,
+      }
+    }
 
-      <th
-        onClick={() => handleSort('countryName')}
-        style={isDock && dockGeometry.colWidths[1] ? { width: `${dockGeometry.colWidths[1]}px`, minWidth: `${dockGeometry.colWidths[1]}px`, maxWidth: `${dockGeometry.colWidths[1]}px` } : undefined}
-        className={`${isDock || isFrozen
-          ? 'sticky left-10 sm:left-12 z-30 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
-          : 'static shadow-none border-r-0'
-          } bg-slate-950 py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}
-      >
-        <div className="flex items-center gap-1 sm:gap-1.5">
-          <span>{t.colCountry}</span>
-          {renderSortIcon('countryName')}
-        </div>
-      </th>
+    return (
+      <>
+        {/* 1. Rank */}
+        <th
+          onClick={() => handleSort('rank')}
+          style={getColStyle()}
+          className={`${isDock || isFrozen ? 'sticky left-0 z-30' : 'static'} bg-slate-950 py-3 px-1 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-tl-xl transition-colors whitespace-nowrap w-10 min-w-[40px] max-w-[40px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center`}
+        >
+          <div className="flex items-center justify-center gap-0.5 sm:gap-1">
+            <span>{t.colRank}</span>
+            {renderSortIcon('rank')}
+          </div>
+        </th>
 
-      <th
-        style={isDock && dockGeometry.colWidths[2] ? { width: `${dockGeometry.colWidths[2]}px`, minWidth: `${dockGeometry.colWidths[2]}px`, maxWidth: `${dockGeometry.colWidths[2]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[65px] sm:min-w-[75px]"
-      >
-        {t.colCurrency}
-      </th>
+        {/* 2. Country */}
+        <th
+          onClick={() => handleSort('countryName')}
+          style={getColStyle()}
+          className={`${isDock || isFrozen
+            ? 'sticky left-10 sm:left-12 z-30 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
+            : 'static shadow-none border-r-0'
+            } bg-slate-950 py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 transition-colors whitespace-nowrap min-w-[100px] sm:min-w-[130px] md:min-w-[170px]`}
+        >
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <span>{t.colCountry}</span>
+            {renderSortIcon('countryName')}
+          </div>
+        </th>
 
-      <th
-        onClick={() => handleSort('fxRate')}
-        style={isDock && dockGeometry.colWidths[3] ? { width: `${dockGeometry.colWidths[3]}px`, minWidth: `${dockGeometry.colWidths[3]}px`, maxWidth: `${dockGeometry.colWidths[3]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors min-w-[80px] sm:min-w-[90px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
-          {renderSortIcon('fxRate')}
-        </div>
-      </th>
+        {/* --- Market / Financial Columns --- */}
+        {showMarket && (
+          <>
+            <th
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[65px] sm:min-w-[75px]"
+            >
+              {t.colCurrency}
+            </th>
 
-      <th
-        onClick={() => handleSort('stockChangePct')}
-        style={isDock && dockGeometry.colWidths[4] ? { width: `${dockGeometry.colWidths[4]}px`, minWidth: `${dockGeometry.colWidths[4]}px`, maxWidth: `${dockGeometry.colWidths[4]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[140px] sm:min-w-[160px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colStockIndex}</span>
-          {renderSortIcon('stockChangePct')}
-        </div>
-      </th>
+            <th
+              onClick={() => handleSort('fxRate')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors min-w-[80px] sm:min-w-[90px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
+                {renderSortIcon('fxRate')}
+              </div>
+            </th>
 
-      {/* Fuel Price (Between Stock Index and Policy Rate) */}
-      <th
-        onClick={() => handleSort('fuelPriceUsd')}
-        style={isDock && dockGeometry.colWidths[5] ? { width: `${dockGeometry.colWidths[5]}px`, minWidth: `${dockGeometry.colWidths[5]}px`, maxWidth: `${dockGeometry.colWidths[5]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[110px] sm:min-w-[125px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colFuelPrice}</span>
-          {renderSortIcon('fuelPriceUsd')}
-        </div>
-      </th>
+            <th
+              onClick={() => handleSort('stockChangePct')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[140px] sm:min-w-[160px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colStockIndex}</span>
+                {renderSortIcon('stockChangePct')}
+              </div>
+            </th>
 
-      <th
-        onClick={() => handleSort('interestRatePct')}
-        style={isDock && dockGeometry.colWidths[6] ? { width: `${dockGeometry.colWidths[6]}px`, minWidth: `${dockGeometry.colWidths[6]}px`, maxWidth: `${dockGeometry.colWidths[6]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[75px] sm:min-w-[85px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colInterestRate}</span>
-          {renderSortIcon('interestRatePct')}
-        </div>
-      </th>
+            {/* Fuel Price (Between Stock Index and Policy Rate) */}
+            <th
+              onClick={() => handleSort('fuelPriceUsd')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[110px] sm:min-w-[125px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colFuelPrice}</span>
+                {renderSortIcon('fuelPriceUsd')}
+              </div>
+            </th>
 
-      <th
-        onClick={() => handleSort('totalGdpUsd')}
-        style={isDock && dockGeometry.colWidths[7] ? { width: `${dockGeometry.colWidths[7]}px`, minWidth: `${dockGeometry.colWidths[7]}px`, maxWidth: `${dockGeometry.colWidths[7]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colTotalGdp}</span>
-          {renderSortIcon('totalGdpUsd')}
-        </div>
-      </th>
+            <th
+              onClick={() => handleSort('interestRatePct')}
+              style={getColStyle()}
+              className={`bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[75px] sm:min-w-[85px] ${
+                activeCategory === 'market' ? 'rounded-tr-xl last:rounded-tr-xl' : ''
+              }`}
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colInterestRate}</span>
+                {renderSortIcon('interestRatePct')}
+              </div>
+            </th>
+          </>
+        )}
 
-      <th
-        onClick={() => handleSort('gdpPerCapitaUsd')}
-        style={isDock && dockGeometry.colWidths[8] ? { width: `${dockGeometry.colWidths[8]}px`, minWidth: `${dockGeometry.colWidths[8]}px`, maxWidth: `${dockGeometry.colWidths[8]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colPerCapita}</span>
-          {renderSortIcon('gdpPerCapitaUsd')}
-        </div>
-      </th>
+        {/* --- Macroeconomic Columns --- */}
+        {showMacro && (
+          <>
+            <th
+              onClick={() => handleSort('totalGdpUsd')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colTotalGdp}</span>
+                {renderSortIcon('totalGdpUsd')}
+              </div>
+            </th>
 
-      <th
-        onClick={() => handleSort('growthRatePct')}
-        style={isDock && dockGeometry.colWidths[9] ? { width: `${dockGeometry.colWidths[9]}px`, minWidth: `${dockGeometry.colWidths[9]}px`, maxWidth: `${dockGeometry.colWidths[9]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[85px] sm:min-w-[95px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colGrowth}</span>
-          {renderSortIcon('growthRatePct')}
-        </div>
-      </th>
+            <th
+              onClick={() => handleSort('gdpPerCapitaUsd')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[105px] sm:min-w-[120px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colPerCapita}</span>
+                {renderSortIcon('gdpPerCapitaUsd')}
+              </div>
+            </th>
 
-      <th
-        onClick={() => handleSort('inflationRatePct')}
-        style={isDock && dockGeometry.colWidths[10] ? { width: `${dockGeometry.colWidths[10]}px`, minWidth: `${dockGeometry.colWidths[10]}px`, maxWidth: `${dockGeometry.colWidths[10]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colInflation}</span>
-          {renderSortIcon('inflationRatePct')}
-        </div>
-      </th>
+            <th
+              onClick={() => handleSort('growthRatePct')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[85px] sm:min-w-[95px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colGrowth}</span>
+                {renderSortIcon('growthRatePct')}
+              </div>
+            </th>
 
-      <th
-        onClick={() => handleSort('debtRatioPct')}
-        style={isDock && dockGeometry.colWidths[11] ? { width: `${dockGeometry.colWidths[11]}px`, minWidth: `${dockGeometry.colWidths[11]}px`, maxWidth: `${dockGeometry.colWidths[11]}px` } : undefined}
-        className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm rounded-tr-xl last:rounded-tr-xl transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
-      >
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{t.colDebt}</span>
-          {renderSortIcon('debtRatioPct')}
-        </div>
-      </th>
-    </>
-  )
+            <th
+              onClick={() => handleSort('inflationRatePct')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colInflation}</span>
+                {renderSortIcon('inflationRatePct')}
+              </div>
+            </th>
+
+            <th
+              onClick={() => handleSort('debtRatioPct')}
+              style={getColStyle()}
+              className="bg-slate-950 py-3 px-2 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm rounded-tr-xl last:rounded-tr-xl transition-colors whitespace-nowrap min-w-[90px] sm:min-w-[100px]"
+            >
+              <div className="flex items-center justify-end gap-1.5">
+                <span>{t.colDebt}</span>
+                {renderSortIcon('debtRatioPct')}
+              </div>
+            </th>
+          </>
+        )}
+      </>
+    )
+  }
 
   return (
     <div ref={tableWrapperRef} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
@@ -523,14 +573,84 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           </div>
         </div>
       )}
-      {/* Mobile Hint Banner: Explains Option 1 + Option 2 */}
+
+      {/* Segmented Category Filter Toolbar: 1. 금융·시장 / 2. 거시경제 (Default) / 3. 전체보기 */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <div className="inline-flex p-1 bg-slate-950 border border-slate-800/90 rounded-xl shadow-inner gap-1 shrink-0 self-start sm:self-auto">
+          {/* 1. 금융 · 시장 */}
+          <button
+            type="button"
+            onClick={() => handleCategoryChange('market')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeCategory === 'market'
+                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>{t.tableTabMarket}</span>
+          </button>
+
+          {/* 2. 거시경제 (Default) */}
+          <button
+            type="button"
+            onClick={() => handleCategoryChange('macro')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeCategory === 'macro'
+                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            <Landmark className="w-3.5 h-3.5" />
+            <span>{t.tableTabMacro}</span>
+          </button>
+
+          {/* 3. 전체보기 */}
+          <button
+            type="button"
+            onClick={() => handleCategoryChange('all')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeCategory === 'all'
+                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>{t.tableTabAll}</span>
+          </button>
+        </div>
+
+        {/* Category Description Hint Badge (Desktop) */}
+        <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+          <span>
+            {activeCategory === 'market'
+              ? t.tableMobileHintMarket
+              : activeCategory === 'macro'
+                ? t.tableMobileHintMacro
+                : t.tableMobileHint}
+          </span>
+        </div>
+      </div>
+
+      {/* Mobile Hint Banner */}
       <div className="flex md:hidden items-center justify-between px-3 py-2 bg-slate-950/70 border border-slate-800/90 rounded-xl text-xs text-slate-400">
         <div className="flex items-center gap-1.5 min-w-0">
           <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-          <span className="truncate">{t.tableMobileHint}</span>
+          <span className="truncate">
+            {activeCategory === 'market'
+              ? t.tableMobileHintMarket
+              : activeCategory === 'macro'
+                ? t.tableMobileHintMacro
+                : t.tableMobileHint}
+          </span>
         </div>
         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shrink-0 ml-2">
-          {t.tableMobileAllMetrics}
+          {activeCategory === 'market'
+            ? t.tableMobileMarketMetrics
+            : activeCategory === 'macro'
+              ? t.tableMobileMacroMetrics
+              : t.tableMobileAllMetrics}
         </span>
       </div>
 
@@ -590,7 +710,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           <tbody className="divide-y divide-slate-800/60 bg-slate-900/50">
             {filteredAndSorted.length === 0 ? (
               <tr>
-                <td colSpan={12} className="py-12 text-center text-slate-500">
+                <td colSpan={activeCategory === 'all' ? 12 : 7} className="py-12 text-center text-slate-500">
                   {t.noCountriesFound}
                 </td>
               </tr>
@@ -629,187 +749,197 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                       </div>
                     </td>
 
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-xs whitespace-nowrap min-w-[65px] sm:min-w-[75px]">
-                      <span
-                        className="font-mono font-bold text-slate-200"
-                        title={`${item.country.currencyCode} (${item.country.currencySymbol})`}
-                      >
-                        {item.country.currencyCode}
-                      </span>
-                    </td>
+                    {/* --- Market / Financial Columns --- */}
+                    {showMarket && (
+                      <>
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-xs whitespace-nowrap min-w-[65px] sm:min-w-[75px]">
+                          <span
+                            className="font-mono font-bold text-slate-200"
+                            title={`${item.country.currencyCode} (${item.country.currencySymbol})`}
+                          >
+                            {item.country.currencyCode}
+                          </span>
+                        </td>
 
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200 whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
-                      {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
-                    </td>
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200 whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
+                          {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
+                        </td>
 
-                    {/* Stock Market Mini Chart */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right min-w-[140px] sm:min-w-[160px]">
-                      {(() => {
-                        const stockData = getStockPriceData(item.country.id)
-                        if (!stockData) {
-                          return <span className="text-slate-600 font-mono text-xs">-</span>
-                        }
-                        if (!stockData.isSupported) {
-                          return (
-                            <span className="text-[10px] text-slate-500 font-mono">
-                              {lang === 'ko'
-                                ? '제재/제한'
-                                : lang === 'ja'
-                                  ? '制限'
-                                  : lang === 'es'
-                                    ? 'Restringido'
-                                    : lang === 'zh'
-                                      ? '受限'
-                                      : 'Restricted'}
-                            </span>
-                          )
-                        }
-                        return (
-                          <div className="flex items-center justify-end gap-1.5 sm:gap-2">
-                            <div className="text-right min-w-0">
-                              <span className="text-xs font-mono font-semibold text-slate-200 block leading-normal whitespace-nowrap">
-                                {stockData.currentPrice.toLocaleString()}
-                              </span>
-                              <span
-                                className="text-[10px] text-slate-400 truncate block leading-normal max-w-[70px]"
-                                title={stockData.nameEn}
-                              >
-                                {lang === 'ko' ? stockData.nameKo : stockData.nameEn}
-                              </span>
+                        {/* Stock Market Mini Chart */}
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right min-w-[140px] sm:min-w-[160px]">
+                          {(() => {
+                            const stockData = getStockPriceData(item.country.id)
+                            if (!stockData) {
+                              return <span className="text-slate-600 font-mono text-xs">-</span>
+                            }
+                            if (!stockData.isSupported) {
+                              return (
+                                <span className="text-[10px] text-slate-500 font-mono">
+                                  {lang === 'ko'
+                                    ? '제재/제한'
+                                    : lang === 'ja'
+                                      ? '制限'
+                                      : lang === 'es'
+                                        ? 'Restringido'
+                                        : lang === 'zh'
+                                          ? '受限'
+                                          : 'Restricted'}
+                                </span>
+                              )
+                            }
+                            return (
+                              <div className="flex items-center justify-end gap-1.5 sm:gap-2">
+                                <div className="text-right min-w-0">
+                                  <span className="text-xs font-mono font-semibold text-slate-200 block leading-normal whitespace-nowrap">
+                                    {stockData.currentPrice.toLocaleString()}
+                                  </span>
+                                  <span
+                                    className="text-[10px] text-slate-400 truncate block leading-normal max-w-[70px]"
+                                    title={stockData.nameEn}
+                                  >
+                                    {lang === 'ko' ? stockData.nameKo : stockData.nameEn}
+                                  </span>
+                                </div>
+                                {stockData.points.length > 0 && (
+                                  <StockSparkline
+                                    points={stockData.points}
+                                    isPositive={stockData.changePct >= 0}
+                                    width={44}
+                                    height={18}
+                                  />
+                                )}
+                                <span
+                                  className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${stockData.changePct >= 0
+                                    ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                                    : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+                                    }`}
+                                >
+                                  {stockData.changePct >= 0 ? '+' : ''}{stockData.changePct}%
+                                </span>
+                              </div>
+                            )
+                          })()}
+                        </td>
+
+                        {/* Fuel Price (Between Stock Market and Policy Rate) */}
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[110px] sm:min-w-[125px]">
+                          {item.fuelPriceUsd !== null && item.fuelPriceUsd !== undefined ? (
+                            <div className="flex flex-col items-end">
+                              <div className="flex items-center gap-1.5 justify-end">
+                                <span
+                                  className="w-2 h-2 rounded-full shrink-0 shadow-sm"
+                                  style={{ backgroundColor: getFuelPriceColor(item.fuelPriceUsd) }}
+                                  title={`RON 95: $${item.fuelPriceUsd.toFixed(2)}/L`}
+                                />
+                                <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                                  {formatFuelPrice(item.fuelPriceUsd, baseCurrency, usdToBase, lang)}
+                                </span>
+                              </div>
+                              {baseCurrency !== 'USD' && (
+                                <span className="text-[10px] font-mono text-slate-500">
+                                  ${item.fuelPriceUsd.toFixed(2)}/L
+                                </span>
+                              )}
                             </div>
-                            {stockData.points.length > 0 && (
-                              <StockSparkline
-                                points={stockData.points}
-                                isPositive={stockData.changePct >= 0}
-                                width={44}
-                                height={18}
-                              />
-                            )}
+                          ) : (
+                            <span className="text-slate-600 font-mono text-xs">-</span>
+                          )}
+                        </td>
+
+                        {/* Central Bank Policy Rate */}
+                        <td
+                          className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[75px] sm:min-w-[85px]"
+                          title={item.centralBankName ?? undefined}
+                        >
+                          {item.interestRatePct !== null && item.interestRatePct !== undefined ? (
+                            <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                              {item.interestRatePct.toFixed(2)}%
+                            </span>
+                          ) : (
+                            <span className="text-slate-600 font-mono text-xs">-</span>
+                          )}
+                        </td>
+                      </>
+                    )}
+
+                    {/* --- Macroeconomic Columns --- */}
+                    {showMacro && (
+                      <>
+                        {/* Total GDP */}
+                        <td className="py-3 px-2 sm:px-3 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[105px] sm:min-w-[120px]">
+                          <span className="font-bold text-white block">
+                            {formatGdpCompact(item.totalGdpUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            ${(item.totalGdpUsd / 1e12).toFixed(2)}T
+                          </span>
+                        </td>
+
+                        {/* GDP Per Capita */}
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[105px] sm:min-w-[120px]">
+                          <span className="font-bold text-white block">
+                            {formatPerCapita(item.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            ${Math.round(item.gdpPerCapitaUsd).toLocaleString()}
+                          </span>
+                        </td>
+
+                        {/* Growth Rate */}
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[85px] sm:min-w-[95px]">
+                          {item.growthRatePct !== null ? (
                             <span
-                              className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${stockData.changePct >= 0
-                                ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
-                                : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+                              className={`font-mono font-semibold ${item.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
                                 }`}
                             >
-                              {stockData.changePct >= 0 ? '+' : ''}{stockData.changePct}%
+                              {item.growthRatePct > 0 ? `+${item.growthRatePct.toFixed(1)}%` : `${item.growthRatePct.toFixed(1)}%`}
                             </span>
-                          </div>
-                        )
-                      })()}
-                    </td>
-
-                    {/* Fuel Price (Between Stock Market and Policy Rate) */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[110px] sm:min-w-[125px]">
-                      {item.fuelPriceUsd !== null && item.fuelPriceUsd !== undefined ? (
-                        <div className="flex flex-col items-end">
-                          <div className="flex items-center gap-1.5 justify-end">
-                            <span
-                              className="w-2 h-2 rounded-full shrink-0 shadow-sm"
-                              style={{ backgroundColor: getFuelPriceColor(item.fuelPriceUsd) }}
-                              title={`RON 95: $${item.fuelPriceUsd.toFixed(2)}/L`}
-                            />
-                            <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
-                              {formatFuelPrice(item.fuelPriceUsd, baseCurrency, usdToBase, lang)}
-                            </span>
-                          </div>
-                          {baseCurrency !== 'USD' && (
-                            <span className="text-[10px] font-mono text-slate-500">
-                              ${item.fuelPriceUsd.toFixed(2)}/L
-                            </span>
+                          ) : (
+                            <span className="text-slate-600 font-mono">-</span>
                           )}
-                        </div>
-                      ) : (
-                        <span className="text-slate-600 font-mono text-xs">-</span>
-                      )}
-                    </td>
+                        </td>
 
-                    {/* Central Bank Policy Rate */}
-                    <td
-                      className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[75px] sm:min-w-[85px]"
-                      title={item.centralBankName ?? undefined}
-                    >
-                      {item.interestRatePct !== null && item.interestRatePct !== undefined ? (
-                        <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
-                          {item.interestRatePct.toFixed(2)}%
-                        </span>
-                      ) : (
-                        <span className="text-slate-600 font-mono text-xs">-</span>
-                      )}
-                    </td>
+                        {/* Inflation Rate */}
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
+                          {item.inflationRatePct !== null ? (
+                            <span
+                              className={`font-mono font-semibold text-xs sm:text-sm ${
+                                item.inflationRatePct <= 2
+                                  ? 'text-cyan-400'
+                                  : item.inflationRatePct <= 4.5
+                                    ? 'text-slate-300'
+                                    : 'text-red-400'
+                              }`}
+                              title={`${t.modalInflationTitle}: ${item.inflationRatePct.toFixed(1)}%`}
+                            >
+                              {item.inflationRatePct.toFixed(1)}%
+                            </span>
+                          ) : (
+                            <span className="text-slate-600 font-mono">-</span>
+                          )}
+                        </td>
 
-                    {/* Total GDP */}
-                    <td className="py-3 px-2 sm:px-3 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[105px] sm:min-w-[120px]">
-                      <span className="font-bold text-white block">
-                        {formatGdpCompact(item.totalGdpUsd, baseCurrency, usdToBase, lang)}
-                      </span>
-                      <span className="text-[11px] text-slate-500 font-mono">
-                        ${(item.totalGdpUsd / 1e12).toFixed(2)}T
-                      </span>
-                    </td>
-
-                    {/* GDP Per Capita */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[105px] sm:min-w-[120px]">
-                      <span className="font-bold text-white block">
-                        {formatPerCapita(item.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
-                      </span>
-                      <span className="text-[11px] text-slate-500 font-mono">
-                        ${Math.round(item.gdpPerCapitaUsd).toLocaleString()}
-                      </span>
-                    </td>
-
-                    {/* Growth Rate */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[85px] sm:min-w-[95px]">
-                      {item.growthRatePct !== null ? (
-                        <span
-                          className={`font-mono font-semibold ${item.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
-                            }`}
-                        >
-                          {item.growthRatePct > 0 ? `+${item.growthRatePct.toFixed(1)}%` : `${item.growthRatePct.toFixed(1)}%`}
-                        </span>
-                      ) : (
-                        <span className="text-slate-600 font-mono">-</span>
-                      )}
-                    </td>
-
-                    {/* Inflation Rate */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
-                      {item.inflationRatePct !== null ? (
-                        <span
-                          className={`font-mono font-semibold text-xs sm:text-sm ${
-                            item.inflationRatePct <= 2
-                              ? 'text-cyan-400'
-                              : item.inflationRatePct <= 4.5
-                                ? 'text-slate-300'
-                                : 'text-red-400'
-                          }`}
-                          title={`${t.modalInflationTitle}: ${item.inflationRatePct.toFixed(1)}%`}
-                        >
-                          {item.inflationRatePct.toFixed(1)}%
-                        </span>
-                      ) : (
-                        <span className="text-slate-600 font-mono">-</span>
-                      )}
-                    </td>
-
-                    {/* Debt Ratio */}
-                    <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
-                      {item.debtRatioPct !== null ? (
-                        <span
-                          className={`font-mono font-semibold text-xs sm:text-sm ${
-                            item.debtRatioPct < 60
-                              ? 'text-emerald-400'
-                              : item.debtRatioPct < 90
-                                ? 'text-amber-400'
-                                : 'text-rose-400'
-                          }`}
-                          title={`${t.modalDebtTitle}: ${item.debtRatioPct.toFixed(1)}%`}
-                        >
-                          {item.debtRatioPct.toFixed(1)}%
-                        </span>
-                      ) : (
-                        <span className="text-slate-600 font-mono">-</span>
-                      )}
-                    </td>
+                        {/* Debt Ratio */}
+                        <td className="py-3 px-2 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[80px] sm:min-w-[90px]">
+                          {item.debtRatioPct !== null ? (
+                            <span
+                              className={`font-mono font-semibold text-xs sm:text-sm ${
+                                item.debtRatioPct < 60
+                                  ? 'text-emerald-400'
+                                  : item.debtRatioPct < 90
+                                    ? 'text-amber-400'
+                                    : 'text-rose-400'
+                              }`}
+                              title={`${t.modalDebtTitle}: ${item.debtRatioPct.toFixed(1)}%`}
+                            >
+                              {item.debtRatioPct.toFixed(1)}%
+                            </span>
+                          ) : (
+                            <span className="text-slate-600 font-mono">-</span>
+                          )}
+                        </td>
+                      </>
+                    )}
                   </tr>
                 )
               }))}
