@@ -9,6 +9,7 @@
        sm+     (≥ 640px):  top-bar(80px) = 80px */
     --navbar-h: 64px;
     --thead-h: 44px; /* sticky thead (dock) row height */
+    --dock-search-h: 44px; /* docked search bar height */
   }
 
   @media (min-width: 640px) {
@@ -16,9 +17,9 @@
   }
 
   /* Ensure data rows are always positioned below the dock when anchor-scrolling.
-     Rule: scroll-padding-top = Navbar height + thead(dock) height + small gap */
+     Rule: scroll-padding-top = Navbar height + docked search height + thead(dock) height + small gap */
   html {
-    scroll-padding-top: calc(var(--navbar-h) + var(--thead-h) + 8px);
+    scroll-padding-top: calc(var(--navbar-h) + var(--dock-search-h) + var(--thead-h) + 8px);
   }
 
 

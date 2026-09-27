@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
-import { ArrowUpDown, Search, ArrowUp, ArrowDown, Sparkles, TrendingUp, Landmark, Layers } from 'lucide-react'
+import { ArrowUpDown, Search, ArrowUp, ArrowDown, Sparkles, TrendingUp, Landmark, Layers, X } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
@@ -89,18 +89,19 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   // Ref to the table wrapper — used to scroll data rows into view below the dock
   const tableWrapperRef = useRef<HTMLDivElement>(null)
 
-  // Ref to the datatable scroll container, table, and mobile floating dock
+  // Ref to the datatable scroll container, table, mobile dock, and docked search input
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
   const mobileDockRef = useRef<HTMLDivElement>(null)
+  const dockSearchInputRef = useRef<HTMLInputElement>(null)
 
   // State to track if table content exceeds container width
   const [isTableOverflowing, setIsTableOverflowing] = useState(false)
   const isFrozen = isTableOverflowing
 
-  // Mobile/desktop floating dock state
-  const [isMobileDockActive, setIsMobileDockActive] = useState(false)
-  const [dockTop, setDockTop] = useState(100)
+  // Floating dock state (both mobile & desktop)
+  const [isDockActive, setIsDockActive] = useState(false)
+  const [dockTop, setDockTop] = useState(80)
   const [dockGeometry, setDockGeometry] = useState<{
     left: number
     width: number
@@ -192,38 +193,31 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
     const checkDockVisibility = () => {
       if (typeof window === 'undefined') {
-        setIsMobileDockActive((prev) => (prev ? false : prev))
+        setIsDockActive((prev) => (prev ? false : prev))
         return
       }
       if (!tableContainerRef.current || !tableRef.current) return
-
-      // If table completely fits within container (e.g. wide desktop screen),
-      // native CSS sticky thead handles vertical pinning; dock is not needed!
-      const isOverflowing = tableRef.current.scrollWidth > tableContainerRef.current.clientWidth + 2
-      if (!isOverflowing) {
-        setIsMobileDockActive((prev) => (prev ? false : prev))
-        return
-      }
 
       const rect = tableContainerRef.current.getBoundingClientRect()
       const navEl = document.querySelector('header')
       const navbarH = navEl
         ? Math.round(navEl.getBoundingClientRect().height)
         : window.innerWidth < 640
-          ? 100
-          : window.innerWidth < 768
-            ? 116
-            : 80
-      const dockHeight = 44
+          ? 64
+          : 80
+      const searchDockHeight = 44
+      const theadHeight = 42
+      const totalDockHeight = searchDockHeight + theadHeight
 
-      const shouldDock = rect.top <= navbarH && rect.bottom > navbarH
+      // Dock starts when the top of the table reaches the position where the docked table header will sit
+      const shouldDock = rect.top <= navbarH + searchDockHeight && rect.bottom > navbarH
 
       if (shouldDock) {
-        const calculatedTop = Math.min(navbarH, rect.bottom - dockHeight)
+        const calculatedTop = Math.min(navbarH, rect.bottom - totalDockHeight)
         setDockTop((prev) => (prev !== calculatedTop ? calculatedTop : prev))
-        setIsMobileDockActive((prev) => (!prev ? true : prev))
+        setIsDockActive((prev) => (!prev ? true : prev))
       } else {
-        setIsMobileDockActive((prev) => (prev ? false : prev))
+        setIsDockActive((prev) => (prev ? false : prev))
       }
     }
 
@@ -271,18 +265,25 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   }, [items.length, lang, baseCurrency, activeCategory])
 
   useEffect(() => {
-    if (isMobileDockActive && mobileDockRef.current && tableContainerRef.current) {
+    if (isDockActive && mobileDockRef.current && tableContainerRef.current) {
       mobileDockRef.current.scrollLeft = tableContainerRef.current.scrollLeft
     }
-  }, [isMobileDockActive])
+  }, [isDockActive])
 
-  // When searchTerm changes (and has content), scroll the table into view so that
-  // the first matching data row appears below the sticky thead (dock), not behind it.
-  // scroll-padding-top in index.css ensures the dock offset is respected.
+  // When searchTerm changes (and has content), scroll the table into view if dock is not already active
+  // so that the first matching data row appears below the dock without disrupting user typing.
   useEffect(() => {
     if (!searchTerm || !tableWrapperRef.current) return
-    tableWrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [searchTerm])
+    if (!isDockActive) {
+      tableWrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [searchTerm, isDockActive])
+
+  const scrollToTableTop = () => {
+    if (tableWrapperRef.current) {
+      tableWrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
 
@@ -561,14 +562,27 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
             {/* Search Input */}
             <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setSearchTerm('')
+                }}
                 placeholder={t.searchPlaceholder}
-                className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors"
+                  title={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -654,33 +668,137 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         </span>
       </div>
 
-      {/* Floating Sticky Header Dock */}
-      {isMobileDockActive && dockGeometry.colWidths.length > 0 && (
+      {/* Floating Sticky Header & Search Dock */}
+      {isDockActive && dockGeometry.colWidths.length > 0 && (
         <div
-          ref={setDockRef}
-          onScroll={handleDockScroll}
-          className="fixed z-40 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-slate-950 border-x border-b border-slate-800 shadow-2xl transition-[top] duration-75"
+          className="fixed z-40 bg-slate-950/95 backdrop-blur-md border-x border-t border-b border-slate-800 shadow-[0_12px_32px_rgba(0,0,0,0.7)] transition-[top] duration-75 rounded-t-xl overflow-hidden"
           style={{
             top: `${dockTop}px`,
             left: `${dockGeometry.left}px`,
             width: `${dockGeometry.width}px`,
           }}
         >
-          <table
-            style={{ width: `${dockGeometry.tableWidth}px` }}
-            className="text-left border-separate border-spacing-0 text-sm table-fixed"
+          {/* Row 1: Docked Search & Controls Bar */}
+          <div className="flex items-center justify-between gap-2 sm:gap-3 px-3 py-2 bg-slate-950 border-b border-slate-800/80">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-xs sm:max-w-sm">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                ref={dockSearchInputRef}
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setSearchTerm('')
+                }}
+                placeholder={t.searchPlaceholder}
+                className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg pl-8 pr-7 py-1.5 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors shadow-inner"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm('')
+                    dockSearchInputRef.current?.focus()
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors"
+                  title={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            {/* Right Side Controls: Category Pills + Count Badge + Top Button */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Category Quick Selector */}
+              <div className="hidden sm:inline-flex p-0.5 bg-slate-900 border border-slate-800 rounded-lg gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => handleCategoryChange('market')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                    activeCategory === 'market'
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                  title={t.tableTabMarket}
+                >
+                  <TrendingUp className="w-3 h-3" />
+                  <span className="hidden md:inline">{t.tableTabMarket}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryChange('macro')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                    activeCategory === 'macro'
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                  title={t.tableTabMacro}
+                >
+                  <Landmark className="w-3 h-3" />
+                  <span className="hidden md:inline">{t.tableTabMacro}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryChange('all')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                    activeCategory === 'all'
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                  title={t.tableTabAll}
+                >
+                  <Layers className="w-3 h-3" />
+                  <span className="hidden md:inline">{t.tableTabAll}</span>
+                </button>
+              </div>
+
+              {/* Matched Count Badge */}
+              <span className="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-slate-900 border border-slate-800 text-slate-300 whitespace-nowrap">
+                {searchTerm ? (
+                  <span className="text-indigo-400 font-bold">{filteredAndSorted.length}</span>
+                ) : (
+                  filteredAndSorted.length
+                )}
+                <span className="text-slate-500"> / {items.length}</span>
+              </span>
+
+              {/* Scroll to Top of Table Button */}
+              <button
+                type="button"
+                onClick={scrollToTableTop}
+                title={lang === 'ko' ? '테이블 상단으로 이동' : 'Scroll to top'}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors shrink-0"
+              >
+                <ArrowUp className="w-3 h-3 text-indigo-400" />
+                <span className="hidden lg:inline">{lang === 'ko' ? '맨 위로' : 'Top'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Row 2: Docked Thead Table (Horizontally Scrollable if overflowing) */}
+          <div
+            ref={setDockRef}
+            onScroll={handleDockScroll}
+            className="overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-slate-950"
           >
-            <colgroup>
-              {dockGeometry.colWidths.map((w, idx) => (
-                <col key={idx} style={{ width: `${w}px` }} />
-              ))}
-            </colgroup>
-            <thead>
-              <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
-                {renderHeaderCells(true)}
-              </tr>
-            </thead>
-          </table>
+            <table
+              style={{ width: `${dockGeometry.tableWidth}px` }}
+              className="text-left border-separate border-spacing-0 text-sm table-fixed"
+            >
+              <colgroup>
+                {dockGeometry.colWidths.map((w, idx) => (
+                  <col key={idx} style={{ width: `${w}px` }} />
+                ))}
+              </colgroup>
+              <thead>
+                <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
+                  {renderHeaderCells(true)}
+                </tr>
+              </thead>
+            </table>
+          </div>
         </div>
       )}
 
@@ -695,12 +813,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       >
         <table ref={tableRef} className="w-full text-left border-separate border-spacing-0 text-sm">
           <thead
-            className={`sticky z-30 bg-slate-950 transition-opacity duration-150 ${isTableOverflowing
-              ? isMobileDockActive
+            className={`sticky z-30 bg-slate-950 transition-opacity duration-150 ${
+              isDockActive
                 ? 'opacity-0 pointer-events-none top-0'
                 : 'top-0'
-              : 'top-0 md:top-[var(--navbar-h)]'
-              }`}
+            }`}
           >
             <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
               {renderHeaderCells(false)}
