@@ -402,13 +402,9 @@
     "ticker": "^N225",
     "isSupported": true,
     "currency": "JPY",
-    "currentPrice": 66364.2,
-    "changePct": -1.72,
+    "currentPrice": 66753.1,
+    "changePct": -2.28,
     "points": [
-      {
-        "date": "2026-08-12",
-        "close": 67524.06
-      },
       {
         "date": "2026-08-13",
         "close": 68308.59
@@ -524,6 +520,10 @@
       {
         "date": "2026-09-25",
         "close": 66364.2
+      },
+      {
+        "date": "2026-09-28",
+        "close": 66753.1
       }
     ]
   },
@@ -5167,8 +5167,8 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13781.53,
-    "changePct": -0.61,
+    "currentPrice": 13833.28,
+    "changePct": -0.24,
     "points": [
       {
         "date": "2026-08-17",
@@ -5288,7 +5288,7 @@
       },
       {
         "date": "2026-09-27",
-        "close": 13781.53
+        "close": 13833.28
       }
     ]
   },
