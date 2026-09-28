@@ -5,7 +5,7 @@
   "octaneStandard": "Octane-95 (RON 95)",
   "noteKo": "전국 평균 소매가격 (세금 포함)",
   "noteEn": "National average retail price inclusive of taxes",
-  "count": 110,
+  "count": 120,
   "prices": {
     "USA": {
       "countryId": "USA",
@@ -556,6 +556,56 @@
       "countryId": "LBY",
       "priceUsd": 0.024,
       "currencyCode": "LYD"
+    },
+    "HND": {
+      "countryId": "HND",
+      "priceUsd": 1.439,
+      "currencyCode": "HNL"
+    },
+    "NIC": {
+      "countryId": "NIC",
+      "priceUsd": 1.332,
+      "currencyCode": "NIO"
+    },
+    "MDA": {
+      "countryId": "MDA",
+      "priceUsd": 1.943,
+      "currencyCode": "MDL"
+    },
+    "LBN": {
+      "countryId": "LBN",
+      "priceUsd": 1.439,
+      "currencyCode": "LBP"
+    },
+    "MLT": {
+      "countryId": "MLT",
+      "priceUsd": 1.534,
+      "currencyCode": "EUR"
+    },
+    "JAM": {
+      "countryId": "JAM",
+      "priceUsd": 1.641,
+      "currencyCode": "JMD"
+    },
+    "ARM": {
+      "countryId": "ARM",
+      "priceUsd": 1.651,
+      "currencyCode": "AMD"
+    },
+    "ALB": {
+      "countryId": "ALB",
+      "priceUsd": 2.444,
+      "currencyCode": "ALL"
+    },
+    "BWA": {
+      "countryId": "BWA",
+      "priceUsd": 1.345,
+      "currencyCode": "BWP"
+    },
+    "BRN": {
+      "countryId": "BRN",
+      "priceUsd": 0.39,
+      "currencyCode": "BND"
     }
   }
 }

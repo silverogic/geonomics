@@ -6,7 +6,7 @@
   "methodology": "Purchasing Power Parity (PPP) based on local Big Mac prices relative to the US dollar baseline",
   "baseCountry": "USA",
   "basePriceUsd": 6.22,
-  "count": 70,
+  "count": 75,
   "items": {
     "USA": {
       "countryId": "USA",
@@ -847,6 +847,66 @@
       "valuationAdjustedPct": -24.5,
       "adjPrice": 5.28,
       "isEurozone": false
+    },
+    "HND": {
+      "countryId": "HND",
+      "currencyCode": "HNL",
+      "date": "2026-07-01",
+      "localPrice": 139,
+      "dollarEx": 26.77,
+      "dollarPrice": 5.19,
+      "valuationRawPct": -16.5,
+      "valuationAdjustedPct": 7.7,
+      "adjPrice": 4.83,
+      "isEurozone": false
+    },
+    "NIC": {
+      "countryId": "NIC",
+      "currencyCode": "NIO",
+      "date": "2026-07-01",
+      "localPrice": 187,
+      "dollarEx": 36.6243,
+      "dollarPrice": 5.11,
+      "valuationRawPct": -17.9,
+      "valuationAdjustedPct": 5.9,
+      "adjPrice": 4.83,
+      "isEurozone": false
+    },
+    "MDA": {
+      "countryId": "MDA",
+      "currencyCode": "MDL",
+      "date": "2026-07-01",
+      "localPrice": 80,
+      "dollarEx": 17.55,
+      "dollarPrice": 4.56,
+      "valuationRawPct": -26.7,
+      "valuationAdjustedPct": -7.8,
+      "adjPrice": 4.95,
+      "isEurozone": false
+    },
+    "LBN": {
+      "countryId": "LBN",
+      "currencyCode": "LBP",
+      "date": "2026-07-01",
+      "localPrice": 480000,
+      "dollarEx": 89550,
+      "dollarPrice": 5.36,
+      "valuationRawPct": -13.8,
+      "valuationAdjustedPct": null,
+      "adjPrice": null,
+      "isEurozone": false
+    },
+    "MLT": {
+      "countryId": "MLT",
+      "currencyCode": "EUR",
+      "date": "2026-07-01",
+      "localPrice": 6.19,
+      "dollarEx": 0.8744,
+      "dollarPrice": 7.08,
+      "valuationRawPct": 13.8,
+      "valuationAdjustedPct": 29.1,
+      "adjPrice": 5.49,
+      "isEurozone": true
     }
   }
 }
