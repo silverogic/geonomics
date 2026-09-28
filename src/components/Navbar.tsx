@@ -1,8 +1,17 @@
 import React from 'react'
-import { Globe, Layers, GitCompare, Coins, Languages, RefreshCw } from 'lucide-react'
+import { Globe, Layers, GitCompare, Coins, Languages, RefreshCw, ChevronDown } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language } from '../types/economics'
 import { translations } from '../i18n/translations'
+import { CountryFlag } from './CountryFlag'
+
+const LANGUAGE_CONFIG: Record<Language, { label: string; short: string; flagIso2: string }> = {
+  ko: { label: '한국어 (KO)', short: 'KO', flagIso2: 'KR' },
+  en: { label: 'English (EN)', short: 'EN', flagIso2: 'US' },
+  ja: { label: '日本語 (JA)', short: 'JA', flagIso2: 'JP' },
+  es: { label: 'Español (ES)', short: 'ES', flagIso2: 'ES' },
+  zh: { label: '中文 (ZH)', short: 'ZH', flagIso2: 'CN' },
+}
 
 interface NavbarProps {
   activeTab: 'cards' | 'compare'
@@ -76,52 +85,96 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Controls: Base Currency, Language Switcher, and Refresh */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Language Combobox */}
-            <div className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-medium">
-              <Languages className="w-4 h-4 text-indigo-400" />
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* Language Selector */}
+            <div className="relative flex items-center bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2 sm:px-2.5 py-1.5 text-xs sm:text-sm font-medium transition-colors cursor-pointer group">
+              {/* Visible presentation */}
+              <div className="flex items-center gap-1 sm:gap-1.5 pointer-events-none">
+                {/* Mobile: Flag + 2-letter ISO */}
+                <CountryFlag
+                  iso2={LANGUAGE_CONFIG[lang].flagIso2}
+                  className="w-4 h-3 rounded-[2px] shrink-0 shadow-sm"
+                  alt={LANGUAGE_CONFIG[lang].label}
+                />
+                <span className="font-bold sm:hidden text-slate-100">{LANGUAGE_CONFIG[lang].short}</span>
+
+                {/* Desktop: Full label */}
+                <span className="hidden sm:inline font-semibold text-slate-100">{LANGUAGE_CONFIG[lang].label}</span>
+                <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-slate-200 shrink-0 opacity-70 transition-transform" />
+              </div>
+
+              {/* Native invisible select overlay for seamless mobile OS picker */}
               <select
                 id="languageSelect"
                 value={lang}
                 onChange={(e) => setLang(e.target.value as Language)}
                 aria-label="Select language"
-                className="bg-transparent text-slate-100 font-semibold focus:outline-none cursor-pointer"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               >
-                <option value="en" className="bg-slate-900 text-white">English (EN)</option>
-                <option value="ko" className="bg-slate-900 text-white">한국어 (KO)</option>
-                <option value="ja" className="bg-slate-900 text-white">日本語 (JA)</option>
-                <option value="es" className="bg-slate-900 text-white">Español (ES)</option>
-                <option value="zh" className="bg-slate-900 text-white">中文 (ZH)</option>
-              </select>
-            </div>
-
-            {/* Base Currency Select */}
-            <div className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-medium">
-              <Coins className="w-4 h-4 text-indigo-400" />
-              <label htmlFor="baseCurrency" className="text-slate-400 hidden lg:inline">
-                {t.baseCurrencyLabel}
-              </label>
-              <select
-                id="baseCurrency"
-                value={baseCurrency}
-                onChange={(e) => setBaseCurrency(e.target.value as BaseCurrency)}
-                className="bg-transparent text-slate-100 font-semibold focus:outline-none cursor-pointer"
-              >
-                {BASE_CURRENCIES.map((bc) => (
-                  <option key={bc.code} value={bc.code} className="bg-slate-900 text-white">
-                    {lang === 'ko'
-                      ? bc.nameKo
-                      : lang === 'ja'
-                      ? bc.nameJa
-                      : lang === 'es'
-                      ? bc.nameEs
-                      : lang === 'zh'
-                      ? bc.nameZh
-                      : bc.nameEn}
+                {Object.entries(LANGUAGE_CONFIG).map(([code, meta]) => (
+                  <option key={code} value={code} className="bg-slate-900 text-white">
+                    {meta.label}
                   </option>
                 ))}
               </select>
             </div>
+
+            {/* Base Currency Select */}
+            {(() => {
+              const activeCurrency = BASE_CURRENCIES.find((c) => c.code === baseCurrency) || BASE_CURRENCIES[0]
+              const currencyLabel =
+                lang === 'ko'
+                  ? activeCurrency.nameKo
+                  : lang === 'ja'
+                    ? activeCurrency.nameJa
+                    : lang === 'es'
+                      ? activeCurrency.nameEs
+                      : lang === 'zh'
+                        ? activeCurrency.nameZh
+                        : activeCurrency.nameEn
+
+              return (
+                <div className="relative flex items-center bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2 sm:px-2.5 py-1.5 text-xs sm:text-sm font-medium transition-colors cursor-pointer group">
+                  {/* Visible presentation */}
+                  <div className="flex items-center gap-1 sm:gap-1.5 pointer-events-none">
+                    {/* Mobile: Currency Symbol + Code ($ USD) */}
+                    <span className="font-mono font-bold text-indigo-400 sm:hidden">{activeCurrency.symbol}</span>
+                    <span className="font-bold sm:hidden text-slate-100">{activeCurrency.code}</span>
+
+                    {/* Desktop: Coins icon + Full Name */}
+                    <Coins className="w-4 h-4 text-indigo-400 hidden sm:inline shrink-0" />
+                    <label htmlFor="baseCurrency" className="text-slate-400 hidden lg:inline mr-0.5">
+                      {t.baseCurrencyLabel}
+                    </label>
+                    <span className="hidden sm:inline font-semibold text-slate-100">{currencyLabel}</span>
+                    <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-slate-200 shrink-0 opacity-70 transition-transform" />
+                  </div>
+
+                  {/* Native invisible select overlay for seamless mobile OS picker */}
+                  <select
+                    id="baseCurrency"
+                    value={baseCurrency}
+                    onChange={(e) => setBaseCurrency(e.target.value as BaseCurrency)}
+                    aria-label="Select base currency"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  >
+                    {BASE_CURRENCIES.map((bc) => (
+                      <option key={bc.code} value={bc.code} className="bg-slate-900 text-white">
+                        {lang === 'ko'
+                          ? bc.nameKo
+                          : lang === 'ja'
+                            ? bc.nameJa
+                            : lang === 'es'
+                              ? bc.nameEs
+                              : lang === 'zh'
+                                ? bc.nameZh
+                                : bc.nameEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )
+            })()}
 
             {/* Refresh Button */}
             {onRefresh && (
@@ -129,7 +182,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={onRefresh}
                 disabled={isRefreshing}
                 title={t.refreshTooltip}
-                className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-200 hover:text-white transition-colors disabled:opacity-50 cursor-pointer"
+                className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-200 hover:text-white transition-colors disabled:opacity-50 cursor-pointer shrink-0"
               >
                 <RefreshCw className={`w-3.5 h-3.5 text-indigo-400 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">{t.refreshBtn}</span>
