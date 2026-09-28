@@ -65,6 +65,15 @@ export const CENTRAL_BANK_NAMES: Record<string, string> = {
   MA: 'Bank Al-Maghrib',
   RO: 'BNR',
   RS: 'NBS',
+  HN: 'BCH',
+  NI: 'BCN',
+  MD: 'BNM',
+  LB: 'BDL',
+  JM: 'BOJ',
+  AM: 'CBA',
+  AL: 'BSH',
+  BW: 'Bank of Botswana',
+  BN: 'BDCB',
 }
 
 /**
@@ -122,4 +131,14 @@ export const FALLBACK_INTEREST_RATES: Record<string, InterestRateInfo> = {
   RO: { countryCode: 'RO', ratePct: 6.50, date: '2026-09', centralBankName: 'BNR', source: 'BIS' },
   RS: { countryCode: 'RS', ratePct: 5.75, date: '2026-09', centralBankName: 'NBS', source: 'BIS' },
   AR: { countryCode: 'AR', ratePct: 29.00, date: '2025-07', centralBankName: 'BCRA', source: 'BIS' },
+  HN: { countryCode: 'HN', ratePct: 5.75, date: '2026-09', centralBankName: 'BCH', source: 'BCH' },
+  NI: { countryCode: 'NI', ratePct: 7.00, date: '2026-09', centralBankName: 'BCN', source: 'BCN' },
+  MD: { countryCode: 'MD', ratePct: 3.60, date: '2026-09', centralBankName: 'BNM', source: 'BNM' },
+  LB: { countryCode: 'LB', ratePct: 20.00, date: '2026-09', centralBankName: 'BDL', source: 'BDL' },
+  MT: { countryCode: 'MT', ratePct: 2.25, date: '2026-09', centralBankName: 'ECB', source: 'BIS' },
+  JM: { countryCode: 'JM', ratePct: 6.75, date: '2026-09', centralBankName: 'BOJ', source: 'BOJ' },
+  AM: { countryCode: 'AM', ratePct: 7.25, date: '2026-09', centralBankName: 'CBA', source: 'CBA' },
+  AL: { countryCode: 'AL', ratePct: 3.00, date: '2026-09', centralBankName: 'BSH', source: 'BSH' },
+  BW: { countryCode: 'BW', ratePct: 1.90, date: '2026-09', centralBankName: 'Bank of Botswana', source: 'BoB' },
+  BN: { countryCode: 'BN', ratePct: 2.50, date: '2026-09', centralBankName: 'BDCB', source: 'BDCB' },
 }

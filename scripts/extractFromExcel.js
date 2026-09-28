@@ -89,6 +89,20 @@ const ALIAS_MAP = {
   'Morocco': 'Morocco',
   'Algeria': 'Algeria',
   'Iraq': 'Iraq',
+  'Brunei': 'Brunei Darussalam',
+}
+
+const FALLBACK_POPULATIONS = {
+  HND: 10600000,
+  NIC: 6800000,
+  MDA: 2500000,
+  LBN: 5300000,
+  MLT: 540000,
+  JAM: 2800000,
+  ARM: 2800000,
+  ALB: 2700000,
+  BWA: 2500000,
+  BRN: 450000,
 }
 
 function normalizeStr(str) {
@@ -176,6 +190,9 @@ for (const c of COUNTRIES) {
         break
       }
     }
+  }
+  if (refPop <= 0 && FALLBACK_POPULATIONS[c.id]) {
+    refPop = FALLBACK_POPULATIONS[c.id]
   }
 
   let lastKnownTotalGdp = 0

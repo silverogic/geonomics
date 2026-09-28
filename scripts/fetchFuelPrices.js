@@ -30,6 +30,16 @@ const ALIASES = {
   MKD: 'north-macedonia',
   HKG: 'hong-kong',
   SGP: 'singapore',
+  HND: 'honduras',
+  NIC: 'nicaragua',
+  MDA: 'moldova',
+  LBN: 'lebanon',
+  MLT: 'malta',
+  JAM: 'jamaica',
+  ARM: 'armenia',
+  ALB: 'albania',
+  BWA: 'botswana',
+  BRN: 'brunei',
 }
 
 // Fallback estimates for countries not in GPP
@@ -37,6 +47,16 @@ const REGIONAL_FALLBACKS = {
   MAC: 1.55, // Macao SAR (tied to HK/China average)
   MMR: 1.15, // Myanmar
   PNG: 1.25, // Papua New Guinea
+  HND: 1.07, // Honduras
+  NIC: 1.33, // Nicaragua
+  MDA: 1.38, // Moldova
+  LBN: 1.62, // Lebanon
+  MLT: 1.45, // Malta
+  JAM: 1.38, // Jamaica
+  ARM: 1.34, // Armenia
+  ALB: 1.89, // Albania
+  BWA: 1.08, // Botswana
+  BRN: 0.39, // Brunei
 }
 
 export async function fetchFuelPrices() {

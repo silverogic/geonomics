@@ -114,6 +114,16 @@ export const COUNTRY_NAMES_JA: Record<string, string> = {
   MNG: 'モンゴル',
   SLV: 'エルサルバドル',
   LBY: 'リビア',
+  HND: 'ホンジュラス',
+  NIC: 'ニカラグア',
+  MDA: 'モルドバ',
+  LBN: 'レバノン',
+  MLT: 'マルタ',
+  JAM: 'ジャマイカ',
+  ARM: 'アルメニア',
+  ALB: 'アルバニア',
+  BWA: 'ボツワナ',
+  BRN: 'ブルネイ',
 }
 
 /**
@@ -313,6 +323,16 @@ export const COUNTRY_NAMES_ES: Record<string, string> = {
   MNG: 'Mongolia',
   SLV: 'El Salvador',
   LBY: 'Libia',
+  HND: 'Honduras',
+  NIC: 'Nicaragua',
+  MDA: 'Moldavia',
+  LBN: 'Líbano',
+  MLT: 'Malta',
+  JAM: 'Jamaica',
+  ARM: 'Armenia',
+  ALB: 'Albania',
+  BWA: 'Botsuana',
+  BRN: 'Brunéi',
 }
 
 /**
@@ -429,6 +449,16 @@ export const COUNTRY_NAMES_ZH: Record<string, string> = {
   MNG: '蒙古',
   SLV: '萨尔瓦多',
   LBY: '利比亚',
+  HND: '洪都拉斯',
+  NIC: '尼加拉瓜',
+  MDA: '摩尔多瓦',
+  LBN: '黎巴嫩',
+  MLT: '马耳他',
+  JAM: '牙买加',
+  ARM: '亚美尼亚',
+  ALB: '阿尔巴尼亚',
+  BWA: '博茨瓦纳',
+  BRN: '文莱',
 }
 
 /**
