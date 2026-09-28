@@ -6,7 +6,7 @@ import { COUNTRIES } from '../src/data/countries.ts'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const OUT_PATH = path.join(__dirname, '../src/data/fuelPricesData.json')
+const OUT_PATH_API = path.join(__dirname, '../public/api/v1/fuel.json')
 
 const ALIASES = {
   USA: 'usa',
@@ -137,8 +137,11 @@ export async function fetchFuelPrices() {
     prices: pricesData,
   }
 
-  fs.writeFileSync(OUT_PATH, JSON.stringify(output, null, 2), 'utf-8')
-  console.log(`[fetchFuelPrices] Successfully saved ${matchCount} country fuel prices to ${OUT_PATH}`)
+  const jsonStr = JSON.stringify(output, null, 2)
+  const apiDir = path.dirname(OUT_PATH_API)
+  if (!fs.existsSync(apiDir)) fs.mkdirSync(apiDir, { recursive: true })
+  fs.writeFileSync(OUT_PATH_API, jsonStr, 'utf-8')
+  console.log(`[fetchFuelPrices] Successfully saved ${matchCount} country fuel prices to public/api/v1/fuel.json`)
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

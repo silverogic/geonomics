@@ -1,4 +1,4 @@
-import excelDataJson from './excelEconomicData.json'
+import excelDataJson from '../../public/api/v1/economics.json'
 import type { EconomicYear, GdpYearPoint } from '../types/economics'
 
 export interface ImfYearMetrics {

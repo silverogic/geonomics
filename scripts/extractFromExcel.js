@@ -135,7 +135,9 @@ const inflationRows = XLSX.utils.sheet_to_json(inflationWb.Sheets[inflationWb.Sh
 const inflationHeader = inflationRows[0]
 
 // Read existing json to preserve population reference ratios and GDP per capita
-const existingJsonPath = path.join(projectRoot, 'src', 'data', 'excelEconomicData.json')
+const existingJsonPath = fs.existsSync(path.join(projectRoot, 'public', 'api', 'v1', 'economics.json'))
+  ? path.join(projectRoot, 'public', 'api', 'v1', 'economics.json')
+  : path.join(projectRoot, 'src', 'data', 'excelEconomicData.json')
 let existing = {}
 if (fs.existsSync(existingJsonPath)) {
   try {
@@ -277,9 +279,7 @@ for (const id of resultKeys) {
 console.log(`Verified all ${resultKeys.length} countries: 100% have valid 2026 GDP and GDP per capita.`)
 
 const outputTargets = [
-  path.join(projectRoot, 'src', 'data', 'excelEconomicData.json'),
-  path.join(projectRoot, 'public', 'data', 'excelEconomicData.json'),
-  path.join(projectRoot, 'docs', 'data', 'excelEconomicData.json'),
+  path.join(projectRoot, 'public', 'api', 'v1', 'economics.json'),
 ]
 
 const jsonContent = JSON.stringify(result, null, 2)

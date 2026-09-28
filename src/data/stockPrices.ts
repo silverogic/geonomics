@@ -1,4 +1,4 @@
-import stockPricesDataJson from './stockPricesData.json'
+import stockPricesDataJson from '../../public/api/v1/stocks.json'
 
 export interface StockPoint {
   date: string

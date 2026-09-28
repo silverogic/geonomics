@@ -1,4 +1,4 @@
-import rawData from './fuelPricesData.json'
+import rawData from '../../public/api/v1/fuel.json'
 import type { BaseCurrency, Language } from '../types/economics'
 
 export interface FuelPriceItem {

@@ -286,18 +286,14 @@ async function fetchTicker(item) {
 
 async function main() {
   console.log(`Fetching Yahoo Finance stock data for ${COUNTRY_TICKERS.length} countries...`)
-  const outDirSrc = path.resolve(__dirname, '../src/data')
-  const outDirPub = path.resolve(__dirname, '../public/data')
-  const outDirDocs = path.resolve(__dirname, '../docs/data')
+  const outDirApi = path.resolve(__dirname, '../public/api/v1')
 
-  if (!fs.existsSync(outDirSrc)) fs.mkdirSync(outDirSrc, { recursive: true })
-  if (!fs.existsSync(outDirPub)) fs.mkdirSync(outDirPub, { recursive: true })
-  if (!fs.existsSync(outDirDocs)) fs.mkdirSync(outDirDocs, { recursive: true })
+  if (!fs.existsSync(outDirApi)) fs.mkdirSync(outDirApi, { recursive: true })
 
   // Retain existing cache if network fails on any ticker
   let results = {}
   try {
-    const existingFile = path.join(outDirSrc, 'stockPricesData.json')
+    const existingFile = path.join(outDirApi, 'stocks.json')
     if (fs.existsSync(existingFile)) {
       results = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
     }
@@ -329,11 +325,9 @@ async function main() {
     }
   }
 
-  fs.writeFileSync(path.join(outDirSrc, 'stockPricesData.json'), JSON.stringify(results, null, 2), 'utf8')
-  fs.writeFileSync(path.join(outDirPub, 'stockPricesData.json'), JSON.stringify(results, null, 2), 'utf8')
-  fs.writeFileSync(path.join(outDirDocs, 'stockPricesData.json'), JSON.stringify(results, null, 2), 'utf8')
+  fs.writeFileSync(path.join(outDirApi, 'stocks.json'), JSON.stringify(results, null, 2), 'utf8')
 
-  console.log(`\nSuccessfully saved ${Object.keys(results).length} / ${COUNTRY_TICKERS.length} countries to stockPricesData.json!`)
+  console.log(`\nSuccessfully saved ${Object.keys(results).length} / ${COUNTRY_TICKERS.length} countries to public/api/v1/stocks.json!`)
 }
 
 main()
