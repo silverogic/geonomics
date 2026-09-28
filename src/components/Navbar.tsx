@@ -1,5 +1,5 @@
 import React from 'react'
-import { Globe, Layers, GitCompare, Coins, Languages, RefreshCw, ChevronDown } from 'lucide-react'
+import { Globe, Layers, GitCompare, Coins, RefreshCw, ChevronDown } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language } from '../types/economics'
 import { translations } from '../i18n/translations'
