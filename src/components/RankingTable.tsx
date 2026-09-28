@@ -76,7 +76,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   const handleCategoryChange = (category: TableCategory) => {
     setActiveCategory(category)
     if (category === 'market') {
-      const marketFields: SortField[] = ['rank', 'countryName', 'fxRate', 'stockChangePct', 'fuelPriceUsd', 'interestRatePct']
+      const marketFields: SortField[] = ['rank', 'countryName', 'fxRate', 'stockChangePct', 'fuelPriceUsd', 'bigMacPriceUsd', 'interestRatePct']
       if (!marketFields.includes(sortField)) {
         setSortField('rank')
         setSortDirection('asc')
@@ -296,7 +296,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
       setSortField(field)
-      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct', 'stockChangePct', 'fuelPriceUsd', 'interestRatePct'].includes(field)) {
+      if (['totalGdpUsd', 'gdpPerCapitaUsd', 'growthRatePct', 'debtRatioPct', 'inflationRatePct', 'stockChangePct', 'fuelPriceUsd', 'bigMacPriceUsd', 'interestRatePct'].includes(field)) {
         setSortDirection('desc')
       } else {
         setSortDirection('asc')
@@ -319,46 +319,62 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         )
       })
       .sort((a, b) => {
-        let valA: any = a[sortField as keyof CountryRowItem]
-        let valB: any = b[sortField as keyof CountryRowItem]
+        const getSortVal = (item: CountryRowItem): number | string | null => {
+          if (sortField === 'countryName') {
+            return getCountryName(item.country, lang)
+          }
+          if (sortField === 'fxRate') {
+            if (!exchangeRates) return null
+            const rate = getConversionRate(exchangeRates, item.country.currencyCode, baseCurrency)
+            return rate !== null && rate !== undefined && !isNaN(rate) ? rate : null
+          }
+          if (sortField === 'stockChangePct') {
+            const s = getStockPriceData(item.country.id)
+            if (!s || !s.isSupported || s.changePct === null || s.changePct === undefined || isNaN(s.changePct)) {
+              return null
+            }
+            return s.changePct
+          }
+          if (sortField === 'fuelPriceUsd') {
+            const v = item.fuelPriceUsd
+            return v !== null && v !== undefined && !isNaN(v) ? v : null
+          }
+          if (sortField === 'bigMacPriceUsd') {
+            const v = item.bigMacPriceUsd
+            return v !== null && v !== undefined && !isNaN(v) ? v : null
+          }
+          if (sortField === 'interestRatePct') {
+            const v = item.interestRatePct
+            return v !== null && v !== undefined && !isNaN(v) ? v : null
+          }
 
-        if (sortField === 'countryName') {
-          valA = getCountryName(a.country, lang)
-          valB = getCountryName(b.country, lang)
-          return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+          const raw = item[sortField as keyof CountryRowItem]
+          if (raw === null || raw === undefined || (typeof raw === 'number' && isNaN(raw))) {
+            return null
+          }
+          return raw as number | string
         }
 
-        if (sortField === 'fxRate') {
-          valA = exchangeRates ? getConversionRate(exchangeRates, a.country.currencyCode, baseCurrency) : 0
-          valB = exchangeRates ? getConversionRate(exchangeRates, b.country.currencyCode, baseCurrency) : 0
+        const valA = getSortVal(a)
+        const valB = getSortVal(b)
+
+        const isMissingA = valA === null || valA === undefined || valA === ''
+        const isMissingB = valB === null || valB === undefined || valB === ''
+
+        // Always place missing/null data rows at the very bottom
+        if (isMissingA && isMissingB) return a.rank - b.rank
+        if (isMissingA) return 1
+        if (isMissingB) return -1
+
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          const comp = valA.localeCompare(valB)
+          return sortDirection === 'asc' ? comp : -comp
         }
 
-        if (sortField === 'stockChangePct') {
-          const sA = getStockPriceData(a.country.id)
-          const sB = getStockPriceData(b.country.id)
-          valA = sA && sA.isSupported ? sA.changePct : -Infinity
-          valB = sB && sB.isSupported ? sB.changePct : -Infinity
-        }
-
-        if (sortField === 'fuelPriceUsd') {
-          valA = a.fuelPriceUsd !== null && a.fuelPriceUsd !== undefined ? a.fuelPriceUsd : -Infinity
-          valB = b.fuelPriceUsd !== null && b.fuelPriceUsd !== undefined ? b.fuelPriceUsd : -Infinity
-        }
-
-        if (sortField === 'bigMacPriceUsd') {
-          valA = a.bigMacPriceUsd !== null && a.bigMacPriceUsd !== undefined ? a.bigMacPriceUsd : -Infinity
-          valB = b.bigMacPriceUsd !== null && b.bigMacPriceUsd !== undefined ? b.bigMacPriceUsd : -Infinity
-        }
-
-        if (sortField === 'interestRatePct') {
-          valA = a.interestRatePct !== null && a.interestRatePct !== undefined ? a.interestRatePct : -Infinity
-          valB = b.interestRatePct !== null && b.interestRatePct !== undefined ? b.interestRatePct : -Infinity
-        }
-
-        valA = valA ?? -Infinity
-        valB = valB ?? -Infinity
-
-        return sortDirection === 'asc' ? (valA > valB ? 1 : -1) : valA < valB ? 1 : -1
+        const numA = Number(valA)
+        const numB = Number(valB)
+        if (numA === numB) return a.rank - b.rank
+        return sortDirection === 'asc' ? (numA > numB ? 1 : -1) : (numA < numB ? 1 : -1)
       })
   }, [items, searchTerm, sortField, sortDirection, exchangeRates, baseCurrency, lang])
 
