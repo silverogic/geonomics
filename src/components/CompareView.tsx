@@ -11,6 +11,7 @@ import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { GdpChart } from './GdpChart'
 import { getCountryName, getCountrySecondaryName } from '../utils/countryNames'
+import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
 import { Spinner } from './Spinner'
 
 interface CompareViewProps {
@@ -319,6 +320,26 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   : 'N/A'}
               </span>
             </div>
+
+            {/* Big Mac Index Comparison */}
+            {(() => {
+              const bm = getBigMacData(countryA.id)
+              if (!bm) return null
+              const color = getBigMacColor(bm.valuationRawPct)
+              return (
+                <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+                  <span className="text-xs text-slate-400">🍔 {t.metricBigMac}</span>
+                  <div className="text-right">
+                    <span className="text-sm font-mono font-bold text-slate-200 block">
+                      {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold block" style={{ color }}>
+                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`} ({bm.localPrice.toLocaleString()} {bm.currencyCode})
+                    </span>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         </div>
 
@@ -424,6 +445,26 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   : 'N/A'}
               </span>
             </div>
+
+            {/* Big Mac Index Comparison */}
+            {(() => {
+              const bm = getBigMacData(countryB.id)
+              if (!bm) return null
+              const color = getBigMacColor(bm.valuationRawPct)
+              return (
+                <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+                  <span className="text-xs text-slate-400">🍔 {t.metricBigMac}</span>
+                  <div className="text-right">
+                    <span className="text-sm font-mono font-bold text-slate-200 block">
+                      {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold block" style={{ color }}>
+                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`} ({bm.localPrice.toLocaleString()} {bm.currencyCode})
+                    </span>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>

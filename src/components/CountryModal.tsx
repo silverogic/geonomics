@@ -13,6 +13,7 @@ import { CountryFlag } from './CountryFlag'
 import { StockChart } from './StockChart'
 import { getStockPriceData } from '../data/stockPrices'
 import { getCountryName, getCountrySecondaryName, getCurrencyName } from '../utils/countryNames'
+import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
 import { Spinner } from './Spinner'
 
 interface CountryModalProps {
@@ -123,7 +124,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8 gap-3 sm:gap-4">
             {/* Total GDP */}
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
@@ -265,6 +266,37 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               </div>
               <span className="text-[11px] text-slate-500">{t.modalRankSub}</span>
             </div>
+
+            {/* Big Mac Index Card */}
+            {(() => {
+              const bm = getBigMacData(country.id)
+              if (!bm) return null
+              const color = getBigMacColor(bm.valuationRawPct)
+              return (
+                <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold text-slate-400 truncate">
+                      🍔 {t.metricBigMac}
+                    </span>
+                    <span
+                      className="w-2 h-2 rounded-full shrink-0 shadow-sm"
+                      style={{ backgroundColor: color }}
+                    />
+                  </div>
+                  <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate font-mono">
+                    {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[11px] font-mono font-bold" style={{ color }}>
+                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
+                    </span>
+                    <span className="text-[10px] text-slate-500 truncate">
+                      (${bm.dollarPrice.toFixed(2)})
+                    </span>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
 
           {/* Real-time Currency Converter (includes exchange rate info) */}
@@ -361,6 +393,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
             <p>• {t.modalAccuracyDebt}</p>
             <p>• {t.modalAccuracyInflation}</p>
             <p>• {t.modalAccuracyFx}</p>
+            <p>• {lang === 'ko' ? '빅맥 지수: 영국 The Economist 매거진 공식 데이터셋 (통화 구매력 평가 PPP 지표).' : 'Big Mac Index: The Economist official dataset (Purchasing Power Parity benchmark).'}</p>
             <div className="pt-1 flex flex-wrap items-center gap-4 text-indigo-400">
               <a
                 href={country.id === 'TWN' ? 'https://www.imf.org/en/Countries/TWN' : `https://data.worldbank.org/country/${country.id.toLowerCase()}`}

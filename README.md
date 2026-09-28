@@ -46,6 +46,7 @@ Geonomics publishes clean, standardized JSON REST API endpoints on GitHub Pages.
 | **1** | **Macroeconomic Indicators** | `/api/v1/economics.json` | 110 countries: GDP, per capita, growth, debt, inflation (2024–2026) |
 | **2** | **Stock Benchmark Indices** | `/api/v1/stocks.json` | 74 countries: Ticker, price, 24h change %, and 30-day sparkline points |
 | **3** | **Gasoline Retail Prices** | `/api/v1/fuel.json` | 170 countries: National average RON 95 gasoline prices in USD/L |
+| **4** | **Big Mac Index (PPP)** | `/api/v1/bigmac.json` | 70 countries: The Economist Big Mac Index, USD prices & currency valuation % |
 
 ### cURL CLI Usage
 
@@ -58,6 +59,9 @@ curl -s https://silverogic.github.io/geonomics/api/v1/stocks.json
 
 # 3. National gasoline prices (USD/L)
 curl -s https://silverogic.github.io/geonomics/api/v1/fuel.json
+
+# 4. The Economist Big Mac Index (PPP currency valuation)
+curl -s https://silverogic.github.io/geonomics/api/v1/bigmac.json
 ```
 
 ### TypeScript / JavaScript SDK (`src/services/geonomicsApi.ts`)
@@ -69,6 +73,7 @@ import {
   getEconomics,
   getStockPrices,
   getFuelPrices,
+  getBigMacIndex,
   getAllData,
 } from './services/geonomicsApi'
 
@@ -84,7 +89,11 @@ console.log(stocks['USA'].currentPrice, stocks['USA'].changePct)
 const fuel = await getFuelPrices()
 console.log(fuel.prices['KOR'].priceUsd) // USD/L
 
-// 4. Fetch all datasets concurrently
+// 4. Fetch Big Mac Index
+const bigMac = await getBigMacIndex()
+console.log(bigMac.items['KOR'].dollarPrice, bigMac.items['KOR'].valuationRawPct)
+
+// 5. Fetch all datasets concurrently
 const allData = await getAllData()
 ```
 

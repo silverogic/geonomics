@@ -10,6 +10,7 @@ import { getCountryName, getCountrySecondaryName, COUNTRY_NAMES_JA } from '../ut
 import { StockSparkline } from './StockSparkline'
 import { getStockPriceData } from '../data/stockPrices'
 import { formatFuelPrice, getFuelPriceColor } from '../data/fuelPrices'
+import { formatBigMacPrice, getBigMacColor } from '../data/bigMac'
 
 export interface CountryRowItem {
   country: CountryMeta
@@ -22,6 +23,8 @@ export interface CountryRowItem {
   interestRatePct?: number | null
   centralBankName?: string | null
   fuelPriceUsd?: number | null
+  bigMacPriceUsd?: number | null
+  bigMacValuationPct?: number | null
 }
 
 export type TableCategory = 'market' | 'macro' | 'all'
@@ -48,6 +51,7 @@ type SortField =
   | 'fxRate'
   | 'stockChangePct'
   | 'fuelPriceUsd'
+  | 'bigMacPriceUsd'
   | 'interestRatePct'
 
 export const RankingTable: React.FC<RankingTableProps> = ({
@@ -341,6 +345,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           valB = b.fuelPriceUsd !== null && b.fuelPriceUsd !== undefined ? b.fuelPriceUsd : -Infinity
         }
 
+        if (sortField === 'bigMacPriceUsd') {
+          valA = a.bigMacPriceUsd !== null && a.bigMacPriceUsd !== undefined ? a.bigMacPriceUsd : -Infinity
+          valB = b.bigMacPriceUsd !== null && b.bigMacPriceUsd !== undefined ? b.bigMacPriceUsd : -Infinity
+        }
+
         if (sortField === 'interestRatePct') {
           valA = a.interestRatePct !== null && a.interestRatePct !== undefined ? a.interestRatePct : -Infinity
           valB = b.interestRatePct !== null && b.interestRatePct !== undefined ? b.interestRatePct : -Infinity
@@ -449,6 +458,18 @@ export const RankingTable: React.FC<RankingTableProps> = ({
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colFuelPrice}</span>
                 {renderSortIcon('fuelPriceUsd')}
+              </div>
+            </th>
+
+            {/* Big Mac Index */}
+            <th
+              onClick={() => handleSort('bigMacPriceUsd')}
+              style={getColStyle()}
+              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[96px] sm:min-w-[125px]"
+            >
+              <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                <span>{t.metricBigMac}</span>
+                {renderSortIcon('bigMacPriceUsd')}
               </div>
             </th>
 
@@ -960,6 +981,39 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                                   ${item.fuelPriceUsd.toFixed(2)}/L
                                 </span>
                               )}
+                            </div>
+                          ) : (
+                            <span className="text-slate-600 font-mono text-xs">-</span>
+                          )}
+                        </td>
+
+                        {/* Big Mac Index */}
+                        <td className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[96px] sm:min-w-[125px]">
+                          {item.bigMacPriceUsd !== null && item.bigMacPriceUsd !== undefined ? (
+                            <div className="flex flex-col items-end">
+                              <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
+                                <span
+                                  className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 shadow-sm"
+                                  style={{ backgroundColor: getBigMacColor(item.bigMacValuationPct) }}
+                                  title={`${item.bigMacValuationPct && item.bigMacValuationPct > 0 ? '+' : ''}${item.bigMacValuationPct}% vs USD base`}
+                                />
+                                <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                                  {formatBigMacPrice(item.bigMacPriceUsd, baseCurrency, usdToBase, lang)}
+                                </span>
+                              </div>
+                              <span
+                                className={`text-[9px] sm:text-[10px] font-mono font-medium ${
+                                  (item.bigMacValuationPct ?? 0) < -15
+                                    ? 'text-cyan-400'
+                                    : (item.bigMacValuationPct ?? 0) > 15
+                                    ? 'text-rose-400'
+                                    : 'text-amber-400'
+                                }`}
+                              >
+                                {item.bigMacValuationPct !== null && item.bigMacValuationPct !== undefined
+                                  ? `${item.bigMacValuationPct > 0 ? '+' : ''}${item.bigMacValuationPct.toFixed(1)}%`
+                                  : `$${item.bigMacPriceUsd.toFixed(2)}`}
+                              </span>
                             </div>
                           ) : (
                             <span className="text-slate-600 font-mono text-xs">-</span>

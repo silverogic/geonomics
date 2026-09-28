@@ -16,6 +16,7 @@ import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
 import { Spinner } from './components/Spinner'
 import { getFuelPriceUsd } from './data/fuelPrices'
+import { getBigMacPriceUsd, getBigMacValuationPct } from './data/bigMac'
 import {
   detectBrowserLanguage,
   detectBrowserBaseCurrency,
@@ -135,6 +136,8 @@ export function App() {
         interestRatePct: rateInfo?.ratePct ?? null,
         centralBankName: rateInfo?.centralBankName ?? null,
         fuelPriceUsd: getFuelPriceUsd(country.id),
+        bigMacPriceUsd: getBigMacPriceUsd(country.id),
+        bigMacValuationPct: getBigMacValuationPct(country.id),
       }
     })
 

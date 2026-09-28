@@ -1,6 +1,7 @@
 import type { ImfCountryRecord } from '../data/imfEconomic'
 import type { StockPriceInfo } from '../data/stockPrices'
 import type { FuelPricesDataset } from '../data/fuelPrices'
+import type { BigMacDataset } from '../data/bigMac'
 
 /**
  * Geonomics Open API Client Configuration
@@ -99,20 +100,46 @@ export async function getFuelPrices(
 }
 
 /**
- * 4. 종합 지표 병렬 조회 (All Geonomics Data)
- * - Executes all 3 endpoints concurrently via Promise.all
+ * 4. 빅맥 지수 API (The Economist Big Mac Index)
+ * - Endpoint: GET /api/v1/bigmac.json
+ * - Source: The Economist Big Mac Index (Purchasing Power Parity, 70 countries)
+ * - Metrics: Local price, USD price, raw currency valuation %, and GDP-adjusted valuation %
+ */
+export async function getBigMacIndex(
+  options?: ApiRequestOptions
+): Promise<BigMacDataset> {
+  const baseUrl = options?.baseUrl || getDefaultApiBaseUrl()
+  const url = `${baseUrl}/bigmac.json`
+
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    ...options?.fetchOptions,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch Big Mac index: HTTP ${response.status} (${response.statusText})`)
+  }
+
+  return response.json()
+}
+
+/**
+ * 5. 종합 지표 병렬 조회 (All Geonomics Data)
+ * - Executes all 4 endpoints concurrently via Promise.all
  */
 export async function getAllData(options?: ApiRequestOptions) {
-  const [economics, stocks, fuel] = await Promise.all([
+  const [economics, stocks, fuel, bigmac] = await Promise.all([
     getEconomics(options),
     getStockPrices(options),
     getFuelPrices(options),
+    getBigMacIndex(options),
   ])
 
   return {
     economics,
     stocks,
     fuel,
+    bigmac,
     fetchedAt: new Date().toISOString(),
   }
 }

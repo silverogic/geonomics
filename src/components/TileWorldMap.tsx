@@ -15,6 +15,7 @@ import type { MapMetric } from './GdpWorldMap'
 import { ChevronRight } from 'lucide-react'
 import { translations } from '../i18n/translations'
 import { formatFuelPrice, getFuelPriceColor } from '../data/fuelPrices'
+import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
 
 interface TileWorldMapProps {
   items: CountryRowItem[]
@@ -382,6 +383,39 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   </span>
                 </div>
               )}
+
+              {/* Big Mac Index in Tooltip */}
+              {(() => {
+                const bm = getBigMacData(activeHoveredItem.country.id)
+                if (!bm) return null
+                const color = getBigMacColor(bm.valuationRawPct)
+                return (
+                  <div
+                    className={`flex items-center justify-between ${
+                      metric === 'bigMac' ? 'text-amber-300 font-semibold' : 'text-slate-400'
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span>🍔 {t.metricBigMac}:</span>
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-bold text-white">
+                        {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
+                      </span>
+                      <span
+                        className="text-[10px] font-mono font-bold"
+                        style={{ color }}
+                      >
+                        ({bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`})
+                      </span>
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
 
             {/* Hint */}

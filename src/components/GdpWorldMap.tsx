@@ -19,8 +19,9 @@ import { translations } from '../i18n/translations'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
 import { getCountryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
 import { getFuelPriceColor, formatFuelPrice, FUEL_COLOR_LOW, FUEL_COLOR_MID, FUEL_COLOR_HIGH } from '../data/fuelPrices'
+import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
 
-export type MapMetric = 'gdp' | 'perCapita' | 'growth' | 'debt' | 'inflation' | 'fuelPrice'
+export type MapMetric = 'gdp' | 'perCapita' | 'growth' | 'debt' | 'inflation' | 'fuelPrice' | 'bigMac'
 
 interface GdpWorldMapProps {
   items: CountryRowItem[]
@@ -36,7 +37,7 @@ const ALL_REGIONS: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania'
 
 interface MetricOptionConfig {
   id: MapMetric
-  labelKey: 'metricTotalGdp' | 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation' | 'metricFuelPrice'
+  labelKey: 'metricTotalGdp' | 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation' | 'metricFuelPrice' | 'metricBigMac'
 }
 
 const METRIC_OPTIONS: MetricOptionConfig[] = [
@@ -46,6 +47,7 @@ const METRIC_OPTIONS: MetricOptionConfig[] = [
   { id: 'debt', labelKey: 'metricDebt' },
   { id: 'inflation', labelKey: 'metricInflation' },
   { id: 'fuelPrice', labelKey: 'metricFuelPrice' },
+  { id: 'bigMac', labelKey: 'metricBigMac' },
 ]
 
 export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
@@ -207,6 +209,10 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       if (metric === 'fuelPrice') {
         return getFuelPriceColor(item.fuelPriceUsd)
+      }
+
+      if (metric === 'bigMac') {
+        return getBigMacColor(item.bigMacValuationPct)
       }
 
       return '#334155'
@@ -606,7 +612,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         ? t.metricDebt
                         : metric === 'inflation'
                           ? t.metricInflation
-                          : t.metricFuelPrice}
+                          : metric === 'fuelPrice'
+                            ? t.metricFuelPrice
+                            : t.metricBigMac}
               </span>
             </div>
 
@@ -779,6 +787,36 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   </div>
                 </div>
               )}
+
+              {metric === 'bigMac' && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full md:w-auto">
+                  <div className="flex flex-wrap items-center gap-2.5 text-[11px]">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-full bg-[#059669] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.bigMacStrongUnder}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-full bg-[#06b6d4] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.bigMacUnder}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-full bg-[#f59e0b] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.bigMacFair}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-full bg-[#f97316] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.bigMacOver}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-full bg-[#f43f5e] shadow-sm"></span>
+                      <span className="text-slate-300 font-medium">{t.bigMacStrongOver}</span>
+                    </div>
+                  </div>
+                  <span className="hidden xl:inline text-[10px] text-slate-500 border-l border-slate-800 pl-2">
+                    {t.bigMacNote}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -948,6 +986,58 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     </div>
                   </div>
                 )}
+
+                {/* Big Mac Index Card in HUD */}
+                {(() => {
+                  const bm = getBigMacData(inspectedCountryItem.country.id)
+                  if (!bm) return null
+                  const color = getBigMacColor(bm.valuationRawPct)
+                  return (
+                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 flex items-center justify-between">
+                      <div>
+                        <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
+                          <span
+                            className="w-2 h-2 rounded-full shrink-0 shadow-sm"
+                            style={{ backgroundColor: color }}
+                          />
+                          <span>🍔 {t.metricBigMac}</span>
+                        </div>
+                        <div className="text-base font-bold text-white font-mono mt-0.5">
+                          {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                          {bm.localPrice.toLocaleString()} {bm.currencyCode} (${bm.dollarPrice.toFixed(2)})
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span
+                          className="text-[11px] font-mono font-bold block"
+                          style={{ color }}
+                        >
+                          {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
+                        </span>
+                        <span
+                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5"
+                          style={{
+                            backgroundColor: `${color}20`,
+                            color: color,
+                          }}
+                        >
+                          {bm.valuationRawPct < -10
+                            ? (lang === 'ko' ? '저평가' : lang === 'ja' ? '割安' : lang === 'es' ? 'Infravalorada' : lang === 'zh' ? '低估' : 'Undervalued')
+                            : bm.valuationRawPct > 10
+                            ? (lang === 'ko' ? '고평가' : lang === 'ja' ? '割高' : lang === 'es' ? 'Sobrevalorada' : lang === 'zh' ? '高估' : 'Overvalued')
+                            : (lang === 'ko' ? '적정 수준' : lang === 'ja' ? '適正' : lang === 'es' ? 'Equilibrado' : lang === 'zh' ? '合理' : 'Fair Value')}
+                        </span>
+                        {bm.valuationAdjustedPct !== null && (
+                          <span className="text-[9px] text-slate-500 block mt-0.5" title="GDP-adjusted valuation">
+                            {lang === 'ko' ? `GDP보정: ${bm.valuationAdjustedPct > 0 ? '+' : ''}${bm.valuationAdjustedPct.toFixed(1)}%` : `GDP-adj: ${bm.valuationAdjustedPct > 0 ? '+' : ''}${bm.valuationAdjustedPct.toFixed(1)}%`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })()}
               </div>
 
               {/* Open Modal CTA Button */}
