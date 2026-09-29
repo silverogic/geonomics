@@ -37,7 +37,7 @@ export const COUNTRY_TICKERS = [
   { id: 'POL', nameEn: 'iShares MSCI Poland (WIG20 Proxy)', nameKo: 'iShares 폴란드 (WIG20 대표 ETF)', ticker: 'EPOL', isSupported: true },
   { id: 'SWE', nameEn: 'OMX Stockholm 30', nameKo: 'OMXS30', ticker: '^OMX', isSupported: true },
   { id: 'BEL', nameEn: 'BEL 20', nameKo: 'BEL 20', ticker: '^BFX', isSupported: true },
-  { id: 'ARG', nameEn: 'S&P Merval', nameKo: 'S&P 메르발', ticker: '^MERV', isSupported: true },
+  { id: 'ARG', nameEn: 'Global X MSCI Argentina (Proxy)', nameKo: 'Global X 아르헨티나 (ARGT)', ticker: 'ARGT', isSupported: true },
   { id: 'IRL', nameEn: 'ISEQ 20', nameKo: 'ISEQ 20', ticker: '^ISEQ', isSupported: true },
   { id: 'NOR', nameEn: 'iShares MSCI Norway (OBX Proxy)', nameKo: 'iShares 노르웨이 (OBX 대표 ETF)', ticker: 'ENOR', isSupported: true },
   { id: 'AUT', nameEn: 'ATX Index', nameKo: 'ATX 지수', ticker: '^ATX', isSupported: true },
