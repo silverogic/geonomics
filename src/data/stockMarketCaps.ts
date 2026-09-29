@@ -39,7 +39,7 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   HKG: 4_600_000_000_000,  // Hong Kong Exchanges and Clearing (HKEX) (~$4.6T)
   TWN: 3_600_000_000_000,  // Taiwan Stock Exchange (TWSE) (~$3.6T)
   SAU: 2_700_000_000_000,  // Saudi Tadawul (~$2.7T)
-  KOR: 2_400_000_000_000,  // Korea Exchange (KRX: KOSPI + KOSDAQ) (~$2.4T, 약 3,250조 원)
+  KOR: 4_270_000_000_000,  // Korea Exchange (KRX: KOSPI 약 5,852조 + KOSDAQ 약 474조 = 약 6,326조 원 / ~$4.27T)
   ARE: 1_100_000_000_000,  // ADX Abu Dhabi + DFM Dubai (~$1.1T)
   SGP: 820_000_000_000,    // Singapore Exchange (SGX) (~$820B)
   IDN: 780_000_000_000,    // Indonesia Stock Exchange (IDX) (~$780B)
