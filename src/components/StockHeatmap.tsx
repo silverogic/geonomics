@@ -152,7 +152,8 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       const estimatedCap = liveCapData?.caps[c.id] ?? getStockMarketCapUsd(c.id)
       const baseCap = liveCapData?.baseCaps?.[c.id] ?? estimatedCap
       const multiplier = liveCapData?.multipliers?.[c.id] ?? 1.0
-      const capYear = liveCapData?.years[c.id] ?? '2026 Live Est.'
+      const currentYear = new Date().getFullYear()
+      const capYear = liveCapData?.years[c.id] ?? `${currentYear} Live Est.`
       const capSource = liveCapData?.sources[c.id] ?? 'World Bank (WFE) × Live Index Tracking'
       const changePct = stock?.changePct ?? 0
       const marketCapUsd = calculateLiveMarketCap(estimatedCap, changePct)
@@ -748,7 +749,9 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
             <div className="pt-1 border-t border-slate-800/80 space-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-slate-400 font-medium">
-                  {lang === 'ko' ? '2026 추정 시총:' : '2026 Live Cap:'}
+                  {lang === 'ko'
+                    ? `${hoveredItem.capYear ? hoveredItem.capYear.split(' ')[0] : new Date().getFullYear()} 추정 시총:`
+                    : `${hoveredItem.capYear ? hoveredItem.capYear.split(' ')[0] : new Date().getFullYear()} Live Cap:`}
                 </span>
                 <span className="text-xs sm:text-sm font-black font-mono text-indigo-300">
                   {formatStockMarketCap(hoveredItem.marketCapUsd, baseCurrency, usdToBase, lang)}

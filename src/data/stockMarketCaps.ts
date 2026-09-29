@@ -5,7 +5,7 @@ import type { BaseCurrency, Language } from '../types/economics'
  * Represents total domestic market capitalization of listed companies by country/exchange.
  * Sourced from WFE Monthly Statistics Portal & Market Highlights, verified against member exchanges.
  */
-export const WFE_REPORT_DATE = '2026 Monthly'
+export const WFE_REPORT_DATE = `${new Date().getFullYear()} Monthly`
 export const WFE_DATA_SOURCE = 'World Federation of Exchanges (WFE) Monthly Market Statistics'
 
 export const STOCK_MARKET_CAPS_USD: Record<string, number> = {

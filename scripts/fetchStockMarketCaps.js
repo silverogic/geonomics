@@ -31,8 +31,11 @@ async function fetchWorldBankDomesticMarketCaps() {
   let page = 1
   let totalPages = 1
 
+  const currentYear = new Date().getFullYear()
+  const startYear = currentYear - 10
+
   while (page <= totalPages) {
-    const url = `https://api.worldbank.org/v2/country/all/indicator/CM.MKT.LCAP.CD?format=json&date=2015:2025&per_page=1000&page=${page}`
+    const url = `https://api.worldbank.org/v2/country/all/indicator/CM.MKT.LCAP.CD?format=json&date=${startYear}:${currentYear}&per_page=1000&page=${page}`
     try {
       const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } })
       if (!res.ok) break
@@ -162,14 +165,16 @@ async function main() {
       }
     }
 
-    // Dynamic 2026 estimated market cap = baseCap * multiplier
+    const currentYear = new Date().getFullYear()
+
+    // Dynamic estimated market cap = baseCap * multiplier
     const marketCapUsd = Math.round(baseCap * multiplier)
 
     outputData[iso] = {
       marketCapUsd,
       baseCapUsd: baseCap,
       baseYear: baseInfo.year,
-      year: '2026 Live Est.',
+      year: `${currentYear} Live Est.`,
       indexMultiplier: multiplier,
       baseIndexPrice,
       currentIndexPrice,
@@ -182,8 +187,9 @@ async function main() {
   }
 
   // 4. Print sample estimates to verify
+  const currentYear = new Date().getFullYear()
   const sampleCodes = ['USA', 'CHN', 'JPN', 'KOR', 'IND', 'DEU', 'GBR', 'TWN', 'CAN']
-  console.log('\n--- 2026 Estimated Market Capitalization Samples (100% Automated from APIs) ---')
+  console.log(`\n--- ${currentYear} Estimated Market Capitalization Samples (100% Automated from APIs) ---`)
   for (const code of sampleCodes) {
     const item = outputData[code]
     if (item) {
