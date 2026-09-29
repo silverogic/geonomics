@@ -15,7 +15,7 @@ Geonomics also publishes **free, open static REST API v1 endpoints** with global
 
 2. **Global Stock Market Heatmap & Treemap (~$144T Equity Universe)**
    - **Squarified Treemap Algorithm**: High-precision area partitioning proportional to national domestic market capitalization.
-   - **Official WFE Monthly Statistics**: Authoritative market cap data from the **World Federation of Exchanges (WFE)** blended with World Bank supplemental datasets for 150+ economies.
+   - **100% Automated Data Pipeline**: Combines official **World Bank Open Data API (`CM.MKT.LCAP.CD` / WFE Database)** baseline figures with automated **Yahoo Finance historical & live index tracking** ($P_{\text{live}} / P_{\text{base}}$) to dynamically estimate 2026 domestic equity market caps with zero manual hardcoding.
    - **Dynamic Live Index Fluctuations**: Real-time intraday % shifts (S&P 500, KOSPI, Nikkei 225, Shanghai Composite, DAX, etc.) via live financial feeds.
    - **Ultra-Wide & Zen Immersion Mode**: 100% full-width responsive canvas with 0 vertical scroll, single-row streamlined toolbar, and one-click Fullscreen toggle.
    - **Floating Glassmorphic HUD**: Zero-footprint hover panel displaying 30-day index trend sparklines, latest price, and local currency metrics.
@@ -53,7 +53,7 @@ Geonomics publishes clean, standardized JSON REST API endpoints on GitHub Pages.
 | :-: | :--- | :--- | :--- |
 | **1** | **Macroeconomic Indicators** | `/api/v1/economics.json` | 110 countries: GDP, per capita, growth, debt, inflation (2024–2026) |
 | **2** | **Stock Benchmark Indices** | `/api/v1/stocks.json` | 74 countries: Ticker, price, 24h change %, and 30-day sparkline points |
-| **3** | **Stock Market Capitalization** | `/api/v1/stock-market-caps.json` | 150+ countries: Official WFE monthly domestic equity market cap in USD |
+| **3** | **Stock Market Capitalization** | `/api/v1/stock-market-caps.json` | 120+ countries: Official World Bank (WFE) baseline + live index tracking 2026 est. in USD |
 | **4** | **Gasoline Retail Prices** | `/api/v1/fuel.json` | 170 countries: National average RON 95 gasoline prices in USD/L |
 | **5** | **Big Mac Index (PPP)** | `/api/v1/bigmac.json` | 70 countries: The Economist Big Mac Index, USD prices & currency valuation % |
 

@@ -12,9 +12,11 @@ const STORAGE_KEY = 'geonomics_stock_market_caps_v2'
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000 // 12 hours
 
 export interface LiveMarketCapData {
-  caps: Record<string, number> // countryId -> base market cap in USD
-  years: Record<string, string> // countryId -> reporting period (e.g. '2026 Monthly')
-  sources: Record<string, string> // countryId -> 'World Federation of Exchanges (WFE) Monthly' | ...
+  caps: Record<string, number> // countryId -> live estimated market cap in USD
+  baseCaps: Record<string, number> // countryId -> original World Bank/WFE census
+  multipliers: Record<string, number> // countryId -> index growth multiplier
+  years: Record<string, string> // countryId -> reporting period (e.g. '2026 Live Est.')
+  sources: Record<string, string> // countryId -> source attribution
   updatedAt: string
 }
 
@@ -46,26 +48,37 @@ export async function fetchStockMarketCaps(forceRefresh = false): Promise<LiveMa
     }
   }
 
-  // 1. Initialize with authoritative WFE Monthly 2026 Benchmarks
+  // 1. Initialize with fallback benchmarks
   const caps: Record<string, number> = { ...FALLBACK_CAPS }
+  const baseCaps: Record<string, number> = { ...FALLBACK_CAPS }
+  const multipliers: Record<string, number> = {}
   const years: Record<string, string> = {}
   const sources: Record<string, string> = {}
 
   for (const code of Object.keys(FALLBACK_CAPS)) {
     years[code] = WFE_REPORT_DATE
     sources[code] = WFE_DATA_SOURCE
+    multipliers[code] = 1.0
   }
 
-  // 2. Fetch precompiled WFE + World Bank unified JSON from public API
+  // 2. Fetch precompiled World Bank + live index estimated JSON from public API
   try {
     const localRes = await fetch('/api/v1/stock-market-caps.json')
     if (localRes.ok) {
       const json = await localRes.json()
       for (const [code, val] of Object.entries(json)) {
         if (val && typeof val === 'object') {
-          const item = val as { marketCapUsd?: number; year?: string; source?: string }
+          const item = val as {
+            marketCapUsd?: number
+            baseCapUsd?: number
+            indexMultiplier?: number
+            year?: string
+            source?: string
+          }
           if (item.marketCapUsd && typeof item.marketCapUsd === 'number' && item.marketCapUsd > 0) {
             caps[code] = item.marketCapUsd
+            if (item.baseCapUsd) baseCaps[code] = item.baseCapUsd
+            if (item.indexMultiplier) multipliers[code] = item.indexMultiplier
             if (item.year) years[code] = item.year
             if (item.source) sources[code] = item.source
           }
@@ -78,6 +91,8 @@ export async function fetchStockMarketCaps(forceRefresh = false): Promise<LiveMa
 
   const result: LiveMarketCapData = {
     caps,
+    baseCaps,
+    multipliers,
     years,
     sources,
     updatedAt: new Date().toISOString(),

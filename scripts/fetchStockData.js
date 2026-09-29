@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const COUNTRY_TICKERS = [
+export const COUNTRY_TICKERS = [
   { id: 'USA', nameEn: 'S&P 500', nameKo: 'S&P 500', ticker: '^GSPC', isSupported: true },
   { id: 'CHN', nameEn: 'SSE Composite', nameKo: '상하이 종합지수', ticker: '000001.SS', isSupported: true },
   { id: 'DEU', nameEn: 'DAX 40', nameKo: 'DAX', ticker: '^GDAXI', isSupported: true },

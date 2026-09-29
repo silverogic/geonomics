@@ -34,6 +34,7 @@ interface MarketItem {
   stockInfo?: StockPriceInfo
   marketCapUsd: number
   baseCapUsd: number
+  multiplier?: number
   capYear: string
   capSource: string
   changePct: number
@@ -148,11 +149,13 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
   const allMarketItems: MarketItem[] = useMemo(() => {
     return COUNTRIES.map((c) => {
       const stock = allStocks[c.id]
-      const baseCap = liveCapData?.caps[c.id] ?? getStockMarketCapUsd(c.id)
-      const capYear = liveCapData?.years[c.id] ?? '2026 Monthly'
-      const capSource = liveCapData?.sources[c.id] ?? 'WFE Monthly Statistics'
+      const estimatedCap = liveCapData?.caps[c.id] ?? getStockMarketCapUsd(c.id)
+      const baseCap = liveCapData?.baseCaps?.[c.id] ?? estimatedCap
+      const multiplier = liveCapData?.multipliers?.[c.id] ?? 1.0
+      const capYear = liveCapData?.years[c.id] ?? '2026 Live Est.'
+      const capSource = liveCapData?.sources[c.id] ?? 'World Bank (WFE) × Live Index Tracking'
       const changePct = stock?.changePct ?? 0
-      const marketCapUsd = calculateLiveMarketCap(baseCap, changePct)
+      const marketCapUsd = calculateLiveMarketCap(estimatedCap, changePct)
       const indexName = stock ? (lang === 'ko' ? stock.nameKo : stock.nameEn) : 'Equity Market'
       const isSupported = stock?.isSupported ?? false
 
@@ -161,6 +164,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         stockInfo: stock,
         marketCapUsd,
         baseCapUsd: baseCap,
+        multiplier,
         capYear,
         capSource,
         changePct,
@@ -740,12 +744,27 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
               </div>
             )}
 
-            {/* Market Cap & Hint */}
-            <div className="pt-1 border-t border-slate-800/80 flex items-center justify-between">
-              <span className="text-[10px] text-slate-400 font-medium">시총 (WFE):</span>
-              <span className="text-xs sm:text-sm font-black font-mono text-indigo-300">
-                {formatStockMarketCap(hoveredItem.marketCapUsd, baseCurrency, usdToBase, lang)}
-              </span>
+            {/* Market Cap & Estimation Breakdown */}
+            <div className="pt-1 border-t border-slate-800/80 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-400 font-medium">
+                  {lang === 'ko' ? '2026 추정 시총:' : '2026 Live Cap:'}
+                </span>
+                <span className="text-xs sm:text-sm font-black font-mono text-indigo-300">
+                  {formatStockMarketCap(hoveredItem.marketCapUsd, baseCurrency, usdToBase, lang)}
+                </span>
+              </div>
+
+              {hoveredItem.multiplier && hoveredItem.multiplier !== 1.0 && (
+                <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 bg-slate-950/60 px-1.5 py-0.5 rounded border border-slate-800/60">
+                  <span>
+                    {lang === 'ko' ? 'WFE 기준치 대비' : 'vs. WFE Base'}:
+                  </span>
+                  <span className="text-emerald-400 font-bold">
+                    {hoveredItem.multiplier > 1.0 ? `+${Math.round((hoveredItem.multiplier - 1) * 100)}%` : `${Math.round((hoveredItem.multiplier - 1) * 100)}%`} ({hoveredItem.multiplier}x)
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
