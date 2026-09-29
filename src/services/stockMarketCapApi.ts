@@ -8,7 +8,7 @@
 
 import { STOCK_MARKET_CAPS_USD as FALLBACK_CAPS, WFE_REPORT_DATE, WFE_DATA_SOURCE } from '../data/stockMarketCaps'
 
-const STORAGE_KEY = 'geonomics_stock_market_caps_v2'
+const STORAGE_KEY = 'geonomics_stock_market_caps_v3'
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000 // 12 hours
 
 export interface LiveMarketCapData {
