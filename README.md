@@ -13,23 +13,31 @@ Geonomics also publishes **free, open static REST API v1 endpoints** with global
    - Core metrics: **Total GDP**, **GDP per Capita**, **Real Growth Rate (%)**, **General Gov Debt (% of GDP)**, and **Inflation Rate (%)**.
    - 10-year historical trajectory trend charts powered by Chart.js.
 
-2. **Real-time Global Financial & Market Benchmarks**
+2. **Global Stock Market Heatmap & Treemap (~$144T Equity Universe)**
+   - **Squarified Treemap Algorithm**: High-precision area partitioning proportional to national domestic market capitalization.
+   - **Official WFE Monthly Statistics**: Authoritative market cap data from the **World Federation of Exchanges (WFE)** blended with World Bank supplemental datasets for 150+ economies.
+   - **Dynamic Live Index Fluctuations**: Real-time intraday % shifts (S&P 500, KOSPI, Nikkei 225, Shanghai Composite, DAX, etc.) via live financial feeds.
+   - **Ultra-Wide & Zen Immersion Mode**: 100% full-width responsive canvas with 0 vertical scroll, single-row streamlined toolbar, and one-click Fullscreen toggle.
+   - **Floating Glassmorphic HUD**: Zero-footprint hover panel displaying 30-day index trend sparklines, latest price, and local currency metrics.
+   - **Unified & 5-Continent Views**: Switch instantly between single global treemap and regional breakdown (Americas, Asia, Europe, Oceania, Africa).
+
+3. **Real-time Global Financial & Market Benchmarks**
    - **Forex Rates**: Live feeds supporting 160+ fiat currencies with base switching (USD, EUR, KRW, JPY, GBP, CNY).
-   - **Stock Benchmark Indices**: 74 national flagship indices (S&P 500, KOSPI, Nikkei 225, DAX, etc.) with 24h change % and interactive 30-day sparklines.
+   - **Stock Benchmark Indices**: 74 national flagship indices with 24h change % and interactive 30-day sparklines.
    - **Retail Gasoline Prices**: National average retail gasoline prices (RON 95, USD/L) for 170 countries.
    - **Central Bank Policy Rates**: Official interest rates from major central banks (Fed, BOK, ECB, BOJ, etc.).
 
-3. **Interactive Visualizations & World Map**
+4. **Interactive Visualizations & World Map**
    - **Tile Grid & High-precision Vector World Maps**: Dynamic metric color gradients with pan & zoom.
    - **Mobile-Optimized Ranking Table**: Full-bleed edge-to-edge layout, slimmed sticky rank & country columns, and Category Switcher (Macroeconomic vs. Market & Finance).
    - **1:1 Country Comparison Tool**: Side-by-side comparative analysis with economic scale multiples.
 
-4. **Zero-Database Architecture & Global CDN**
+5. **Zero-Database Architecture & Global CDN**
    - Operates with zero backend database maintenance.
    - Client-side in-memory caching (10-minute TTL) ensures real-time accuracy and rate-limit safety.
    - Automated offline fallback data for resilient continuous availability.
 
-5. **Multi-language Localization (i18n)**
+6. **Multi-language Localization (i18n)**
    - Supports Korean (`ko`), English (`en`), Japanese (`ja`), Spanish (`es`), and Chinese (`zh`).
    - Automatic browser language and regional currency detection.
 
@@ -45,8 +53,9 @@ Geonomics publishes clean, standardized JSON REST API endpoints on GitHub Pages.
 | :-: | :--- | :--- | :--- |
 | **1** | **Macroeconomic Indicators** | `/api/v1/economics.json` | 110 countries: GDP, per capita, growth, debt, inflation (2024–2026) |
 | **2** | **Stock Benchmark Indices** | `/api/v1/stocks.json` | 74 countries: Ticker, price, 24h change %, and 30-day sparkline points |
-| **3** | **Gasoline Retail Prices** | `/api/v1/fuel.json` | 170 countries: National average RON 95 gasoline prices in USD/L |
-| **4** | **Big Mac Index (PPP)** | `/api/v1/bigmac.json` | 70 countries: The Economist Big Mac Index, USD prices & currency valuation % |
+| **3** | **Stock Market Capitalization** | `/api/v1/stock-market-caps.json` | 150+ countries: Official WFE monthly domestic equity market cap in USD |
+| **4** | **Gasoline Retail Prices** | `/api/v1/fuel.json` | 170 countries: National average RON 95 gasoline prices in USD/L |
+| **5** | **Big Mac Index (PPP)** | `/api/v1/bigmac.json` | 70 countries: The Economist Big Mac Index, USD prices & currency valuation % |
 
 ### cURL CLI Usage
 
@@ -57,10 +66,13 @@ curl -s https://silverogic.github.io/geonomics/api/v1/economics.json
 # 2. Global stock benchmarks and 30-day sparklines
 curl -s https://silverogic.github.io/geonomics/api/v1/stocks.json
 
-# 3. National gasoline prices (USD/L)
+# 3. National stock market capitalization (WFE official monthly)
+curl -s https://silverogic.github.io/geonomics/api/v1/stock-market-caps.json
+
+# 4. National gasoline prices (USD/L)
 curl -s https://silverogic.github.io/geonomics/api/v1/fuel.json
 
-# 4. The Economist Big Mac Index (PPP currency valuation)
+# 5. The Economist Big Mac Index (PPP currency valuation)
 curl -s https://silverogic.github.io/geonomics/api/v1/bigmac.json
 ```
 
@@ -156,7 +168,8 @@ npm run build
 
 - **Macroeconomic Projections & Statistics**: [International Monetary Fund (IMF WEO)](https://www.imf.org/en/Publications/WEO) and [World Bank Open Data](https://data.worldbank.org/)
 - **Live Foreign Exchange**: [European Central Bank (ECB)](https://www.ecb.europa.eu/) & [Open Exchange Rates API](https://open.er-api.com/)
-- **Stock Market Benchmarks**: National Stock Exchanges via Yahoo Finance
+- **Stock Market Capitalization**: [World Federation of Exchanges (WFE)](https://www.world-exchanges.org/) Monthly Statistics & World Bank CM.MKT.LCAP.CD
+- **Stock Market Benchmarks & Real-time Indices**: National Stock Exchanges via Yahoo Finance
 - **Gasoline Retail Prices**: [Global Petrol Prices](https://www.globalpetrolprices.com/) & National Energy Ministries
 - **Central Bank Interest Rates**: [Bank for International Settlements (BIS)](https://www.bis.org/) & Central Bank Open Feeds
 

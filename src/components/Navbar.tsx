@@ -1,5 +1,5 @@
 import React from 'react'
-import { Globe, Layers, GitCompare, Coins, RefreshCw, ChevronDown } from 'lucide-react'
+import { Globe, Layers, GitCompare, Coins, RefreshCw, ChevronDown, LayoutGrid } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language } from '../types/economics'
 import { translations } from '../i18n/translations'
@@ -14,8 +14,8 @@ const LANGUAGE_CONFIG: Record<Language, { label: string; short: string; flagIso2
 }
 
 interface NavbarProps {
-  activeTab: 'cards' | 'compare'
-  setActiveTab: (tab: 'cards' | 'compare') => void
+  activeTab: 'cards' | 'heatmap' | 'compare'
+  setActiveTab: (tab: 'cards' | 'heatmap' | 'compare') => void
   baseCurrency: BaseCurrency
   setBaseCurrency: (c: BaseCurrency) => void
   lang: Language
@@ -70,6 +70,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Layers className="w-4 h-4" />
               {t.navExplorer}
+            </button>
+            <button
+              onClick={() => setActiveTab('heatmap')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                activeTab === 'heatmap'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              {t.navStockHeatmap}
             </button>
             <button
               onClick={() => setActiveTab('compare')}
@@ -198,10 +209,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         aria-label="Mobile Bottom Navigation"
         className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_25px_rgba(0,0,0,0.6)]"
       >
-        <div className="max-w-md mx-auto grid grid-cols-2 gap-2">
+        <div className="max-w-md mx-auto grid grid-cols-3 gap-1.5">
           <button
             onClick={() => setActiveTab('cards')}
-            className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
               activeTab === 'cards'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
@@ -211,8 +222,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="text-xs font-bold tracking-tight">{t.navExplorer}</span>
           </button>
           <button
+            onClick={() => setActiveTab('heatmap')}
+            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+              activeTab === 'heatmap'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4 shrink-0" />
+            <span className="text-xs font-bold tracking-tight">{t.navStockHeatmap}</span>
+          </button>
+          <button
             onClick={() => setActiveTab('compare')}
-            className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
               activeTab === 'compare'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'

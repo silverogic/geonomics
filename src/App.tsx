@@ -14,6 +14,7 @@ import { CompareView } from './components/CompareView'
 import type { CountryRowItem } from './components/RankingTable'
 import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
+import { StockHeatmap } from './components/StockHeatmap'
 import { Spinner } from './components/Spinner'
 import { getFuelPriceUsd } from './data/fuelPrices'
 import { getBigMacPriceUsd, getBigMacValuationPct } from './data/bigMac'
@@ -46,7 +47,7 @@ export function App() {
   }, [lang])
 
   const t = translations[lang]
-  const [activeTab, setActiveTab] = useState<'cards' | 'compare'>('cards')
+  const [activeTab, setActiveTab] = useState<'cards' | 'heatmap' | 'compare'>('cards')
 
   // Selected economic year: Default 2024 (Actual)
   const [selectedYear, setSelectedYear] = useState<EconomicYear>(DEFAULT_ECONOMIC_YEAR)
@@ -65,11 +66,15 @@ export function App() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [refreshCount, setRefreshCount] = useState(0)
 
   // Initial and refresh data fetcher
   const loadData = useCallback(async (isRefresh = false, yearToLoad?: EconomicYear) => {
     setIsLoading(true)
     setErrorMsg(null)
+    if (isRefresh) {
+      setRefreshCount((c) => c + 1)
+    }
 
     const yr = yearToLoad ?? selectedYear
 
@@ -172,16 +177,24 @@ export function App() {
         isRefreshing={isLoading}
       />
 
-      {/* Real-time FX Ticker */}
-      <TickerBar
-        exchangeRates={exchangeRates}
-        interestRates={interestRates}
-        baseCurrency={baseCurrency}
-        lang={lang}
-      />
+      {/* Real-time FX Ticker (hidden in heatmap to maximize viewing area) */}
+      {activeTab !== 'heatmap' && (
+        <TickerBar
+          exchangeRates={exchangeRates}
+          interestRates={interestRates}
+          baseCurrency={baseCurrency}
+          lang={lang}
+        />
+      )}
 
       {/* Main Content Area */}
-      <main className="flex-grow max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+      <main
+        className={
+          activeTab === 'heatmap'
+            ? 'flex-grow w-full max-w-none px-1.5 sm:px-3 py-1 sm:py-1.5'
+            : 'flex-grow w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-6 py-4 sm:py-6 space-y-5'
+        }
+      >
         {/* Network Error Notification */}
         {errorMsg && (
           <div className="p-4 rounded-xl bg-rose-950/50 border border-rose-800 text-rose-300 text-sm flex items-center gap-3">
@@ -215,7 +228,18 @@ export function App() {
           )
         )}
 
-        {/* 1:1 COMPARE */}
+        {/* TAB 2: GLOBAL STOCK HEATMAP */}
+        {activeTab === 'heatmap' && (
+          <StockHeatmap
+            baseCurrency={baseCurrency}
+            exchangeRates={exchangeRates}
+            lang={lang}
+            onSelectCountry={(c) => setSelectedCountry(c)}
+            refreshKey={refreshCount}
+          />
+        )}
+
+        {/* TAB 3: 1:1 COMPARE */}
         {activeTab === 'compare' && (
           <CompareView
             baseCurrency={baseCurrency}
@@ -242,8 +266,8 @@ export function App() {
         />
       )}
 
-      {/* Global Footer */}
-      <Footer lang={lang} />
+      {/* Global Footer (hidden in heatmap mode for clean full-height viewing) */}
+      {activeTab !== 'heatmap' && <Footer lang={lang} />}
     </div>
   )
 }

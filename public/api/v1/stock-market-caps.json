@@ -1,0 +1,811 @@
+{
+  "USA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 70500000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CAN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 3900000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BRA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 1100000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "MEX": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 580000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CHL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 220000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PER": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 135000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ARG": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 110000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "COL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 105000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PRI": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 25000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PAN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 20000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ECU": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 18000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "JAM": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 16000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "DOM": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 15000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CRI": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 15000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BOL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 12000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "GTM": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 10000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "URY": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 10000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "VEN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 10000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "HND": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 8000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "NIC": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 6000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PRY": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 6000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CHN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 11600000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "JPN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 7850000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "IND": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 5450000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "HKG": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 4600000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "TWN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 3600000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "SAU": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 2700000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "KOR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 2400000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ARE": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 1100000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "SGP": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 820000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "IDN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 780000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "THA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 560000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "TUR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 450000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "MYS": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 440000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ISR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 360000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PHL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 270000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "VNM": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 270000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "QAT": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 185000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "KWT": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 155000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "KAZ": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 75000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BGD": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 48000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PAK": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 42000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "JOR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 26000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "OMN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 26000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BHR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 24000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "LKA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 18000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "UZB": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 15000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "IRQ": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 15000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "LBN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 14000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BRN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 12000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ARM": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 6000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "GEO": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 5000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "MNG": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 4500000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "NPL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 4000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "KHM": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 3500000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "GBR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 4400000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "FRA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 3800000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "DEU": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 2850000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CHE": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 2500000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "NLD": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 1750000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "SWE": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 1050000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ITA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 980000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ESP": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 920000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "DNK": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 520000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BEL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 430000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "NOR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 410000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "FIN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 320000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "POL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 290000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "AUT": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 210000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "IRL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 180000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "GRC": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 130000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PRT": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 115000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ROU": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 80000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "HUN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 52000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CZE": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 48000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "LUX": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 48000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "HRV": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 28000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "MLT": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 24000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ISL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 22000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BGR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 20000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "SVN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 16000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "SRB": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 14000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "UKR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 15000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CYP": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 12000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "LTU": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 8500000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "SVK": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 7000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "EST": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 6000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "MDA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 4500000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ALB": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 4500000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "LVA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 1500000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "AUS": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 2100000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "NZL": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 120000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "PNG": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 7000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ZAF": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 1100000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "MAR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 85000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "EGY": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 55000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "NGA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 48000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "BWA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 22000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "KEN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 16000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CIV": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 14000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "TUN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 12000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "GHA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 10000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ETH": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 9000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "TZA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 8000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "AGO": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 7000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "UGA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 7000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "DZA": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 6000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "SEN": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 6000000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "CMR": {
+    "year": "2026 Monthly",
+    "marketCapUsd": 4500000000,
+    "source": "World Federation of Exchanges (WFE) Monthly Market Statistics"
+  },
+  "ARB": {
+    "year": "2025",
+    "marketCapUsd": 4112882980000,
+    "countryName": "Arab World",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "CEB": {
+    "year": "2025",
+    "marketCapUsd": 575146840000,
+    "countryName": "Central Europe and the Baltics",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "EAR": {
+    "year": "2025",
+    "marketCapUsd": 17051145850000,
+    "countryName": "Early-demographic dividend",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "EAS": {
+    "year": "2025",
+    "marketCapUsd": 40672189430000,
+    "countryName": "East Asia & Pacific",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "EAP": {
+    "year": "2025",
+    "marketCapUsd": 18006335900000,
+    "countryName": "East Asia & Pacific (excluding high income)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "TEA": {
+    "year": "2025",
+    "marketCapUsd": 18006335900000,
+    "countryName": "East Asia & Pacific (IDA & IBRD countries)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "ECA": {
+    "year": "2025",
+    "marketCapUsd": 593564960000,
+    "countryName": "Europe & Central Asia (excluding high income)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "TEC": {
+    "year": "2023",
+    "marketCapUsd": 1358866850000,
+    "countryName": "Europe & Central Asia (IDA & IBRD countries)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "IBD": {
+    "year": "2025",
+    "marketCapUsd": 33590880840000,
+    "countryName": "IBRD only",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "IBT": {
+    "year": "2025",
+    "marketCapUsd": 33891309230000,
+    "countryName": "IDA & IBRD total",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "IDB": {
+    "year": "2025",
+    "marketCapUsd": 203763570000,
+    "countryName": "IDA blend",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "LTE": {
+    "year": "2025",
+    "marketCapUsd": 20565657020000,
+    "countryName": "Late-demographic dividend",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "LCN": {
+    "year": "2025",
+    "marketCapUsd": 2195014520000,
+    "countryName": "Latin America & Caribbean",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "LAC": {
+    "year": "2025",
+    "marketCapUsd": 1681102130000,
+    "countryName": "Latin America & Caribbean (excluding high income)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "TLA": {
+    "year": "2025",
+    "marketCapUsd": 2195014520000,
+    "countryName": "Latin America & the Caribbean (IDA & IBRD countries)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "LMY": {
+    "year": "2025",
+    "marketCapUsd": 32945226470000,
+    "countryName": "Low & middle income",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "MEA": {
+    "year": "2025",
+    "marketCapUsd": 4374158550000,
+    "countryName": "Middle East, North Africa, Afghanistan & Pakistan",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "MNA": {
+    "year": "2025",
+    "marketCapUsd": 487104140000,
+    "countryName": "Middle East, North Africa, Afghanistan & Pakistan (excluding high income)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "TMN": {
+    "year": "2025",
+    "marketCapUsd": 482161320000,
+    "countryName": "Middle East, North Africa, Afghanistan & Pakistan (IDA & IBRD)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "MIC": {
+    "year": "2025",
+    "marketCapUsd": 32942023280000,
+    "countryName": "Middle income",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "NAC": {
+    "year": "2025",
+    "marketCapUsd": 73561357620000,
+    "countryName": "North America",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "OED": {
+    "year": "2025",
+    "marketCapUsd": 95236656960000,
+    "countryName": "OECD members",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "PST": {
+    "year": "2025",
+    "marketCapUsd": 100309699350000,
+    "countryName": "Post-demographic dividend",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "SAS": {
+    "year": "2025",
+    "marketCapUsd": 10611912050000,
+    "countryName": "South Asia",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "TSA": {
+    "year": "2025",
+    "marketCapUsd": 10611912050000,
+    "countryName": "South Asia (IDA & IBRD)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "WLD": {
+    "year": "2025",
+    "marketCapUsd": 141297217290000,
+    "countryName": "World",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "AZE": {
+    "year": "2025",
+    "marketCapUsd": 1573050000,
+    "countryName": "Azerbaijan",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "BLR": {
+    "year": "2025",
+    "marketCapUsd": 5538660000,
+    "countryName": "Belarus",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "BMU": {
+    "year": "2025",
+    "marketCapUsd": 2260240000,
+    "countryName": "Bermuda",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "IRN": {
+    "year": "2025",
+    "marketCapUsd": 185635780000,
+    "countryName": "Iran, Islamic Rep.",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "MUS": {
+    "year": "2025",
+    "marketCapUsd": 8890480000,
+    "countryName": "Mauritius",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "NAM": {
+    "year": "2024",
+    "marketCapUsd": 2480220000,
+    "countryName": "Namibia",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "RUS": {
+    "year": "2023",
+    "marketCapUsd": 650487790000,
+    "countryName": "Russian Federation",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "RWA": {
+    "year": "2025",
+    "marketCapUsd": 3203190000,
+    "countryName": "Rwanda",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "SYC": {
+    "year": "2025",
+    "marketCapUsd": 646440000,
+    "countryName": "Seychelles",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "PSE": {
+    "year": "2025",
+    "marketCapUsd": 4942820000,
+    "countryName": "West Bank and Gaza",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "ZMB": {
+    "year": "2025",
+    "marketCapUsd": 14907450000,
+    "countryName": "Zambia",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "AFW": {
+    "year": "2022",
+    "marketCapUsd": 68844370000,
+    "countryName": "Africa Western and Central",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "IDA": {
+    "year": "2020",
+    "marketCapUsd": 267177520000,
+    "countryName": "IDA total",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "SSF": {
+    "year": "2020",
+    "marketCapUsd": 1169989050000,
+    "countryName": "Sub-Saharan Africa",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "SSA": {
+    "year": "2020",
+    "marketCapUsd": 1168764540000,
+    "countryName": "Sub-Saharan Africa (excluding high income)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "TSS": {
+    "year": "2020",
+    "marketCapUsd": 1169989050000,
+    "countryName": "Sub-Saharan Africa (IDA & IBRD countries)",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "BRB": {
+    "year": "2020",
+    "marketCapUsd": 2780430000,
+    "countryName": "Barbados",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  },
+  "CYM": {
+    "year": "2020",
+    "marketCapUsd": 644320000,
+    "countryName": "Cayman Islands",
+    "source": "World Bank (CM.MKT.LCAP.CD)"
+  }
+}
