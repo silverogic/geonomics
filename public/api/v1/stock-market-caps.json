@@ -708,16 +708,16 @@
     "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1338x via Yahoo Finance)"
   },
   "EGY": {
-    "marketCapUsd": 59261874100,
+    "marketCapUsd": 59915798228,
     "baseCapUsd": 62877320000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9425,
+    "indexMultiplier": 0.9529,
     "baseIndexPrice": 134,
-    "currentIndexPrice": 126.3,
+    "currentIndexPrice": 127.69,
     "indexTicker": "COMI.CA",
     "countryName": "Egypt, Arab Rep.",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9425x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9529x via Yahoo Finance)"
   },
   "FRA": {
     "marketCapUsd": 3742223489324,
@@ -1092,16 +1092,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "PAK": {
-    "marketCapUsd": 68729219770,
+    "marketCapUsd": 68272337045,
     "baseCapUsd": 70289650000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9778,
+    "indexMultiplier": 0.9713,
     "baseIndexPrice": 323.93,
-    "currentIndexPrice": 316.73,
+    "currentIndexPrice": 314.62,
     "indexTicker": "OGDC.KA",
     "countryName": "Pakistan",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9778x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9713x via Yahoo Finance)"
   },
   "PAN": {
     "marketCapUsd": 27183000000,
