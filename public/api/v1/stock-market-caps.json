@@ -444,16 +444,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "AUS": {
-    "marketCapUsd": 2004705520584,
+    "marketCapUsd": 2012692395168,
     "baseCapUsd": 2047916560000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9789,
+    "indexMultiplier": 0.9828,
     "baseIndexPrice": 8869.1,
-    "currentIndexPrice": 8682.1,
+    "currentIndexPrice": 8716.7,
     "indexTicker": "^AXJO",
     "countryName": "Australia",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9789x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9828x via Yahoo Finance)"
   },
   "AUT": {
     "marketCapUsd": 253078001462,
@@ -864,16 +864,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "JPN": {
-    "marketCapUsd": 9749867495637,
+    "marketCapUsd": 9906644695239,
     "baseCapUsd": 7610543670000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.2811,
+    "indexMultiplier": 1.3017,
     "baseIndexPrice": 53322.85,
-    "currentIndexPrice": 68309.46,
+    "currentIndexPrice": 69409.54,
     "indexTicker": "^N225",
     "countryName": "Japan",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2811x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.3017x via Yahoo Finance)"
   },
   "JOR": {
     "marketCapUsd": 37367150000,
@@ -1044,16 +1044,16 @@
     "source": "World Bank (WFE 2017) × Live Index Multiplier (1.9923x via Yahoo Finance)"
   },
   "NZL": {
-    "marketCapUsd": 105149712304,
+    "marketCapUsd": 105387000705,
     "baseCapUsd": 103168870000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0192,
+    "indexMultiplier": 1.0215,
     "baseIndexPrice": 13423.18,
-    "currentIndexPrice": 13680.49,
+    "currentIndexPrice": 13712.22,
     "indexTicker": "^NZ50",
     "countryName": "New Zealand",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0192x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0215x via Yahoo Finance)"
   },
   "NGA": {
     "marketCapUsd": 88603366716,
