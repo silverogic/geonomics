@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-06",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -169,7 +169,7 @@
     },
     "PHL": {
       "countryId": "PHL",
-      "priceUsd": 1.458,
+      "priceUsd": 1.535,
       "currencyCode": "PHP"
     },
     "DNK": {
