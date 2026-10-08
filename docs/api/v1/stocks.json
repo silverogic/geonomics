@@ -6,13 +6,9 @@
     "ticker": "^GSPC",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 7818.93,
-    "changePct": 1.85,
+    "currentPrice": 7801.77,
+    "changePct": 1.64,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 7677.28
-      },
       {
         "date": "2026-08-26",
         "close": 7675.7
@@ -128,6 +124,10 @@
       {
         "date": "2026-10-06",
         "close": 7818.93
+      },
+      {
+        "date": "2026-10-07",
+        "close": 7801.77
       }
     ]
   },
@@ -138,13 +138,9 @@
     "ticker": "000001.SS",
     "isSupported": true,
     "currency": "CNY",
-    "currentPrice": 3842.2,
-    "changePct": -1.34,
+    "currentPrice": 3831.84,
+    "changePct": -1.84,
     "points": [
-      {
-        "date": "2026-08-19",
-        "close": 3894.42
-      },
       {
         "date": "2026-08-20",
         "close": 3903.72
@@ -260,6 +256,10 @@
       {
         "date": "2026-09-30",
         "close": 3842.2
+      },
+      {
+        "date": "2026-10-08",
+        "close": 3831.84
       }
     ]
   },
@@ -270,17 +270,9 @@
     "ticker": "^GDAXI",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 25449.19,
-    "changePct": -3.11,
+    "currentPrice": 25104.36,
+    "changePct": -4.79,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 26266.14
-      },
-      {
-        "date": "2026-08-26",
-        "close": 26285.96
-      },
       {
         "date": "2026-08-27",
         "close": 26367.24
@@ -392,6 +384,14 @@
       {
         "date": "2026-10-05",
         "close": 25254.21
+      },
+      {
+        "date": "2026-10-06",
+        "close": 25449.19
+      },
+      {
+        "date": "2026-10-07",
+        "close": 25104.36
       }
     ]
   },
@@ -402,17 +402,9 @@
     "ticker": "^N225",
     "isSupported": true,
     "currency": "JPY",
-    "currentPrice": 70734.33,
-    "changePct": 7.15,
+    "currentPrice": 69437.47,
+    "changePct": 5.44,
     "points": [
-      {
-        "date": "2026-08-21",
-        "close": 66016.36
-      },
-      {
-        "date": "2026-08-24",
-        "close": 65528.09
-      },
       {
         "date": "2026-08-25",
         "close": 65856.43
@@ -522,8 +514,16 @@
         "close": 69946.86
       },
       {
+        "date": "2026-10-06",
+        "close": 70683.98
+      },
+      {
         "date": "2026-10-07",
-        "close": 70734.33
+        "close": 70035.71
+      },
+      {
+        "date": "2026-10-08",
+        "close": 69437.47
       }
     ]
   },
@@ -534,21 +534,9 @@
     "ticker": "^NSEI",
     "isSupported": true,
     "currency": "INR",
-    "currentPrice": 22776.1,
-    "changePct": -6.09,
+    "currentPrice": 22475,
+    "changePct": -7.16,
     "points": [
-      {
-        "date": "2026-08-21",
-        "close": 24252
-      },
-      {
-        "date": "2026-08-24",
-        "close": 24219.05
-      },
-      {
-        "date": "2026-08-25",
-        "close": 24334.55
-      },
       {
         "date": "2026-08-26",
         "close": 24207.75
@@ -656,6 +644,18 @@
       {
         "date": "2026-10-05",
         "close": 22555.75
+      },
+      {
+        "date": "2026-10-06",
+        "close": 22776.1
+      },
+      {
+        "date": "2026-10-07",
+        "close": 22603.05
+      },
+      {
+        "date": "2026-10-08",
+        "close": 22475
       }
     ]
   },
@@ -666,17 +666,9 @@
     "ticker": "^FTSE",
     "isSupported": true,
     "currency": "GBP",
-    "currentPrice": 10541.69,
-    "changePct": -2.88,
+    "currentPrice": 10458.5,
+    "changePct": -3.86,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 10854.3
-      },
-      {
-        "date": "2026-08-25",
-        "close": 10886.2
-      },
       {
         "date": "2026-08-26",
         "close": 10878.1
@@ -788,6 +780,14 @@
       {
         "date": "2026-10-05",
         "close": 10497.9
+      },
+      {
+        "date": "2026-10-06",
+        "close": 10541.7
+      },
+      {
+        "date": "2026-10-07",
+        "close": 10458.5
       }
     ]
   },
@@ -798,17 +798,9 @@
     "ticker": "^FCHI",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 7865.07,
-    "changePct": -6.8,
+    "currentPrice": 7769.21,
+    "changePct": -6.62,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 8439.2
-      },
-      {
-        "date": "2026-08-26",
-        "close": 8462.39
-      },
       {
         "date": "2026-08-27",
         "close": 8319.87
@@ -920,6 +912,14 @@
       {
         "date": "2026-10-05",
         "close": 7834.1
+      },
+      {
+        "date": "2026-10-06",
+        "close": 7865.07
+      },
+      {
+        "date": "2026-10-07",
+        "close": 7769.21
       }
     ]
   },
@@ -930,17 +930,9 @@
     "ticker": "FTSEMIB.MI",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 51261.4,
-    "changePct": -2.77,
+    "currentPrice": 49972.25,
+    "changePct": -4.39,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 52720
-      },
-      {
-        "date": "2026-08-26",
-        "close": 52883
-      },
       {
         "date": "2026-08-27",
         "close": 52265
@@ -1052,6 +1044,14 @@
       {
         "date": "2026-10-05",
         "close": 50818
+      },
+      {
+        "date": "2026-10-06",
+        "close": 51261
+      },
+      {
+        "date": "2026-10-07",
+        "close": 49972
       }
     ]
   },
@@ -1062,13 +1062,9 @@
     "ticker": "^BVSP",
     "isSupported": true,
     "currency": "BRL",
-    "currentPrice": 205835.3,
-    "changePct": 17.91,
+    "currentPrice": 204302.33,
+    "changePct": 17.02,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 174577
-      },
       {
         "date": "2026-08-26",
         "close": 174586
@@ -1183,7 +1179,11 @@
       },
       {
         "date": "2026-10-06",
-        "close": 205835.3
+        "close": 205835
+      },
+      {
+        "date": "2026-10-07",
+        "close": 204302
       }
     ]
   },
@@ -1194,13 +1194,9 @@
     "ticker": "^GSPTSE",
     "isSupported": true,
     "currency": "CAD",
-    "currentPrice": 35649.51,
-    "changePct": -3.54,
+    "currentPrice": 35041.86,
+    "changePct": -4.81,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 36957.6
-      },
       {
         "date": "2026-08-26",
         "close": 36813.7
@@ -1315,7 +1311,11 @@
       },
       {
         "date": "2026-10-06",
-        "close": 35649.51
+        "close": 35649.5
+      },
+      {
+        "date": "2026-10-07",
+        "close": 35041.9
       }
     ]
   },
@@ -1339,13 +1339,9 @@
     "ticker": "^MXX",
     "isSupported": true,
     "currency": "MXN",
-    "currentPrice": 65312.46,
-    "changePct": -1.48,
+    "currentPrice": 64653.33,
+    "changePct": -2.32,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 66293.07
-      },
       {
         "date": "2026-08-26",
         "close": 66191.11
@@ -1461,6 +1457,10 @@
       {
         "date": "2026-10-06",
         "close": 65312.46
+      },
+      {
+        "date": "2026-10-07",
+        "close": 64653.33
       }
     ]
   },
@@ -1471,17 +1471,9 @@
     "ticker": "^AXJO",
     "isSupported": true,
     "currency": "AUD",
-    "currentPrice": 8723.5,
-    "changePct": -4.43,
+    "currentPrice": 8664.3,
+    "changePct": -4.71,
     "points": [
-      {
-        "date": "2026-08-26",
-        "close": 9127.8
-      },
-      {
-        "date": "2026-08-27",
-        "close": 9038.2
-      },
       {
         "date": "2026-08-28",
         "close": 9092.3
@@ -1591,8 +1583,16 @@
         "close": 8686.4
       },
       {
+        "date": "2026-10-05",
+        "close": 8735.7
+      },
+      {
         "date": "2026-10-06",
-        "close": 8723.5
+        "close": 8727.7
+      },
+      {
+        "date": "2026-10-08",
+        "close": 8664.3
       }
     ]
   },
@@ -1603,21 +1603,9 @@
     "ticker": "^KS11",
     "isSupported": true,
     "currency": "KRW",
-    "currentPrice": 6941.39,
-    "changePct": 1.3,
+    "currentPrice": 6687.08,
+    "changePct": -0.83,
     "points": [
-      {
-        "date": "2026-08-20",
-        "close": 6852.58
-      },
-      {
-        "date": "2026-08-21",
-        "close": 6912.95
-      },
-      {
-        "date": "2026-08-24",
-        "close": 6696.96
-      },
       {
         "date": "2026-08-25",
         "close": 6742.74
@@ -1725,6 +1713,18 @@
       {
         "date": "2026-10-02",
         "close": 7003.74
+      },
+      {
+        "date": "2026-10-06",
+        "close": 6941.39
+      },
+      {
+        "date": "2026-10-07",
+        "close": 6803.9
+      },
+      {
+        "date": "2026-10-08",
+        "close": 6687.08
       }
     ]
   },
@@ -1735,17 +1735,9 @@
     "ticker": "^IBEX",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 19444.2,
-    "changePct": -3.05,
+    "currentPrice": 19118,
+    "changePct": -3.84,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 20056.6
-      },
-      {
-        "date": "2026-08-26",
-        "close": 20067.3
-      },
       {
         "date": "2026-08-27",
         "close": 19881.6
@@ -1857,6 +1849,14 @@
       {
         "date": "2026-10-05",
         "close": 19299.7
+      },
+      {
+        "date": "2026-10-06",
+        "close": 19444.2
+      },
+      {
+        "date": "2026-10-07",
+        "close": 19118
       }
     ]
   },
@@ -1867,21 +1867,9 @@
     "ticker": "^JKSE",
     "isSupported": true,
     "currency": "IDR",
-    "currentPrice": 6192.93,
-    "changePct": -4.75,
+    "currentPrice": 6099.05,
+    "changePct": -6.43,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 6501.67
-      },
-      {
-        "date": "2026-08-26",
-        "close": 6405.69
-      },
-      {
-        "date": "2026-08-27",
-        "close": 6521.75
-      },
       {
         "date": "2026-08-28",
         "close": 6518.12
@@ -1989,6 +1977,18 @@
       {
         "date": "2026-10-05",
         "close": 6118.86
+      },
+      {
+        "date": "2026-10-06",
+        "close": 6192.93
+      },
+      {
+        "date": "2026-10-07",
+        "close": 6146.72
+      },
+      {
+        "date": "2026-10-08",
+        "close": 6099.04
       }
     ]
   },
@@ -1999,17 +1999,9 @@
     "ticker": "XU100.IS",
     "isSupported": true,
     "currency": "TRY",
-    "currentPrice": 12374.26,
-    "changePct": -14.5,
+    "currentPrice": 12122.94,
+    "changePct": -16.83,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 14473.4
-      },
-      {
-        "date": "2026-08-26",
-        "close": 14610.9
-      },
       {
         "date": "2026-08-27",
         "close": 14575.5
@@ -2121,6 +2113,14 @@
       {
         "date": "2026-10-05",
         "close": 12443.9
+      },
+      {
+        "date": "2026-10-06",
+        "close": 12374.3
+      },
+      {
+        "date": "2026-10-07",
+        "close": 12122.9
       }
     ]
   },
@@ -2131,17 +2131,9 @@
     "ticker": "^AEX",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 1128.33,
-    "changePct": 1.8,
+    "currentPrice": 1117.75,
+    "changePct": 1.3,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 1108.34
-      },
-      {
-        "date": "2026-08-26",
-        "close": 1107.76
-      },
       {
         "date": "2026-08-27",
         "close": 1103.38
@@ -2253,6 +2245,14 @@
       {
         "date": "2026-10-05",
         "close": 1123.88
+      },
+      {
+        "date": "2026-10-06",
+        "close": 1128.33
+      },
+      {
+        "date": "2026-10-07",
+        "close": 1117.75
       }
     ]
   },
@@ -2263,17 +2263,9 @@
     "ticker": "KSA",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 36.9,
-    "changePct": -5.46,
+    "currentPrice": 36.73,
+    "changePct": -6.97,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 39.03
-      },
-      {
-        "date": "2026-08-25",
-        "close": 39.26
-      },
       {
         "date": "2026-08-26",
         "close": 39.48
@@ -2385,6 +2377,14 @@
       {
         "date": "2026-10-05",
         "close": 36.52
+      },
+      {
+        "date": "2026-10-06",
+        "close": 36.9
+      },
+      {
+        "date": "2026-10-07",
+        "close": 36.73
       }
     ]
   },
@@ -2395,17 +2395,9 @@
     "ticker": "^SSMI",
     "isSupported": true,
     "currency": "CHF",
-    "currentPrice": 13788.93,
-    "changePct": -5.07,
+    "currentPrice": 13808.42,
+    "changePct": -4,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 14525.29
-      },
-      {
-        "date": "2026-08-26",
-        "close": 14542.9
-      },
       {
         "date": "2026-08-27",
         "close": 14384.37
@@ -2517,6 +2509,14 @@
       {
         "date": "2026-10-05",
         "close": 13703.53
+      },
+      {
+        "date": "2026-10-06",
+        "close": 13788.93
+      },
+      {
+        "date": "2026-10-07",
+        "close": 13808.42
       }
     ]
   },
@@ -2527,17 +2527,9 @@
     "ticker": "EPOL",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 44.5,
-    "changePct": -0.04,
+    "currentPrice": 43.6,
+    "changePct": -2.53,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 44.52
-      },
-      {
-        "date": "2026-08-25",
-        "close": 44.69
-      },
       {
         "date": "2026-08-26",
         "close": 44.73
@@ -2649,6 +2641,14 @@
       {
         "date": "2026-10-05",
         "close": 43.51
+      },
+      {
+        "date": "2026-10-06",
+        "close": 44.5
+      },
+      {
+        "date": "2026-10-07",
+        "close": 43.6
       }
     ]
   },
@@ -2659,17 +2659,9 @@
     "ticker": "^OMX",
     "isSupported": true,
     "currency": "SEK",
-    "currentPrice": 3282.94,
-    "changePct": -1.06,
+    "currentPrice": 3226.82,
+    "changePct": -2.85,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 3318.26
-      },
-      {
-        "date": "2026-08-26",
-        "close": 3326.34
-      },
       {
         "date": "2026-08-27",
         "close": 3321.44
@@ -2781,6 +2773,14 @@
       {
         "date": "2026-10-05",
         "close": 3257.59
+      },
+      {
+        "date": "2026-10-06",
+        "close": 3282.94
+      },
+      {
+        "date": "2026-10-07",
+        "close": 3226.82
       }
     ]
   },
@@ -2791,17 +2791,9 @@
     "ticker": "^BFX",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 5569.99,
-    "changePct": -4.53,
+    "currentPrice": 5527.87,
+    "changePct": -5.32,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 5834.53
-      },
-      {
-        "date": "2026-08-26",
-        "close": 5860.95
-      },
       {
         "date": "2026-08-27",
         "close": 5838.67
@@ -2913,6 +2905,14 @@
       {
         "date": "2026-10-05",
         "close": 5498.96
+      },
+      {
+        "date": "2026-10-06",
+        "close": 5569.99
+      },
+      {
+        "date": "2026-10-07",
+        "close": 5527.87
       }
     ]
   },
@@ -2923,17 +2923,9 @@
     "ticker": "ARGT",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 89.69,
-    "changePct": -5.45,
+    "currentPrice": 87.82,
+    "changePct": -7.03,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 94.86
-      },
-      {
-        "date": "2026-08-25",
-        "close": 95.49
-      },
       {
         "date": "2026-08-26",
         "close": 94.46
@@ -3045,6 +3037,14 @@
       {
         "date": "2026-10-05",
         "close": 89.53
+      },
+      {
+        "date": "2026-10-06",
+        "close": 89.69
+      },
+      {
+        "date": "2026-10-07",
+        "close": 87.82
       }
     ]
   },
@@ -3055,17 +3055,9 @@
     "ticker": "^ISEQ",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 14470.5,
-    "changePct": 0.83,
+    "currentPrice": 14344.11,
+    "changePct": 1.08,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 14351.49
-      },
-      {
-        "date": "2026-08-26",
-        "close": 14374.67
-      },
       {
         "date": "2026-08-27",
         "close": 14191.46
@@ -3177,6 +3169,14 @@
       {
         "date": "2026-10-05",
         "close": 14315.9
+      },
+      {
+        "date": "2026-10-06",
+        "close": 14470.5
+      },
+      {
+        "date": "2026-10-07",
+        "close": 14344.11
       }
     ]
   },
@@ -3187,17 +3187,9 @@
     "ticker": "ENOR",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 35.17,
-    "changePct": -4.09,
+    "currentPrice": 34.97,
+    "changePct": -4.17,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 36.67
-      },
-      {
-        "date": "2026-08-25",
-        "close": 36.62
-      },
       {
         "date": "2026-08-26",
         "close": 36.49
@@ -3309,6 +3301,14 @@
       {
         "date": "2026-10-05",
         "close": 35.23
+      },
+      {
+        "date": "2026-10-06",
+        "close": 35.17
+      },
+      {
+        "date": "2026-10-07",
+        "close": 34.97
       }
     ]
   },
@@ -3319,17 +3319,9 @@
     "ticker": "^ATX",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 6792.23,
-    "changePct": 1.8,
+    "currentPrice": 6611.99,
+    "changePct": -0.96,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 6672.27
-      },
-      {
-        "date": "2026-08-26",
-        "close": 6758.44
-      },
       {
         "date": "2026-08-27",
         "close": 6676.23
@@ -3441,6 +3433,14 @@
       {
         "date": "2026-10-05",
         "close": 6746.05
+      },
+      {
+        "date": "2026-10-06",
+        "close": 6792.23
+      },
+      {
+        "date": "2026-10-07",
+        "close": 6611.99
       }
     ]
   },
@@ -3451,17 +3451,9 @@
     "ticker": "^TA125.TA",
     "isSupported": true,
     "currency": "ILS",
-    "currentPrice": 4028.1,
-    "changePct": -0.32,
+    "currentPrice": 3932.42,
+    "changePct": -2.68,
     "points": [
-      {
-        "date": "2026-08-18",
-        "close": 4040.87
-      },
-      {
-        "date": "2026-08-19",
-        "close": 4039.99
-      },
       {
         "date": "2026-08-20",
         "close": 4040.89
@@ -3573,6 +3565,14 @@
       {
         "date": "2026-10-05",
         "close": 4063.58
+      },
+      {
+        "date": "2026-10-06",
+        "close": 4028.1
+      },
+      {
+        "date": "2026-10-07",
+        "close": 3932.42
       }
     ]
   },
@@ -3583,17 +3583,9 @@
     "ticker": "UAE",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 19.73,
-    "changePct": 0.48,
+    "currentPrice": 19.74,
+    "changePct": 1.13,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 19.64
-      },
-      {
-        "date": "2026-08-25",
-        "close": 19.4
-      },
       {
         "date": "2026-08-26",
         "close": 19.52
@@ -3705,6 +3697,14 @@
       {
         "date": "2026-10-05",
         "close": 19.75
+      },
+      {
+        "date": "2026-10-06",
+        "close": 19.74
+      },
+      {
+        "date": "2026-10-07",
+        "close": 19.74
       }
     ]
   },
@@ -3715,21 +3715,9 @@
     "ticker": "^STI",
     "isSupported": true,
     "currency": "SGD",
-    "currentPrice": 5701.54,
-    "changePct": -0.6,
+    "currentPrice": 5433.08,
+    "changePct": -4.68,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 5735.68
-      },
-      {
-        "date": "2026-08-26",
-        "close": 5721.59
-      },
-      {
-        "date": "2026-08-27",
-        "close": 5684.12
-      },
       {
         "date": "2026-08-28",
         "close": 5699.93
@@ -3837,6 +3825,18 @@
       {
         "date": "2026-10-05",
         "close": 5664.33
+      },
+      {
+        "date": "2026-10-06",
+        "close": 5701.54
+      },
+      {
+        "date": "2026-10-07",
+        "close": 5608.44
+      },
+      {
+        "date": "2026-10-08",
+        "close": 5433.08
       }
     ]
   },
@@ -3847,21 +3847,9 @@
     "ticker": "^KLSE",
     "isSupported": true,
     "currency": "MYR",
-    "currentPrice": 1633.35,
-    "changePct": -5.95,
+    "currentPrice": 1600.7,
+    "changePct": -8.46,
     "points": [
-      {
-        "date": "2026-08-20",
-        "close": 1736.71
-      },
-      {
-        "date": "2026-08-21",
-        "close": 1736.48
-      },
-      {
-        "date": "2026-08-24",
-        "close": 1736.33
-      },
       {
         "date": "2026-08-26",
         "close": 1748.54
@@ -3969,6 +3957,18 @@
       {
         "date": "2026-10-05",
         "close": 1631.75
+      },
+      {
+        "date": "2026-10-06",
+        "close": 1633.35
+      },
+      {
+        "date": "2026-10-07",
+        "close": 1611.78
+      },
+      {
+        "date": "2026-10-08",
+        "close": 1600.7
       }
     ]
   },
@@ -3979,17 +3979,9 @@
     "ticker": "^J200.JO",
     "isSupported": true,
     "currency": "ZAR",
-    "currentPrice": 101162.2,
-    "changePct": -7.52,
+    "currentPrice": 99394.06,
+    "changePct": -9.22,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 109389.6
-      },
-      {
-        "date": "2026-08-25",
-        "close": 109534.6
-      },
       {
         "date": "2026-08-26",
         "close": 109487.6
@@ -4101,6 +4093,14 @@
       {
         "date": "2026-10-05",
         "close": 100681.1
+      },
+      {
+        "date": "2026-10-06",
+        "close": 101162.2
+      },
+      {
+        "date": "2026-10-07",
+        "close": 99394.1
       }
     ]
   },
@@ -4111,17 +4111,9 @@
     "ticker": "EPHE",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 22.75,
-    "changePct": -9.87,
+    "currentPrice": 22.72,
+    "changePct": -7.72,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 25.24
-      },
-      {
-        "date": "2026-08-25",
-        "close": 25
-      },
       {
         "date": "2026-08-26",
         "close": 24.62
@@ -4233,6 +4225,14 @@
       {
         "date": "2026-10-05",
         "close": 23
+      },
+      {
+        "date": "2026-10-06",
+        "close": 22.75
+      },
+      {
+        "date": "2026-10-07",
+        "close": 22.72
       }
     ]
   },
@@ -4243,17 +4243,9 @@
     "ticker": "^OMXC25",
     "isSupported": true,
     "currency": "DKK",
-    "currentPrice": 1821.97,
-    "changePct": -5.84,
+    "currentPrice": 1819.11,
+    "changePct": -5.13,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 1935.07
-      },
-      {
-        "date": "2026-08-26",
-        "close": 1920.84
-      },
       {
         "date": "2026-08-27",
         "close": 1917.5
@@ -4281,6 +4273,10 @@
       {
         "date": "2026-09-04",
         "close": 1912.14
+      },
+      {
+        "date": "2026-09-07",
+        "close": 1911.87
       },
       {
         "date": "2026-09-08",
@@ -4365,6 +4361,10 @@
       {
         "date": "2026-10-06",
         "close": 1821.97
+      },
+      {
+        "date": "2026-10-07",
+        "close": 1812.58
       }
     ]
   },
@@ -4376,12 +4376,8 @@
     "isSupported": true,
     "currency": "EGP",
     "currentPrice": 81.2,
-    "changePct": -42.4,
+    "changePct": -41.7,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 140.96
-      },
       {
         "date": "2026-08-26",
         "close": 139.28
@@ -4497,6 +4493,10 @@
       {
         "date": "2026-10-05",
         "close": 126.05
+      },
+      {
+        "date": "2026-10-06",
+        "close": 125.16
       }
     ]
   },
@@ -4507,17 +4507,9 @@
     "ticker": "EEM",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 68.27,
-    "changePct": 3.27,
+    "currentPrice": 67.37,
+    "changePct": 0.3,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 66.11
-      },
-      {
-        "date": "2026-08-25",
-        "close": 67.25
-      },
       {
         "date": "2026-08-26",
         "close": 67.17
@@ -4629,6 +4621,14 @@
       {
         "date": "2026-10-05",
         "close": 68.73
+      },
+      {
+        "date": "2026-10-06",
+        "close": 68.27
+      },
+      {
+        "date": "2026-10-07",
+        "close": 67.37
       }
     ]
   },
@@ -4639,17 +4639,9 @@
     "ticker": "VNM",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 16.93,
-    "changePct": -5.42,
+    "currentPrice": 16.87,
+    "changePct": -7.05,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 17.9
-      },
-      {
-        "date": "2026-08-25",
-        "close": 17.95
-      },
       {
         "date": "2026-08-26",
         "close": 18.15
@@ -4761,6 +4753,14 @@
       {
         "date": "2026-10-05",
         "close": 16.9
+      },
+      {
+        "date": "2026-10-06",
+        "close": 16.93
+      },
+      {
+        "date": "2026-10-07",
+        "close": 16.87
       }
     ]
   },
@@ -4771,17 +4771,9 @@
     "ticker": "AFK",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 26.96,
-    "changePct": -8.73,
+    "currentPrice": 26.52,
+    "changePct": -10.86,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 29.54
-      },
-      {
-        "date": "2026-08-25",
-        "close": 29.85
-      },
       {
         "date": "2026-08-26",
         "close": 29.75
@@ -4893,6 +4885,14 @@
       {
         "date": "2026-10-05",
         "close": 26.94
+      },
+      {
+        "date": "2026-10-06",
+        "close": 26.96
+      },
+      {
+        "date": "2026-10-07",
+        "close": 26.52
       }
     ]
   },
@@ -4903,17 +4903,9 @@
     "ticker": "THD",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 71.91,
-    "changePct": -2.12,
+    "currentPrice": 71.8,
+    "changePct": -2.64,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 73.47
-      },
-      {
-        "date": "2026-08-25",
-        "close": 73.23
-      },
       {
         "date": "2026-08-26",
         "close": 73.75
@@ -5025,6 +5017,14 @@
       {
         "date": "2026-10-05",
         "close": 71.48
+      },
+      {
+        "date": "2026-10-06",
+        "close": 71.91
+      },
+      {
+        "date": "2026-10-07",
+        "close": 71.8
       }
     ]
   },
@@ -5035,21 +5035,9 @@
     "ticker": "^HSI",
     "isSupported": true,
     "currency": "HKD",
-    "currentPrice": 24280.56,
-    "changePct": -4.85,
+    "currentPrice": 23963.31,
+    "changePct": -6.27,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 25517.33
-      },
-      {
-        "date": "2026-08-25",
-        "close": 25511.1
-      },
-      {
-        "date": "2026-08-26",
-        "close": 25652.97
-      },
       {
         "date": "2026-08-27",
         "close": 25565.74
@@ -5157,6 +5145,18 @@
       {
         "date": "2026-10-05",
         "close": 24040.34
+      },
+      {
+        "date": "2026-10-06",
+        "close": 24280.56
+      },
+      {
+        "date": "2026-10-07",
+        "close": 24130.5
+      },
+      {
+        "date": "2026-10-08",
+        "close": 23963.31
       }
     ]
   },
@@ -5167,17 +5167,9 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13681.93,
-    "changePct": -2.36,
+    "currentPrice": 13691.85,
+    "changePct": -0.55,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 14013.21
-      },
-      {
-        "date": "2026-08-26",
-        "close": 13880.05
-      },
       {
         "date": "2026-08-27",
         "close": 13768.18
@@ -5287,8 +5279,16 @@
         "close": 13699.02
       },
       {
+        "date": "2026-10-05",
+        "close": 13700.12
+      },
+      {
         "date": "2026-10-06",
-        "close": 13681.93
+        "close": 13684.04
+      },
+      {
+        "date": "2026-10-08",
+        "close": 13691.85
       }
     ]
   },
@@ -5299,17 +5299,9 @@
     "ticker": "^OMXH25",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 6461.4,
-    "changePct": -0.46,
+    "currentPrice": 6406.24,
+    "changePct": -1.43,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 6491.09
-      },
-      {
-        "date": "2026-08-26",
-        "close": 6493.3
-      },
       {
         "date": "2026-08-27",
         "close": 6499.01
@@ -5421,6 +5413,14 @@
       {
         "date": "2026-10-05",
         "close": 6395.27
+      },
+      {
+        "date": "2026-10-06",
+        "close": 6461.4
+      },
+      {
+        "date": "2026-10-07",
+        "close": 6406.24
       }
     ]
   },
@@ -5431,13 +5431,9 @@
     "ticker": "EDP.LS",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 4.82,
-    "changePct": 3.01,
+    "currentPrice": 4.79,
+    "changePct": 1.94,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 4.68
-      },
       {
         "date": "2026-08-26",
         "close": 4.7
@@ -5553,6 +5549,10 @@
       {
         "date": "2026-10-05",
         "close": 4.78
+      },
+      {
+        "date": "2026-10-06",
+        "close": 4.82
       }
     ]
   },
@@ -5563,17 +5563,9 @@
     "ticker": "EC",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 16.96,
-    "changePct": -2.14,
+    "currentPrice": 16.63,
+    "changePct": 0.67,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 17.33
-      },
-      {
-        "date": "2026-08-25",
-        "close": 16.79
-      },
       {
         "date": "2026-08-26",
         "close": 16.52
@@ -5685,6 +5677,14 @@
       {
         "date": "2026-10-05",
         "close": 17.25
+      },
+      {
+        "date": "2026-10-06",
+        "close": 16.96
+      },
+      {
+        "date": "2026-10-07",
+        "close": 16.63
       }
     ]
   },
@@ -5695,17 +5695,9 @@
     "ticker": "ECH",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 38.31,
+    "currentPrice": 37.43,
     "changePct": -9.37,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 42.27
-      },
-      {
-        "date": "2026-08-25",
-        "close": 41.92
-      },
       {
         "date": "2026-08-26",
         "close": 41.3
@@ -5817,6 +5809,14 @@
       {
         "date": "2026-10-05",
         "close": 38
+      },
+      {
+        "date": "2026-10-06",
+        "close": 38.31
+      },
+      {
+        "date": "2026-10-07",
+        "close": 37.43
       }
     ]
   },
@@ -5827,13 +5827,9 @@
     "ticker": "CEZ.PR",
     "isSupported": true,
     "currency": "CZK",
-    "currentPrice": 1360,
-    "changePct": -1.16,
+    "currentPrice": 1335,
+    "changePct": -3.54,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 1376
-      },
       {
         "date": "2026-08-25",
         "close": 1384
@@ -5949,6 +5945,10 @@
       {
         "date": "2026-10-05",
         "close": 1349
+      },
+      {
+        "date": "2026-10-06",
+        "close": 1360
       }
     ]
   },
@@ -5959,13 +5959,9 @@
     "ticker": "BVB.RO",
     "isSupported": true,
     "currency": "RON",
-    "currentPrice": 77.8,
-    "changePct": -8.25,
+    "currentPrice": 78,
+    "changePct": -8.88,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 84.8
-      },
       {
         "date": "2026-08-26",
         "close": 85.6
@@ -6081,6 +6077,10 @@
       {
         "date": "2026-10-05",
         "close": 79.4
+      },
+      {
+        "date": "2026-10-06",
+        "close": 77.8
       }
     ]
   },
@@ -6091,17 +6091,9 @@
     "ticker": "EPU",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 91.18,
-    "changePct": -3.29,
+    "currentPrice": 88.65,
+    "changePct": -5.98,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 94.28
-      },
-      {
-        "date": "2026-08-25",
-        "close": 94.97
-      },
       {
         "date": "2026-08-26",
         "close": 94.29
@@ -6213,6 +6205,14 @@
       {
         "date": "2026-10-05",
         "close": 90.69
+      },
+      {
+        "date": "2026-10-06",
+        "close": 91.18
+      },
+      {
+        "date": "2026-10-07",
+        "close": 88.65
       }
     ]
   },
@@ -6223,17 +6223,9 @@
     "ticker": "GD.AT",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 2686.2,
-    "changePct": 1.23,
+    "currentPrice": 2622.02,
+    "changePct": -1.69,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 2653.53
-      },
-      {
-        "date": "2026-08-26",
-        "close": 2687.04
-      },
       {
         "date": "2026-08-27",
         "close": 2667.04
@@ -6345,6 +6337,14 @@
       {
         "date": "2026-10-05",
         "close": 2639.95
+      },
+      {
+        "date": "2026-10-06",
+        "close": 2686.2
+      },
+      {
+        "date": "2026-10-07",
+        "close": 2622.02
       }
     ]
   },
@@ -6355,17 +6355,9 @@
     "ticker": "QAT",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 16.3,
-    "changePct": -4.93,
+    "currentPrice": 16.27,
+    "changePct": -5.84,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 17.15
-      },
-      {
-        "date": "2026-08-25",
-        "close": 17.22
-      },
       {
         "date": "2026-08-26",
         "close": 17.28
@@ -6477,6 +6469,14 @@
       {
         "date": "2026-10-05",
         "close": 16.35
+      },
+      {
+        "date": "2026-10-06",
+        "close": 16.31
+      },
+      {
+        "date": "2026-10-07",
+        "close": 16.27
       }
     ]
   },
@@ -6487,13 +6487,9 @@
     "ticker": "OTP.BD",
     "isSupported": true,
     "currency": "HUF",
-    "currentPrice": 41470,
-    "changePct": -10.78,
+    "currentPrice": 39900,
+    "changePct": -13.86,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 46480
-      },
       {
         "date": "2026-08-26",
         "close": 46320
@@ -6609,6 +6605,10 @@
       {
         "date": "2026-10-05",
         "close": 40700
+      },
+      {
+        "date": "2026-10-06",
+        "close": 41470
       }
     ]
   },
@@ -6619,17 +6619,9 @@
     "ticker": "KWT",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 35.97,
-    "changePct": -4.06,
+    "currentPrice": 35.93,
+    "changePct": -4.4,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 37.49
-      },
-      {
-        "date": "2026-08-25",
-        "close": 37.64
-      },
       {
         "date": "2026-08-26",
         "close": 37.59
@@ -6741,6 +6733,14 @@
       {
         "date": "2026-10-05",
         "close": 35.94
+      },
+      {
+        "date": "2026-10-06",
+        "close": 35.97
+      },
+      {
+        "date": "2026-10-07",
+        "close": 35.94
       }
     ]
   },
@@ -6764,21 +6764,9 @@
     "ticker": "^TWII",
     "isSupported": true,
     "currency": "TWD",
-    "currentPrice": 49822.55,
-    "changePct": 10.17,
+    "currentPrice": 49425.59,
+    "changePct": 7.84,
     "points": [
-      {
-        "date": "2026-08-21",
-        "close": 45224.29
-      },
-      {
-        "date": "2026-08-24",
-        "close": 44762.32
-      },
-      {
-        "date": "2026-08-25",
-        "close": 45169.46
-      },
       {
         "date": "2026-08-26",
         "close": 45832.62
@@ -6886,6 +6874,18 @@
       {
         "date": "2026-10-05",
         "close": 49712.04
+      },
+      {
+        "date": "2026-10-06",
+        "close": 49822.55
+      },
+      {
+        "date": "2026-10-07",
+        "close": 49806.37
+      },
+      {
+        "date": "2026-10-08",
+        "close": 49425.59
       }
     ]
   },
@@ -6899,10 +6899,6 @@
     "currentPrice": 131.87,
     "changePct": -59.73,
     "points": [
-      {
-        "date": "2026-08-25",
-        "close": 327.43
-      },
       {
         "date": "2026-08-26",
         "close": 327.43
@@ -7018,6 +7014,10 @@
       {
         "date": "2026-10-05",
         "close": 310.34
+      },
+      {
+        "date": "2026-10-06",
+        "close": 317.05
       }
     ]
   },
@@ -7028,17 +7028,9 @@
     "ticker": "KSPI",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 93.16,
-    "changePct": -12.49,
+    "currentPrice": 91.87,
+    "changePct": -14.68,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 106.46
-      },
-      {
-        "date": "2026-08-25",
-        "close": 108.75
-      },
       {
         "date": "2026-08-26",
         "close": 107.68
@@ -7150,6 +7142,14 @@
       {
         "date": "2026-10-05",
         "close": 93.98
+      },
+      {
+        "date": "2026-10-06",
+        "close": 93.16
+      },
+      {
+        "date": "2026-10-07",
+        "close": 91.87
       }
     ]
   },
@@ -7238,17 +7238,9 @@
     "ticker": "BPOP",
     "isSupported": true,
     "currency": "USD",
-    "currentPrice": 158.29,
-    "changePct": -6.02,
+    "currentPrice": 155.52,
+    "changePct": -8.38,
     "points": [
-      {
-        "date": "2026-08-24",
-        "close": 168.43
-      },
-      {
-        "date": "2026-08-25",
-        "close": 169.55
-      },
       {
         "date": "2026-08-26",
         "close": 169.75
@@ -7360,6 +7352,14 @@
       {
         "date": "2026-10-05",
         "close": 158.82
+      },
+      {
+        "date": "2026-10-06",
+        "close": 158.29
+      },
+      {
+        "date": "2026-10-07",
+        "close": 155.52
       }
     ]
   },
@@ -7475,12 +7475,8 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 3.27,
-    "changePct": -2.1,
+    "changePct": -1.95,
     "points": [
-      {
-        "date": "2026-08-26",
-        "close": 3.34
-      },
       {
         "date": "2026-08-27",
         "close": 3.34
@@ -7596,6 +7592,10 @@
       {
         "date": "2026-10-06",
         "close": 3.27
+      },
+      {
+        "date": "2026-10-07",
+        "close": 3.27
       }
     ]
   },
@@ -7606,13 +7606,9 @@
     "ticker": "SAF1R.RG",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 16.5,
-    "changePct": -1.49,
+    "currentPrice": 16.8,
+    "changePct": -2.33,
     "points": [
-      {
-        "date": "2026-08-26",
-        "close": 16.75
-      },
       {
         "date": "2026-08-27",
         "close": 17.2
@@ -7643,7 +7639,7 @@
       },
       {
         "date": "2026-09-07",
-        "close": 17.75
+        "close": 17.45
       },
       {
         "date": "2026-09-08",
@@ -7727,7 +7723,11 @@
       },
       {
         "date": "2026-10-06",
-        "close": 16.6
+        "close": 16.5
+      },
+      {
+        "date": "2026-10-07",
+        "close": 16.5
       }
     ]
   },
@@ -7738,13 +7738,9 @@
     "ticker": "IGN1L.VS",
     "isSupported": true,
     "currency": "EUR",
-    "currentPrice": 21.75,
-    "changePct": -1.81,
+    "currentPrice": 21.8,
+    "changePct": -1.13,
     "points": [
-      {
-        "date": "2026-08-26",
-        "close": 22.15
-      },
       {
         "date": "2026-08-27",
         "close": 22.05
@@ -7775,7 +7771,7 @@
       },
       {
         "date": "2026-09-07",
-        "close": 22.7
+        "close": 22.65
       },
       {
         "date": "2026-09-08",
@@ -7859,7 +7855,11 @@
       },
       {
         "date": "2026-10-06",
-        "close": 21.85
+        "close": 21.75
+      },
+      {
+        "date": "2026-10-07",
+        "close": 21.75
       }
     ]
   }
