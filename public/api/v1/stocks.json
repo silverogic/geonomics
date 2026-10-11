@@ -4243,9 +4243,13 @@
     "ticker": "^OMXC25",
     "isSupported": true,
     "currency": "DKK",
-    "currentPrice": 1819.11,
-    "changePct": -4.85,
+    "currentPrice": 1824.92,
+    "changePct": -5.13,
     "points": [
+      {
+        "date": "2026-08-28",
+        "close": 1923.68
+      },
       {
         "date": "2026-08-31",
         "close": 1911.87
@@ -4265,10 +4269,6 @@
       {
         "date": "2026-09-04",
         "close": 1912.14
-      },
-      {
-        "date": "2026-09-07",
-        "close": 1911.87
       },
       {
         "date": "2026-09-08",
@@ -5432,12 +5432,8 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 4.8,
-    "changePct": 2.11,
+    "changePct": 2.54,
     "points": [
-      {
-        "date": "2026-08-28",
-        "close": 4.7
-      },
       {
         "date": "2026-08-31",
         "close": 4.68
@@ -5553,6 +5549,10 @@
       {
         "date": "2026-10-08",
         "close": 4.78
+      },
+      {
+        "date": "2026-10-09",
+        "close": 4.8
       }
     ]
   },
@@ -5828,12 +5828,8 @@
     "isSupported": true,
     "currency": "CZK",
     "currentPrice": 1337,
-    "changePct": -3.6,
+    "changePct": -3.74,
     "points": [
-      {
-        "date": "2026-08-27",
-        "close": 1387
-      },
       {
         "date": "2026-08-28",
         "close": 1389
@@ -5949,6 +5945,10 @@
       {
         "date": "2026-10-08",
         "close": 1335
+      },
+      {
+        "date": "2026-10-09",
+        "close": 1337
       }
     ]
   },
@@ -5960,12 +5960,8 @@
     "isSupported": true,
     "currency": "RON",
     "currentPrice": 76.6,
-    "changePct": -7.71,
+    "changePct": 0.79,
     "points": [
-      {
-        "date": "2026-08-28",
-        "close": 83
-      },
       {
         "date": "2026-08-31",
         "close": 76
@@ -6081,6 +6077,10 @@
       {
         "date": "2026-10-08",
         "close": 76.8
+      },
+      {
+        "date": "2026-10-09",
+        "close": 76.6
       }
     ]
   },
@@ -6488,12 +6488,8 @@
     "isSupported": true,
     "currency": "HUF",
     "currentPrice": 40300,
-    "changePct": -12.39,
+    "changePct": -10.92,
     "points": [
-      {
-        "date": "2026-08-28",
-        "close": 46000
-      },
       {
         "date": "2026-08-31",
         "close": 45240
@@ -6609,6 +6605,10 @@
       {
         "date": "2026-10-08",
         "close": 37870
+      },
+      {
+        "date": "2026-10-09",
+        "close": 40300
       }
     ]
   },
@@ -6897,12 +6897,8 @@
     "isSupported": true,
     "currency": "PKR",
     "currentPrice": 131.87,
-    "changePct": -59.45,
+    "changePct": -59.88,
     "points": [
-      {
-        "date": "2026-08-28",
-        "close": 325.2
-      },
       {
         "date": "2026-08-31",
         "close": 328.7
@@ -7018,6 +7014,10 @@
       {
         "date": "2026-10-08",
         "close": 315.91
+      },
+      {
+        "date": "2026-10-09",
+        "close": 306.12
       }
     ]
   },
@@ -7727,7 +7727,7 @@
       },
       {
         "date": "2026-10-09",
-        "close": 16.8
+        "close": 16.55
       }
     ]
   },
