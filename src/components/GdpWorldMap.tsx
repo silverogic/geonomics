@@ -8,8 +8,11 @@ import {
   Check,
   ExternalLink,
   Activity,
+  Globe,
+  LayoutGrid,
 } from 'lucide-react'
 import { TileWorldMap } from './TileWorldMap'
+import { GdpTreemap } from './GdpTreemap'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Region, Language, EconomicYear } from '../types/economics'
 import { CountryFlag } from './CountryFlag'
 import { RankingTable, type CountryRowItem } from './RankingTable'
@@ -60,7 +63,17 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   onSelectCountry,
 }) => {
   const t = translations[lang]
+  const [visualMode, setVisualMode] = useState<'map' | 'treemap'>('map')
   const [metric, setMetric] = useState<MapMetric>('gdp')
+  const isHeatmapSupported = metric === 'gdp' || metric === 'perCapita' || metric === 'debt'
+
+  // Automatically fall back to map view if current metric does not support heatmap
+  useEffect(() => {
+    if (!isHeatmapSupported && visualMode === 'treemap') {
+      setVisualMode('map')
+    }
+  }, [isHeatmapSupported, visualMode])
+
   const [isMetricMenuOpen, setIsMetricMenuOpen] = useState(false)
   const metricMenuRef = useRef<HTMLDivElement>(null)
   const [selectedRegions, setSelectedRegions] = useState<Region[]>([])
@@ -563,6 +576,41 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               </div>
             )}
 
+            {/* View Mode Switcher: World Map vs Heatmap */}
+            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
+              <button
+                type="button"
+                onClick={() => setVisualMode('map')}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  visualMode === 'map'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
+                title={t.mapViewModeMap}
+              >
+                <Globe className="w-3.5 h-3.5" />
+                <span>{t.mapViewModeMap}</span>
+              </button>
+              <button
+                type="button"
+                disabled={!isHeatmapSupported}
+                onClick={() => {
+                  if (isHeatmapSupported) setVisualMode('treemap')
+                }}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  !isHeatmapSupported
+                    ? 'opacity-35 cursor-not-allowed text-slate-500'
+                    : visualMode === 'treemap'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                }`}
+                title={isHeatmapSupported ? t.mapViewModeTreemap : t.heatmapDisabledTooltip}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>{t.mapViewModeTreemap}</span>
+              </button>
+            </div>
+
           </div>
 
           {/* Quick Country Search (Alined with filter row) */}
@@ -583,7 +631,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* MAP CANVAS (Takes 3 columns on wide screens) */}
         <div className="xl:col-span-3 space-y-4">
-          <TileWorldMap
+          {visualMode === 'map' ? (
+            <>
+              <TileWorldMap
             items={items}
             metric={metric}
             baseCurrency={baseCurrency}
@@ -821,6 +871,24 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               )}
             </div>
           </div>
+            </>
+          ) : (
+            <GdpTreemap
+              items={filteredItems}
+              allItems={items}
+              metric={metric}
+              baseCurrency={baseCurrency}
+              usdToBase={usdToBase}
+              lang={lang}
+              searchQuery={searchQuery}
+              hoveredCountryId={hoveredCountryId}
+              pinnedCountryId={pinnedCountryId}
+              getCountryFill={getCountryFill}
+              onHoverCountry={(id) => setHoveredCountryId(id)}
+              onSelectCountry={handleCountrySelect}
+              selectedYear={selectedYear}
+            />
+          )}
         </div>
 
         {/* RIGHT SIDEBAR: Selected / Hovered Economy Inspector HUD */}

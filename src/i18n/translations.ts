@@ -91,6 +91,14 @@ export const translations = {
     mapStyleLabel: 'Map Style',
     mapStyleTile: 'Tile Map',
     mapStyleVector: 'Detailed Map',
+    mapViewModeMap: 'World Map',
+    mapViewModeTreemap: 'Heatmap',
+    heatmapDisabledTooltip: 'Heatmap is only available for Total GDP, Per Capita, and Debt Ratio',
+    treemapTotalGdpShare: 'World Share',
+    treemapYoYGrowth: 'YoY Growth',
+    treemapColorByGrowth: 'Growth Rate',
+    treemapColorByMetric: 'Indicator Color',
+    treemapSubtitle: 'Treemap of National Total GDP & YoY Growth Rate',
 
     // Year Switcher
     yearLabel: 'Economic Horizon',
@@ -299,6 +307,14 @@ export const translations = {
     mapStyleLabel: '지도 형태',
     mapStyleTile: '타일맵',
     mapStyleVector: '정밀 지도',
+    mapViewModeMap: '세계 지도',
+    mapViewModeTreemap: '히트맵',
+    heatmapDisabledTooltip: '총 GDP, 1인당 GDP, 국가 부채 비율에서만 히트맵을 지원합니다',
+    treemapTotalGdpShare: '세계 점유율',
+    treemapYoYGrowth: '전년 대비',
+    treemapColorByGrowth: '성장률 기준',
+    treemapColorByMetric: '선택 지표 기준',
+    treemapSubtitle: '국가별 규모(면적) 및 전년 대비 증감률(색상) 히트맵',
 
     // Year Switcher
     yearLabel: '기준 연도',
@@ -507,6 +523,14 @@ export const translations = {
     mapStyleLabel: 'マップ形式',
     mapStyleTile: 'タイルマップ',
     mapStyleVector: '詳細地図',
+    mapViewModeMap: '世界地図',
+    mapViewModeTreemap: 'ヒートマップ',
+    heatmapDisabledTooltip: '名目GDP、1人当たりGDP、政府債務比率でのみヒートマップを利用できます',
+    treemapTotalGdpShare: '世界シェア',
+    treemapYoYGrowth: '前年比',
+    treemapColorByGrowth: '成長率基準',
+    treemapColorByMetric: '選択指標基準',
+    treemapSubtitle: '国別規模（面積）および前年比増減率（色）ヒートマップ',
 
     // Year Switcher
     yearLabel: '対象年度',
@@ -715,6 +739,14 @@ export const translations = {
     mapStyleLabel: 'Estilo de mapa',
     mapStyleTile: 'Mapa de cuadrícula',
     mapStyleVector: 'Mapa detallado',
+    mapViewModeMap: 'Mapa Mundial',
+    mapViewModeTreemap: 'Mapa de Calor',
+    heatmapDisabledTooltip: 'El mapa de calor solo está disponible para PIB Total, PIB per cápita y Deuda',
+    treemapTotalGdpShare: 'Cuota Mundial',
+    treemapYoYGrowth: 'Var. interanual',
+    treemapColorByGrowth: 'Tasa de Crecimiento',
+    treemapColorByMetric: 'Color de Indicador',
+    treemapSubtitle: 'Mapa de calor de tamaño nacional y tasa de crecimiento interanual',
 
     // Year Switcher
     yearLabel: 'Horizonte económico',
@@ -923,6 +955,14 @@ export const translations = {
     mapStyleLabel: '地图样式',
     mapStyleTile: '点阵瓦片地图',
     mapStyleVector: '矢量精细地图',
+    mapViewModeMap: '世界地图',
+    mapViewModeTreemap: '热力图',
+    heatmapDisabledTooltip: '热力图仅支持名义GDP、人均GDP和政府债务率',
+    treemapTotalGdpShare: '全球占比',
+    treemapYoYGrowth: '同比增幅',
+    treemapColorByGrowth: '增长率基准',
+    treemapColorByMetric: '所选指标基准',
+    treemapSubtitle: '国家规模（面积）与同比增减率（颜色）热力图',
 
     // Year Switcher
     yearLabel: '基准年份',
