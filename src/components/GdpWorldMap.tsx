@@ -63,16 +63,24 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   onSelectCountry,
 }) => {
   const t = translations[lang]
-  const [visualMode, setVisualMode] = useState<'map' | 'treemap'>('map')
+  const [visualMode, setVisualMode] = useState<'map' | 'treemap'>(() => {
+    try {
+      const saved = localStorage.getItem('geonomics_visual_mode')
+      if (saved === 'map' || saved === 'treemap') return saved
+    } catch { }
+    return 'treemap' // 기본을 히트맵(treemap)으로 설정
+  })
+
+  const handleVisualModeChange = (mode: 'map' | 'treemap') => {
+    setVisualMode(mode)
+    try {
+      localStorage.setItem('geonomics_visual_mode', mode)
+    } catch { }
+  }
+
   const [metric, setMetric] = useState<MapMetric>('gdp')
   const isHeatmapSupported = metric === 'gdp' || metric === 'debt'
-
-  // Automatically fall back to map view if current metric does not support heatmap
-  useEffect(() => {
-    if (!isHeatmapSupported && visualMode === 'treemap') {
-      setVisualMode('map')
-    }
-  }, [isHeatmapSupported, visualMode])
+  const activeVisualMode = isHeatmapSupported ? visualMode : 'map'
 
   const [isMetricMenuOpen, setIsMetricMenuOpen] = useState(false)
   const metricMenuRef = useRef<HTMLDivElement>(null)
@@ -580,9 +588,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
             <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
               <button
                 type="button"
-                onClick={() => setVisualMode('map')}
+                onClick={() => handleVisualModeChange('map')}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  visualMode === 'map'
+                  activeVisualMode === 'map'
                     ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                 }`}
@@ -595,12 +603,12 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 type="button"
                 disabled={!isHeatmapSupported}
                 onClick={() => {
-                  if (isHeatmapSupported) setVisualMode('treemap')
+                  if (isHeatmapSupported) handleVisualModeChange('treemap')
                 }}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   !isHeatmapSupported
                     ? 'opacity-35 cursor-not-allowed text-slate-500'
-                    : visualMode === 'treemap'
+                    : activeVisualMode === 'treemap'
                     ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                 }`}
@@ -631,7 +639,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* MAP CANVAS (Takes 3 columns on wide screens) */}
         <div className="xl:col-span-3 space-y-4">
-          {visualMode === 'map' ? (
+          {activeVisualMode === 'map' ? (
             <>
               <TileWorldMap
             items={items}

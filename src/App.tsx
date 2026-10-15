@@ -211,7 +211,7 @@ export function App() {
 
         {/* TAB 1: GDP WORLD MAP & EXPLORER */}
         {activeTab === 'cards' && (
-          isLoading ? (
+          isLoading && allRankedItems.length === 0 ? (
             <div className="py-24 flex items-center justify-center">
               <Spinner size="lg" label={t.loadingData} />
             </div>
