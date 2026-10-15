@@ -80,12 +80,25 @@ export const StockChart: React.FC<StockChartProps> = ({
     )
   }
 
-  const { points, changePct, currentPrice, currency, nameKo, nameEn, ticker } = stockData
-  const isPositive = changePct >= 0
-
+  const { points, changePct, currentPrice, currency, nameKo, nameEn, ticker, changePct30d } = stockData
+  
   const closes = points.map((p) => p.close)
   const minPrice = Math.min(...closes)
   const maxPrice = Math.max(...closes)
+
+  // 1-Day daily change: compare currentPrice with previous trading day's close
+  const prevClose = points.length >= 2 ? points[points.length - 2].close : closes[0]
+  const calculated1dChange = prevClose > 0 && points.length >= 2
+    ? Number((((currentPrice - prevClose) / prevClose) * 100).toFixed(2))
+    : changePct
+  const dailyChangePct = stockData.changePct ?? calculated1dChange
+  const isPositive = dailyChangePct >= 0
+
+  // 30-Day cumulative change
+  const calc30dChange = closes[0] > 0
+    ? Number((((currentPrice - closes[0]) / closes[0]) * 100).toFixed(2))
+    : 0
+  const display30dChange = changePct30d ?? calc30dChange
 
   // Format short date for X-axis: "08/12"
   const labels = points.map((p) => {
@@ -196,20 +209,34 @@ export const StockChart: React.FC<StockChartProps> = ({
               }`}
             >
               {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-              <span>{isPositive ? '+' : ''}{changePct.toFixed(2)}%</span>
+              <span>{isPositive ? '+' : ''}{dailyChangePct.toFixed(2)}%</span>
+              <span className="text-[10px] opacity-75 font-normal ml-0.5">(1D)</span>
+            </div>
+
+            {/* 30D Trend Tag */}
+            <div
+              className={`inline-flex items-center gap-1 text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded ${
+                display30dChange >= 0
+                  ? 'text-emerald-400/90 bg-slate-900 border border-emerald-500/20'
+                  : 'text-rose-400/90 bg-slate-900 border border-rose-500/20'
+              }`}
+              title={lang === 'ko' ? '최근 30거래일 누적 등락률' : '30-Day Cumulative Trend'}
+            >
+              <span className="text-[10px] text-slate-500">30D:</span>
+              <span>{display30dChange >= 0 ? '+' : ''}{display30dChange.toFixed(2)}%</span>
             </div>
           </div>
           <span className="text-[11px] text-slate-500">
             {lang === 'ko'
-              ? '최근 30거래일 등락률'
+              ? '전일 대비 1일 등락률'
               : lang === 'ja'
-              ? '直近30取引日の騰落率'
+              ? '前日比（1日）騰落率'
               : lang === 'es'
-              ? 'Tendencia en 30 días de negociación'
+              ? 'Variación diaria (1 día)'
               : lang === 'zh'
-              ? '最近30个交易日涨跌幅'
-              : '30-Day Trading Trend'}{' '}
-            ({startDate} ~ {endDate})
+              ? '较前一交易日涨跌幅 (1日)'
+              : 'Daily Change (1-Day)'}{' '}
+            · 30D ({startDate} ~ {endDate})
           </span>
         </div>
 

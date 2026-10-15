@@ -265,7 +265,24 @@ async function fetchTicker(item) {
 
     const currentPrice = meta.regularMarketPrice || recent30Points[recent30Points.length - 1].close
     const firstPrice = recent30Points[0].close
-    const changePct = Number((((currentPrice - firstPrice) / firstPrice) * 100).toFixed(2))
+
+    // Previous trading day close (meta.chartPreviousClose or the second to last point)
+    let prevClose = meta.chartPreviousClose
+    if (!prevClose || prevClose <= 0) {
+      if (recent30Points.length >= 2) {
+        prevClose = recent30Points[recent30Points.length - 2].close
+      } else {
+        prevClose = firstPrice
+      }
+    }
+
+    // 1-Day daily change percentage (전일 대비 1일 등락률)
+    const changePct = prevClose > 0
+      ? Number((((currentPrice - prevClose) / prevClose) * 100).toFixed(2))
+      : 0
+
+    // 30-Day cumulative change percentage (30일 누적 등락률)
+    const changePct30d = Number((((currentPrice - firstPrice) / firstPrice) * 100).toFixed(2))
 
     return {
       countryId: item.id,
@@ -276,6 +293,7 @@ async function fetchTicker(item) {
       currency: meta.currency || 'USD',
       currentPrice: Number(currentPrice.toFixed(2)),
       changePct,
+      changePct30d,
       points: recent30Points
     }
   } catch (err) {

@@ -15,7 +15,8 @@ export interface StockPriceInfo {
   fallbackReasonKo?: string
   currency: string
   currentPrice: number
-  changePct: number
+  changePct: number // 1-Day daily change percentage (전일 대비 등락률)
+  changePct30d?: number // 30-Day cumulative change percentage (30일 누적 등락률)
   points: StockPoint[]
 }
 
