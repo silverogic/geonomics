@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-14",
+  "updatedAt": "2026-10-15",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -204,7 +204,7 @@
     },
     "HKG": {
       "countryId": "HKG",
-      "priceUsd": 4.411,
+      "priceUsd": 4.424,
       "currencyCode": "HKD"
     },
     "NZL": {
@@ -329,12 +329,12 @@
     },
     "ECU": {
       "countryId": "ECU",
-      "priceUsd": 0.848,
+      "priceUsd": 0.839,
       "currencyCode": "USD"
     },
     "UZB": {
       "countryId": "UZB",
-      "priceUsd": 1.545,
+      "priceUsd": 1.541,
       "currencyCode": "UZS"
     },
     "VEN": {
@@ -414,7 +414,7 @@
     },
     "TZA": {
       "countryId": "TZA",
-      "priceUsd": 1.443,
+      "priceUsd": 1.543,
       "currencyCode": "TZS"
     },
     "BLR": {
