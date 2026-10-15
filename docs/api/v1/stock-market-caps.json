@@ -420,16 +420,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "ARG": {
-    "marketCapUsd": 135588803064,
+    "marketCapUsd": 137007804908,
     "baseCapUsd": 52947830000,
     "baseYear": "2022",
     "year": "2026 Live Est.",
-    "indexMultiplier": 2.5608,
+    "indexMultiplier": 2.5876,
     "baseIndexPrice": 33.97,
-    "currentIndexPrice": 86.99,
+    "currentIndexPrice": 87.9,
     "indexTicker": "ARGT",
     "countryName": "Argentina",
-    "source": "World Bank (WFE 2022) × Live Index Multiplier (2.5608x via Yahoo Finance)"
+    "source": "World Bank (WFE 2022) × Live Index Multiplier (2.5876x via Yahoo Finance)"
   },
   "ARM": {
     "marketCapUsd": 4847050000,
@@ -444,28 +444,28 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "AUS": {
-    "marketCapUsd": 2011258853576,
+    "marketCapUsd": 2013511561792,
     "baseCapUsd": 2047916560000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9821,
+    "indexMultiplier": 0.9832,
     "baseIndexPrice": 8869.1,
-    "currentIndexPrice": 8710.6,
+    "currentIndexPrice": 8719.7,
     "indexTicker": "^AXJO",
     "countryName": "Australia",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9821x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9832x via Yahoo Finance)"
   },
   "AUT": {
-    "marketCapUsd": 249361855270,
+    "marketCapUsd": 245181190804,
     "baseCapUsd": 211144670000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.181,
+    "indexMultiplier": 1.1612,
     "baseIndexPrice": 5604.9,
-    "currentIndexPrice": 6619.12,
+    "currentIndexPrice": 6508.55,
     "indexTicker": "^ATX",
     "countryName": "Austria",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.181x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1612x via Yahoo Finance)"
   },
   "AZE": {
     "marketCapUsd": 1573050000,
@@ -492,16 +492,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "BGD": {
-    "marketCapUsd": 30855246291,
+    "marketCapUsd": 30650750649,
     "baseCapUsd": 26217390000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.1769,
+    "indexMultiplier": 1.1691,
     "baseIndexPrice": 54.71,
-    "currentIndexPrice": 64.39,
+    "currentIndexPrice": 63.96,
     "indexTicker": "EEM",
     "countryName": "Bangladesh",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1769x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1691x via Yahoo Finance)"
   },
   "BRB": {
     "marketCapUsd": 2780430000,
@@ -528,16 +528,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "BEL": {
-    "marketCapUsd": 510057093030,
+    "marketCapUsd": 514231309088,
     "baseCapUsd": 321093542983.702,
     "baseYear": "2018",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.5885,
+    "indexMultiplier": 1.6015,
     "baseIndexPrice": 3491.62,
-    "currentIndexPrice": 5546.61,
+    "currentIndexPrice": 5591.77,
     "indexTicker": "^BFX",
     "countryName": "Belgium",
-    "source": "World Bank (WFE 2018) × Live Index Multiplier (1.5885x via Yahoo Finance)"
+    "source": "World Bank (WFE 2018) × Live Index Multiplier (1.6015x via Yahoo Finance)"
   },
   "BMU": {
     "marketCapUsd": 2260240000,
@@ -564,16 +564,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "BRA": {
-    "marketCapUsd": 1116920200501,
+    "marketCapUsd": 1105068663693,
     "baseCapUsd": 871436530000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.2817,
+    "indexMultiplier": 1.2681,
     "baseIndexPrice": 161125,
-    "currentIndexPrice": 206505.98,
+    "currentIndexPrice": 204324.27,
     "indexTicker": "^BVSP",
     "countryName": "Brazil",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2817x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2681x via Yahoo Finance)"
   },
   "BGR": {
     "marketCapUsd": 11178580000,
@@ -588,16 +588,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "CAN": {
-    "marketCapUsd": 5185483495857,
+    "marketCapUsd": 5265892918215,
     "baseCapUsd": 4621231170000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.1221,
+    "indexMultiplier": 1.1395,
     "baseIndexPrice": 31712.8,
-    "currentIndexPrice": 35584.46,
+    "currentIndexPrice": 36137.1,
     "indexTicker": "^GSPTSE",
     "countryName": "Canada",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1221x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1395x via Yahoo Finance)"
   },
   "CYM": {
     "marketCapUsd": 644320000,
@@ -612,40 +612,40 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "CHL": {
-    "marketCapUsd": 444821989521,
+    "marketCapUsd": 449397245787,
     "baseCapUsd": 486729390000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9139,
+    "indexMultiplier": 0.9233,
     "baseIndexPrice": 40.4,
-    "currentIndexPrice": 36.92,
+    "currentIndexPrice": 37.3,
     "indexTicker": "ECH",
     "countryName": "Chile",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9139x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9233x via Yahoo Finance)"
   },
   "CHN": {
-    "marketCapUsd": 13948667334900,
+    "marketCapUsd": 13962625307550,
     "baseCapUsd": 15508858500000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.8994,
+    "indexMultiplier": 0.9003,
     "baseIndexPrice": 4117.95,
-    "currentIndexPrice": 3703.52,
+    "currentIndexPrice": 3707.48,
     "indexTicker": "000001.SS",
     "countryName": "China",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8994x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9003x via Yahoo Finance)"
   },
   "COL": {
-    "marketCapUsd": 236711951784,
+    "marketCapUsd": 234075046365,
     "baseCapUsd": 132507810000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.7864,
+    "indexMultiplier": 1.7665,
     "baseIndexPrice": 10.02,
-    "currentIndexPrice": 17.9,
+    "currentIndexPrice": 17.7,
     "indexTicker": "EC",
     "countryName": "Colombia",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.7864x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.7665x via Yahoo Finance)"
   },
   "CRI": {
     "marketCapUsd": 2232060000,
@@ -696,52 +696,52 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "CZE": {
-    "marketCapUsd": 64357385518,
+    "marketCapUsd": 63980961794,
     "baseCapUsd": 55356430000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.1626,
+    "indexMultiplier": 1.1558,
     "baseIndexPrice": 1181,
-    "currentIndexPrice": 1373,
+    "currentIndexPrice": 1365,
     "indexTicker": "CEZ.PR",
     "countryName": "Czechia",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1626x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1558x via Yahoo Finance)"
   },
   "EGY": {
-    "marketCapUsd": 56778219960,
+    "marketCapUsd": 57243512128,
     "baseCapUsd": 62877320000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.903,
+    "indexMultiplier": 0.9104,
     "baseIndexPrice": 134,
-    "currentIndexPrice": 121,
+    "currentIndexPrice": 122,
     "indexTicker": "COMI.CA",
     "countryName": "Egypt, Arab Rep.",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.903x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9104x via Yahoo Finance)"
   },
   "FRA": {
-    "marketCapUsd": 3730866928188,
+    "marketCapUsd": 3760204711123,
     "baseCapUsd": 2365950236659.36,
     "baseYear": "2018",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.5769,
+    "indexMultiplier": 1.5893,
     "baseIndexPrice": 4992.72,
-    "currentIndexPrice": 7873.11,
+    "currentIndexPrice": 7934.7,
     "indexTicker": "^FCHI",
     "countryName": "France",
-    "source": "World Bank (WFE 2018) × Live Index Multiplier (1.5769x via Yahoo Finance)"
+    "source": "World Bank (WFE 2018) × Live Index Multiplier (1.5893x via Yahoo Finance)"
   },
   "DEU": {
-    "marketCapUsd": 2988489169290,
+    "marketCapUsd": 2998344516696,
     "baseCapUsd": 2898631590000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.031,
+    "indexMultiplier": 1.0344,
     "baseIndexPrice": 24538.81,
-    "currentIndexPrice": 25298.61,
+    "currentIndexPrice": 25382.62,
     "indexTicker": "^GDAXI",
     "countryName": "Germany",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.031x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0344x via Yahoo Finance)"
   },
   "GHA": {
     "marketCapUsd": 16444520000,
@@ -756,64 +756,64 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "GRC": {
-    "marketCapUsd": 145072733456,
+    "marketCapUsd": 143860354638,
     "baseCapUsd": 128976470000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.1248,
+    "indexMultiplier": 1.1154,
     "baseIndexPrice": 2314.88,
-    "currentIndexPrice": 2603.7,
+    "currentIndexPrice": 2582.1,
     "indexTicker": "GD.AT",
     "countryName": "Greece",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1248x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1154x via Yahoo Finance)"
   },
   "HKG": {
-    "marketCapUsd": 5348776733280,
+    "marketCapUsd": 5349994578620,
     "baseCapUsd": 6089226700000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.8784,
+    "indexMultiplier": 0.8786,
     "baseIndexPrice": 27387.11,
-    "currentIndexPrice": 24057.7,
+    "currentIndexPrice": 24062.72,
     "indexTicker": "^HSI",
     "countryName": "Hong Kong SAR, China",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8784x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8786x via Yahoo Finance)"
   },
   "HUN": {
-    "marketCapUsd": 64021715276,
+    "marketCapUsd": 64284586724,
     "baseCapUsd": 62588440000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0229,
+    "indexMultiplier": 1.0271,
     "baseIndexPrice": 40540,
-    "currentIndexPrice": 41470,
+    "currentIndexPrice": 41640,
     "indexTicker": "OTP.BD",
     "countryName": "Hungary",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0229x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0271x via Yahoo Finance)"
   },
   "IND": {
-    "marketCapUsd": 9433930344384,
+    "marketCapUsd": 9590212154432,
     "baseCapUsd": 10559581760000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.8934,
+    "indexMultiplier": 0.9082,
     "baseIndexPrice": 25320.65,
-    "currentIndexPrice": 22622.7,
+    "currentIndexPrice": 22997.35,
     "indexTicker": "^NSEI",
     "countryName": "India",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8934x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9082x via Yahoo Finance)"
   },
   "IDN": {
-    "marketCapUsd": 670787705808,
+    "marketCapUsd": 668508698880,
     "baseCapUsd": 949586220000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.7064,
+    "indexMultiplier": 0.704,
     "baseIndexPrice": 8329.61,
-    "currentIndexPrice": 5883.69,
+    "currentIndexPrice": 5863.78,
     "indexTicker": "^JKSE",
     "countryName": "Indonesia",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.7064x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.704x via Yahoo Finance)"
   },
   "IRN": {
     "marketCapUsd": 185635780000,
@@ -828,28 +828,28 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "IRL": {
-    "marketCapUsd": 283129777211,
+    "marketCapUsd": 283162823522,
     "baseCapUsd": 110154370000,
     "baseYear": "2018",
     "year": "2026 Live Est.",
-    "indexMultiplier": 2.5703,
+    "indexMultiplier": 2.5706,
     "baseIndexPrice": 5479.81,
-    "currentIndexPrice": 14084.62,
+    "currentIndexPrice": 14086.39,
     "indexTicker": "^ISEQ",
     "countryName": "Ireland",
-    "source": "World Bank (WFE 2018) × Live Index Multiplier (2.5703x via Yahoo Finance)"
+    "source": "World Bank (WFE 2018) × Live Index Multiplier (2.5706x via Yahoo Finance)"
   },
   "ISR": {
-    "marketCapUsd": 532620626624,
+    "marketCapUsd": 532223568320,
     "baseCapUsd": 330881920000,
     "baseYear": "2024",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.6097,
+    "indexMultiplier": 1.6085,
     "baseIndexPrice": 2500.6,
-    "currentIndexPrice": 4025.15,
+    "currentIndexPrice": 4022.23,
     "indexTicker": "^TA125.TA",
     "countryName": "Israel",
-    "source": "World Bank (WFE 2024) × Live Index Multiplier (1.6097x via Yahoo Finance)"
+    "source": "World Bank (WFE 2024) × Live Index Multiplier (1.6085x via Yahoo Finance)"
   },
   "JAM": {
     "marketCapUsd": 11588830000,
@@ -864,16 +864,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "JPN": {
-    "marketCapUsd": 9204191514498,
+    "marketCapUsd": 9195058862094,
     "baseCapUsd": 7610543670000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.2094,
+    "indexMultiplier": 1.2082,
     "baseIndexPrice": 53322.85,
-    "currentIndexPrice": 64489.06,
+    "currentIndexPrice": 64425.95,
     "indexTicker": "^N225",
     "countryName": "Japan",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2094x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2082x via Yahoo Finance)"
   },
   "JOR": {
     "marketCapUsd": 37367150000,
@@ -888,16 +888,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "KAZ": {
-    "marketCapUsd": 192432872192,
+    "marketCapUsd": 192290305856,
     "baseCapUsd": 158407040000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.2148,
+    "indexMultiplier": 1.2139,
     "baseIndexPrice": 78.13,
-    "currentIndexPrice": 94.91,
+    "currentIndexPrice": 94.84,
     "indexTicker": "KSPI",
     "countryName": "Kazakhstan",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2148x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2139x via Yahoo Finance)"
   },
   "KEN": {
     "marketCapUsd": 22831200000,
@@ -912,28 +912,28 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "KOR": {
-    "marketCapUsd": 2929234874874,
+    "marketCapUsd": 2930613208619,
     "baseCapUsd": 2756667490000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0626,
+    "indexMultiplier": 1.0631,
     "baseIndexPrice": 5224.36,
-    "currentIndexPrice": 5551.16,
+    "currentIndexPrice": 5554.22,
     "indexTicker": "^KS11",
     "countryName": "Korea, Rep.",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0626x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0631x via Yahoo Finance)"
   },
   "KWT": {
-    "marketCapUsd": 159147893766,
+    "marketCapUsd": 158235624853,
     "baseCapUsd": 172126210000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9246,
+    "indexMultiplier": 0.9193,
     "baseIndexPrice": 38.28,
-    "currentIndexPrice": 35.39,
+    "currentIndexPrice": 35.19,
     "indexTicker": "KWT",
     "countryName": "Kuwait",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9246x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9193x via Yahoo Finance)"
   },
   "LBN": {
     "marketCapUsd": 10577280000,
@@ -960,16 +960,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "MYS": {
-    "marketCapUsd": 454837234257,
+    "marketCapUsd": 454642255269,
     "baseCapUsd": 487447470000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9331,
+    "indexMultiplier": 0.9327,
     "baseIndexPrice": 1740.88,
-    "currentIndexPrice": 1624.43,
+    "currentIndexPrice": 1623.7,
     "indexTicker": "^KLSE",
     "countryName": "Malaysia",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9331x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9327x via Yahoo Finance)"
   },
   "MLT": {
     "marketCapUsd": 5350140000,
@@ -996,16 +996,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "MEX": {
-    "marketCapUsd": 582039011394,
+    "marketCapUsd": 589660550538,
     "baseCapUsd": 560407290000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0386,
+    "indexMultiplier": 1.0522,
     "baseIndexPrice": 64308.29,
-    "currentIndexPrice": 66790.35,
+    "currentIndexPrice": 67663.29,
     "indexTicker": "^MXX",
     "countryName": "Mexico",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0386x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0522x via Yahoo Finance)"
   },
   "MAR": {
     "marketCapUsd": 114008700000,
@@ -1032,52 +1032,52 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "NLD": {
-    "marketCapUsd": 2231673896177,
+    "marketCapUsd": 2222873052655,
     "baseCapUsd": 1100105440292.49,
     "baseYear": "2017",
     "year": "2026 Live Est.",
-    "indexMultiplier": 2.0286,
+    "indexMultiplier": 2.0206,
     "baseIndexPrice": 560.52,
-    "currentIndexPrice": 1137.09,
+    "currentIndexPrice": 1132.58,
     "indexTicker": "^AEX",
     "countryName": "Netherlands",
-    "source": "World Bank (WFE 2017) × Live Index Multiplier (2.0286x via Yahoo Finance)"
+    "source": "World Bank (WFE 2017) × Live Index Multiplier (2.0206x via Yahoo Finance)"
   },
   "NZL": {
-    "marketCapUsd": 105727457976,
+    "marketCapUsd": 106429006292,
     "baseCapUsd": 103168870000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0248,
+    "indexMultiplier": 1.0316,
     "baseIndexPrice": 13423.18,
-    "currentIndexPrice": 13756.28,
+    "currentIndexPrice": 13847.14,
     "indexTicker": "^NZ50",
     "countryName": "New Zealand",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0248x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0316x via Yahoo Finance)"
   },
   "NGA": {
-    "marketCapUsd": 84995242176,
+    "marketCapUsd": 86455880544,
     "baseCapUsd": 86942760000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9776,
+    "indexMultiplier": 0.9944,
     "baseIndexPrice": 26.75,
-    "currentIndexPrice": 26.15,
+    "currentIndexPrice": 26.6,
     "indexTicker": "AFK",
     "countryName": "Nigeria",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9776x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9944x via Yahoo Finance)"
   },
   "NOR": {
-    "marketCapUsd": 421600120695,
+    "marketCapUsd": 421718340147,
     "baseCapUsd": 295548630000,
     "baseYear": "2019",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.4265,
+    "indexMultiplier": 1.4269,
     "baseIndexPrice": 25.16,
-    "currentIndexPrice": 35.89,
+    "currentIndexPrice": 35.9,
     "indexTicker": "ENOR",
     "countryName": "Norway",
-    "source": "World Bank (WFE 2019) × Live Index Multiplier (1.4265x via Yahoo Finance)"
+    "source": "World Bank (WFE 2019) × Live Index Multiplier (1.4269x via Yahoo Finance)"
   },
   "OMN": {
     "marketCapUsd": 41303510000,
@@ -1092,16 +1092,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "PAK": {
-    "marketCapUsd": 64870317985,
+    "marketCapUsd": 65039013145,
     "baseCapUsd": 70289650000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9229,
+    "indexMultiplier": 0.9253,
     "baseIndexPrice": 323.93,
-    "currentIndexPrice": 298.96,
+    "currentIndexPrice": 299.74,
     "indexTicker": "OGDC.KA",
     "countryName": "Pakistan",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9229x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9253x via Yahoo Finance)"
   },
   "PAN": {
     "marketCapUsd": 27183000000,
@@ -1128,76 +1128,76 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "PER": {
-    "marketCapUsd": 129043885257,
+    "marketCapUsd": 130831633647,
     "baseCapUsd": 105161670000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.2271,
+    "indexMultiplier": 1.2441,
     "baseIndexPrice": 72.35,
-    "currentIndexPrice": 88.78,
+    "currentIndexPrice": 90.01,
     "indexTicker": "EPU",
     "countryName": "Peru",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2271x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2441x via Yahoo Finance)"
   },
   "PHL": {
-    "marketCapUsd": 207953365851,
+    "marketCapUsd": 211109448627,
     "baseCapUsd": 232064910000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.8961,
+    "indexMultiplier": 0.9097,
     "baseIndexPrice": 24.92,
-    "currentIndexPrice": 22.33,
+    "currentIndexPrice": 22.67,
     "indexTicker": "EPHE",
     "countryName": "Philippines",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8961x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9097x via Yahoo Finance)"
   },
   "POL": {
-    "marketCapUsd": 395812048632,
+    "marketCapUsd": 399768270132,
     "baseCapUsd": 316497720000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.2506,
+    "indexMultiplier": 1.2631,
     "baseIndexPrice": 35.19,
-    "currentIndexPrice": 44.01,
+    "currentIndexPrice": 44.45,
     "indexTicker": "EPOL",
     "countryName": "Poland",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2506x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2631x via Yahoo Finance)"
   },
   "PRT": {
-    "marketCapUsd": 101967487037,
+    "marketCapUsd": 100406760195,
     "baseCapUsd": 61933604857.411,
     "baseYear": "2018",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.6464,
+    "indexMultiplier": 1.6212,
     "baseIndexPrice": 2.98,
-    "currentIndexPrice": 4.91,
+    "currentIndexPrice": 4.83,
     "indexTicker": "EDP.LS",
     "countryName": "Portugal",
-    "source": "World Bank (WFE 2018) × Live Index Multiplier (1.6464x via Yahoo Finance)"
+    "source": "World Bank (WFE 2018) × Live Index Multiplier (1.6212x via Yahoo Finance)"
   },
   "QAT": {
-    "marketCapUsd": 147771853816,
+    "marketCapUsd": 146993455448,
     "baseCapUsd": 176908720000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.8353,
+    "indexMultiplier": 0.8309,
     "baseIndexPrice": 18.82,
-    "currentIndexPrice": 15.72,
+    "currentIndexPrice": 15.64,
     "indexTicker": "QAT",
     "countryName": "Qatar",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8353x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8309x via Yahoo Finance)"
   },
   "ROU": {
-    "marketCapUsd": 141978231636,
+    "marketCapUsd": 144920161241,
     "baseCapUsd": 70889870000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 2.0028,
+    "indexMultiplier": 2.0443,
     "baseIndexPrice": 38.55,
-    "currentIndexPrice": 77.2,
+    "currentIndexPrice": 78.8,
     "indexTicker": "BVB.RO",
     "countryName": "Romania",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (2.0028x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (2.0443x via Yahoo Finance)"
   },
   "RUS": {
     "marketCapUsd": 650487790000,
@@ -1224,16 +1224,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "SAU": {
-    "marketCapUsd": 2277012008658,
+    "marketCapUsd": 2277719594739,
     "baseCapUsd": 2358620270000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.9654,
+    "indexMultiplier": 0.9657,
     "baseIndexPrice": 36.41,
-    "currentIndexPrice": 35.15,
+    "currentIndexPrice": 35.16,
     "indexTicker": "KSA",
     "countryName": "Saudi Arabia",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9654x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9657x via Yahoo Finance)"
   },
   "SYC": {
     "marketCapUsd": 646440000,
@@ -1248,16 +1248,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "SGP": {
-    "marketCapUsd": 903554897859,
+    "marketCapUsd": 908088746904,
     "baseCapUsd": 824336190000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0961,
+    "indexMultiplier": 1.1016,
     "baseIndexPrice": 4905.13,
-    "currentIndexPrice": 5376.27,
+    "currentIndexPrice": 5403.5,
     "indexTicker": "^STI",
     "countryName": "Singapore",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0961x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1016x via Yahoo Finance)"
   },
   "SVN": {
     "marketCapUsd": 20735220000,
@@ -1272,28 +1272,28 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "ZAF": {
-    "marketCapUsd": 1254362041647,
+    "marketCapUsd": 1275470775436,
     "baseCapUsd": 1397929390000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.8973,
+    "indexMultiplier": 0.9124,
     "baseIndexPrice": 112229,
-    "currentIndexPrice": 100698.08,
+    "currentIndexPrice": 102392.5,
     "indexTicker": "^J200.JO",
     "countryName": "South Africa",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8973x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.9124x via Yahoo Finance)"
   },
   "ESP": {
-    "marketCapUsd": 1395597451320,
+    "marketCapUsd": 1391704571400,
     "baseCapUsd": 1297626640000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0755,
+    "indexMultiplier": 1.0725,
     "baseIndexPrice": 17880.9,
-    "currentIndexPrice": 19230.7,
+    "currentIndexPrice": 19177.7,
     "indexTicker": "^IBEX",
     "countryName": "Spain",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0755x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0725x via Yahoo Finance)"
   },
   "LKA": {
     "marketCapUsd": 26112900000,
@@ -1308,16 +1308,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "CHE": {
-    "marketCapUsd": 2693829248352,
+    "marketCapUsd": 2735818186608,
     "baseCapUsd": 2514307680000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0714,
+    "indexMultiplier": 1.0881,
     "baseIndexPrice": 13188.26,
-    "currentIndexPrice": 14129.93,
+    "currentIndexPrice": 14349.51,
     "indexTicker": "^SSMI",
     "countryName": "Switzerland",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0714x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0881x via Yahoo Finance)"
   },
   "TZA": {
     "marketCapUsd": 9779370000,
@@ -1332,16 +1332,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "THA": {
-    "marketCapUsd": 611320184277,
+    "marketCapUsd": 615829125373,
     "baseCapUsd": 512379670000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.1931,
+    "indexMultiplier": 1.2019,
     "baseIndexPrice": 59.67,
-    "currentIndexPrice": 71.19,
+    "currentIndexPrice": 71.72,
     "indexTicker": "THD",
     "countryName": "Thailand",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1931x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.2019x via Yahoo Finance)"
   },
   "TUN": {
     "marketCapUsd": 11982720000,
@@ -1356,16 +1356,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "TUR": {
-    "marketCapUsd": 354086011125,
+    "marketCapUsd": 352670799250,
     "baseCapUsd": 404346250000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.8757,
+    "indexMultiplier": 0.8722,
     "baseIndexPrice": 13838.3,
-    "currentIndexPrice": 12118.29,
+    "currentIndexPrice": 12070.17,
     "indexTicker": "XU100.IS",
     "countryName": "Turkiye",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8757x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8722x via Yahoo Finance)"
   },
   "UKR": {
     "marketCapUsd": 4415440000,
@@ -1380,40 +1380,40 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "ARE": {
-    "marketCapUsd": 1135221935652,
+    "marketCapUsd": 1137000235140,
     "baseCapUsd": 1111437180000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0214,
+    "indexMultiplier": 1.023,
     "baseIndexPrice": 19.12,
-    "currentIndexPrice": 19.53,
+    "currentIndexPrice": 19.56,
     "indexTicker": "UAE",
     "countryName": "United Arab Emirates",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0214x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.023x via Yahoo Finance)"
   },
   "GBR": {
-    "marketCapUsd": 4456048950799,
+    "marketCapUsd": 4503727095621,
     "baseCapUsd": 3095983430000,
     "baseYear": "2022",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.4393,
+    "indexMultiplier": 1.4547,
     "baseIndexPrice": 7451.7,
-    "currentIndexPrice": 10724.86,
+    "currentIndexPrice": 10840.35,
     "indexTicker": "^FTSE",
     "countryName": "United Kingdom",
-    "source": "World Bank (WFE 2022) × Live Index Multiplier (1.4393x via Yahoo Finance)"
+    "source": "World Bank (WFE 2022) × Live Index Multiplier (1.4547x via Yahoo Finance)"
   },
   "USA": {
-    "marketCapUsd": 77734337938396,
+    "marketCapUsd": 77989408043373,
     "baseCapUsd": 68937866210000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.1276,
+    "indexMultiplier": 1.1313,
     "baseIndexPrice": 6845.5,
-    "currentIndexPrice": 7718.94,
+    "currentIndexPrice": 7744.06,
     "indexTicker": "^GSPC",
     "countryName": "United States",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1276x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.1313x via Yahoo Finance)"
   },
   "UZB": {
     "marketCapUsd": 23699960000,
@@ -1428,16 +1428,16 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "VNM": {
-    "marketCapUsd": 271443252670,
+    "marketCapUsd": 272928448581,
     "baseCapUsd": 315999130000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 0.859,
+    "indexMultiplier": 0.8637,
     "baseIndexPrice": 19.08,
-    "currentIndexPrice": 16.39,
+    "currentIndexPrice": 16.48,
     "indexTicker": "VNM",
     "countryName": "Viet Nam",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.859x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (0.8637x via Yahoo Finance)"
   },
   "PSE": {
     "marketCapUsd": 4942820000,
@@ -1464,15 +1464,15 @@
     "source": "World Bank (CM.MKT.LCAP.CD / WFE Database)"
   },
   "TWN": {
-    "marketCapUsd": 3597480000000,
+    "marketCapUsd": 3593880000000,
     "baseCapUsd": 1800000000000,
     "baseYear": "2024",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.9986,
+    "indexMultiplier": 1.9966,
     "baseIndexPrice": 23525.41,
-    "currentIndexPrice": 47018.76,
+    "currentIndexPrice": 46969.87,
     "indexTicker": "^TWII",
     "countryName": "Taiwan",
-    "source": "World Bank (WFE 2024) × Live Index Multiplier (1.9986x via Yahoo Finance)"
+    "source": "World Bank (WFE 2024) × Live Index Multiplier (1.9966x via Yahoo Finance)"
   }
 }
