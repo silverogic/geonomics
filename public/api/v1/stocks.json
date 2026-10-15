@@ -274,8 +274,12 @@
     "currency": "EUR",
     "currentPrice": 25382.62,
     "changePct": 1.53,
-    "changePct30d": -2.55,
+    "changePct30d": -2.39,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 26003.32
+      },
       {
         "date": "2026-09-04",
         "close": 26046.4
@@ -391,10 +395,6 @@
       {
         "date": "2026-10-14",
         "close": 25298.61
-      },
-      {
-        "date": "2026-10-15",
-        "close": 25382.62
       }
     ]
   },
@@ -806,8 +806,12 @@
     "currency": "EUR",
     "currentPrice": 7934.7,
     "changePct": -5.34,
-    "changePct30d": -4.16,
+    "changePct30d": -4.24,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 8286.4
+      },
       {
         "date": "2026-09-04",
         "close": 8278.77
@@ -923,10 +927,6 @@
       {
         "date": "2026-10-14",
         "close": 7873.11
-      },
-      {
-        "date": "2026-10-15",
-        "close": 7934.7
       }
     ]
   },
@@ -939,8 +939,12 @@
     "currency": "EUR",
     "currentPrice": 49397.55,
     "changePct": -5.75,
-    "changePct30d": -5.19,
+    "changePct30d": -5.45,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 52245
+      },
       {
         "date": "2026-09-04",
         "close": 52100
@@ -1056,10 +1060,6 @@
       {
         "date": "2026-10-14",
         "close": 49754
-      },
-      {
-        "date": "2026-10-15",
-        "close": 49397.55
       }
     ]
   },
@@ -1750,8 +1750,12 @@
     "currency": "EUR",
     "currentPrice": 19177.7,
     "changePct": -0.51,
-    "changePct30d": -4.35,
+    "changePct30d": -4.11,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 20000.2
+      },
       {
         "date": "2026-09-04",
         "close": 20050.7
@@ -1867,10 +1871,6 @@
       {
         "date": "2026-10-14",
         "close": 19230.7
-      },
-      {
-        "date": "2026-10-15",
-        "close": 19177.7
       }
     ]
   },
@@ -2149,8 +2149,12 @@
     "currency": "EUR",
     "currentPrice": 1132.58,
     "changePct": 3.16,
-    "changePct30d": 1.71,
+    "changePct30d": 2.53,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 1104.62
+      },
       {
         "date": "2026-09-04",
         "close": 1113.5
@@ -2266,10 +2270,6 @@
       {
         "date": "2026-10-14",
         "close": 1137.09
-      },
-      {
-        "date": "2026-10-15",
-        "close": 1132.58
       }
     ]
   },
@@ -2415,8 +2415,12 @@
     "currency": "CHF",
     "currentPrice": 14349.51,
     "changePct": 0.29,
-    "changePct30d": -0.32,
+    "changePct30d": -0.31,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 14394.77
+      },
       {
         "date": "2026-09-04",
         "close": 14395.94
@@ -2532,10 +2536,6 @@
       {
         "date": "2026-10-14",
         "close": 14129.93
-      },
-      {
-        "date": "2026-10-15",
-        "close": 14349.51
       }
     ]
   },
@@ -2681,8 +2681,12 @@
     "currency": "SEK",
     "currentPrice": 3256.08,
     "changePct": 3.34,
-    "changePct30d": -0.85,
+    "changePct30d": -0.67,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 3278.19
+      },
       {
         "date": "2026-09-04",
         "close": 3284.08
@@ -2798,10 +2802,6 @@
       {
         "date": "2026-10-14",
         "close": 3276.27
-      },
-      {
-        "date": "2026-10-15",
-        "close": 3256.08
       }
     ]
   },
@@ -2814,8 +2814,12 @@
     "currency": "EUR",
     "currentPrice": 5591.77,
     "changePct": -0.39,
-    "changePct30d": -4.46,
+    "changePct30d": -4.89,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 5879.05
+      },
       {
         "date": "2026-09-04",
         "close": 5852.54
@@ -2931,10 +2935,6 @@
       {
         "date": "2026-10-14",
         "close": 5546.61
-      },
-      {
-        "date": "2026-10-15",
-        "close": 5591.77
       }
     ]
   },
@@ -3346,8 +3346,12 @@
     "currency": "EUR",
     "currentPrice": 6508.55,
     "changePct": 0.57,
-    "changePct30d": -5.1,
+    "changePct30d": -4.3,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 6800.72
+      },
       {
         "date": "2026-09-04",
         "close": 6858.28
@@ -3463,10 +3467,6 @@
       {
         "date": "2026-10-14",
         "close": 6619.12
-      },
-      {
-        "date": "2026-10-15",
-        "close": 6508.55
       }
     ]
   },
@@ -4011,8 +4011,12 @@
     "currency": "ZAR",
     "currentPrice": 102392.5,
     "changePct": 0.38,
-    "changePct30d": -6.3,
+    "changePct30d": -4.95,
     "points": [
+      {
+        "date": "2026-09-02",
+        "close": 107730.1
+      },
       {
         "date": "2026-09-03",
         "close": 109277.2
@@ -4128,10 +4132,6 @@
       {
         "date": "2026-10-14",
         "close": 100698.1
-      },
-      {
-        "date": "2026-10-15",
-        "close": 102392.5
       }
     ]
   },
@@ -5206,9 +5206,9 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13866.57,
-    "changePct": 1.85,
-    "changePct30d": -0.77,
+    "currentPrice": 13833.14,
+    "changePct": 1.6,
+    "changePct30d": -1.01,
     "points": [
       {
         "date": "2026-09-03",
@@ -5328,7 +5328,7 @@
       },
       {
         "date": "2026-10-15",
-        "close": 13866.57
+        "close": 13833.14
       }
     ]
   },
@@ -5341,8 +5341,12 @@
     "currency": "EUR",
     "currentPrice": 6305.57,
     "changePct": 2.92,
-    "changePct30d": -2.31,
+    "changePct30d": -1.52,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 6402.97
+      },
       {
         "date": "2026-09-04",
         "close": 6454.82
@@ -5458,10 +5462,6 @@
       {
         "date": "2026-10-14",
         "close": 6411.56
-      },
-      {
-        "date": "2026-10-15",
-        "close": 6305.57
       }
     ]
   },
@@ -5873,8 +5873,12 @@
     "currency": "CZK",
     "currentPrice": 1365,
     "changePct": 4.92,
-    "changePct30d": -1.02,
+    "changePct30d": -0.15,
     "points": [
+      {
+        "date": "2026-09-02",
+        "close": 1367
+      },
       {
         "date": "2026-09-03",
         "close": 1379
@@ -5990,10 +5994,6 @@
       {
         "date": "2026-10-14",
         "close": 1373
-      },
-      {
-        "date": "2026-10-15",
-        "close": 1365
       }
     ]
   },
@@ -6538,8 +6538,12 @@
     "currency": "HUF",
     "currentPrice": 41640,
     "changePct": -6.09,
-    "changePct30d": -7.34,
+    "changePct30d": -7.45,
     "points": [
+      {
+        "date": "2026-09-03",
+        "close": 44990
+      },
       {
         "date": "2026-09-04",
         "close": 44940
@@ -6655,10 +6659,6 @@
       {
         "date": "2026-10-14",
         "close": 41470
-      },
-      {
-        "date": "2026-10-15",
-        "close": 41640
       }
     ]
   },
