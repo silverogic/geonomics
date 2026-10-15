@@ -65,7 +65,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   const t = translations[lang]
   const [visualMode, setVisualMode] = useState<'map' | 'treemap'>('map')
   const [metric, setMetric] = useState<MapMetric>('gdp')
-  const isHeatmapSupported = metric === 'gdp' || metric === 'perCapita' || metric === 'debt'
+  const isHeatmapSupported = metric === 'gdp' || metric === 'debt'
 
   // Automatically fall back to map view if current metric does not support heatmap
   useEffect(() => {
