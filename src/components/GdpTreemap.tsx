@@ -380,9 +380,9 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                 onClick={() => onSelectCountry(item.country)}
                 onMouseEnter={() => onHoverCountry(item.country.id)}
                 onMouseLeave={() => onHoverCountry(null)}
+                data-tooltip={titleTooltip}
                 className="cursor-pointer transition-all duration-150"
               >
-                <title>{titleTooltip}</title>
 
                 {/* Rectangle Body */}
                 <rect

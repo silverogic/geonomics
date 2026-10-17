@@ -814,7 +814,6 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
                   onMouseLeave={() => onHover(null)}
                   className="cursor-pointer transition-all duration-150"
                 >
-                  <title>{`${getCountryName(item.country, lang)} (${item.country.id}): ${item.changePct >= 0 ? '+' : ''}${item.changePct.toFixed(2)}% | ${formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}`}</title>
 
                   {/* Rect background */}
                   <rect

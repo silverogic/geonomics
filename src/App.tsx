@@ -16,6 +16,7 @@ import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
 import { StockHeatmap } from './components/StockHeatmap'
 import { Spinner } from './components/Spinner'
+import { AppTooltip } from './components/AppTooltip'
 import { getFuelPriceUsd } from './data/fuelPrices'
 import { getBigMacPriceUsd, getBigMacValuationPct } from './data/bigMac'
 import {
@@ -268,6 +269,9 @@ export function App() {
 
       {/* Global Footer (hidden in heatmap mode for clean full-height viewing) */}
       {activeTab !== 'heatmap' && <Footer lang={lang} />}
+
+      {/* Global App-Themed Custom Tooltip */}
+      <AppTooltip />
     </div>
   )
 }
