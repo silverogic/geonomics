@@ -20,6 +20,8 @@
      Rule: scroll-padding-top = Navbar height + docked search height + thead(dock) height + small gap */
   html {
     scroll-padding-top: calc(var(--navbar-h) + var(--dock-search-h) + var(--thead-h) + 8px);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
 

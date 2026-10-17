@@ -900,7 +900,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         </div>
 
         {/* RIGHT SIDEBAR: Selected / Hovered Economy Inspector HUD */}
-        <div className="xl:col-span-1 space-y-4">
+        <div className="hidden sm:block xl:col-span-1 space-y-4">
           {inspectedCountryItem && (
             <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5">
               {/* Badge & Country Identity */}

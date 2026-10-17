@@ -797,11 +797,13 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
               const colors = getPerformanceColor(item.changePct, isHovered)
 
               // Adjust display based on rectangle dimensions
-              const isExtraLarge = r.w >= 130 && r.h >= 90
-              const isWide = r.w >= 85 && r.h >= 50
-              const isMedium = r.w >= 52 && r.h >= 32
-              const isCompact = r.w >= 28 && r.h >= 18
-              const isTiny = r.w >= 16 && r.h >= 12
+              const rectW = Math.max(0, r.w - 1.5)
+              const rectH = Math.max(0, r.h - 1.5)
+              const isExtraLarge = r.w >= 145 && r.h >= 94
+              const isWide = r.w >= 92 && r.h >= 56
+              const isMedium = r.w >= 54 && r.h >= 34
+              const isCompact = r.w >= 32 && r.h >= 22
+              const isTiny = r.w >= 16 && r.h >= 11
 
               return (
                 <g
@@ -816,8 +818,8 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
 
                   {/* Rect background */}
                   <rect
-                    width={Math.max(0, r.w - 1.5)}
-                    height={Math.max(0, r.h - 1.5)}
+                    width={rectW}
+                    height={rectH}
                     rx={r.w > 40 && r.h > 30 ? 5 : 2}
                     fill={colors.bg}
                     stroke={isHovered ? '#ffffff' : colors.border}
@@ -828,37 +830,44 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
                   {/* Content inside rectangle */}
                   {isExtraLarge ? (
                     // Extra Large Presentation (USA, China, Japan, India, etc.)
-                    <foreignObject x={4} y={4} width={Math.max(0, r.w - 10)} height={Math.max(0, r.h - 10)}>
-                      <div className="h-full flex flex-col justify-between p-2 overflow-hidden text-white pointer-events-none">
-                        <div className="flex items-start justify-between gap-1">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <CountryFlag iso2={item.country.iso2} className="w-5 h-3.5 rounded-[2px] shrink-0 shadow-sm" />
+                    <foreignObject
+                      x={2}
+                      y={2}
+                      width={Math.max(0, rectW - 4)}
+                      height={Math.max(0, rectH - 4)}
+                      overflow="hidden"
+                      className="overflow-hidden pointer-events-none"
+                    >
+                      <div className="w-full h-full flex flex-col justify-between p-1.5 sm:p-2 overflow-hidden text-white pointer-events-none select-none">
+                        <div className="flex items-start justify-between gap-1 min-w-0">
+                          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                            <CountryFlag iso2={item.country.iso2} className="w-4 h-3 sm:w-5 sm:h-3.5 rounded-[2px] shrink-0 shadow-sm" />
                             <div className="min-w-0">
-                              <div className="font-black text-sm sm:text-base tracking-tight truncate drop-shadow">
+                              <div className="font-black text-xs sm:text-base leading-tight tracking-tight truncate [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
                                 {getCountryName(item.country, lang)}
                               </div>
-                              <div className="text-[11px] text-slate-300 font-semibold truncate">
+                              <div className="text-[10px] sm:text-[11px] leading-tight text-slate-300 font-semibold truncate">
                                 {item.indexName}
                               </div>
                             </div>
                           </div>
-                          <span className="text-xs font-mono text-slate-300 font-black px-1.5 py-0.5 rounded bg-black/30 shrink-0">
+                          <span className="text-[10px] sm:text-xs leading-none font-mono text-slate-300 font-black px-1.5 py-0.5 rounded bg-black/30 shrink-0 whitespace-nowrap">
                             {item.country.id}
                           </span>
                         </div>
 
-                        <div className="flex items-end justify-between pt-1">
+                        <div className="flex items-end justify-between gap-1 pt-0.5 min-w-0">
                           <span
-                            className="px-2 py-0.5 rounded-md text-sm sm:text-base font-mono font-black shadow-sm"
+                            className="px-1.5 sm:px-2 py-0.5 rounded-md text-xs sm:text-base leading-tight font-mono font-black shadow-sm shrink-0 whitespace-nowrap"
                             style={{ backgroundColor: colors.badgeBg, color: colors.badgeText }}
                           >
                             {item.changePct > 0 ? `+${item.changePct.toFixed(2)}%` : `${item.changePct.toFixed(2)}%`}
                           </span>
-                          <div className="text-right">
-                            <span className="text-xs sm:text-sm font-mono text-white font-black block">
+                          <div className="text-right min-w-0">
+                            <span className="text-[11px] sm:text-sm leading-tight font-mono text-white font-black block truncate">
                               {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
                             </span>
-                            <span className="text-[9px] text-slate-400 font-mono">
+                            <span className="text-[8px] sm:text-[9px] leading-none text-slate-400 font-mono block">
                               WFE
                             </span>
                           </div>
@@ -867,74 +876,133 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
                     </foreignObject>
                   ) : isWide ? (
                     // Wide Presentation (UK, France, Germany, Korea, Taiwan, Brazil, etc.)
-                    <foreignObject x={3} y={3} width={Math.max(0, r.w - 8)} height={Math.max(0, r.h - 8)}>
-                      <div className="h-full flex flex-col justify-between p-1.5 overflow-hidden text-white pointer-events-none">
-                        <div className="flex items-start justify-between gap-1">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <CountryFlag iso2={item.country.iso2} className="w-4 h-3 rounded-[2px] shrink-0" />
-                            <span className="font-black text-xs sm:text-sm tracking-tight truncate drop-shadow">
+                    <foreignObject
+                      x={2}
+                      y={2}
+                      width={Math.max(0, rectW - 4)}
+                      height={Math.max(0, rectH - 4)}
+                      overflow="hidden"
+                      className="overflow-hidden pointer-events-none"
+                    >
+                      <div className="w-full h-full flex flex-col justify-between p-1 sm:p-1.5 overflow-hidden text-white pointer-events-none select-none">
+                        <div className="flex items-center justify-between gap-1 min-w-0">
+                          <div className="flex items-center gap-1 min-w-0">
+                            <CountryFlag iso2={item.country.iso2} className="w-3.5 h-2.5 sm:w-4 sm:h-3 rounded-[2px] shrink-0" />
+                            <span className="font-black text-[11px] sm:text-sm leading-tight tracking-tight truncate [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
                               {getCountryName(item.country, lang)}
                             </span>
                           </div>
-                          <span className="text-[10px] font-mono text-slate-300 font-bold shrink-0">
-                            {item.country.id}
-                          </span>
+                          {r.w >= 115 && (
+                            <span className="text-[9px] sm:text-[10px] leading-none font-mono text-slate-300 font-bold shrink-0 whitespace-nowrap">
+                              {item.country.id}
+                            </span>
+                          )}
                         </div>
 
-                        <div className="text-[10px] text-slate-200/90 truncate font-semibold">
-                          {item.indexName}
-                        </div>
+                        {r.h >= 72 && (
+                          <div className="text-[9px] sm:text-[10px] leading-tight text-slate-200/90 truncate font-semibold">
+                            {item.indexName}
+                          </div>
+                        )}
 
-                        <div className="flex items-end justify-between pt-0.5">
-                          <span
-                            className="px-1.5 py-0.2 rounded text-[11px] font-mono font-black"
-                            style={{ backgroundColor: colors.badgeBg, color: colors.badgeText }}
-                          >
-                            {item.changePct > 0 ? `+${item.changePct.toFixed(2)}%` : `${item.changePct.toFixed(2)}%`}
-                          </span>
-                          <span className="text-[10px] sm:text-xs font-mono text-slate-200/90 font-bold">
-                            {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
-                          </span>
-                        </div>
+                        {r.w >= 118 ? (
+                          <div className="flex items-center justify-between gap-1 pt-0.5 min-w-0">
+                            <span
+                              className="px-1 py-0.5 rounded text-[10px] sm:text-[11px] leading-none font-mono font-black shrink-0 whitespace-nowrap"
+                              style={{ backgroundColor: colors.badgeBg, color: colors.badgeText }}
+                            >
+                              {item.changePct > 0 ? `+${item.changePct.toFixed(2)}%` : `${item.changePct.toFixed(2)}%`}
+                            </span>
+                            <span className="text-[10px] sm:text-xs leading-none font-mono text-slate-200/90 font-bold truncate min-w-0">
+                              {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col justify-end min-w-0 gap-0.5">
+                            <span
+                              className="text-[10px] leading-none font-mono font-black whitespace-nowrap truncate"
+                              style={{ color: colors.badgeText }}
+                            >
+                              {item.changePct > 0 ? `+${item.changePct.toFixed(2)}%` : `${item.changePct.toFixed(2)}%`}
+                            </span>
+                            <span className="text-[9px] leading-none font-mono text-slate-200/90 font-bold truncate">
+                              {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </foreignObject>
                   ) : isMedium ? (
                     // Medium Presentation
-                    <foreignObject x={2} y={2} width={Math.max(0, r.w - 6)} height={Math.max(0, r.h - 6)}>
-                      <div className="h-full flex flex-col justify-between p-1 overflow-hidden text-white pointer-events-none text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <CountryFlag iso2={item.country.iso2} className="w-3.5 h-2.5 rounded-[2px] shrink-0" />
-                          <span className="font-black text-xs tracking-tight truncate">
+                    <foreignObject
+                      x={1.5}
+                      y={1.5}
+                      width={Math.max(0, rectW - 3)}
+                      height={Math.max(0, rectH - 3)}
+                      overflow="hidden"
+                      className="overflow-hidden pointer-events-none"
+                    >
+                      <div className="w-full h-full flex flex-col justify-between p-0.5 sm:p-1 overflow-hidden text-white pointer-events-none select-none text-center">
+                        <div className="flex items-center justify-center gap-1 min-w-0">
+                          <CountryFlag iso2={item.country.iso2} className="w-3 h-2 rounded-[1px] shrink-0" />
+                          <span className="font-black text-[10px] sm:text-xs leading-none tracking-tight truncate">
                             {item.country.id}
                           </span>
                         </div>
                         <div
-                          className="text-[10px] font-mono font-bold leading-tight"
+                          className="text-[9px] sm:text-[10px] font-mono font-bold leading-none whitespace-nowrap truncate"
                           style={{ color: colors.badgeText }}
                         >
                           {item.changePct > 0 ? `+${item.changePct.toFixed(1)}%` : `${item.changePct.toFixed(1)}%`}
                         </div>
-                        <div className="text-[9px] font-mono text-slate-300 truncate">
-                          {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
-                        </div>
+                        {r.h >= 46 && (
+                          <div className="text-[8px] sm:text-[9px] leading-none font-mono text-slate-300 truncate">
+                            {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
+                          </div>
+                        )}
                       </div>
                     </foreignObject>
                   ) : isCompact ? (
                     // Compact Presentation
-                    <foreignObject x={1} y={1} width={Math.max(0, r.w - 4)} height={Math.max(0, r.h - 4)}>
-                      <div className="h-full flex flex-col items-center justify-center p-0.5 overflow-hidden text-white pointer-events-none text-center leading-none">
-                        <span className="font-bold text-[9px] font-mono">{item.country.id}</span>
-                        <span className="text-[8px] font-mono font-bold mt-0.5" style={{ color: colors.badgeText }}>
-                          {item.changePct > 0 ? `+${item.changePct.toFixed(1)}%` : `${item.changePct.toFixed(1)}%`}
+                    <foreignObject
+                      x={1}
+                      y={1}
+                      width={Math.max(0, rectW - 2)}
+                      height={Math.max(0, rectH - 2)}
+                      overflow="hidden"
+                      className="overflow-hidden pointer-events-none"
+                    >
+                      <div className="w-full h-full flex flex-col items-center justify-center p-0.5 overflow-hidden text-white pointer-events-none select-none text-center leading-none gap-0.5">
+                        <span className="font-bold text-[8px] sm:text-[9px] leading-none font-mono whitespace-nowrap">
+                          {item.country.id}
+                        </span>
+                        <span
+                          className="text-[7px] sm:text-[8px] leading-none font-mono font-bold whitespace-nowrap"
+                          style={{ color: colors.badgeText }}
+                        >
+                          {r.w >= 40
+                            ? item.changePct > 0
+                              ? `+${item.changePct.toFixed(1)}%`
+                              : `${item.changePct.toFixed(1)}%`
+                            : item.changePct > 0
+                              ? `+${item.changePct.toFixed(0)}%`
+                              : `${item.changePct.toFixed(0)}%`}
                         </span>
                       </div>
                     </foreignObject>
                   ) : isTiny ? (
                     // Micro Presentation
-                    <foreignObject x={1} y={1} width={Math.max(0, r.w - 2)} height={Math.max(0, r.h - 2)}>
-                      <div className="h-full flex items-center justify-center overflow-hidden text-white pointer-events-none text-center leading-none">
-                        <span className="font-bold text-[8px] font-mono tracking-tighter truncate px-0.5">
-                          {item.country.id}
+                    <foreignObject
+                      x={0.5}
+                      y={0.5}
+                      width={Math.max(0, rectW - 1)}
+                      height={Math.max(0, rectH - 1)}
+                      overflow="hidden"
+                      className="overflow-hidden pointer-events-none"
+                    >
+                      <div className="w-full h-full flex items-center justify-center overflow-hidden text-white pointer-events-none select-none text-center leading-none">
+                        <span className="font-bold text-[7px] sm:text-[8px] leading-none font-mono tracking-tighter whitespace-nowrap">
+                          {r.w >= 24 ? item.country.id : item.country.iso2}
                         </span>
                       </div>
                     </foreignObject>

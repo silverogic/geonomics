@@ -362,12 +362,14 @@ export const GdpTreemap: React.FC<GdpTreemapProps> = ({
             const sharePct = worldTotalGdp > 0 ? (item.totalGdpUsd / worldTotalGdp) * 100 : 0
             const colors = getItemColor(metric, p.yoyPct, isHovered)
 
-            // Responsive tile sizing breakpoints
-            const isExtraLarge = r.w >= 130 && r.h >= 80
-            const isLarge = r.w >= 85 && r.h >= 50
-            const isMedium = r.w >= 50 && r.h >= 32
-            const isSmall = r.w >= 28 && r.h >= 18
-            const isTiny = r.w >= 14 && r.h >= 10
+            // Responsive tile sizing breakpoints (matched to actual inner content height/width)
+            const rectW = Math.max(0, r.w - 1.5)
+            const rectH = Math.max(0, r.h - 1.5)
+            const isExtraLarge = r.w >= 140 && r.h >= 94
+            const isLarge = r.w >= 92 && r.h >= 54
+            const isMedium = r.w >= 52 && r.h >= 34
+            const isSmall = r.w >= 26 && r.h >= 16
+            const isTiny = r.w >= 15 && r.h >= 11
 
             // Formatted main value for display
             const mainDisplayVal =
@@ -398,8 +400,8 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
 
                 {/* Rectangle Body */}
                 <rect
-                  width={Math.max(0, r.w - 1.5)}
-                  height={Math.max(0, r.h - 1.5)}
+                  width={rectW}
+                  height={rectH}
                   rx={r.w > 40 && r.h > 30 ? 6 : 3}
                   fill={colors.bg}
                   stroke={
@@ -418,7 +420,7 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
 
                 {/* Top Glare Highlight */}
                 <rect
-                  width={Math.max(0, r.w - 1.5)}
+                  width={rectW}
                   height={Math.max(0, Math.min(r.h * 0.4, 20))}
                   rx={r.w > 40 && r.h > 30 ? 6 : 3}
                   fill="url(#topGlareGrad)"
@@ -430,32 +432,34 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                 {isExtraLarge ? (
                   /* EXTRA LARGE (USA, CHN, DEU, JPN, IND...) */
                   <foreignObject
-                    x={4}
-                    y={4}
-                    width={Math.max(0, r.w - 8)}
-                    height={Math.max(0, r.h - 8)}
+                    x={2}
+                    y={2}
+                    width={Math.max(0, rectW - 4)}
+                    height={Math.max(0, rectH - 4)}
+                    overflow="hidden"
+                    className="overflow-hidden pointer-events-none"
                   >
-                    <div className="h-full flex flex-col justify-between p-1.5 overflow-hidden text-white pointer-events-none select-none">
-                      <div className="flex items-start justify-between gap-1">
+                    <div className="w-full h-full flex flex-col justify-between p-1.5 overflow-hidden text-white pointer-events-none select-none">
+                      <div className="flex items-center justify-between gap-1 min-w-0">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <CountryFlag
                             iso2={item.country.iso2}
-                            className="w-5 h-3.5 rounded-[2px] shrink-0 shadow-sm"
+                            className="w-4 h-3 sm:w-5 sm:h-3.5 rounded-[2px] shrink-0 shadow-sm"
                           />
-                          <span className="font-black text-xs sm:text-sm tracking-tight truncate block drop-shadow">
+                          <span className="font-black text-xs sm:text-sm leading-tight tracking-tight truncate block [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
                             {getCountryName(item.country, lang)}
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono text-indigo-300 font-black px-1.5 py-0.2 rounded bg-indigo-950/70 border border-indigo-800/60 shrink-0">
+                        <span className="text-[10px] leading-none font-mono text-indigo-300 font-black px-1.5 py-0.5 rounded bg-indigo-950/70 border border-indigo-800/60 shrink-0 whitespace-nowrap">
                           #{item.rank}
                         </span>
                       </div>
 
-                      <div className="my-auto py-0.5">
-                        <div className="text-sm sm:text-base font-black font-mono tracking-tight text-white drop-shadow">
+                      <div className="my-auto py-0.5 min-w-0">
+                        <div className="text-xs sm:text-base leading-tight font-black font-mono tracking-tight text-white truncate [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
                           {mainDisplayVal}
                         </div>
-                        <div className="text-[10px] text-slate-300/90 font-mono font-medium">
+                        <div className="text-[10px] leading-tight text-slate-300/90 font-mono font-medium truncate">
                           {metric === 'debt' && p.totalDebtUsd ? (
                             <span>{formatGdpCompact(p.totalDebtUsd, baseCurrency, usdToBase, lang)} {lang === 'ko' ? '부채' : 'Debt'}</span>
                           ) : (
@@ -464,18 +468,18 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-0.5">
+                      <div className="flex items-center justify-between gap-1 pt-0.5 min-w-0">
                         {p.yoyPct !== null ? (
                           <span
-                            className="px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] font-mono font-black shadow-sm"
+                            className="px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] leading-none font-mono font-black shadow-sm shrink-0 whitespace-nowrap"
                             style={{ backgroundColor: colors.badgeBg, color: colors.badgeText }}
                           >
                             {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(1)}%` : `${p.yoyPct.toFixed(1)}%`}
                           </span>
                         ) : (
-                          <span className="text-[10px] text-slate-400 font-mono">-</span>
+                          <span className="text-[10px] leading-none text-slate-400 font-mono">-</span>
                         )}
-                        <span className="text-[9px] font-mono text-slate-400">
+                        <span className="text-[9px] leading-none font-mono text-slate-400 truncate">
                           {lang === 'ko' ? `전년비` : `YoY`}
                         </span>
                       </div>
@@ -484,59 +488,84 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                 ) : isLarge ? (
                   /* LARGE TILE */
                   <foreignObject
-                    x={3}
-                    y={3}
-                    width={Math.max(0, r.w - 6)}
-                    height={Math.max(0, r.h - 6)}
+                    x={2}
+                    y={2}
+                    width={Math.max(0, rectW - 4)}
+                    height={Math.max(0, rectH - 4)}
+                    overflow="hidden"
+                    className="overflow-hidden pointer-events-none"
                   >
-                    <div className="h-full flex flex-col justify-between p-1 overflow-hidden text-white pointer-events-none select-none">
-                      <div className="flex items-center justify-between gap-1">
+                    <div className="w-full h-full flex flex-col justify-between p-1 overflow-hidden text-white pointer-events-none select-none">
+                      <div className="flex items-center justify-between gap-1 min-w-0">
                         <div className="flex items-center gap-1 min-w-0">
-                          <CountryFlag iso2={item.country.iso2} className="w-4 h-3 rounded-[2px] shrink-0" />
-                          <span className="font-black text-xs tracking-tight truncate">
+                          <CountryFlag iso2={item.country.iso2} className="w-3.5 h-2.5 rounded-[2px] shrink-0" />
+                          <span className="font-black text-[11px] sm:text-xs leading-tight tracking-tight truncate">
                             {getCountryName(item.country, lang)}
                           </span>
                         </div>
-                        <span className="text-[9px] font-mono text-slate-300 font-bold shrink-0">
-                          #{item.rank}
-                        </span>
-                      </div>
-
-                      <div className="flex items-baseline justify-between gap-1 pt-0.5">
-                        <span className="text-xs font-black font-mono text-white truncate">
-                          {mainDisplayVal}
-                        </span>
-                        {p.yoyPct !== null && (
-                          <span
-                            className="text-[10px] font-mono font-black shrink-0 px-1 py-0.2 rounded"
-                            style={{ backgroundColor: colors.badgeBg, color: colors.badgeText }}
-                          >
-                            {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(1)}%` : `${p.yoyPct.toFixed(1)}%`}
+                        {r.w >= 110 && (
+                          <span className="text-[9px] leading-none font-mono text-slate-300 font-bold shrink-0 whitespace-nowrap">
+                            #{item.rank}
                           </span>
                         )}
                       </div>
+
+                      {r.w >= 115 ? (
+                        <div className="flex items-center justify-between gap-1 pt-0.5 min-w-0">
+                          <span className="text-[11px] sm:text-xs leading-tight font-black font-mono text-white truncate min-w-0">
+                            {mainDisplayVal}
+                          </span>
+                          {p.yoyPct !== null && (
+                            <span
+                              className="text-[9px] sm:text-[10px] leading-none font-mono font-black shrink-0 whitespace-nowrap px-1 py-0.5 rounded"
+                              style={{ backgroundColor: colors.badgeBg, color: colors.badgeText }}
+                            >
+                              {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(1)}%` : `${p.yoyPct.toFixed(1)}%`}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col justify-end min-w-0 gap-0.5">
+                          <span className="text-[10px] leading-none font-black font-mono text-white truncate">
+                            {mainDisplayVal}
+                          </span>
+                          {p.yoyPct !== null && r.h >= 62 && (
+                            <span
+                              className="text-[9px] leading-none font-mono font-bold truncate"
+                              style={{ color: colors.badgeText }}
+                            >
+                              {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(1)}%` : `${p.yoyPct.toFixed(1)}%`}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </foreignObject>
                 ) : isMedium ? (
                   /* MEDIUM TILE */
                   <foreignObject
-                    x={2}
-                    y={2}
-                    width={Math.max(0, r.w - 4)}
-                    height={Math.max(0, r.h - 4)}
+                    x={1.5}
+                    y={1.5}
+                    width={Math.max(0, rectW - 3)}
+                    height={Math.max(0, rectH - 3)}
+                    overflow="hidden"
+                    className="overflow-hidden pointer-events-none"
                   >
-                    <div className="h-full flex flex-col justify-between p-0.5 overflow-hidden text-white pointer-events-none select-none">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-black text-[10px] font-mono tracking-tighter truncate">
+                    <div className="w-full h-full flex flex-col justify-between p-0.5 overflow-hidden text-white pointer-events-none select-none">
+                      <div className="flex items-center justify-between gap-0.5 min-w-0">
+                        <span className="font-black text-[10px] leading-none font-mono tracking-tighter truncate">
                           {item.country.id}
                         </span>
-                        {p.yoyPct !== null && (
-                          <span className="text-[9px] font-mono font-bold" style={{ color: colors.badgeText }}>
+                        {p.yoyPct !== null && r.w >= 64 && (
+                          <span
+                            className="text-[8px] leading-none font-mono font-bold shrink-0 whitespace-nowrap"
+                            style={{ color: colors.badgeText }}
+                          >
                             {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(0)}%` : `${p.yoyPct.toFixed(0)}%`}
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] font-black font-mono text-slate-200 truncate">
+                      <span className="text-[9px] leading-none font-black font-mono text-slate-200 truncate block w-full">
                         {mainDisplayVal}
                       </span>
                     </div>
@@ -546,30 +575,33 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                   <foreignObject
                     x={1}
                     y={1}
-                    width={Math.max(0, r.w - 2)}
-                    height={Math.max(0, r.h - 2)}
+                    width={Math.max(0, rectW - 2)}
+                    height={Math.max(0, rectH - 2)}
+                    overflow="hidden"
+                    className="overflow-hidden pointer-events-none"
                   >
-                    <div className="h-full flex items-center justify-center text-center p-0.5 overflow-hidden text-white pointer-events-none select-none">
-                      <span className="font-mono font-black text-[8px] sm:text-[9px] text-white/95 tracking-tighter truncate">
-                        {item.country.id}
+                    <div className="w-full h-full flex items-center justify-center text-center overflow-hidden text-white pointer-events-none select-none">
+                      <span className="font-mono font-black text-[8px] sm:text-[9px] leading-none text-white/95 tracking-tighter whitespace-nowrap">
+                        {r.w >= 32 ? item.country.id : item.country.iso2}
                       </span>
                     </div>
                   </foreignObject>
                 ) : isTiny ? (
                   /* TINY TILE */
-                  <g pointerEvents="none">
-                    <text
-                      x={r.w / 2}
-                      y={r.h / 2 + 3}
-                      textAnchor="middle"
-                      fill="#ffffff"
-                      fontSize="7px"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      {item.country.iso2}
-                    </text>
-                  </g>
+                  <foreignObject
+                    x={0.5}
+                    y={0.5}
+                    width={Math.max(0, rectW - 1)}
+                    height={Math.max(0, rectH - 1)}
+                    overflow="hidden"
+                    className="overflow-hidden pointer-events-none"
+                  >
+                    <div className="w-full h-full flex items-center justify-center text-center overflow-hidden text-white pointer-events-none select-none">
+                      <span className="font-mono font-bold text-[7px] leading-none text-white/90 tracking-tighter whitespace-nowrap">
+                        {item.country.iso2}
+                      </span>
+                    </div>
+                  </foreignObject>
                 ) : null}
               </g>
             )
