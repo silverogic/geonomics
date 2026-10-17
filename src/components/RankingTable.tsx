@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ArrowUpDown, Search, ArrowUp, ArrowDown, ArrowLeftRight, TrendingUp, Landmark, Layers, X } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
-import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
@@ -35,6 +34,7 @@ interface RankingTableProps {
   exchangeRates: ExchangeRates | null
   lang: Language
   onSelectCountry: (c: CountryMeta) => void
+  onSearchChange?: (q: string) => void
   hideHeader?: boolean
   selectedYear?: EconomicYear
   onYearChange?: (year: EconomicYear) => void
@@ -60,12 +60,16 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   exchangeRates,
   lang,
   onSelectCountry,
+  onSearchChange,
   hideHeader = false,
-  selectedYear = DEFAULT_ECONOMIC_YEAR,
-  onYearChange,
 }) => {
   const t = translations[lang]
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTermState] = useState('')
+
+  const setSearchTerm = (val: string) => {
+    setSearchTermState(val)
+    onSearchChange?.(val)
+  }
   const [sortField, setSortField] = useState<SortField>('rank')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [activeCategory, setActiveCategory] = useState<TableCategory>('macro')
@@ -571,59 +575,37 @@ export const RankingTable: React.FC<RankingTableProps> = ({
     <div ref={tableWrapperRef} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
       {/* Header & Search */}
       {!hideHeader && (
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-white">{t.tableTitle}</h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-              {t.tableSubtitle.replace('{count}', items.length.toString())}
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">{t.tableTitle}</h2>
+            <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-800 text-indigo-300 border border-slate-700/80">
+              {items.length}
+            </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
-            {onYearChange && activeCategory !== 'market' && (
-              <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
-                <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                  {t.yearLabel}
-                </span>
-                {ECONOMIC_YEAR_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.year}
-                    onClick={() => onYearChange(opt.year)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${selectedYear === opt.year
-                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                      }`}
-                  >
-                    {t[opt.labelKey].replace('{year}', opt.year)}
-                  </button>
-                ))}
-              </div>
+          {/* Search Input */}
+          <div className="relative w-full sm:w-64 shrink-0">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setSearchTerm('')
+              }}
+              placeholder={t.searchPlaceholder}
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors"
+                title={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             )}
-
-            {/* Search Input */}
-            <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') setSearchTerm('')
-                }}
-                placeholder={t.searchPlaceholder}
-                className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors"
-                  title={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
           </div>
         </div>
       )}
@@ -871,18 +853,18 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                       #{item.rank}
                     </td>
 
-                    <td className={`${isFrozen
-                      ? 'sticky left-9 sm:left-12 z-20 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
-                      : 'static shadow-none border-r-0'
-                      } bg-slate-900 group-hover:bg-slate-800/95 py-2.5 sm:py-3 px-1.5 sm:px-3 border-b border-slate-800/60 transition-colors whitespace-nowrap min-w-[88px] sm:min-w-[130px] md:min-w-[170px]`}>
+                    <td
+                      className={`${isFrozen
+                        ? 'sticky left-9 sm:left-12 z-20 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
+                        : 'static shadow-none border-r-0'
+                        } bg-slate-900 group-hover:bg-slate-800/95 py-2.5 sm:py-3 px-1.5 sm:px-3 border-b border-slate-800/60 transition-colors whitespace-nowrap min-w-[88px] sm:min-w-[130px] md:min-w-[160px]`}
+                      title={`${displayName} (${secondaryName})`}
+                    >
                       <div className="flex items-center gap-1 sm:gap-2.5 min-w-0">
-                        <CountryFlag iso2={item.country.iso2} className="w-4 h-3 sm:w-7 sm:h-5 shrink-0" alt={displayName} />
-                        <div className="min-w-0">
-                          <div className="font-bold text-slate-100 group-hover:text-white flex items-center gap-1 sm:gap-1.5 min-w-0 text-xs sm:text-sm">
-                            <span className="truncate max-w-[56px] sm:max-w-none">{displayName}</span>
-                            <span className="text-[11px] font-mono text-slate-500 hidden md:inline shrink-0">{item.country.id}</span>
-                          </div>
-                          <span className="text-xs text-slate-400 truncate hidden md:block">{secondaryName}</span>
+                        <CountryFlag iso2={item.country.iso2} className="w-4 h-3 sm:w-6 sm:h-4 shrink-0" alt={displayName} />
+                        <div className="font-bold text-slate-100 group-hover:text-white flex items-center gap-1 sm:gap-1.5 min-w-0 text-xs sm:text-sm">
+                          <span className="truncate max-w-[56px] sm:max-w-none">{displayName}</span>
+                          <span className="text-[11px] font-mono text-slate-500 hidden md:inline shrink-0">{item.country.id}</span>
                         </div>
                       </div>
                     </td>
@@ -926,24 +908,19 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                               )
                             }
                             return (
-                              <div className="flex items-center justify-end gap-1 sm:gap-2">
-                                <div className="text-right min-w-0">
-                                  <span className="text-xs font-mono font-semibold text-slate-200 block leading-normal whitespace-nowrap">
-                                    {stockData.currentPrice.toLocaleString()}
-                                  </span>
-                                  <span
-                                    className="text-[10px] text-slate-400 truncate block leading-normal max-w-[60px] sm:max-w-[70px]"
-                                    title={stockData.nameEn}
-                                  >
-                                    {lang === 'ko' ? stockData.nameKo : stockData.nameEn}
-                                  </span>
-                                </div>
+                              <div
+                                className="flex items-center justify-end gap-1 sm:gap-2"
+                                title={`${lang === 'ko' ? stockData.nameKo : stockData.nameEn}: ${stockData.currentPrice.toLocaleString()} (${stockData.changePct >= 0 ? '+' : ''}${stockData.changePct}%)`}
+                              >
+                                <span className="text-xs font-mono font-semibold text-slate-200 whitespace-nowrap">
+                                  {stockData.currentPrice.toLocaleString()}
+                                </span>
                                 {stockData.points.length > 0 && (
                                   <StockSparkline
                                     points={stockData.points}
                                     isPositive={stockData.changePct >= 0}
-                                    width={40}
-                                    height={16}
+                                    width={36}
+                                    height={14}
                                   />
                                 )}
                                 <span
@@ -960,24 +937,19 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                         </td>
 
                         {/* Fuel Price (Between Stock Market and Policy Rate) */}
-                        <td className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[96px] sm:min-w-[125px]">
+                        <td
+                          className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[88px] sm:min-w-[110px]"
+                          title={item.fuelPriceUsd !== null && item.fuelPriceUsd !== undefined ? `RON 95: $${item.fuelPriceUsd.toFixed(2)}/L` : undefined}
+                        >
                           {item.fuelPriceUsd !== null && item.fuelPriceUsd !== undefined ? (
-                            <div className="flex flex-col items-end">
-                              <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
-                                <span
-                                  className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 shadow-sm"
-                                  style={{ backgroundColor: getFuelPriceColor(item.fuelPriceUsd) }}
-                                  title={`RON 95: $${item.fuelPriceUsd.toFixed(2)}/L`}
-                                />
-                                <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
-                                  {formatFuelPrice(item.fuelPriceUsd, baseCurrency, usdToBase, lang)}
-                                </span>
-                              </div>
-                              {baseCurrency !== 'USD' && (
-                                <span className="text-[9px] sm:text-[10px] font-mono text-slate-500">
-                                  ${item.fuelPriceUsd.toFixed(2)}/L
-                                </span>
-                              )}
+                            <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
+                              <span
+                                className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 shadow-sm"
+                                style={{ backgroundColor: getFuelPriceColor(item.fuelPriceUsd) }}
+                              />
+                              <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                                {formatFuelPrice(item.fuelPriceUsd, baseCurrency, usdToBase, lang)}
+                              </span>
                             </div>
                           ) : (
                             <span className="text-slate-600 font-mono text-xs">-</span>
@@ -985,32 +957,36 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                         </td>
 
                         {/* Big Mac Index */}
-                        <td className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[96px] sm:min-w-[125px]">
+                        <td
+                          className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[96px] sm:min-w-[125px]"
+                          title={
+                            item.bigMacPriceUsd !== null && item.bigMacPriceUsd !== undefined
+                              ? `$${item.bigMacPriceUsd.toFixed(2)} (${item.bigMacValuationPct && item.bigMacValuationPct > 0 ? '+' : ''}${item.bigMacValuationPct?.toFixed(1) ?? 0}% vs USD)`
+                              : undefined
+                          }
+                        >
                           {item.bigMacPriceUsd !== null && item.bigMacPriceUsd !== undefined ? (
-                            <div className="flex flex-col items-end">
-                              <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
-                                <span
-                                  className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 shadow-sm"
-                                  style={{ backgroundColor: getBigMacColor(item.bigMacValuationPct) }}
-                                  title={`${item.bigMacValuationPct && item.bigMacValuationPct > 0 ? '+' : ''}${item.bigMacValuationPct}% vs USD base`}
-                                />
-                                <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
-                                  {formatBigMacPrice(item.bigMacPriceUsd, baseCurrency, usdToBase, lang)}
-                                </span>
-                              </div>
+                            <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
                               <span
-                                className={`text-[9px] sm:text-[10px] font-mono font-medium ${
-                                  (item.bigMacValuationPct ?? 0) < -15
-                                    ? 'text-cyan-400'
-                                    : (item.bigMacValuationPct ?? 0) > 15
-                                    ? 'text-rose-400'
-                                    : 'text-amber-400'
-                                }`}
-                              >
-                                {item.bigMacValuationPct !== null && item.bigMacValuationPct !== undefined
-                                  ? `${item.bigMacValuationPct > 0 ? '+' : ''}${item.bigMacValuationPct.toFixed(1)}%`
-                                  : `$${item.bigMacPriceUsd.toFixed(2)}`}
+                                className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 shadow-sm"
+                                style={{ backgroundColor: getBigMacColor(item.bigMacValuationPct) }}
+                              />
+                              <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                                {formatBigMacPrice(item.bigMacPriceUsd, baseCurrency, usdToBase, lang)}
                               </span>
+                              {item.bigMacValuationPct !== null && item.bigMacValuationPct !== undefined && (
+                                <span
+                                  className={`text-[10px] font-mono font-medium hidden sm:inline ${
+                                    item.bigMacValuationPct < -15
+                                      ? 'text-cyan-400'
+                                      : item.bigMacValuationPct > 15
+                                      ? 'text-rose-400'
+                                      : 'text-amber-400'
+                                  }`}
+                                >
+                                  {item.bigMacValuationPct > 0 ? `+${item.bigMacValuationPct.toFixed(0)}%` : `${item.bigMacValuationPct.toFixed(0)}%`}
+                                </span>
+                              )}
                             </div>
                           ) : (
                             <span className="text-slate-600 font-mono text-xs">-</span>
@@ -1037,22 +1013,22 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     {showMacro && (
                       <>
                         {/* Total GDP */}
-                        <td className="py-2.5 sm:py-3 px-1.5 sm:px-3 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[92px] sm:min-w-[120px]">
-                          <span className="font-bold text-white block text-xs sm:text-sm">
+                        <td
+                          className="py-2.5 sm:py-3 px-1.5 sm:px-3 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[92px] sm:min-w-[120px]"
+                          title={`$${(item.totalGdpUsd / 1e12).toFixed(2)}T USD`}
+                        >
+                          <span className="font-bold text-white font-mono text-xs sm:text-sm">
                             {formatGdpCompact(item.totalGdpUsd, baseCurrency, usdToBase, lang)}
-                          </span>
-                          <span className="text-[10px] sm:text-[11px] text-slate-500 font-mono">
-                            ${(item.totalGdpUsd / 1e12).toFixed(2)}T
                           </span>
                         </td>
 
                         {/* GDP Per Capita */}
-                        <td className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[92px] sm:min-w-[120px]">
-                          <span className="font-bold text-white block text-xs sm:text-sm">
+                        <td
+                          className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[92px] sm:min-w-[120px]"
+                          title={`$${Math.round(item.gdpPerCapitaUsd).toLocaleString()} USD`}
+                        >
+                          <span className="font-bold text-white font-mono text-xs sm:text-sm">
                             {formatPerCapita(item.gdpPerCapitaUsd, baseCurrency, usdToBase, lang)}
-                          </span>
-                          <span className="text-[10px] sm:text-[11px] text-slate-500 font-mono">
-                            ${Math.round(item.gdpPerCapitaUsd).toLocaleString()}
                           </span>
                         </td>
 

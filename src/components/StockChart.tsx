@@ -12,7 +12,7 @@ import {
   type ChartOptions,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { TrendingUp, TrendingDown, Info, ShieldAlert } from 'lucide-react'
+import { TrendingUp, TrendingDown, ShieldAlert } from 'lucide-react'
 import type { Language } from '../types/economics'
 import { getStockPriceData } from '../data/stockPrices'
 
@@ -80,7 +80,7 @@ export const StockChart: React.FC<StockChartProps> = ({
     )
   }
 
-  const { points, changePct, currentPrice, currency, nameKo, nameEn, ticker, changePct30d } = stockData
+  const { points, changePct, currentPrice, currency, nameKo, nameEn, changePct30d } = stockData
   
   const closes = points.map((p) => p.close)
   const minPrice = Math.min(...closes)
@@ -264,27 +264,6 @@ export const StockChart: React.FC<StockChartProps> = ({
       {/* Chart.js Line Canvas */}
       <div className="w-full h-64 sm:h-72">
         <Line data={{ labels, datasets }} options={options} />
-      </div>
-
-      {/* Footer Info / Source Attribution */}
-      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-        <div className="flex items-center gap-1.5">
-          <Info className="w-3.5 h-3.5 text-indigo-400" />
-          <span>
-            {lang === 'ko'
-              ? `야후 파이낸스(Yahoo Finance) 일별 공식 종가 데이터 (${ticker})`
-              : lang === 'ja'
-              ? `Yahoo Finance 公式日次終値データ (${ticker})`
-              : lang === 'es'
-              ? `Datos oficiales de cierre diario de Yahoo Finance (${ticker})`
-              : lang === 'zh'
-              ? `雅虎财经 (Yahoo Finance) 官方日收盘价数据 (${ticker})`
-              : `Yahoo Finance Official Daily Close Data (${ticker})`}
-          </span>
-        </div>
-        <span className="font-mono text-slate-400">
-          {points.length} {lang === 'ko' ? '거래일' : lang === 'ja' ? '営業日' : lang === 'es' ? 'días de negociación' : lang === 'zh' ? '个交易日' : 'trading days'}
-        </span>
       </div>
     </div>
   )

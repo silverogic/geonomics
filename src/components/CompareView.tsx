@@ -102,16 +102,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
     <div className="space-y-6">
       {/* Top Header & Presets */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-              <GitCompare className="w-6 h-6 text-indigo-400" />
-              {t.compareTitle}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              {t.compareDescription}
-            </p>
-          </div>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+            <GitCompare className="w-6 h-6 text-indigo-400" />
+            {t.compareTitle}
+          </h2>
 
           <div className="flex flex-wrap items-center gap-3">
             {onYearChange && (
@@ -136,7 +131,6 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
             {/* Preset Buttons with Vector Flags */}
             <div className="flex flex-wrap items-center gap-1.5 text-xs">
-              <span className="text-slate-500 mr-1 font-medium">{t.compareRecommended}</span>
               <button
                 onClick={() => setPreset('USA', 'CHN')}
                 className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5"
@@ -220,43 +214,38 @@ export const CompareView: React.FC<CompareViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Country A Card */}
         <div className="bg-slate-900/80 border-2 border-indigo-500/30 rounded-2xl p-5 shadow-lg shadow-indigo-500/5">
-          <div className="flex items-center gap-3 mb-4">
-            <CountryFlag iso2={countryA.iso2} className="w-12 h-8" alt={nameA} />
-            <div>
-              <h3 className="text-xl font-bold text-white">{nameA}</h3>
-              <p className="text-xs text-slate-400">
-                {getCountrySecondaryName(countryA, lang)} • {countryA.currencyCode}
-              </p>
+          <div
+            className="flex items-center gap-3 mb-4"
+            title={`${nameA} (${getCountrySecondaryName(countryA, lang)})`}
+          >
+            <CountryFlag iso2={countryA.iso2} className="w-10 h-7 shrink-0" alt={nameA} />
+            <div className="flex items-center gap-2 min-w-0">
+              <h3 className="text-xl font-bold text-white truncate">{nameA}</h3>
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
+                {countryA.currencyCode}
+              </span>
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+          <div className="space-y-2.5">
+            <div
+              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+              title={detailA ? `$${(detailA.totalGdpUsd / 1e12).toFixed(2)}T USD` : undefined}
+            >
               <span className="text-xs text-slate-400">{t.cardTotalGdp} ({detailA?.latestYear ?? selectedYear})</span>
-              <div className="text-right">
-                <span className="text-base font-bold text-indigo-400 block">
-                  {detailA ? formatGdpCompact(detailA.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
-                </span>
-                {baseCurrency !== 'USD' && detailA && (
-                  <span className="text-[11px] text-slate-500 font-mono block">
-                    ${(detailA.totalGdpUsd / 1e12).toFixed(2)}T
-                  </span>
-                )}
-              </div>
+              <span className="text-base font-bold font-mono text-indigo-400">
+                {detailA ? formatGdpCompact(detailA.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
+              </span>
             </div>
 
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+            <div
+              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+              title={detailA ? `$${Math.round(detailA.gdpPerCapitaUsd).toLocaleString()} USD` : undefined}
+            >
               <span className="text-xs text-slate-400">{t.cardPerCapita}</span>
-              <div className="text-right">
-                <span className={`text-base font-bold block ${getPerCapitaColorClass(detailA?.gdpPerCapitaUsd)}`}>
-                  {detailA ? formatPerCapita(detailA.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
-                </span>
-                {baseCurrency !== 'USD' && detailA && (
-                  <span className="text-[11px] text-slate-500 font-mono block">
-                    ${Math.round(detailA.gdpPerCapitaUsd).toLocaleString()}
-                  </span>
-                )}
-              </div>
+              <span className={`text-base font-bold font-mono ${getPerCapitaColorClass(detailA?.gdpPerCapitaUsd)}`}>
+                {detailA ? formatPerCapita(detailA.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
+              </span>
             </div>
 
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
@@ -267,11 +256,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </div>
 
             {interestA && (
-              <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+              <div
+                className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+                title={interestA.centralBankName}
+              >
                 <span className="text-xs text-slate-400">{t.compareInterestRate}</span>
                 <span className="text-sm font-mono font-bold text-indigo-300">
                   {interestA.ratePct.toFixed(2)}%
-                  <span className="ml-1 text-[11px] text-slate-400 font-normal">({interestA.centralBankName})</span>
                 </span>
               </div>
             )}
@@ -327,14 +318,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
               if (!bm) return null
               const color = getBigMacColor(bm.valuationRawPct)
               return (
-                <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+                <div
+                  className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+                  title={`${bm.localPrice.toLocaleString()} ${bm.currencyCode}`}
+                >
                   <span className="text-xs text-slate-400">🍔 {t.metricBigMac}</span>
-                  <div className="text-right">
-                    <span className="text-sm font-mono font-bold text-slate-200 block">
+                  <div className="flex items-baseline gap-1.5 font-mono">
+                    <span className="text-sm font-bold text-slate-200">
                       {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
                     </span>
-                    <span className="text-[10px] font-mono font-bold block" style={{ color }}>
-                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`} ({bm.localPrice.toLocaleString()} {bm.currencyCode})
+                    <span className="text-xs font-bold" style={{ color }}>
+                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
                     </span>
                   </div>
                 </div>
@@ -345,43 +339,38 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
         {/* Country B Card */}
         <div className="bg-slate-900/80 border-2 border-emerald-500/30 rounded-2xl p-5 shadow-lg shadow-emerald-500/5">
-          <div className="flex items-center gap-3 mb-4">
-            <CountryFlag iso2={countryB.iso2} className="w-12 h-8" alt={nameB} />
-            <div>
-              <h3 className="text-xl font-bold text-white">{nameB}</h3>
-              <p className="text-xs text-slate-400">
-                {getCountrySecondaryName(countryB, lang)} • {countryB.currencyCode}
-              </p>
+          <div
+            className="flex items-center gap-3 mb-4"
+            title={`${nameB} (${getCountrySecondaryName(countryB, lang)})`}
+          >
+            <CountryFlag iso2={countryB.iso2} className="w-10 h-7 shrink-0" alt={nameB} />
+            <div className="flex items-center gap-2 min-w-0">
+              <h3 className="text-xl font-bold text-white truncate">{nameB}</h3>
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
+                {countryB.currencyCode}
+              </span>
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+          <div className="space-y-2.5">
+            <div
+              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+              title={detailB ? `$${(detailB.totalGdpUsd / 1e12).toFixed(2)}T USD` : undefined}
+            >
               <span className="text-xs text-slate-400">{t.cardTotalGdp} ({detailB?.latestYear ?? selectedYear})</span>
-              <div className="text-right">
-                <span className="text-base font-bold text-emerald-400 block">
-                  {detailB ? formatGdpCompact(detailB.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
-                </span>
-                {baseCurrency !== 'USD' && detailB && (
-                  <span className="text-[11px] text-slate-500 font-mono block">
-                    ${(detailB.totalGdpUsd / 1e12).toFixed(2)}T
-                  </span>
-                )}
-              </div>
+              <span className="text-base font-bold font-mono text-emerald-400">
+                {detailB ? formatGdpCompact(detailB.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
+              </span>
             </div>
 
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+            <div
+              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+              title={detailB ? `$${Math.round(detailB.gdpPerCapitaUsd).toLocaleString()} USD` : undefined}
+            >
               <span className="text-xs text-slate-400">{t.cardPerCapita}</span>
-              <div className="text-right">
-                <span className={`text-base font-bold block ${getPerCapitaColorClass(detailB?.gdpPerCapitaUsd)}`}>
-                  {detailB ? formatPerCapita(detailB.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
-                </span>
-                {baseCurrency !== 'USD' && detailB && (
-                  <span className="text-[11px] text-slate-500 font-mono block">
-                    ${Math.round(detailB.gdpPerCapitaUsd).toLocaleString()}
-                  </span>
-                )}
-              </div>
+              <span className={`text-base font-bold font-mono ${getPerCapitaColorClass(detailB?.gdpPerCapitaUsd)}`}>
+                {detailB ? formatPerCapita(detailB.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
+              </span>
             </div>
 
             <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
@@ -392,11 +381,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </div>
 
             {interestB && (
-              <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+              <div
+                className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+                title={interestB.centralBankName}
+              >
                 <span className="text-xs text-slate-400">{t.compareInterestRate}</span>
                 <span className="text-sm font-mono font-bold text-indigo-300">
                   {interestB.ratePct.toFixed(2)}%
-                  <span className="ml-1 text-[11px] text-slate-400 font-normal">({interestB.centralBankName})</span>
                 </span>
               </div>
             )}
@@ -452,14 +443,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
               if (!bm) return null
               const color = getBigMacColor(bm.valuationRawPct)
               return (
-                <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
+                <div
+                  className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
+                  title={`${bm.localPrice.toLocaleString()} ${bm.currencyCode}`}
+                >
                   <span className="text-xs text-slate-400">🍔 {t.metricBigMac}</span>
-                  <div className="text-right">
-                    <span className="text-sm font-mono font-bold text-slate-200 block">
+                  <div className="flex items-baseline gap-1.5 font-mono">
+                    <span className="text-sm font-bold text-slate-200">
                       {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
                     </span>
-                    <span className="text-[10px] font-mono font-bold block" style={{ color }}>
-                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`} ({bm.localPrice.toLocaleString()} {bm.currencyCode})
+                    <span className="text-xs font-bold" style={{ color }}>
+                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
                     </span>
                   </div>
                 </div>
@@ -499,14 +493,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
           return (
             <>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span>
-                    {t.compareChartTitle} ({startYear} ~ {endYear})
-                  </span>
-                  <span className="text-xs font-normal text-slate-400">
-                    ({nameA} <span className="text-indigo-400">■</span> vs {nameB}{' '}
-                    <span className="text-emerald-400">■</span>)
-                  </span>
+                <h3 className="text-lg font-bold text-white">
+                  {t.compareChartTitle} ({startYear} ~ {endYear})
                 </h3>
                 <span className="text-xs text-slate-500 font-mono">{baseCurrency}</span>
               </div>

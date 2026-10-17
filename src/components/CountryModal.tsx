@@ -94,26 +94,34 @@ export const CountryModal: React.FC<CountryModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header: Country Flag, Name, Rank */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-800 bg-slate-950/70">
-          <div className="flex items-center gap-3.5">
-            <CountryFlag iso2={country.iso2} className="w-13 h-9" alt={displayName} />
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h2 className="text-2xl font-black text-white">{displayName}</h2>
-                <span className="text-sm text-slate-400 font-medium">({secondaryName})</span>
-                <span className="text-xs px-2 py-0.5 rounded-md font-mono bg-slate-800 text-slate-300 border border-slate-700">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800 bg-slate-950/70">
+          <div className="flex items-center gap-3 min-w-0">
+            <CountryFlag iso2={country.iso2} className="w-11 h-7.5 sm:w-12 sm:h-8 shrink-0" alt={displayName} />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-xl sm:text-2xl font-black text-white truncate" title={`${displayName} (${secondaryName})`}>
+                  {displayName}
+                </h2>
+                <span className="text-xs px-2 py-0.5 rounded-md font-mono bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
                   {country.id}
                 </span>
+                <span
+                  className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0"
+                  title={`${t.modalRankTitle} (${t.modalRankSub})`}
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  <span>{t.modalRankValue.replace('{rank}', rank.toString())}</span>
+                </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {t.modalContinent}: {country.region} • {t.modalCurrency}: {currencyName} ({country.currencyCode})
+              <p className="text-xs text-slate-400 mt-0.5 truncate">
+                {country.region} • {currencyName} ({country.currencyCode})
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors shrink-0 ml-2"
             title={t.modalClose}
             aria-label={t.modalClose}
           >
@@ -122,46 +130,45 @@ export const CountryModal: React.FC<CountryModalProps> = ({
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5">
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {/* Total GDP */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+            <div
+              className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+              title={detail ? `$${(detail.totalGdpUsd / 1e12).toFixed(2)}T USD` : undefined}
+            >
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalTotalGdpTitle} ({detail?.latestYear ?? selectedYear})
               </span>
-              <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate">
+              <div className="text-base lg:text-lg font-bold font-mono text-white tracking-tight truncate">
                 {detail ? formatGdpCompact(detail.totalGdpUsd, baseCurrency, usdToBase, lang) : t.loadingData}
               </div>
-              {baseCurrency !== 'USD' && detail && (
-                <span className="text-xs text-indigo-400 font-mono truncate block">
-                  ${(detail.totalGdpUsd / 1e12).toFixed(2)}T
-                </span>
-              )}
             </div>
 
             {/* GDP Per Capita */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+            <div
+              className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+              title={detail ? `$${Math.round(detail.gdpPerCapitaUsd).toLocaleString()} USD` : undefined}
+            >
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalPerCapitaTitle}
               </span>
-              <div className={`text-base lg:text-lg font-bold tracking-tight truncate ${getPerCapitaColorClass(detail?.gdpPerCapitaUsd)}`}>
+              <div className={`text-base lg:text-lg font-bold font-mono tracking-tight truncate ${getPerCapitaColorClass(detail?.gdpPerCapitaUsd)}`}>
                 {detail ? formatPerCapita(detail.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : t.loadingData}
               </div>
-              {baseCurrency !== 'USD' && detail && (
-                <span className="text-xs text-indigo-400 font-mono truncate block">
-                  ${Math.round(detail.gdpPerCapitaUsd).toLocaleString()}
-                </span>
-              )}
             </div>
 
             {/* Annual Growth Rate */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+            <div
+              className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+              title={t.modalRealGrowth}
+            >
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalGrowthTitle}
               </span>
               <div
-                className={`text-base lg:text-lg font-bold flex items-center gap-1 min-w-0 ${
+                className={`text-base lg:text-lg font-bold font-mono flex items-center gap-1 min-w-0 ${
                   detail?.growthRatePct !== null && (detail?.growthRatePct ?? 0) >= 0
                     ? 'text-emerald-400'
                     : 'text-rose-400'
@@ -178,11 +185,13 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                     : 'N/A'}
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400 truncate block">{t.modalRealGrowth}</span>
             </div>
 
             {/* Inflation Rate */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+            <div
+              className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+              title={t.modalInflationSub}
+            >
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalInflationTitle}
               </span>
@@ -200,13 +209,13 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                   ? `${detail.inflationRatePct.toFixed(1)}%`
                   : 'N/A'}
               </div>
-              <span className="text-[11px] text-slate-400 truncate block" title={t.modalInflationSub}>
-                {t.modalInflationSub}
-              </span>
             </div>
 
             {/* National Debt Ratio */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+            <div
+              className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+              title={t.modalDebtSub}
+            >
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalDebtTitle}
               </span>
@@ -228,13 +237,13 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                   ? `${detail.debtRatioPct.toFixed(1)}%`
                   : 'N/A'}
               </div>
-              <span className="text-[11px] text-slate-400 truncate block" title={t.modalDebtSub}>
-                {t.modalDebtSub}
-              </span>
             </div>
 
             {/* Central Bank Policy Rate */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+            <div
+              className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+              title={interestRateInfo?.date ? `${interestRateInfo.date} (${interestRateInfo.source})` : t.modalInterestRateSub}
+            >
               <span className="text-xs font-semibold text-slate-400 block mb-1 truncate">
                 {t.modalInterestRateTitle}
               </span>
@@ -250,21 +259,6 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                   <span className="text-slate-500 font-mono text-sm">-</span>
                 )}
               </div>
-              <span className="text-[11px] text-slate-400 truncate block" title={t.modalInterestRateSub}>
-                {interestRateInfo?.date ? `${interestRateInfo.date} (${interestRateInfo.source})` : t.modalInterestRateSub}
-              </span>
-            </div>
-
-            {/* Global Rank */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
-              <span className="text-xs font-semibold text-slate-400 block mb-1">
-                {t.modalRankTitle}
-              </span>
-              <div className="text-lg sm:text-xl font-bold text-amber-400 flex items-center gap-1.5">
-                <Award className="w-5 h-5 text-amber-400" />
-                <span>{t.modalRankValue.replace('{rank}', rank.toString())}</span>
-              </div>
-              <span className="text-[11px] text-slate-500">{t.modalRankSub}</span>
             </div>
 
             {/* Big Mac Index Card */}
@@ -273,7 +267,10 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               if (!bm) return null
               const color = getBigMacColor(bm.valuationRawPct)
               return (
-                <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 min-w-0 overflow-hidden">
+                <div
+                  className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+                  title={`$${bm.dollarPrice.toFixed(2)} USD (${bm.localPrice.toLocaleString()} ${bm.currencyCode})`}
+                >
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-400 truncate">
                       🍔 {t.metricBigMac}
@@ -283,15 +280,12 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                       style={{ backgroundColor: color }}
                     />
                   </div>
-                  <div className="text-base lg:text-lg font-bold text-white tracking-tight truncate font-mono">
-                    {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
-                  </div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[11px] font-mono font-bold" style={{ color }}>
-                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
+                  <div className="flex items-baseline gap-1.5 truncate font-mono">
+                    <span className="text-base lg:text-lg font-bold text-white tracking-tight">
+                      {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
                     </span>
-                    <span className="text-[10px] text-slate-500 truncate">
-                      (${bm.dollarPrice.toFixed(2)})
+                    <span className="text-xs font-bold" style={{ color }}>
+                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
                     </span>
                   </div>
                 </div>
@@ -310,19 +304,16 @@ export const CountryModal: React.FC<CountryModalProps> = ({
           {/* National Benchmark Stock Index Chart */}
           {stockData && (
             <div className="space-y-2.5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <div className="flex items-center gap-2">
-                  <LineChart className="w-4 h-4 text-indigo-400" />
-                  <h4 className="text-sm font-bold text-slate-200">
-                    {t.modalStockIndexTitle} ({lang === 'ko' ? stockData.nameKo : stockData.nameEn})
-                  </h4>
-                  {stockData.ticker && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">
-                      {stockData.ticker}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[11px] text-slate-400">{t.modalStockIndexSub}</span>
+              <div className="flex items-center gap-2">
+                <LineChart className="w-4 h-4 text-indigo-400" />
+                <h4 className="text-sm font-bold text-slate-200">
+                  {t.modalStockIndexTitle} ({lang === 'ko' ? stockData.nameKo : stockData.nameEn})
+                </h4>
+                {stockData.ticker && (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">
+                    {stockData.ticker}
+                  </span>
+                )}
               </div>
 
               <StockChart countryId={country.id} lang={lang} />
@@ -371,30 +362,17 @@ export const CountryModal: React.FC<CountryModalProps> = ({
             })()}
           </div>
 
-          {/* Authoritative Source Transparency */}
-          <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400 space-y-2">
-            <div className="flex items-center gap-2 text-slate-300 font-semibold">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>{t.modalAccuracyTitle}</span>
+          {/* Compact Single-Line Source & Official Portals Bar */}
+          <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-xs text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-slate-400 min-w-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span className="truncate">
+                {lang === 'ko'
+                  ? '출처: IMF WEO · World Bank · BIS · ECB · The Economist · Yahoo Finance'
+                  : 'Sources: IMF WEO · World Bank · BIS · ECB · The Economist · Yahoo Finance'}
+              </span>
             </div>
-            <p>
-              • {country.id === 'TWN'
-                ? (lang === 'ko'
-                    ? 'GDP 통계: 세계은행 미수록 국가로 국제통화기금(IMF WEO) 및 대만 행정원 주계총처(DGBAS) 공식 집계치 기준.'
-                    : lang === 'ja'
-                      ? 'GDP統計: 世界銀行未収録のため、国際通貨基金(IMF WEO)および台湾行政院主計総処(DGBAS)公式統計基準。'
-                      : lang === 'es'
-                        ? 'Estadísticas del PIB: no registradas en el Banco Mundial; basadas en las estadísticas oficiales del FMI (WEO) y la DGBAS de Taiwán.'
-                        : lang === 'zh'
-                          ? 'GDP 统计: 鉴于世行未收录，数据来源于国际货币基金组织 (IMF WEO) 与台湾地区统计部门官方数据。'
-                          : 'GDP Statistics: Sourced from IMF World Economic Outlook (WEO) & DGBAS Taiwan official data.')
-                : t.modalAccuracyGdp}
-            </p>
-            <p>• {t.modalAccuracyDebt}</p>
-            <p>• {t.modalAccuracyInflation}</p>
-            <p>• {t.modalAccuracyFx}</p>
-            <p>• {lang === 'ko' ? '빅맥 지수: 영국 The Economist 매거진 공식 데이터셋 (통화 구매력 평가 PPP 지표).' : 'Big Mac Index: The Economist official dataset (Purchasing Power Parity benchmark).'}</p>
-            <div className="pt-1 flex flex-wrap items-center gap-4 text-indigo-400">
+            <div className="flex flex-wrap items-center gap-3 text-indigo-400 shrink-0">
               <a
                 href={country.id === 'TWN' ? 'https://www.imf.org/en/Countries/TWN' : `https://data.worldbank.org/country/${country.id.toLowerCase()}`}
                 target="_blank"
@@ -404,14 +382,8 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 <span>
                   {country.id === 'TWN'
                     ? lang === 'ko'
-                      ? 'IMF 대만 공식 경제 포털 바로가기'
-                      : lang === 'ja'
-                        ? 'IMF 台湾公式経済ポータル'
-                        : lang === 'es'
-                          ? 'Visitar el portal de datos del FMI sobre Taiwán'
-                          : lang === 'zh'
-                            ? '访问 IMF 台湾地区数据门户'
-                            : 'Visit IMF Taiwan Data Portal'
+                      ? 'IMF 대만 포털'
+                      : 'IMF Taiwan Portal'
                     : t.modalWorldBankLink}
                 </span>
                 <ExternalLink className="w-3 h-3" />

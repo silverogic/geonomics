@@ -8,7 +8,7 @@ import { CountryFlag } from './CountryFlag'
 import { getCountryName } from '../utils/countryNames'
 import { translations } from '../i18n/translations'
 import { getImfCountryData } from '../data/imfEconomic'
-import { TrendingUp, TrendingDown, Globe, Sparkles } from 'lucide-react'
+import { TrendingUp, TrendingDown, Globe } from 'lucide-react'
 
 interface GdpTreemapProps {
   items: CountryRowItem[]
@@ -319,20 +319,6 @@ export const GdpTreemap: React.FC<GdpTreemapProps> = ({
               {summary.avgYoy > 0 ? `+${summary.avgYoy.toFixed(1)}%` : `${summary.avgYoy.toFixed(1)}%`}
             </span>
           </div>
-
-          <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
-            ({summary.totalCount} {lang === 'ko' ? '개국 표시 중' : 'Economies'})
-          </span>
-        </div>
-
-        {/* Right: YoY Base Horizon Label */}
-        <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-mono bg-slate-950/60 px-2.5 py-1 rounded-xl border border-slate-800/80">
-          <Sparkles className="w-3 h-3 text-indigo-400" />
-          <span>
-            {lang === 'ko'
-              ? `기준: ${selectedYear}년 (vs. ${prevYearStr}년)`
-              : `Horizon: ${selectedYear} (vs. ${prevYearStr})`}
-          </span>
         </div>
       </div>
 
@@ -618,9 +604,8 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
 
       {/* 3. DYNAMIC YOY LEGEND */}
       <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2 text-slate-300 font-semibold">
-          <span>{t.legendTitle}:</span>
-          <span className="text-indigo-400 font-bold">
+        <div className="flex items-center gap-2 text-indigo-400 font-bold">
+          <span>
             {lang === 'ko'
               ? `전년(${prevYearStr}년) 대비 증감률`
               : `YoY Growth Rate (vs. ${prevYearStr})`}
@@ -671,10 +656,6 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
             </div>
           </div>
         )}
-
-        <div className="text-[10px] text-slate-400 hidden xl:block">
-          💡 {t.clickCountryHint}
-        </div>
       </div>
     </div>
   )

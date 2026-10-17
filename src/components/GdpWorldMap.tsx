@@ -2,7 +2,6 @@ import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import {
   TrendingUp,
   TrendingDown,
-  Search,
   Filter,
   ChevronDown,
   Check,
@@ -378,7 +377,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               >
                 <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
                   <Activity className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>{t.mapMetricLabel}:</span>
+                  <span className="hidden sm:inline">{t.mapMetricLabel}:</span>
                 </span>
                 <span className="text-slate-100 font-bold max-w-[130px] sm:max-w-[180px] truncate">
                   {getMetricLabel(metric)}
@@ -431,7 +430,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               >
                 <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
                   <Filter className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>{lang === 'ko' ? '대륙' : lang === 'ja' ? '地域' : lang === 'es' ? 'Región' : lang === 'zh' ? '大洲' : 'Region'}:</span>
+                  <span className="hidden sm:inline">{lang === 'ko' ? '대륙' : lang === 'ja' ? '地域' : lang === 'es' ? 'Región' : lang === 'zh' ? '大洲' : 'Region'}:</span>
                 </span>
                 <span className="text-slate-100 font-bold max-w-[130px] sm:max-w-[180px] truncate">
                   {getRegionButtonLabel()}
@@ -618,19 +617,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <span>{t.mapViewModeTreemap}</span>
               </button>
             </div>
-
-          </div>
-
-          {/* Quick Country Search (Alined with filter row) */}
-          <div className="relative w-full sm:w-64 xl:w-72 shrink-0">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
-            />
           </div>
         </div>
       </div>
@@ -659,9 +645,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
           {/* CHOROPLETH COLOR SCALE LEGEND */}
           <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-slate-300 font-semibold">
-              <span>{t.legendTitle}:</span>
-              <span className="text-indigo-400 font-bold">
+            <div className="flex items-center gap-2 text-indigo-400 font-bold">
+              <span>
                 {metric === 'gdp'
                   ? t.metricTotalGdp
                   : metric === 'perCapita'
@@ -1139,8 +1124,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
           exchangeRates={exchangeRates}
           lang={lang}
           onSelectCountry={onSelectCountry}
-          selectedYear={selectedYear}
-          onYearChange={onYearChange}
+          onSearchChange={setSearchQuery}
           hideHeader={false}
         />
       </div>
