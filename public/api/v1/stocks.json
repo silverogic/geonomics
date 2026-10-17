@@ -538,7 +538,7 @@
     "ticker": "^NSEI",
     "isSupported": true,
     "currency": "INR",
-    "currentPrice": 23146.15,
+    "currentPrice": 23146.2,
     "changePct": -3.85,
     "changePct30d": -3.05,
     "points": [
@@ -1192,7 +1192,7 @@
       },
       {
         "date": "2026-10-16",
-        "close": 205430.33
+        "close": 205430
       }
     ]
   },
@@ -1349,7 +1349,7 @@
     "ticker": "^MXX",
     "isSupported": true,
     "currency": "MXN",
-    "currentPrice": 68929.72,
+    "currentPrice": 68929.7,
     "changePct": 3.88,
     "changePct30d": 6.26,
     "points": [
@@ -1471,7 +1471,7 @@
       },
       {
         "date": "2026-10-16",
-        "close": 68929.72
+        "close": 68929.7
       }
     ]
   },
@@ -2014,7 +2014,7 @@
     "ticker": "XU100.IS",
     "isSupported": true,
     "currency": "TRY",
-    "currentPrice": 11721.72,
+    "currentPrice": 11721.7,
     "changePct": -17.75,
     "changePct30d": -17.17,
     "points": [
@@ -2413,7 +2413,7 @@
     "ticker": "^SSMI",
     "isSupported": true,
     "currency": "CHF",
-    "currentPrice": 14391.31,
+    "currentPrice": 14391.3,
     "changePct": 0.87,
     "changePct30d": 0.78,
     "points": [
@@ -5206,7 +5206,7 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13753.73,
+    "currentPrice": 13753.7,
     "changePct": 1.02,
     "changePct30d": -0.28,
     "points": [
@@ -5328,7 +5328,7 @@
       },
       {
         "date": "2026-10-16",
-        "close": 13753.73
+        "close": 13753.7
       }
     ]
   },
@@ -6815,7 +6815,7 @@
     "ticker": "^TWII",
     "isSupported": true,
     "currency": "TWD",
-    "currentPrice": 47111.26,
+    "currentPrice": 47111.3,
     "changePct": 3.26,
     "changePct30d": 2.05,
     "points": [
