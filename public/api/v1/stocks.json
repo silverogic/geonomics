@@ -7531,11 +7531,11 @@
     "currency": "EUR",
     "currentPrice": 3.25,
     "changePct": -2.99,
-    "changePct30d": -2.11,
+    "changePct30d": -1.81,
     "points": [
       {
         "date": "2026-09-07",
-        "close": 3.32
+        "close": 3.31
       },
       {
         "date": "2026-09-08",
@@ -7664,11 +7664,11 @@
     "currency": "EUR",
     "currentPrice": 16.35,
     "changePct": 37.39,
-    "changePct30d": -6.3,
+    "changePct30d": -7.89,
     "points": [
       {
         "date": "2026-09-07",
-        "close": 17.45
+        "close": 17.75
       },
       {
         "date": "2026-09-08",
@@ -7797,11 +7797,11 @@
     "currency": "EUR",
     "currentPrice": 21.75,
     "changePct": -3.33,
-    "changePct30d": -3.97,
+    "changePct30d": -4.19,
     "points": [
       {
         "date": "2026-09-07",
-        "close": 22.65
+        "close": 22.7
       },
       {
         "date": "2026-09-08",
