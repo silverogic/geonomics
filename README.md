@@ -32,10 +32,15 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 - **Side-by-Side Benchmarking**: Compare any two countries with one-click rivalry presets (`USA vs CHN`, `KOR vs JPN`, `DEU vs GBR`, `IND vs JPN`, etc.).
 - **Scale Multiples & Spreads**: Automatically computes GDP scale multiples, GDP per capita ratios, central bank interest rate spreads, bilateral FX cross-rates, Big Mac PPP valuations, and dual 10-year historical trajectory charts (`GdpChart`).
 
-### 5. Country Deep-Dive Modal (`CountryModal`)
+### 5. Country & Sector Customized Economic News (`EconomicNewsView`)
+- **Multi-Source Global Wire Aggregation (`newsApi.ts`)**: Queries 3 complementary real-time news sources in parallel—**Reuters/Bloomberg/CNBC/FT Wire RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)**, **Algolia Global Story Search**, and **GDELT DOC 2.0 Global News API** (with non-blocking timeout & cooldown guards).
+- **Country × Sector & Custom Keyword Search**: Explore targeted economic articles for any country across **6 industry/macro themes** (**All Economy & Business**, **Semiconductors & AI**, **Rates, FX & Inflation**, **Energy, EV & Battery**, **Trade, Tariffs & Supply Chain**, **Stocks & Corporate**) or type custom keywords in any supported language (automatically translated to English for global querying).
+- **Financial Domain Real-Time Translation Pipeline**: Translates English wire headlines and summaries on-the-fly into Korean, Japanese, Spanish, and Chinese using ALL-CAPS headline normalization, a 60+ Wall Street idiom pre-glossary, and natural financial terminology post-processing, with instant **View Original (EN) / Auto-Translate** toggling and original English hover tooltips.
+
+### 6. Country Deep-Dive Modal (`CountryModal`)
 - **All-in-One Country Profile**: Displays 10-year historical macroeconomic trajectory charts (`GdpChart`), 30-day stock index performance charts (`StockChart`), an interactive two-way **Currency Converter (`CurrencyConverter`)**, central bank policy rate, fuel price, and Big Mac PPP valuation.
 
-### 6. Multi-Currency & 5-Language Localization (i18n)
+### 7. Multi-Currency & 5-Language Localization (i18n)
 - **8 Base Currencies**: `USD ($)`, `EUR (€)`, `KRW (₩)`, `JPY (¥)`, `GBP (£)`, `CNY (¥)`, `CHF`, and `AUD (A$)` with native unit formatting (`조/억/만 원`, `兆/億/万円`, `万亿/亿/万元`, `T/B/M`).
 - **5 Languages**: English (`en`), Korean (`ko`), Japanese (`ja`), Spanish (`es`), and Chinese (`zh`), with automatic browser locale and regional currency detection (`src/utils/locale.ts`).
 
@@ -112,10 +117,10 @@ geonomics/
 │   ├── fetchBigMacData.js       # Updates Big Mac PPP dataset into src/data/bigMac.ts & api/v1/bigmac.json
 │   └── generatePixelMap.js      # Generates 53x28 pixel world map coordinates
 └── src/
-    ├── components/              # UI Components (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, CountryModal, Navbar, TickerBar, etc.)
+    ├── components/              # UI Components (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, Navbar, TickerBar, etc.)
     ├── data/                    # Typed fallback & build-time synchronized datasets
     ├── i18n/                    # 5-language translation dictionary (en, ko, ja, es, zh)
-    ├── services/                # API clients with in-memory TTL caching (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, geonomicsApi)
+    ├── services/                # API clients with in-memory TTL caching (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, newsApi, geonomicsApi)
     ├── types/                   # Core TypeScript interfaces (economics.ts)
     └── utils/                   # Squarified treemap layout, currency/number formatters, locale detection, dynamic year helpers
 ```
@@ -187,6 +192,7 @@ npm run lint
 - **Central Bank Policy Rates**: [Bank for International Settlements (BIS)](https://www.bis.org/) & National Central Banks
 - **Retail Gasoline Prices**: [Global Petrol Prices](https://www.globalpetrolprices.com/) & National Energy Ministries
 - **Big Mac Index (PPP)**: [The Economist Big Mac Index](https://github.com/TheEconomist/big-mac-data)
+- **Global Economic & Sector News**: [Reuters & Bloomberg RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)](https://github.com/laapy/reuters-bloomberg-news-rss-pool), [GDELT DOC 2.0 Global News API](https://www.gdeltproject.org/), & Algolia Story Search API
 
 ---
 

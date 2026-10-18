@@ -76,6 +76,14 @@ export interface InterestRateInfo {
 
 export type NewsCategory = 'ALL' | 'MACRO' | 'CENTRAL_BANKS' | 'COMMODITIES' | 'MARKETS' | 'WORLD'
 
+export type CountryTopicCategory =
+  | 'ALL'
+  | 'SEMICONDUCTOR_AI'
+  | 'CENTRAL_BANK'
+  | 'ENERGY'
+  | 'TRADE'
+  | 'FINANCE'
+
 export interface MacroBriefItem {
   id: string
   category: Exclude<NewsCategory, 'ALL'>
@@ -86,9 +94,21 @@ export interface MacroBriefItem {
   relatedCountryIds: string[]
 }
 
+export interface CountryNewsArticle {
+  id: string
+  title: string
+  description?: string
+  url: string
+  source: string
+  publishedAt: string
+  countryId: string
+  topic: CountryTopicCategory
+}
+
 export interface EconomicNewsData {
   lastUpdated: string
   briefings: MacroBriefItem[]
   repositories: string[]
 }
+
 

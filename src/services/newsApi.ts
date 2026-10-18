@@ -1,4 +1,7 @@
 import type {
+  CountryMeta,
+  CountryNewsArticle,
+  CountryTopicCategory,
   EconomicNewsData,
   Language,
   MacroBriefItem,
@@ -7,6 +10,8 @@ import type {
 import { COUNTRIES } from '../data/countries'
 
 const BRIEF_JSON_URL = 'https://raw.githubusercontent.com/givanchris/News/main/data/brief.json'
+const RSS_POOL_XML_URL =
+  'https://raw.githubusercontent.com/laapy/reuters-bloomberg-news-rss-pool/main/data/deduplicated.xml'
 
 const ALLOWED_BRIEF_CATEGORIES = new Set([
   'MACRO',
@@ -613,3 +618,658 @@ export async function translateBatchOnTheFly(
 
   return resultMap
 }
+
+// ============================================================================
+// COUNTRY & SECTOR CUSTOMIZED ECONOMIC NEWS ENGINE ("1 + A")
+// Multi-source on-demand search:
+// 1. laapy/reuters-bloomberg-news-rss-pool (777 global wire articles + summaries)
+// 2. Algolia Global News Story Search (<150ms high-speed global media index)
+// 3. GDELT DOC 2.0 Global News API (with non-blocking timeout & cooldown guard)
+// ============================================================================
+
+interface RawRssPoolItem {
+  title: string
+  description: string
+  url: string
+  source: string
+  publishedAt: string
+}
+
+let cachedRssPoolItems: RawRssPoolItem[] | null = null
+let lastRssPoolFetchTime = 0
+let lastGdeltCallTime = 0
+const countryNewsCache = new Map<string, { ts: number; items: CountryNewsArticle[] }>()
+
+const KEYWORD_TO_ENGLISH_DICT: Record<string, string> = {
+  // Korean
+  반도체: 'semiconductor chip',
+  칩: 'semiconductor chip',
+  파운드리: 'foundry semiconductor',
+  인공지능: 'AI artificial intelligence',
+  금리: 'interest rate central bank',
+  기준금리: 'interest rate central bank',
+  환율: 'currency exchange rate',
+  물가: 'inflation CPI',
+  인플레이션: 'inflation CPI',
+  전기차: 'EV electric vehicle',
+  배터리: 'battery EV',
+  이차전지: 'battery EV',
+  원전: 'nuclear power energy',
+  원자력: 'nuclear power energy',
+  석유: 'oil crude energy',
+  유가: 'oil price crude',
+  가스: 'natural gas LNG',
+  태양광: 'solar energy',
+  관세: 'tariff trade',
+  수출: 'export trade',
+  수입: 'import trade',
+  공급망: 'supply chain',
+  무역: 'trade export',
+  증시: 'stock market index',
+  주식: 'stock market shares',
+  채권: 'bond yield treasury',
+  국채: 'government bond yield',
+  부동산: 'real estate property housing',
+  방산: 'defense military export',
+  조선: 'shipbuilding',
+  철강: 'steel industry',
+  자동차: 'automaker car automotive',
+  바이오: 'biotech pharmaceutical',
+  제약: 'pharmaceutical drug',
+  은행: 'banking financial',
+  // Japanese
+  半導体: 'semiconductor chip',
+  金利: 'interest rate',
+  為替: 'currency exchange',
+  インフレ: 'inflation',
+  電気自動車: 'EV electric vehicle',
+  電池: 'battery',
+  原発: 'nuclear power',
+  関税: 'tariff trade',
+  輸出: 'export trade',
+  株価: 'stock market',
+  不動産: 'real estate',
+  // Chinese
+  半导体: 'semiconductor chip',
+  芯片: 'semiconductor chip',
+  利率: 'interest rate',
+  汇率: 'currency exchange',
+  通胀: 'inflation',
+  电动车: 'EV electric vehicle',
+  新能源汽车: 'EV electric vehicle',
+  锂电池: 'lithium battery',
+  电池: 'battery',
+  关税: 'tariff trade',
+  出口: 'export trade',
+  股市: 'stock market',
+  房地产: 'real estate property',
+  // Spanish
+  semiconductores: 'semiconductor chip',
+  tasas: 'interest rate',
+  inflación: 'inflation',
+  aranceles: 'tariff trade',
+  energía: 'energy oil',
+  baterías: 'battery EV',
+}
+
+export async function translateQueryToEnglish(rawQuery: string): Promise<string> {
+  const trimmed = rawQuery.trim()
+  if (!trimmed) return ''
+
+  const directMatch = KEYWORD_TO_ENGLISH_DICT[trimmed.toLowerCase()]
+  if (directMatch) return directMatch
+
+  // Check if ASCII-only (already English)
+  if (/^[\x00-\x7F]+$/.test(trimmed)) {
+    return trimmed
+  }
+
+  // Check if any token in the query is in our dictionary
+  const tokens = trimmed.split(/\s+/)
+  const mappedTokens = tokens.map((tok) => KEYWORD_TO_ENGLISH_DICT[tok.toLowerCase()] || null)
+  if (mappedTokens.every((m) => m !== null)) {
+    return mappedTokens.join(' ')
+  }
+
+  try {
+    const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=en&q=${encodeURIComponent(
+      trimmed
+    )}`
+    const res = await fetch(url)
+    if (res.ok) {
+      const data = await res.json()
+      const translated = Array.isArray(data)
+        ? typeof data[0] === 'string'
+          ? data[0]
+          : Array.isArray(data[0]) && typeof data[0][0] === 'string'
+          ? data[0][0]
+          : ''
+        : ''
+      if (translated.trim()) {
+        return translated.trim()
+      }
+    }
+  } catch {
+    // Ignore and return original
+  }
+  return trimmed
+}
+
+const COUNTRY_SEARCH_ALIASES: Record<
+  string,
+  { primary: string; extraTerms: string[]; regex: RegExp }
+> = {
+  USA: {
+    primary: 'US',
+    extraTerms: ['United States', 'Wall Street', 'Fed'],
+    regex: /\b(U\.?S\.?|United States|America|American|Wall Street|Fed\b|Federal Reserve|White House|Treasury|Nasdaq)\b/i,
+  },
+  IND: {
+    primary: 'India',
+    extraTerms: ['Indian', 'Mumbai', 'Modi'],
+    regex: /\b(India|Indian|Mumbai|New Delhi|Sensex|Nifty|RBI|Rupee|Modi)\b/i,
+  },
+  KOR: {
+    primary: 'South Korea',
+    extraTerms: ['Korea', 'Korean', 'Samsung', 'Seoul'],
+    regex: /\b(South Korea|Korea|Korean|Seoul|KOSPI|Samsung|SK Hynix|Hyundai|Won|BOK)\b/i,
+  },
+  JPN: {
+    primary: 'Japan',
+    extraTerms: ['Japanese', 'Tokyo', 'BOJ', 'Yen'],
+    regex: /\b(Japan|Japanese|Tokyo|Nikkei|BOJ|Bank of Japan|Yen|Toyota|SoftBank|RapidUs)\b/i,
+  },
+  CHN: {
+    primary: 'China',
+    extraTerms: ['Chinese', 'Beijing', 'Shanghai'],
+    regex: /\b(China|Chinese|Beijing|Shanghai|Shenzhen|PBOC|Yuan|Renminbi|Huawei|BYD|Alibaba|Tencent)\b/i,
+  },
+  TWN: {
+    primary: 'Taiwan',
+    extraTerms: ['Taiwanese', 'TSMC', 'Taipei'],
+    regex: /\b(Taiwan|Taiwanese|Taipei|TSMC|Foxconn|MediaTek|TAIEX)\b/i,
+  },
+  DEU: {
+    primary: 'Germany',
+    extraTerms: ['German', 'Berlin', 'Frankfurt'],
+    regex: /\b(Germany|German|Berlin|Frankfurt|DAX|Bundesbank|Volkswagen|Siemens|SAP)\b/i,
+  },
+  GBR: {
+    primary: 'UK',
+    extraTerms: ['Britain', 'British', 'London'],
+    regex: /\b(U\.?K\.?|United Kingdom|Britain|British|London|FTSE|Bank of England|BOE|Sterling|Pound)\b/i,
+  },
+  FRA: {
+    primary: 'France',
+    extraTerms: ['French', 'Paris'],
+    regex: /\b(France|French|Paris|CAC 40|Macron|TotalEnergies|Airbus|LVMH)\b/i,
+  },
+  VNM: {
+    primary: 'Vietnam',
+    extraTerms: ['Vietnamese', 'Hanoi'],
+    regex: /\b(Vietnam|Vietnamese|Hanoi|Ho Chi Minh|VinFast)\b/i,
+  },
+  SAU: {
+    primary: 'Saudi Arabia',
+    extraTerms: ['Saudi', 'Riyadh', 'Aramco'],
+    regex: /\b(Saudi Arabia|Saudi|Riyadh|Aramco|PIF)\b/i,
+  },
+  ARE: {
+    primary: 'UAE',
+    extraTerms: ['Dubai', 'Abu Dhabi'],
+    regex: /\b(UAE|United Arab Emirates|Dubai|Abu Dhabi|MGX|Mubadala)\b/i,
+  },
+  SGP: {
+    primary: 'Singapore',
+    extraTerms: ['Singaporean', 'MAS'],
+    regex: /\b(Singapore|Singaporean|Temasek|GIC|MAS)\b/i,
+  },
+  CAN: {
+    primary: 'Canada',
+    extraTerms: ['Canadian', 'Toronto', 'Ottawa'],
+    regex: /\b(Canada|Canadian|Toronto|Ottawa|Bank of Canada|Loonie)\b/i,
+  },
+  AUS: {
+    primary: 'Australia',
+    extraTerms: ['Australian', 'Sydney', 'RBA'],
+    regex: /\b(Australia|Australian|Sydney|Canberra|RBA|ASX)\b/i,
+  },
+  BRA: {
+    primary: 'Brazil',
+    extraTerms: ['Brazilian', 'Brasilia', 'Petrobras'],
+    regex: /\b(Brazil|Brazilian|Brasilia|Sao Paulo|Bovespa|Petrobras|Lula)\b/i,
+  },
+  MEX: {
+    primary: 'Mexico',
+    extraTerms: ['Mexican', 'Peso'],
+    regex: /\b(Mexico|Mexican|Mexico City|Banxico)\b/i,
+  },
+  NLD: {
+    primary: 'Netherlands',
+    extraTerms: ['Dutch', 'ASML', 'Amsterdam'],
+    regex: /\b(Netherlands|Dutch|Amsterdam|ASML|NXP)\b/i,
+  },
+  CHE: {
+    primary: 'Switzerland',
+    extraTerms: ['Swiss', 'Zurich', 'UBS', 'SNB'],
+    regex: /\b(Switzerland|Swiss|Zurich|Geneva|SNB|UBS|Novartis|Nestle)\b/i,
+  },
+  IDN: {
+    primary: 'Indonesia',
+    extraTerms: ['Indonesian', 'Jakarta'],
+    regex: /\b(Indonesia|Indonesian|Jakarta|Rupiah)\b/i,
+  },
+  MYS: {
+    primary: 'Malaysia',
+    extraTerms: ['Malaysian', 'Kuala Lumpur'],
+    regex: /\b(Malaysia|Malaysian|Kuala Lumpur|Ringgit|Johor)\b/i,
+  },
+  THA: {
+    primary: 'Thailand',
+    extraTerms: ['Thai', 'Bangkok'],
+    regex: /\b(Thailand|Thai|Bangkok|Baht)\b/i,
+  },
+  TUR: {
+    primary: 'Turkey',
+    extraTerms: ['Turkish', 'Istanbul', 'Lira'],
+    regex: /\b(Turkey|Turkish|Turkiye|Istanbul|Ankara|Lira)\b/i,
+  },
+  RUS: {
+    primary: 'Russia',
+    extraTerms: ['Russian', 'Moscow', 'Ruble'],
+    regex: /\b(Russia|Russian|Moscow|Ruble|Gazprom)\b/i,
+  },
+}
+
+function getCountrySearchProfile(country: CountryMeta): {
+  primary: string
+  extraTerms: string[]
+  regex: RegExp
+} {
+  const preset = COUNTRY_SEARCH_ALIASES[country.id]
+  if (preset) return preset
+  const escaped = country.nameEn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return {
+    primary: country.nameEn,
+    extraTerms: [country.currencyCode],
+    regex: new RegExp(`\\b(${escaped}|${country.currencyCode})\\b`, 'i'),
+  }
+}
+
+const TOPIC_CONFIG: Record<
+  CountryTopicCategory,
+  {
+    subTerms: string[]
+    gdeltClause: string
+    regex: RegExp
+  }
+> = {
+  ALL: {
+    subTerms: ['economy', 'market', 'trade', 'investment', 'industry'],
+    gdeltClause: '(economy OR market OR trade OR GDP OR investment OR industry OR bank)',
+    regex: /\b(econom|market|trade|export|import|gdp|invest|bank|rate|inflation|growth|industry|tariff|stock|bond|currency|chip|semiconductor|tech|energy|oil|ev|finance|fund|billion|million|company|corp|business|manufacturing|factory|supply chain|revenue|profit|tax|policy|central bank|deal|pact)\b/i,
+  },
+  SEMICONDUCTOR_AI: {
+    subTerms: ['semiconductor', 'chip', 'AI', 'data center'],
+    gdeltClause: '(semiconductor OR chip OR AI OR "artificial intelligence" OR foundry OR fab)',
+    regex: /\b(semiconductor|semiconductors|chip|chips|chipmaker|wafer|foundry|fab\b|fabs\b|tsmc|nvidia|micron|samsung|hynix|asml|arm\b|ai\b|artificial intelligence|gpu|data center|tech|electronics|computing|quantum)\b/i,
+  },
+  CENTRAL_BANK: {
+    subTerms: ['interest rate', 'inflation', 'central bank', 'currency', 'bond'],
+    gdeltClause: '("interest rate" OR inflation OR "central bank" OR currency OR bond OR yield OR GDP)',
+    regex: /\b(rate|rates|inflation|cpi|deflation|central bank|fed\b|ecb|boj|pboc|rbi|bok|rba|snb|currency|forex|dollar|yen|yuan|rupee|won|euro|sterling|peso|lira|bond|bonds|yield|yields|treasury|gdp|monetary|fiscal|debt|deficit)\b/i,
+  },
+  ENERGY: {
+    subTerms: ['energy', 'EV', 'battery', 'oil', 'nuclear', 'solar'],
+    gdeltClause: '(energy OR oil OR gas OR EV OR battery OR solar OR nuclear OR power)',
+    regex: /\b(energy|oil|crude|gas|lng|solar|wind|nuclear|reactor|ev\b|evs\b|electric vehicle|battery|batteries|lithium|grid|power|renewable|hydrogen|opec|refinery|mining|coal|electricity)\b/i,
+  },
+  TRADE: {
+    subTerms: ['trade', 'tariff', 'export', 'supply chain', 'manufacturing'],
+    gdeltClause: '(trade OR tariff OR export OR import OR "supply chain" OR manufacturing)',
+    regex: /\b(trade|tariff|tariffs|export|exports|import|imports|supply chain|manufacturing|factory|customs|sanction|sanctions|pact|deal|wto|fdi|investment|port|shipping|logistics)\b/i,
+  },
+  FINANCE: {
+    subTerms: ['stock', 'market', 'bank', 'investment', 'IPO'],
+    gdeltClause: '(stock OR market OR bank OR IPO OR investment OR fund OR earnings)',
+    regex: /\b(stock|stocks|shares|equity|equities|market|index|bank|banks|banking|ipo|fund|invest|investment|investor|billion|million|valuation|earnings|profit|revenue|merger|acquisition|fintech|capital|wealth)\b/i,
+  },
+}
+
+const KNOWN_PUBLISHER_NAMES: Record<string, string> = {
+  'reuters.com': 'Reuters',
+  'bloomberg.com': 'Bloomberg',
+  'ft.com': 'Financial Times',
+  'wsj.com': 'Wall Street Journal',
+  'cnbc.com': 'CNBC',
+  'asia.nikkei.com': 'Nikkei Asia',
+  'nikkei.com': 'Nikkei',
+  'economictimes.indiatimes.com': 'Economic Times',
+  'indiatimes.com': 'Times of India',
+  'indianexpress.com': 'Indian Express',
+  'thehindu.com': 'The Hindu',
+  'livemint.com': 'Mint',
+  'scmp.com': 'SCMP',
+  'koreaherald.com': 'Korea Herald',
+  'koreatimes.co.kr': 'Korea Times',
+  'yna.co.kr': 'Yonhap News',
+  'japantimes.co.jp': 'Japan Times',
+  'techcrunch.com': 'TechCrunch',
+  'theregister.com': 'The Register',
+  'arstechnica.com': 'Ars Technica',
+  'semianalysis.com': 'SemiAnalysis',
+  'digitimes.com': 'DigiTimes',
+  'tomshardware.com': "Tom's Hardware",
+  'nytimes.com': 'New York Times',
+  'washingtonpost.com': 'Washington Post',
+  'bbc.com': 'BBC',
+  'bbc.co.uk': 'BBC',
+  'theguardian.com': 'The Guardian',
+  'economist.com': 'The Economist',
+  'apnews.com': 'AP News',
+  'afp.com': 'AFP',
+  'dw.com': 'DW',
+  'france24.com': 'France 24',
+  'aljazeera.com': 'Al Jazeera',
+  'yahoo.com': 'Yahoo Finance',
+  'finance.yahoo.com': 'Yahoo Finance',
+  'marketwatch.com': 'MarketWatch',
+  'barrons.com': "Barron's",
+  'fortune.com': 'Fortune',
+  'forbes.com': 'Forbes',
+  'businessinsider.com': 'Business Insider',
+}
+
+function formatPublisherFromUrl(url: string, fallbackSource?: string): string {
+  if (fallbackSource && !fallbackSource.includes('.')) return fallbackSource
+  try {
+    const host = new URL(url).hostname.replace(/^www\./i, '').toLowerCase()
+    if (KNOWN_PUBLISHER_NAMES[host]) return KNOWN_PUBLISHER_NAMES[host]
+    for (const [domain, label] of Object.entries(KNOWN_PUBLISHER_NAMES)) {
+      if (host.endsWith(`.${domain}`)) return label
+    }
+    return host
+  } catch {
+    return fallbackSource || 'Global Wire'
+  }
+}
+
+function decodeXmlEntities(str: string): string {
+  return str
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+async function getRssPoolItems(): Promise<RawRssPoolItem[]> {
+  const now = Date.now()
+  if (cachedRssPoolItems && now - lastRssPoolFetchTime < CACHE_TTL_MS) {
+    return cachedRssPoolItems
+  }
+
+  try {
+    const res = await fetch(RSS_POOL_XML_URL)
+    if (!res.ok) return cachedRssPoolItems || []
+    const xml = await res.text()
+    const itemsRaw = xml.split('<item>').slice(1)
+    const parsed: RawRssPoolItem[] = []
+
+    for (const raw of itemsRaw) {
+      const titleMatch = raw.match(/<title>([\s\S]*?)<\/title>/)
+      const descMatch = raw.match(/<description>([\s\S]*?)<\/description>/)
+      const linkMatch = raw.match(/<link>([\s\S]*?)<\/link>/)
+      const pubMatch = raw.match(/<pubDate>([\s\S]*?)<\/pubDate>/)
+      const wireMatch = raw.match(/<wire:publisher>([\s\S]*?)<\/wire:publisher>/)
+
+      const title = titleMatch ? decodeXmlEntities(titleMatch[1]) : ''
+      const description = descMatch ? decodeXmlEntities(descMatch[1]) : ''
+      const url = linkMatch ? decodeXmlEntities(linkMatch[1]) : ''
+      const pubDate = pubMatch ? decodeXmlEntities(pubMatch[1]) : ''
+      const publisher = wireMatch ? decodeXmlEntities(wireMatch[1]) : ''
+
+      if (!title || !url) continue
+      // Filter out pure entertainment / sports / lifestyle fluff
+      if (/\b(NHL|NBA|NFL|MLB|Premier League|Champions League|Oscars|Grammys|Box Office|Crossword)\b/i.test(title)) {
+        continue
+      }
+
+      parsed.push({
+        title,
+        description: description !== title ? description : '',
+        url,
+        source: publisher || formatPublisherFromUrl(url),
+        publishedAt: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+      })
+    }
+
+    cachedRssPoolItems = parsed
+    lastRssPoolFetchTime = now
+    return parsed
+  } catch {
+    return cachedRssPoolItems || []
+  }
+}
+
+function parseGdeltDate(seendate: string): string {
+  // Format: "20260416T083000Z"
+  const m = String(seendate || '').match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/)
+  if (!m) return new Date().toISOString()
+  return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}Z`
+}
+
+/**
+ * Fetches country-specific & sector/topic-specific economic news on-demand.
+ */
+export async function fetchCountrySpecificNews(
+  country: CountryMeta,
+  topic: CountryTopicCategory,
+  customQuery = '',
+  forceRefresh = false
+): Promise<CountryNewsArticle[]> {
+  const cleanCustom = customQuery.trim()
+  const cacheKey = `${country.id}::${topic}::${cleanCustom.toLowerCase()}`
+  const now = Date.now()
+
+  if (!forceRefresh) {
+    const cached = countryNewsCache.get(cacheKey)
+    if (cached && now - cached.ts < CACHE_TTL_MS) {
+      return cached.items
+    }
+  }
+
+  const englishCustomQuery = cleanCustom ? await translateQueryToEnglish(cleanCustom) : ''
+  const countryProfile = getCountrySearchProfile(country)
+  const topicConfig = TOPIC_CONFIG[topic]
+
+  // Build custom regex if customQuery is provided
+  const customTokens = englishCustomQuery
+    .split(/\s+/)
+    .map((w) => w.replace(/[^a-zA-Z0-9+-]/g, ''))
+    .filter((w) => w.length >= 2)
+
+  const customRegex =
+    customTokens.length > 0
+      ? new RegExp(
+          `\\b(${customTokens
+            .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+            .join('|')})`,
+          'i'
+        )
+      : null
+
+  // Build Algolia sub-queries (targeted 2-part queries for <150ms high recall)
+  const algoliaQueries: string[] = []
+  if (englishCustomQuery) {
+    // Query each main custom keyword with the country name
+    for (const tok of customTokens.slice(0, 3)) {
+      algoliaQueries.push(`${countryProfile.primary} ${tok}`)
+    }
+    if (algoliaQueries.length === 0) {
+      algoliaQueries.push(`${countryProfile.primary} ${englishCustomQuery}`)
+    }
+  } else {
+    for (const sub of topicConfig.subTerms.slice(0, 4)) {
+      algoliaQueries.push(`${countryProfile.primary} ${sub}`)
+    }
+  }
+
+  // Task 1: Filter from 777-item Reuters/Bloomberg/CNBC/FT RSS Pool (includes rich descriptions)
+  const rssPoolPromise = getRssPoolItems().then((pool) => {
+    const matched: CountryNewsArticle[] = []
+    for (let i = 0; i < pool.length; i++) {
+      const item = pool[i]
+      const fullText = `${item.title} ${item.description}`
+      if (!countryProfile.regex.test(fullText)) continue
+      if (customRegex) {
+        if (!customRegex.test(fullText)) continue
+      } else if (!topicConfig.regex.test(fullText)) {
+        continue
+      }
+      matched.push({
+        id: `rss-${country.id}-${i}`,
+        title: item.title,
+        description: item.description || undefined,
+        url: item.url,
+        source: item.source,
+        publishedAt: item.publishedAt,
+        countryId: country.id,
+        topic,
+      })
+    }
+    return matched
+  })
+
+  // Task 2: Parallel Algolia Global News Story Queries (both newest and top relevance)
+  const algoliaPromise = Promise.all(
+    algoliaQueries.flatMap((q) => [
+      fetch(
+        `https://hn.algolia.com/api/v1/search_by_date?query=${encodeURIComponent(
+          q
+        )}&tags=story&hitsPerPage=20`
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+      fetch(
+        `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(
+          q
+        )}&tags=story&hitsPerPage=20`
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    ])
+  ).then((responses) => {
+    const matched: CountryNewsArticle[] = []
+    for (const data of responses) {
+      if (!data || !Array.isArray(data.hits)) continue
+      for (const hit of data.hits) {
+        const title = String(hit.title || '').trim()
+        const url = String(hit.url || '').trim()
+        if (!title || !url) continue
+        if (/^(Show HN|Ask HN|Tell HN|Launch HN)/i.test(title)) continue
+        if (!countryProfile.regex.test(title)) continue
+        if (customRegex) {
+          if (!customRegex.test(title)) continue
+        } else if (!topicConfig.regex.test(title)) {
+          continue
+        }
+
+        matched.push({
+          id: `alg-${hit.objectID || Math.random()}`,
+          title,
+          url,
+          source: formatPublisherFromUrl(url),
+          publishedAt: hit.created_at || new Date().toISOString(),
+          countryId: country.id,
+          topic,
+        })
+      }
+    }
+    return matched
+  })
+
+  // Task 3: GDELT DOC 2.0 Global News API (with 1800ms non-blocking timeout & 5.2s rate-limit guard)
+  const gdeltPromise = (async (): Promise<CountryNewsArticle[]> => {
+    const elapsedSinceLastGdelt = Date.now() - lastGdeltCallTime
+    if (elapsedSinceLastGdelt < 5200) {
+      return []
+    }
+    lastGdeltCallTime = Date.now()
+
+    const gdeltQuery = englishCustomQuery
+      ? `"${countryProfile.primary}" (${customTokens.join(' OR ') || englishCustomQuery}) sourcelang:english`
+      : `"${countryProfile.primary}" ${topicConfig.gdeltClause} sourcelang:english`
+
+    const gdeltUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(
+      gdeltQuery
+    )}&mode=ArtList&maxrecords=15&format=json&timespan=14d`
+
+    try {
+      const res = await fetch(gdeltUrl, { signal: AbortSignal.timeout(1800) })
+      if (!res.ok) return []
+      const text = await res.text()
+      if (!text.startsWith('{')) return []
+      const data = JSON.parse(text)
+      if (!Array.isArray(data.articles)) return []
+
+      return data.articles
+        .map((art: any, idx: number): CountryNewsArticle | null => {
+          const title = String(art.title || '').trim()
+          const url = String(art.url || '').trim()
+          if (!title || !url) return null
+          return {
+            id: `gdelt-${country.id}-${idx}`,
+            title,
+            url,
+            source: formatPublisherFromUrl(url, art.domain),
+            publishedAt: parseGdeltDate(art.seendate),
+            countryId: country.id,
+            topic,
+          }
+        })
+        .filter((x: CountryNewsArticle | null): x is CountryNewsArticle => x !== null)
+    } catch {
+      return []
+    }
+  })()
+
+  const [rssItems, gdeltItems, algoliaItems] = await Promise.all([
+    rssPoolPromise,
+    gdeltPromise,
+    algoliaPromise,
+  ])
+
+  // Merge & deduplicate by normalized title prefix, prioritizing RSS Pool (which has descriptions) & GDELT
+  const combined = [...rssItems, ...gdeltItems, ...algoliaItems]
+  const seenTitles = new Set<string>()
+  const seenUrls = new Set<string>()
+  const deduplicated: CountryNewsArticle[] = []
+
+  for (const item of combined) {
+    const normTitle = item.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '')
+      .slice(0, 50)
+    if (!normTitle || seenTitles.has(normTitle) || seenUrls.has(item.url)) continue
+    seenTitles.add(normTitle)
+    seenUrls.add(item.url)
+    deduplicated.push(item)
+  }
+
+  // Sort so items with rich description or more recent date appear prominently
+  deduplicated.sort((a, b) => {
+    const timeA = new Date(a.publishedAt).getTime() || 0
+    const timeB = new Date(b.publishedAt).getTime() || 0
+    return timeB - timeA
+  })
+
+  const finalItems = deduplicated.slice(0, 12)
+  countryNewsCache.set(cacheKey, { ts: Date.now(), items: finalItems })
+  return finalItems
+}
+
