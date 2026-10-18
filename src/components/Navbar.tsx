@@ -1,5 +1,5 @@
 import React from 'react'
-import { Globe, Layers, GitCompare, Coins, RefreshCw, ChevronDown, LayoutGrid } from 'lucide-react'
+import { Globe, Layers, GitCompare, Coins, RefreshCw, ChevronDown, LayoutGrid, Newspaper } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language } from '../types/economics'
 import { translations } from '../i18n/translations'
@@ -14,8 +14,8 @@ const LANGUAGE_CONFIG: Record<Language, { label: string; short: string; flagIso2
 }
 
 interface NavbarProps {
-  activeTab: 'cards' | 'heatmap' | 'compare'
-  setActiveTab: (tab: 'cards' | 'heatmap' | 'compare') => void
+  activeTab: 'cards' | 'heatmap' | 'compare' | 'news'
+  setActiveTab: (tab: 'cards' | 'heatmap' | 'compare' | 'news') => void
   baseCurrency: BaseCurrency
   setBaseCurrency: (c: BaseCurrency) => void
   lang: Language
@@ -92,6 +92,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <GitCompare className="w-4 h-4" />
               {t.navCompare}
+            </button>
+            <button
+              onClick={() => setActiveTab('news')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                activeTab === 'news'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <Newspaper className="w-4 h-4" />
+              {t.navNews}
             </button>
           </nav>
 
@@ -207,41 +218,52 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Bottom Navigation Tab Bar */}
       <nav
         aria-label="Mobile Bottom Navigation"
-        className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_25px_rgba(0,0,0,0.6)]"
+        className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_25px_rgba(0,0,0,0.6)]"
       >
-        <div className="max-w-md mx-auto grid grid-cols-3 gap-1.5">
+        <div className="max-w-lg mx-auto grid grid-cols-4 gap-1">
           <button
             onClick={() => setActiveTab('cards')}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
               activeTab === 'cards'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
-            <Layers className="w-4 h-4 shrink-0" />
-            <span className="text-xs font-bold tracking-tight">{t.navExplorer}</span>
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navExplorer}</span>
           </button>
           <button
             onClick={() => setActiveTab('heatmap')}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
               activeTab === 'heatmap'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
-            <LayoutGrid className="w-4 h-4 shrink-0" />
-            <span className="text-xs font-bold tracking-tight">{t.navStockHeatmap}</span>
+            <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navStockHeatmap}</span>
           </button>
           <button
             onClick={() => setActiveTab('compare')}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-semibold transition-all duration-150 active:scale-95 ${
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
               activeTab === 'compare'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
-            <GitCompare className="w-4 h-4 shrink-0" />
-            <span className="text-xs font-bold tracking-tight">{t.navCompare}</span>
+            <GitCompare className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navCompare}</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('news')}
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
+              activeTab === 'news'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <Newspaper className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navNews}</span>
           </button>
         </div>
       </nav>

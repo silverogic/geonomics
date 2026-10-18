@@ -73,3 +73,22 @@ export interface InterestRateInfo {
   centralBankName: string // e.g. 'Fed', 'BOK', 'ECB', 'BOJ', 'BOE', 'PBOC'
   source?: string // 'BIS' or fallback
 }
+
+export type NewsCategory = 'ALL' | 'MACRO' | 'CENTRAL_BANKS' | 'COMMODITIES' | 'MARKETS' | 'WORLD'
+
+export interface MacroBriefItem {
+  id: string
+  category: Exclude<NewsCategory, 'ALL'>
+  rawCategory: string
+  headline: string
+  body: string
+  explain: string
+  relatedCountryIds: string[]
+}
+
+export interface EconomicNewsData {
+  lastUpdated: string
+  briefings: MacroBriefItem[]
+  repositories: string[]
+}
+
