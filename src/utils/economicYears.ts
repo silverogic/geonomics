@@ -7,7 +7,7 @@ export const CURRENT_MINUS_1_STR = String(CURRENT_MINUS_1_NUM)
 export const CURRENT_MINUS_2_NUM = CURRENT_YEAR_NUM - 2
 export const CURRENT_MINUS_2_STR = String(CURRENT_MINUS_2_NUM)
 
-export const DEFAULT_ECONOMIC_YEAR = CURRENT_MINUS_2_STR // e.g. "2024"
+export const DEFAULT_ECONOMIC_YEAR = CURRENT_YEAR_STR // e.g. "2026"
 
 export interface EconomicYearOption {
   year: string
