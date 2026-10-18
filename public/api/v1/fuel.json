@@ -5,7 +5,7 @@
   "octaneStandard": "Octane-95 (RON 95)",
   "noteKo": "전국 평균 소매가격 (세금 포함)",
   "noteEn": "National average retail price inclusive of taxes",
-  "count": 120,
+  "count": 125,
   "prices": {
     "USA": {
       "countryId": "USA",
@@ -606,6 +606,31 @@
       "countryId": "BRN",
       "priceUsd": 0.39,
       "currencyCode": "BND"
+    },
+    "MUS": {
+      "countryId": "MUS",
+      "priceUsd": 1.485,
+      "currencyCode": "MUR"
+    },
+    "TTO": {
+      "countryId": "TTO",
+      "priceUsd": 1.141,
+      "currencyCode": "TTD"
+    },
+    "NAM": {
+      "countryId": "NAM",
+      "priceUsd": 1.612,
+      "currencyCode": "NAD"
+    },
+    "MKD": {
+      "countryId": "MKD",
+      "priceUsd": 1.45,
+      "currencyCode": "MKD"
+    },
+    "BIH": {
+      "countryId": "BIH",
+      "priceUsd": 1.952,
+      "currencyCode": "BAM"
     }
   }
 }

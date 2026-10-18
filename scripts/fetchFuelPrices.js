@@ -40,6 +40,9 @@ const ALIASES = {
   ALB: 'albania',
   BWA: 'botswana',
   BRN: 'brunei',
+  MUS: 'mauritius',
+  TTO: 'trinidad-and-tobago',
+  NAM: 'namibia',
 }
 
 // Fallback estimates for countries not in GPP
@@ -57,6 +60,11 @@ const REGIONAL_FALLBACKS = {
   ALB: 1.89, // Albania
   BWA: 1.08, // Botswana
   BRN: 0.39, // Brunei
+  MUS: 1.42, // Mauritius
+  TTO: 0.85, // Trinidad and Tobago (oil & gas producer)
+  NAM: 1.22, // Namibia
+  MKD: 1.45, // North Macedonia
+  BIH: 1.42, // Bosnia and Herzegovina
 }
 
 export async function fetchFuelPrices() {

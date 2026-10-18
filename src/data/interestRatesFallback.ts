@@ -71,9 +71,17 @@ export const CENTRAL_BANK_NAMES: Record<string, string> = {
   LB: 'BDL',
   JM: 'BOJ',
   AM: 'CBA',
+  ALB: 'BSH',
   AL: 'BSH',
   BW: 'Bank of Botswana',
   BN: 'BDCB',
+  LK: 'CBSL',
+  JO: 'CBJ',
+  MU: 'Bank of Mauritius',
+  TT: 'CBTT',
+  NA: 'Bank of Namibia',
+  MK: 'NBRNM',
+  BA: 'CBBH',
 }
 
 /**
@@ -141,4 +149,11 @@ export const FALLBACK_INTEREST_RATES: Record<string, InterestRateInfo> = {
   AL: { countryCode: 'AL', ratePct: 3.00, date: '2026-09', centralBankName: 'BSH', source: 'BSH' },
   BW: { countryCode: 'BW', ratePct: 1.90, date: '2026-09', centralBankName: 'Bank of Botswana', source: 'BoB' },
   BN: { countryCode: 'BN', ratePct: 2.50, date: '2026-09', centralBankName: 'BDCB', source: 'BDCB' },
+  LK: { countryCode: 'LK', ratePct: 8.25, date: '2026-09', centralBankName: 'CBSL', source: 'CBSL' },
+  JO: { countryCode: 'JO', ratePct: 6.50, date: '2026-09', centralBankName: 'CBJ', source: 'CBJ' },
+  MU: { countryCode: 'MU', ratePct: 4.50, date: '2026-09', centralBankName: 'Bank of Mauritius', source: 'BoM' },
+  TT: { countryCode: 'TT', ratePct: 3.50, date: '2026-09', centralBankName: 'CBTT', source: 'CBTT' },
+  NA: { countryCode: 'NA', ratePct: 7.25, date: '2026-09', centralBankName: 'Bank of Namibia', source: 'BoN' },
+  MK: { countryCode: 'MK', ratePct: 5.50, date: '2026-09', centralBankName: 'NBRNM', source: 'NBRNM' },
+  BA: { countryCode: 'BA', ratePct: 2.25, date: '2026-09', centralBankName: 'CBBH', source: 'CBBH' },
 }

@@ -214,6 +214,18 @@ export const COUNTRY_TICKERS = [
   { id: 'EST', nameEn: 'LHV Group (Tallinn Proxy)', nameKo: 'LHV 그룹 (탈린 대표 금융주)', ticker: 'LHV1T.TL', isSupported: true },
   { id: 'LVA', nameEn: 'SAF Tehnika (Riga Proxy)', nameKo: 'SAF 테크니카 (리가 대표 기술주)', ticker: 'SAF1R.RG', isSupported: true },
   { id: 'LTU', nameEn: 'Ignitis Group (Vilnius Proxy)', nameKo: '이그니티스 (빌뉴스 대표 에너지주)', ticker: 'IGN1L.VS', isSupported: true },
+  // Option B: 5 Existing Countries Activated with Live Stock Index Tracking
+  { id: 'LUX', nameEn: 'LuxX Index (ArcelorMittal Proxy)', nameKo: '룩셈부르크 LuxX (아르셀로미탈 대표주)', ticker: 'MT.AS', isSupported: true },
+  { id: 'ISL', nameEn: 'OMX Iceland 15 (Alvotech Proxy)', nameKo: '아이슬란드 OMXI15 (알보텍 대표주)', ticker: 'ALVO', isSupported: true },
+  { id: 'HRV', nameEn: 'CROBEX (Erste Adriatic Proxy)', nameKo: '크로아티아 CROBEX (에르스테 금융 프록시)', ticker: 'EBS.VI', isSupported: true },
+  { id: 'LKA', nameEn: 'CSE All-Share (South Asia Proxy)', nameKo: '스리랑카 CSE 올셰어 (남아시아 ETF)', ticker: 'INDA', isSupported: true },
+  { id: 'JOR', nameEn: 'ASE General (MENA Equity Proxy)', nameKo: '요르단 암만 ASE (MENA 증시 ETF)', ticker: 'UAE', isSupported: true },
+  // Option A: 5 New Stock-Market Countries
+  { id: 'MUS', nameEn: 'SEMDEX (Mauritius / Africa Proxy)', nameKo: '모리셔스 SEMDEX (아프리카 증시 ETF)', ticker: 'AFK', isSupported: true },
+  { id: 'TTO', nameEn: 'TTSE Composite (Caribbean / LatAm Proxy)', nameKo: '트리니다드 토바고 TTSE (중남미 ETF)', ticker: 'ILF', isSupported: true },
+  { id: 'NAM', nameEn: 'NSX Overall (Southern Africa Proxy)', nameKo: '나미비아 NSX (남아프리카 증시 ETF)', ticker: 'EZA', isSupported: true },
+  { id: 'MKD', nameEn: 'MBI 10 (Balkan Equity Proxy)', nameKo: '북마케도니아 MBI 10 (발칸 증시 ETF)', ticker: 'GREK', isSupported: true },
+  { id: 'BIH', nameEn: 'SASX-10 (Raiffeisen Balkan Proxy)', nameKo: '보스니아 SASX-10 (발칸 금융 대표주)', ticker: 'RBI.VI', isSupported: true },
 ]
 
 async function fetchTicker(item) {

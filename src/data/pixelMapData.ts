@@ -2003,7 +2003,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 26,
     "r": 8,
-    "id": "ITA",
+    "id": "HRV",
     "isTracked": true
   },
   {
@@ -2189,13 +2189,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 25,
     "r": 9,
-    "id": "ESP",
+    "id": "ITA",
     "isTracked": true
   },
   {
     "c": 26,
     "r": 9,
-    "id": "HRV",
+    "id": "BIH",
     "isTracked": true
   },
   {
@@ -2207,7 +2207,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 28,
     "r": 9,
-    "id": "GRC",
+    "id": "MKD",
     "isTracked": true
   },
   {
@@ -2387,7 +2387,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 26,
     "r": 10,
-    "id": "DZA",
+    "id": "MLT",
     "isTracked": true
   },
   {
@@ -2399,7 +2399,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
   {
     "c": 28,
     "r": 10,
-    "id": "MLT",
+    "id": "GRC",
     "isTracked": true
   },
   {
@@ -2994,6 +2994,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 15,
     "r": 14,
     "id": "VEN",
+    "isTracked": true
+  },
+  {
+    "c": 16,
+    "r": 14,
+    "id": "TTO",
     "isTracked": true
   },
   {
@@ -3672,13 +3678,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 27,
     "r": 20,
     "id": "NAM",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 28,
     "r": 20,
     "id": "NAM",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 29,
@@ -3697,6 +3703,12 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "r": 20,
     "id": "MDG",
     "isTracked": false
+  },
+  {
+    "c": 34,
+    "r": 20,
+    "id": "MUS",
+    "isTracked": true
   },
   {
     "c": 43,
@@ -4192,12 +4204,12 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
     "r": 8
   },
   "ITA": {
-    "c": 26,
-    "r": 8
+    "c": 25,
+    "r": 9
   },
   "GRC": {
     "c": 28,
-    "r": 9
+    "r": 10
   },
   "TUR": {
     "c": 29,
@@ -4369,7 +4381,7 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   },
   "HRV": {
     "c": 26,
-    "r": 9
+    "r": 8
   },
   "SRB": {
     "c": 27,
@@ -4516,7 +4528,7 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
     "r": 10
   },
   "MLT": {
-    "c": 28,
+    "c": 26,
     "r": 10
   },
   "ALB": {
@@ -4534,5 +4546,25 @@ export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
   "BRN": {
     "c": 42,
     "r": 15
+  },
+  "BIH": {
+    "c": 26,
+    "r": 9
+  },
+  "MKD": {
+    "c": 28,
+    "r": 9
+  },
+  "NAM": {
+    "c": 27,
+    "r": 20
+  },
+  "TTO": {
+    "c": 16,
+    "r": 14
+  },
+  "MUS": {
+    "c": 34,
+    "r": 20
   }
 }

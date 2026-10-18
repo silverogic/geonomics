@@ -90,6 +90,11 @@ const ALIAS_MAP = {
   'Algeria': 'Algeria',
   'Iraq': 'Iraq',
   'Brunei': 'Brunei Darussalam',
+  'Mauritius': 'Mauritius',
+  'Trinidad and Tobago': 'Trinidad and Tobago',
+  'Namibia': 'Namibia',
+  'North Macedonia': 'North Macedonia',
+  'Bosnia and Herzegovina': 'Bosnia and Herzegovina',
 }
 
 const FALLBACK_POPULATIONS = {
@@ -103,6 +108,11 @@ const FALLBACK_POPULATIONS = {
   ALB: 2700000,
   BWA: 2500000,
   BRN: 450000,
+  MUS: 1260000,
+  TTO: 1530000,
+  NAM: 2600000,
+  MKD: 1830000,
+  BIH: 3200000,
 }
 
 function normalizeStr(str) {

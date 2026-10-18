@@ -2,7 +2,7 @@
 
 🌐 **Languages**: **English** | [한국어 (Korean)](./README.ko.md)
 
-**Geonomics** is a serverless, client-side macroeconomic and financial market intelligence platform hosted on GitHub Pages. It synthesizes official **IMF World Economic Outlook (WEO)** and **World Bank** indicators, real-time foreign exchange rates, global equity market capitalizations, benchmark stock indices, central bank policy rates, retail gasoline prices, and **The Economist Big Mac Index (PPP)** across **110+ economies**—with zero backend database overhead.
+**Geonomics** is a serverless, client-side macroeconomic and financial market intelligence platform hosted on GitHub Pages. It synthesizes official **IMF World Economic Outlook (WEO)** and **World Bank** indicators, real-time foreign exchange rates, global equity market capitalizations, benchmark stock indices, central bank policy rates, retail gasoline prices, and **The Economist Big Mac Index (PPP)** across **125 economies**—with zero backend database overhead.
 
 Geonomics also publishes **free, open static REST API v1 endpoints** updated automatically via daily GitHub Actions pipelines.
 
@@ -19,7 +19,7 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 - **Responsive UX**: Includes a live Economy Inspector HUD sidebar on desktop/tablet screens (automatically hidden on mobile `< 640px` to minimize cognitive load).
 
 ### 2. Global Stock Market Heatmap (`StockHeatmap`)
-- **~$144T+ Global Equity Universe**: Visualizes domestic equity market capitalization across 110+ countries using a responsive squarified treemap.
+- **~$144T+ Global Equity Universe**: Visualizes domestic equity market capitalization across 125 countries using a responsive squarified treemap.
 - **Hybrid Live Valuation Engine**: Combines official **World Bank (`CM.MKT.LCAP.CD`) / World Federation of Exchanges (WFE)** baseline market caps with **Yahoo Finance live index tracking** ($P_{\text{live}} / P_{\text{base}}$) and intraday percentage fluctuations.
 - **Unified & 5-Continent Split Modes**: Toggle between a single global canvas and a 5-continent comparative grid (`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`).
 - **Zen Fullscreen Immersion & Floating Glassmorphic HUD**: Single-line control bar, one-click fullscreen mode, and hover HUD with 30-day index sparklines (`StockSparkline`), live index price, and WFE base multiplier breakdown.
@@ -54,9 +54,9 @@ Geonomics serves static JSON REST API v1 endpoints via GitHub Pages CDN. No API 
 
 | # | Dataset | Endpoint (`GET`) | Description |
 | :-: | :--- | :--- | :--- |
-| **1** | **Macroeconomic Indicators** | `/api/v1/economics.json` | 110 economies: Total GDP, GDP per capita, real growth, gov debt %, inflation % & 10Y history |
-| **2** | **Stock Benchmark Indices** | `/api/v1/stocks.json` | 74 economies: Flagship index ticker, current price, 24h change %, and 30-day sparkline points |
-| **3** | **Stock Market Capitalization** | `/api/v1/stock-market-caps.json` | 110+ economies: Official WFE / World Bank baseline cap + live index multiplier 2026 est. (USD) |
+| **1** | **Macroeconomic Indicators** | `/api/v1/economics.json` | 125 economies: Total GDP, GDP per capita, real growth, gov debt %, inflation % & 10Y history |
+| **2** | **Stock Benchmark Indices** | `/api/v1/stocks.json` | 84 economies: Flagship index ticker, current price, 24h change %, and 30-day sparkline points |
+| **3** | **Stock Market Capitalization** | `/api/v1/stock-market-caps.json` | 125 economies: Official WFE / World Bank baseline cap + live index multiplier 2026 est. (USD) |
 | **4** | **Retail Gasoline Prices** | `/api/v1/fuel.json` | 170 economies: National average RON 95 retail gasoline price in USD/L |
 | **5** | **Big Mac Index (PPP)** | `/api/v1/bigmac.json` | 70+ economies: Local price, dollar price, raw PPP valuation %, and GDP-adjusted valuation % |
 

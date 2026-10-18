@@ -124,6 +124,11 @@ export const COUNTRY_NAMES_JA: Record<string, string> = {
   ALB: 'アルバニア',
   BWA: 'ボツワナ',
   BRN: 'ブルネイ',
+  MUS: 'モーリシャス',
+  TTO: 'トリニダード・トバゴ',
+  NAM: 'ナミビア',
+  MKD: '北マケドニア',
+  BIH: 'ボスニア・ヘルツェゴビナ',
 }
 
 /**
@@ -207,6 +212,11 @@ export const CURRENCY_NAMES_JA: Record<string, string> = {
   GEL: 'ジョージアラリ',
   MNT: 'モンゴルトゥグルグ',
   LYD: 'リビアディナール',
+  MUR: 'モーリシャス・ルピー',
+  TTD: 'トリニダード・トバゴ・ドル',
+  NAD: 'ナミビア・ドル',
+  MKD: 'マケドニア・デナル',
+  BAM: '兌換マルク',
 }
 
 /**
@@ -333,6 +343,11 @@ export const COUNTRY_NAMES_ES: Record<string, string> = {
   ALB: 'Albania',
   BWA: 'Botsuana',
   BRN: 'Brunéi',
+  MUS: 'Mauricio',
+  TTO: 'Trinidad y Tobago',
+  NAM: 'Namibia',
+  MKD: 'Macedonia del Norte',
+  BIH: 'Bosnia y Herzegovina',
 }
 
 /**
@@ -459,6 +474,11 @@ export const COUNTRY_NAMES_ZH: Record<string, string> = {
   ALB: '阿尔巴尼亚',
   BWA: '博茨瓦纳',
   BRN: '文莱',
+  MUS: '毛里求斯',
+  TTO: '特立尼达和多巴哥',
+  NAM: '纳米比亚',
+  MKD: '北马其顿',
+  BIH: '波斯尼亚和黑塞哥维那',
 }
 
 /**
@@ -542,6 +562,11 @@ export const CURRENCY_NAMES_ES: Record<string, string> = {
   GEL: 'Lari georgiano',
   MNT: 'Tugrik mongol',
   LYD: 'Dinar libio',
+  MUR: 'Rupia de Mauricio',
+  TTD: 'Dólar de Trinidad y Tobago',
+  NAD: 'Dólar namibio',
+  MKD: 'Denar macedonio',
+  BAM: 'Marco convertible',
 }
 
 /**
@@ -625,6 +650,11 @@ export const CURRENCY_NAMES_ZH: Record<string, string> = {
   GEL: '格鲁吉亚拉里',
   MNT: '蒙古图格里克',
   LYD: '利比亚第纳尔',
+  MUR: '毛里求斯卢比',
+  TTD: '特立尼达和多巴哥元',
+  NAD: '纳米比亚元',
+  MKD: '马其顿代纳尔',
+  BAM: '波黑可兑换马克',
 }
 
 /**

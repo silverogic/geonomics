@@ -22,6 +22,7 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   PAN: 20_000_000_000,     // Panama Stock Exchange (~$20B)
   ECU: 18_000_000_000,     // Ecuador (~$18B)
   JAM: 16_000_000_000,     // Jamaica Stock Exchange (~$16B)
+  TTO: 16_000_000_000,     // Trinidad and Tobago Stock Exchange (TTSE) (~$16B)
   DOM: 15_000_000_000,     // Dominican Republic (~$15B)
   CRI: 15_000_000_000,     // Costa Rica (~$15B)
   BOL: 12_000_000_000,     // Bolivia (~$12B)
@@ -101,8 +102,10 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   LTU: 8_500_000_000,      // Nasdaq Vilnius (~$8.5B)
   SVK: 7_000_000_000,      // Bratislava Stock Exchange (~$7B)
   EST: 6_000_000_000,      // Nasdaq Tallinn (~$6B)
+  BIH: 4_800_000_000,      // Sarajevo + Banja Luka Stock Exchanges (~$4.8B)
   MDA: 4_500_000_000,      // Moldova Stock Exchange (~$4.5B)
   ALB: 4_500_000_000,      // Tirana Stock Exchange (~$4.5B)
+  MKD: 4_200_000_000,      // Macedonian Stock Exchange (MSE) (~$4.2B)
   LVA: 1_500_000_000,      // Nasdaq Riga (~$1.5B)
 
   // --- Oceania ---
@@ -120,6 +123,7 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   CIV: 14_000_000_000,     // BRVM (West Africa Regional) (~$14B)
   TUN: 12_000_000_000,     // Bourse de Tunis (~$12B)
   GHA: 10_000_000_000,     // Ghana Stock Exchange (~$10B)
+  MUS: 9_500_000_000,      // Stock Exchange of Mauritius (SEM) (~$9.5B)
   ETH: 9_000_000_000,      // Ethiopia Securities Exchange (~$9B)
   TZA: 8_000_000_000,      // Dar es Salaam Stock Exchange (~$8B)
   AGO: 7_000_000_000,      // Bodiva Angola (~$7B)
@@ -127,6 +131,7 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   DZA: 6_000_000_000,      // Algiers Stock Exchange (~$6B)
   SEN: 6_000_000_000,      // Senegal (BRVM) (~$6B)
   CMR: 4_500_000_000,      // Douala Stock Exchange (~$4.5B)
+  NAM: 3_200_000_000,      // Namibian Stock Exchange (NSX Domestic) (~$3.2B)
 }
 
 /**
