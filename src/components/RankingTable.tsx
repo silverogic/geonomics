@@ -611,48 +611,48 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       )}
 
       {/* Segmented Category Filter Toolbar: 1. 금융·시장 / 2. 거시경제 (Default) / 3. 전체보기 */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <div className="inline-flex p-1 bg-slate-950 border border-slate-800/90 rounded-xl shadow-inner gap-1 shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 min-w-0">
+        <div className="flex flex-wrap sm:inline-flex p-1 bg-slate-950 border border-slate-800/90 rounded-xl shadow-inner gap-1 max-w-full min-w-0">
           {/* 1. 금융 · 시장 */}
           <button
             type="button"
             onClick={() => handleCategoryChange('market')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 ${
               activeCategory === 'market'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
             }`}
           >
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>{t.tableTabMarket}</span>
+            <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{t.tableTabMarket}</span>
           </button>
 
           {/* 2. 거시경제 (Default) */}
           <button
             type="button"
             onClick={() => handleCategoryChange('macro')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 ${
               activeCategory === 'macro'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
             }`}
           >
-            <Landmark className="w-3.5 h-3.5" />
-            <span>{t.tableTabMacro}</span>
+            <Landmark className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{t.tableTabMacro}</span>
           </button>
 
           {/* 3. 전체보기 */}
           <button
             type="button"
             onClick={() => handleCategoryChange('all')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 ${
               activeCategory === 'all'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>{t.tableTabAll}</span>
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{t.tableTabAll}</span>
           </button>
         </div>
 
@@ -682,9 +682,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           }}
         >
           {/* Row 1: Docked Search & Controls Bar */}
-          <div className="flex items-center justify-between gap-2 sm:gap-3 px-3 py-2 bg-slate-950 border-b border-slate-800/80">
+          <div className="flex items-center justify-between gap-2 sm:gap-3 px-3 py-2 bg-slate-950 border-b border-slate-800/80 min-w-0">
             {/* Search Input */}
-            <div className="relative flex-1 max-w-xs sm:max-w-sm">
+            <div className="relative flex-1 min-w-[110px] max-w-xs sm:max-w-sm">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 ref={dockSearchInputRef}
@@ -705,7 +705,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     dockSearchInputRef.current?.focus()
                   }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors"
-                  title={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
+                  data-tooltip={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -713,52 +713,52 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             </div>
 
             {/* Right Side Controls: Category Pills + Count Badge + Top Button */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
               {/* Category Quick Selector */}
-              <div className="hidden sm:inline-flex p-0.5 bg-slate-900 border border-slate-800 rounded-lg gap-0.5">
+              <div className="hidden sm:inline-flex p-0.5 bg-slate-900 border border-slate-800 rounded-lg gap-0.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => handleCategoryChange('market')}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap ${
                     activeCategory === 'market'
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
-                  title={t.tableTabMarket}
+                  data-tooltip={t.tableTabMarket}
                 >
-                  <TrendingUp className="w-3 h-3" />
-                  <span className="hidden md:inline">{t.tableTabMarket}</span>
+                  <TrendingUp className="w-3 h-3 shrink-0" />
+                  <span className="hidden lg:inline">{t.tableTabMarket}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleCategoryChange('macro')}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap ${
                     activeCategory === 'macro'
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
-                  title={t.tableTabMacro}
+                  data-tooltip={t.tableTabMacro}
                 >
-                  <Landmark className="w-3 h-3" />
-                  <span className="hidden md:inline">{t.tableTabMacro}</span>
+                  <Landmark className="w-3 h-3 shrink-0" />
+                  <span className="hidden lg:inline">{t.tableTabMacro}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleCategoryChange('all')}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap ${
                     activeCategory === 'all'
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
-                  title={t.tableTabAll}
+                  data-tooltip={t.tableTabAll}
                 >
-                  <Layers className="w-3 h-3" />
-                  <span className="hidden md:inline">{t.tableTabAll}</span>
+                  <Layers className="w-3 h-3 shrink-0" />
+                  <span className="hidden lg:inline">{t.tableTabAll}</span>
                 </button>
               </div>
 
               {/* Matched Count Badge */}
-              <span className="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-slate-900 border border-slate-800 text-slate-300 whitespace-nowrap">
+              <span className="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-slate-900 border border-slate-800 text-slate-300 whitespace-nowrap shrink-0">
                 {searchTerm ? (
                   <span className="text-indigo-400 font-bold">{filteredAndSorted.length}</span>
                 ) : (
@@ -771,11 +771,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
               <button
                 type="button"
                 onClick={scrollToTableTop}
-                title={lang === 'ko' ? '테이블 상단으로 이동' : 'Scroll to top'}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors shrink-0"
+                data-tooltip={lang === 'ko' ? '테이블 상단으로 이동' : 'Scroll to top'}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors shrink-0 whitespace-nowrap"
               >
-                <ArrowUp className="w-3 h-3 text-indigo-400" />
-                <span className="hidden lg:inline">{lang === 'ko' ? '맨 위로' : 'Top'}</span>
+                <ArrowUp className="w-3 h-3 text-indigo-400 shrink-0" />
+                <span className="hidden xl:inline">{lang === 'ko' ? '맨 위로' : 'Top'}</span>
               </button>
             </div>
           </div>
