@@ -351,9 +351,9 @@ export const GdpTreemap: React.FC<GdpTreemapProps> = ({
             // Responsive tile sizing breakpoints (matched to actual inner content height/width)
             const rectW = Math.max(0, r.w - 1.5)
             const rectH = Math.max(0, r.h - 1.5)
-            const isExtraLarge = r.w >= 140 && r.h >= 94
-            const isLarge = r.w >= 92 && r.h >= 54
-            const isMedium = r.w >= 52 && r.h >= 34
+            const isExtraLarge = r.w >= 135 && r.h >= 88
+            const isLarge = r.w >= 84 && r.h >= 50
+            const isMedium = r.w >= 48 && r.h >= 30
             const isSmall = r.w >= 26 && r.h >= 16
             const isTiny = r.w >= 15 && r.h >= 11
 
@@ -484,8 +484,8 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                     <div className="w-full h-full flex flex-col justify-between p-1 overflow-hidden text-white pointer-events-none select-none">
                       <div className="flex items-center justify-between gap-1 min-w-0">
                         <div className="flex items-center gap-1 min-w-0">
-                          <CountryFlag iso2={item.country.iso2} className="w-3.5 h-2.5 rounded-[2px] shrink-0" />
-                          <span className="font-black text-[11px] sm:text-xs leading-tight tracking-tight truncate">
+                          <CountryFlag iso2={item.country.iso2} className="w-3.5 h-2.5 sm:w-4 sm:h-3 rounded-[2px] shrink-0 shadow-sm" />
+                          <span className="font-black text-[11px] sm:text-xs leading-tight tracking-tight truncate [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
                             {getCountryName(item.country, lang)}
                           </span>
                         </div>
@@ -515,7 +515,7 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                           <span className="text-[10px] leading-none font-black font-mono text-white truncate">
                             {mainDisplayVal}
                           </span>
-                          {p.yoyPct !== null && r.h >= 62 && (
+                          {p.yoyPct !== null && r.h >= 60 && (
                             <span
                               className="text-[9px] leading-none font-mono font-bold truncate"
                               style={{ color: colors.badgeText }}
@@ -528,7 +528,7 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                     </div>
                   </foreignObject>
                 ) : isMedium ? (
-                  /* MEDIUM TILE */
+                  /* MEDIUM TILE (with CountryFlag like StockHeatmap) */
                   <foreignObject
                     x={1.5}
                     y={1.5}
@@ -537,27 +537,28 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                     overflow="hidden"
                     className="overflow-hidden pointer-events-none"
                   >
-                    <div className="w-full h-full flex flex-col justify-between p-0.5 overflow-hidden text-white pointer-events-none select-none">
-                      <div className="flex items-center justify-between gap-0.5 min-w-0">
-                        <span className="font-black text-[10px] leading-none font-mono tracking-tighter truncate">
+                    <div className="w-full h-full flex flex-col justify-between p-0.5 sm:p-1 overflow-hidden text-white pointer-events-none select-none text-center">
+                      <div className="flex items-center justify-center gap-1 min-w-0">
+                        <CountryFlag iso2={item.country.iso2} className="w-3 h-2 rounded-[1px] shrink-0 shadow-sm" />
+                        <span className="font-black text-[10px] sm:text-xs leading-none tracking-tight truncate">
                           {item.country.id}
                         </span>
-                        {p.yoyPct !== null && r.w >= 64 && (
-                          <span
-                            className="text-[8px] leading-none font-mono font-bold shrink-0 whitespace-nowrap"
-                            style={{ color: colors.badgeText }}
-                          >
-                            {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(0)}%` : `${p.yoyPct.toFixed(0)}%`}
-                          </span>
-                        )}
                       </div>
-                      <span className="text-[9px] leading-none font-black font-mono text-slate-200 truncate block w-full">
+                      <span className="text-[9px] sm:text-[10px] leading-none font-black font-mono text-slate-100 truncate block w-full">
                         {mainDisplayVal}
                       </span>
+                      {p.yoyPct !== null && r.h >= 42 && (
+                        <div
+                          className="text-[8px] sm:text-[9px] font-mono font-bold leading-none whitespace-nowrap truncate"
+                          style={{ color: colors.badgeText }}
+                        >
+                          {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(1)}%` : `${p.yoyPct.toFixed(1)}%`}
+                        </div>
+                      )}
                     </div>
                   </foreignObject>
                 ) : isSmall ? (
-                  /* SMALL TILE */
+                  /* SMALL / COMPACT TILE (with mini CountryFlag when space permits) */
                   <foreignObject
                     x={1}
                     y={1}
@@ -566,10 +567,23 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                     overflow="hidden"
                     className="overflow-hidden pointer-events-none"
                   >
-                    <div className="w-full h-full flex items-center justify-center text-center overflow-hidden text-white pointer-events-none select-none">
-                      <span className="font-mono font-black text-[8px] sm:text-[9px] leading-none text-white/95 tracking-tighter whitespace-nowrap">
-                        {r.w >= 32 ? item.country.id : item.country.iso2}
-                      </span>
+                    <div className="w-full h-full flex flex-col items-center justify-center p-0.5 text-center overflow-hidden text-white pointer-events-none select-none gap-0.5">
+                      <div className="flex items-center justify-center gap-0.5 min-w-0">
+                        {r.w >= 32 && r.h >= 18 && (
+                          <CountryFlag iso2={item.country.iso2} className="w-2.5 h-1.5 rounded-[1px] shrink-0" />
+                        )}
+                        <span className="font-mono font-black text-[8px] sm:text-[9px] leading-none text-white/95 tracking-tighter whitespace-nowrap">
+                          {r.w >= 38 ? item.country.id : item.country.iso2}
+                        </span>
+                      </div>
+                      {r.h >= 26 && p.yoyPct !== null && (
+                        <span
+                          className="text-[7px] sm:text-[8px] leading-none font-mono font-bold whitespace-nowrap"
+                          style={{ color: colors.badgeText }}
+                        >
+                          {p.yoyPct > 0 ? `+${p.yoyPct.toFixed(0)}%` : `${p.yoyPct.toFixed(0)}%`}
+                        </span>
+                      )}
                     </div>
                   </foreignObject>
                 ) : isTiny ? (
