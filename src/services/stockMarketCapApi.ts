@@ -63,7 +63,8 @@ export async function fetchStockMarketCaps(forceRefresh = false): Promise<LiveMa
 
   // 2. Fetch precompiled World Bank + live index estimated JSON from public API
   try {
-    const localRes = await fetch('/api/v1/stock-market-caps.json')
+    const url = `${import.meta.env.BASE_URL}api/v1/stock-market-caps.json`
+    const localRes = await fetch(url)
     if (localRes.ok) {
       const json = await localRes.json()
       for (const [code, val] of Object.entries(json)) {

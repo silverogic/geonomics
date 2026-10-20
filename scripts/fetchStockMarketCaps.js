@@ -1,15 +1,12 @@
 /**
- * Automated Stock Market Capitalization Fetcher & Dynamic 2026 Estimator
+ * Automated Stock Market Capitalization Fetcher & Real-Time Sync Pipeline
  *
- * 100% automated and data-driven:
- * 1. Fetches official baseline domestic market capitalization (CM.MKT.LCAP.CD)
- *    directly from the World Bank Open Data API (sourced from WFE).
- * 2. For each tracked economy, automatically queries Yahoo Finance for historical
- *    monthly index prices corresponding to the World Bank baseline year (baseIndexPrice)
- *    and the latest index price (currentIndexPrice) with ZERO hardcoding.
- * 3. Dynamically estimates 2026 market capitalization:
- *    Estimated Market Cap = Base Cap * (Current Index Price / Base Index Price)
- * 4. Outputs public/api/v1/stock-market-caps.json.
+ * 100% Automated, Data-Driven, ZERO Hardcoding:
+ * 1. Primary Source: Automatically fetches live market capitalization for major economies
+ *    from CompaniesMarketCap (real-time exchange aggregate covering 99%+ of global market cap).
+ * 2. Secondary/Fallback Source: Fetches official World Bank indicators (CM.MKT.LCAP.CD / WFE)
+ *    and scales with Yahoo Finance live index performance for smaller/frontier economies.
+ * 3. Outputs public/api/v1/stock-market-caps.json.
  */
 
 import fs from 'fs'
@@ -20,9 +17,106 @@ import { COUNTRY_TICKERS } from './fetchStockData.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Supplemental baseline for markets not listed in World Bank UN records (Taiwan TWSE)
-const SUPPLEMENTAL_OFFICIAL_BASELINES = {
-  TWN: { name: 'Taiwan', baseCapUsd: 1800000000000, year: '2024', source: 'Taiwan Stock Exchange (TWSE) / WFE' },
+const COUNTRY_NAME_TO_ISO = {
+  'United States': 'USA',
+  'China': 'CHN',
+  'Japan': 'JPN',
+  'United Kingdom': 'GBR',
+  'Canada': 'CAN',
+  'Taiwan': 'TWN',
+  'India': 'IND',
+  'South Korea': 'KOR',
+  'Switzerland': 'CHE',
+  'France': 'FRA',
+  'Germany': 'DEU',
+  'Saudi Arabia': 'SAU',
+  'Australia': 'AUS',
+  'Netherlands': 'NLD',
+  'Spain': 'ESP',
+  'Sweden': 'SWE',
+  'Italy': 'ITA',
+  'Ireland': 'IRL',
+  'Brazil': 'BRA',
+  'Hong Kong': 'HKG',
+  'United Arab Emirates': 'ARE',
+  'Singapore': 'SGP',
+  'Denmark': 'DNK',
+  'Israel': 'ISR',
+  'Mexico': 'MEX',
+  'Thailand': 'THA',
+  'Belgium': 'BEL',
+  'Norway': 'NOR',
+  'South Africa': 'ZAF',
+  'Finland': 'FIN',
+  'Russia': 'RUS',
+  'Poland': 'POL',
+  'Malaysia': 'MYS',
+  'Indonesia': 'IDN',
+  'Austria': 'AUT',
+  'Luxembourg': 'LUX',
+  'Turkey': 'TUR',
+  'Vietnam': 'VNM',
+  'Chile': 'CHL',
+  'Kuwait': 'KWT',
+  'Greece': 'GRC',
+  'Argentina': 'ARG',
+  'Qatar': 'QAT',
+  'New Zealand': 'NZL',
+  'Philippines': 'PHL',
+  'Portugal': 'PRT',
+  'Czech Republic': 'CZE',
+  'Pakistan': 'PAK',
+  'Oman': 'OMN',
+  'Bahrain': 'BHR',
+  'Iceland': 'ISL',
+  'Cambodia': 'KHM',
+}
+
+async function fetchCompaniesMarketCaps() {
+  console.log('Fetching live consensus market capitalization from CompaniesMarketCap...')
+  const url = 'https://companiesmarketcap.com/all-countries/'
+  const result = {}
+
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+    })
+    if (!res.ok) {
+      console.warn(`CompaniesMarketCap HTTP error: ${res.status}`)
+      return result
+    }
+
+    const html = await res.text()
+    // Pattern to match: <td data-sort="Country Name"> ... <td class="td-right" data-sort="ExactIntegerCap">
+    const pattern = /<td data-sort="([A-Za-z\s]+)">[\s\S]*?<td class="td-right" data-sort="(\d+)">/g
+    let match
+
+    while ((match = pattern.exec(html)) !== null) {
+      const countryName = match[1].trim()
+      const rawCap = parseInt(match[2], 10)
+      const iso = COUNTRY_NAME_TO_ISO[countryName]
+
+      if (iso && !isNaN(rawCap) && rawCap > 0) {
+        result[iso] = {
+          marketCapUsd: rawCap,
+          baseCapUsd: rawCap,
+          year: `${new Date().getFullYear()} Live`,
+          indexMultiplier: 1.0,
+          countryName,
+          source: 'CompaniesMarketCap (Real-Time Global Exchanges Consensus)',
+        }
+      }
+    }
+
+    console.log(`Successfully parsed live market cap for ${Object.keys(result).length} countries.`)
+  } catch (err) {
+    console.warn('CompaniesMarketCap fetch error:', err.message)
+  }
+
+  return result
 }
 
 async function fetchWorldBankDomesticMarketCaps() {
@@ -63,18 +157,6 @@ async function fetchWorldBankDomesticMarketCaps() {
     }
   }
 
-  // Merge supplemental baselines for markets not directly indexed in World Bank country codes
-  for (const [iso, supp] of Object.entries(SUPPLEMENTAL_OFFICIAL_BASELINES)) {
-    if (!result[iso]) {
-      result[iso] = {
-        year: supp.year,
-        baseCapUsd: supp.baseCapUsd,
-        countryName: supp.name,
-        source: supp.source
-      }
-    }
-  }
-
   return result
 }
 
@@ -106,14 +188,12 @@ async function fetchIndexPerformance(ticker, targetYear) {
       if (close != null && !isNaN(close)) {
         latestPrice = close
         const dateStr = new Date(timestamps[i] * 1000).toISOString().slice(0, 10)
-        // Find the closing price corresponding to the World Bank base year (e.g. 2024 or 2025)
         if (dateStr.startsWith(targetYear)) {
           basePrice = close
         }
       }
     }
 
-    // Fallback to earliest valid price in range if baseYear was slightly earlier
     if (!basePrice && closes.length > 0) {
       basePrice = closes.find(c => c != null && !isNaN(c)) || latestPrice
     }
@@ -126,7 +206,7 @@ async function fetchIndexPerformance(ticker, targetYear) {
       currentIndexPrice: Number(latestPrice.toFixed(2)),
       multiplier
     }
-  } catch (err) {
+  } catch {
     return null
   }
 }
@@ -134,11 +214,13 @@ async function fetchIndexPerformance(ticker, targetYear) {
 async function main() {
   console.log('Starting 100% automated market capitalization pipeline...')
 
-  // 1. Fetch official World Bank / WFE base market capitalization
-  const wbBaseData = await fetchWorldBankDomesticMarketCaps()
-  console.log(`Successfully extracted official base data for ${Object.keys(wbBaseData).length} countries.`)
+  // 1. Primary: Fetch real-time market cap for major economies (50+ countries)
+  const liveMarketCaps = await fetchCompaniesMarketCaps()
 
-  // 2. Map tickers by country ID
+  // 2. Secondary: Fetch World Bank baseline data for remaining smaller economies
+  const wbBaseData = await fetchWorldBankDomesticMarketCaps()
+
+  // 3. Map tickers by country ID
   const tickerMap = new Map()
   for (const item of COUNTRY_TICKERS) {
     if (item.isSupported && item.ticker) {
@@ -146,10 +228,14 @@ async function main() {
     }
   }
 
-  // 3. Dynamically compute estimated 2026 market capitalization from real index prices
-  const outputData = {}
+  // 4. Combine sources into unified outputData
+  const outputData = { ...liveMarketCaps }
+  const currentYear = new Date().getFullYear()
 
+  // For countries not in liveMarketCaps, scale World Bank baseline
   for (const [iso, baseInfo] of Object.entries(wbBaseData)) {
+    if (outputData[iso]) continue // Already covered by real-time primary source
+
     const baseCap = baseInfo.baseCapUsd
     const ticker = tickerMap.get(iso)
     let multiplier = 1.0
@@ -165,9 +251,6 @@ async function main() {
       }
     }
 
-    const currentYear = new Date().getFullYear()
-
-    // Dynamic estimated market cap = baseCap * multiplier
     const marketCapUsd = Math.round(baseCap * multiplier)
 
     outputData[iso] = {
@@ -186,20 +269,18 @@ async function main() {
     }
   }
 
-  // 4. Print sample estimates to verify
-  const currentYear = new Date().getFullYear()
-  const sampleCodes = ['USA', 'CHN', 'JPN', 'KOR', 'IND', 'DEU', 'GBR', 'TWN', 'CAN']
-  console.log(`\n--- ${currentYear} Estimated Market Capitalization Samples (100% Automated from APIs) ---`)
+  // 5. Print sample estimates to verify precision
+  const sampleCodes = ['USA', 'CHN', 'JPN', 'KOR', 'IND', 'DEU', 'GBR', 'TWN', 'CAN', 'ITA', 'NLD']
+  console.log(`\n--- ${currentYear} Synchronized Market Capitalization Samples ---`)
   for (const code of sampleCodes) {
     const item = outputData[code]
     if (item) {
       const capInTrillions = (item.marketCapUsd / 1e12).toFixed(2)
-      const baseInTrillions = (item.baseCapUsd / 1e12).toFixed(2)
-      console.log(`${code} (${item.countryName}): $${capInTrillions}T (Base: $${baseInTrillions}T [${item.baseYear}] | Multiplier: ${item.indexMultiplier}x | Index: ${item.baseIndexPrice} -> ${item.currentIndexPrice})`)
+      console.log(`${code} (${item.countryName}): $${capInTrillions}T | Source: ${item.source}`)
     }
   }
 
-  // 5. Save to public/api/v1/stock-market-caps.json
+  // 6. Save to public/api/v1/stock-market-caps.json
   const outDir = path.resolve(__dirname, '../public/api/v1')
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true })
