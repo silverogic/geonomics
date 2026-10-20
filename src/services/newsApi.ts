@@ -696,10 +696,9 @@ export async function translateBatchOnTheFly(
 
 // ============================================================================
 // COUNTRY & SECTOR CUSTOMIZED ECONOMIC NEWS ENGINE ("1 + A")
-// Multi-source on-demand search:
-// 1. laapy/reuters-bloomberg-news-rss-pool (777 global wire articles + summaries)
-// 2. Algolia Global News Story Search (<150ms high-speed global media index)
-// 3. GDELT DOC 2.0 Global News API (with non-blocking timeout & cooldown guard)
+// High-quality single-source engine:
+// laapy/reuters-bloomberg-news-rss-pool (820+ global wire articles with summaries)
+// Updated every 4 hours via GitHub Actions (Bloomberg, Reuters, FT, CNBC, CNA)
 // ============================================================================
 
 interface RawRssPoolItem {
@@ -712,7 +711,6 @@ interface RawRssPoolItem {
 
 let cachedRssPoolItems: RawRssPoolItem[] | null = null
 let lastRssPoolFetchTime = 0
-let lastGdeltCallTime = 0
 const countryNewsCache = new Map<string, { ts: number; items: CountryNewsArticle[] }>()
 
 const KEYWORD_TO_ENGLISH_DICT: Record<string, string> = {
@@ -975,38 +973,31 @@ const TOPIC_CONFIG: Record<
   CountryTopicCategory,
   {
     subTerms: string[]
-    gdeltClause: string
     regex: RegExp
   }
 > = {
   ALL: {
     subTerms: ['economy', 'market', 'trade', 'investment', 'industry'],
-    gdeltClause: '(economy OR market OR trade OR GDP OR investment OR industry OR bank)',
     regex: /\b(econom|market|trade|export|import|gdp|invest|bank|rate|inflation|growth|industry|tariff|stock|bond|currency|chip|semiconductor|tech|energy|oil|ev|finance|fund|billion|million|company|corp|business|manufacturing|factory|supply chain|revenue|profit|tax|policy|central bank|deal|pact)\b/i,
   },
   SEMICONDUCTOR_AI: {
     subTerms: ['semiconductor', 'chip', 'AI', 'data center'],
-    gdeltClause: '(semiconductor OR chip OR AI OR "artificial intelligence" OR foundry OR fab)',
     regex: /\b(semiconductor|semiconductors|chip|chips|chipmaker|wafer|foundry|fab\b|fabs\b|tsmc|nvidia|micron|samsung|hynix|asml|arm\b|ai\b|artificial intelligence|gpu|data center|tech|electronics|computing|quantum)\b/i,
   },
   CENTRAL_BANK: {
     subTerms: ['interest rate', 'inflation', 'central bank', 'currency', 'bond'],
-    gdeltClause: '("interest rate" OR inflation OR "central bank" OR currency OR bond OR yield OR GDP)',
     regex: /\b(rate|rates|inflation|cpi|deflation|central bank|fed\b|ecb|boj|pboc|rbi|bok|rba|snb|currency|forex|dollar|yen|yuan|rupee|won|euro|sterling|peso|lira|bond|bonds|yield|yields|treasury|gdp|monetary|fiscal|debt|deficit)\b/i,
   },
   ENERGY: {
     subTerms: ['energy', 'EV', 'battery', 'oil', 'nuclear', 'solar'],
-    gdeltClause: '(energy OR oil OR gas OR EV OR battery OR solar OR nuclear OR power)',
     regex: /\b(energy|oil|crude|gas|lng|solar|wind|nuclear|reactor|ev\b|evs\b|electric vehicle|battery|batteries|lithium|grid|power|renewable|hydrogen|opec|refinery|mining|coal|electricity)\b/i,
   },
   TRADE: {
     subTerms: ['trade', 'tariff', 'export', 'supply chain', 'manufacturing'],
-    gdeltClause: '(trade OR tariff OR export OR import OR "supply chain" OR manufacturing)',
     regex: /\b(trade|tariff|tariffs|export|exports|import|imports|supply chain|manufacturing|factory|customs|sanction|sanctions|pact|deal|wto|fdi|investment|port|shipping|logistics)\b/i,
   },
   FINANCE: {
     subTerms: ['stock', 'market', 'bank', 'investment', 'IPO'],
-    gdeltClause: '(stock OR market OR bank OR IPO OR investment OR fund OR earnings)',
     regex: /\b(stock|stocks|shares|equity|equities|market|index|bank|banks|banking|ipo|fund|invest|investment|investor|billion|million|valuation|earnings|profit|revenue|merger|acquisition|fintech|capital|wealth)\b/i,
   },
 }
@@ -1131,15 +1122,9 @@ async function getRssPoolItems(): Promise<RawRssPoolItem[]> {
   }
 }
 
-function parseGdeltDate(seendate: string): string {
-  // Format: "20260416T083000Z"
-  const m = String(seendate || '').match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/)
-  if (!m) return new Date().toISOString()
-  return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}Z`
-}
-
 /**
  * Fetches country-specific & sector/topic-specific economic news on-demand.
+ * Powered by 820+ item Reuters/Bloomberg/FT/CNBC live RSS pool.
  * When `country` is null or `country.id === 'ALL'`, fetches Global Overall (세계종합) news.
  */
 export async function fetchCountrySpecificNews(
@@ -1181,226 +1166,59 @@ export async function fetchCountrySpecificNews(
         )
       : null
 
-  // Build Algolia sub-queries (targeted 2-part queries for <150ms high recall)
-  const algoliaQueries: string[] = []
-  if (isAll) {
-    if (englishCustomQuery) {
-      for (const tok of customTokens.slice(0, 3)) {
-        algoliaQueries.push(tok)
+  // Filter directly from 820+ item Reuters/Bloomberg/CNBC/FT RSS Pool (instant 0ms filtering)
+  const pool = await getRssPoolItems()
+  const matched: CountryNewsArticle[] = []
+
+  for (let i = 0; i < pool.length; i++) {
+    const item = pool[i]
+    const fullText = `${item.title} ${item.description}`
+
+    if (isAll) {
+      if (customRegex) {
+        if (!customRegex.test(fullText)) continue
+      } else if (topic !== 'ALL' && !topicConfig.regex.test(fullText)) {
+        continue
       }
-      if (algoliaQueries.length === 0) {
-        algoliaQueries.push(englishCustomQuery)
-      }
+      const related = detectRelatedCountries(fullText)
+      matched.push({
+        id: `rss-ALL-${i}`,
+        title: item.title,
+        description: item.description || undefined,
+        url: item.url,
+        source: item.source,
+        publishedAt: item.publishedAt,
+        countryId: 'ALL',
+        topic,
+        relatedCountryIds: related,
+      })
     } else {
-      if (topic === 'ALL') {
-        algoliaQueries.push('global economy', 'world markets', 'central bank', 'global trade')
-      } else {
-        for (const sub of topicConfig.subTerms.slice(0, 4)) {
-          algoliaQueries.push(sub)
-        }
+      if (!countryProfile!.regex.test(fullText)) continue
+      if (customRegex) {
+        if (!customRegex.test(fullText)) continue
+      } else if (topic !== 'ALL' && !topicConfig.regex.test(fullText)) {
+        continue
       }
-    }
-  } else {
-    if (englishCustomQuery) {
-      for (const tok of customTokens.slice(0, 3)) {
-        algoliaQueries.push(`${countryProfile!.primary} ${tok}`)
-      }
-      if (algoliaQueries.length === 0) {
-        algoliaQueries.push(`${countryProfile!.primary} ${englishCustomQuery}`)
-      }
-    } else {
-      for (const sub of topicConfig.subTerms.slice(0, 4)) {
-        algoliaQueries.push(`${countryProfile!.primary} ${sub}`)
-      }
+      matched.push({
+        id: `rss-${country!.id}-${i}`,
+        title: item.title,
+        description: item.description || undefined,
+        url: item.url,
+        source: item.source,
+        publishedAt: item.publishedAt,
+        countryId: country!.id,
+        topic,
+        relatedCountryIds: [country!.id],
+      })
     }
   }
 
-  // Task 1: Filter from 777-item Reuters/Bloomberg/CNBC/FT RSS Pool (includes rich descriptions)
-  const rssPoolPromise = getRssPoolItems().then((pool) => {
-    const matched: CountryNewsArticle[] = []
-    for (let i = 0; i < pool.length; i++) {
-      const item = pool[i]
-      const fullText = `${item.title} ${item.description}`
-      if (isAll) {
-        if (customRegex) {
-          if (!customRegex.test(fullText)) continue
-        } else if (topic !== 'ALL' && !topicConfig.regex.test(fullText)) {
-          continue
-        }
-        const related = detectRelatedCountries(fullText)
-        matched.push({
-          id: `rss-ALL-${i}`,
-          title: item.title,
-          description: item.description || undefined,
-          url: item.url,
-          source: item.source,
-          publishedAt: item.publishedAt,
-          countryId: 'ALL',
-          topic,
-          relatedCountryIds: related,
-        })
-      } else {
-        if (!countryProfile!.regex.test(fullText)) continue
-        if (customRegex) {
-          if (!customRegex.test(fullText)) continue
-        } else if (!topicConfig.regex.test(fullText)) {
-          continue
-        }
-        matched.push({
-          id: `rss-${country!.id}-${i}`,
-          title: item.title,
-          description: item.description || undefined,
-          url: item.url,
-          source: item.source,
-          publishedAt: item.publishedAt,
-          countryId: country!.id,
-          topic,
-          relatedCountryIds: [country!.id],
-        })
-      }
-    }
-    return matched
-  })
-
-  // Task 2: Parallel Algolia Global News Story Queries (both newest and top relevance)
-  const algoliaPromise = Promise.all(
-    algoliaQueries.flatMap((q) => [
-      fetch(
-        `https://hn.algolia.com/api/v1/search_by_date?query=${encodeURIComponent(
-          q
-        )}&tags=story&hitsPerPage=20`
-      )
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null),
-      fetch(
-        `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(
-          q
-        )}&tags=story&hitsPerPage=20`
-      )
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null),
-    ])
-  ).then((responses) => {
-    const matched: CountryNewsArticle[] = []
-    for (const data of responses) {
-      if (!data || !Array.isArray(data.hits)) continue
-      for (const hit of data.hits) {
-        const title = String(hit.title || '').trim()
-        const url = String(hit.url || '').trim()
-        if (!title || !url) continue
-        if (/^(Show HN|Ask HN|Tell HN|Launch HN)/i.test(title)) continue
-
-        if (isAll) {
-          if (customRegex) {
-            if (!customRegex.test(title)) continue
-          } else if (topic !== 'ALL' && !topicConfig.regex.test(title)) {
-            continue
-          }
-          const related = detectRelatedCountries(title)
-          matched.push({
-            id: `alg-${hit.objectID || Math.random()}`,
-            title,
-            url,
-            source: formatPublisherFromUrl(url),
-            publishedAt: hit.created_at || new Date().toISOString(),
-            countryId: 'ALL',
-            topic,
-            relatedCountryIds: related,
-          })
-        } else {
-          if (!countryProfile!.regex.test(title)) continue
-          if (customRegex) {
-            if (!customRegex.test(title)) continue
-          } else if (!topicConfig.regex.test(title)) {
-            continue
-          }
-          matched.push({
-            id: `alg-${hit.objectID || Math.random()}`,
-            title,
-            url,
-            source: formatPublisherFromUrl(url),
-            publishedAt: hit.created_at || new Date().toISOString(),
-            countryId: country!.id,
-            topic,
-            relatedCountryIds: [country!.id],
-          })
-        }
-      }
-    }
-    return matched
-  })
-
-  // Task 3: GDELT DOC 2.0 Global News API (with 1800ms non-blocking timeout & 5.2s rate-limit guard)
-  const gdeltPromise = (async (): Promise<CountryNewsArticle[]> => {
-    const elapsedSinceLastGdelt = Date.now() - lastGdeltCallTime
-    if (elapsedSinceLastGdelt < 5200) {
-      return []
-    }
-    lastGdeltCallTime = Date.now()
-
-    let gdeltQuery = ''
-    if (isAll) {
-      if (englishCustomQuery) {
-        gdeltQuery = `(${customTokens.join(' OR ') || englishCustomQuery}) sourcelang:english`
-      } else {
-        gdeltQuery = topicConfig.gdeltClause
-          ? `${topicConfig.gdeltClause} sourcelang:english`
-          : '("economy" OR "market" OR "trade" OR "central bank") sourcelang:english'
-      }
-    } else {
-      gdeltQuery = englishCustomQuery
-        ? `"${countryProfile!.primary}" (${customTokens.join(' OR ') || englishCustomQuery}) sourcelang:english`
-        : `"${countryProfile!.primary}" ${topicConfig.gdeltClause} sourcelang:english`
-    }
-
-    const gdeltUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(
-      gdeltQuery
-    )}&mode=ArtList&maxrecords=15&format=json&timespan=14d`
-
-    try {
-      const res = await fetch(gdeltUrl, { signal: AbortSignal.timeout(1800) })
-      if (!res.ok) return []
-      const text = await res.text()
-      if (!text.startsWith('{')) return []
-      const data = JSON.parse(text)
-      if (!Array.isArray(data.articles)) return []
-
-      return data.articles
-        .map((art: any, idx: number): CountryNewsArticle | null => {
-          const title = String(art.title || '').trim()
-          const url = String(art.url || '').trim()
-          if (!title || !url) return null
-          const related = isAll ? detectRelatedCountries(title) : [country!.id]
-          return {
-            id: `gdelt-${scopeId}-${idx}`,
-            title,
-            url,
-            source: formatPublisherFromUrl(url, art.domain),
-            publishedAt: parseGdeltDate(art.seendate),
-            countryId: scopeId,
-            topic,
-            relatedCountryIds: related,
-          }
-        })
-        .filter((x: CountryNewsArticle | null): x is CountryNewsArticle => x !== null)
-    } catch {
-      return []
-    }
-  })()
-
-  const [rssItems, gdeltItems, algoliaItems] = await Promise.all([
-    rssPoolPromise,
-    gdeltPromise,
-    algoliaPromise,
-  ])
-
-  // Merge & deduplicate by normalized title prefix, prioritizing RSS Pool (which has descriptions) & GDELT
-  const combined = [...rssItems, ...gdeltItems, ...algoliaItems]
+  // Deduplicate by normalized title prefix (just in case)
   const seenTitles = new Set<string>()
   const seenUrls = new Set<string>()
   const deduplicated: CountryNewsArticle[] = []
 
-  for (const item of combined) {
+  for (const item of matched) {
     const normTitle = item.title
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '')
@@ -1411,14 +1229,14 @@ export async function fetchCountrySpecificNews(
     deduplicated.push(item)
   }
 
-  // Sort so items with rich description or more recent date appear prominently
+  // Sort by most recent date
   deduplicated.sort((a, b) => {
     const timeA = new Date(a.publishedAt).getTime() || 0
     const timeB = new Date(b.publishedAt).getTime() || 0
     return timeB - timeA
   })
 
-  const finalItems = deduplicated.slice(0, 12)
+  const finalItems = deduplicated.slice(0, 16)
   countryNewsCache.set(cacheKey, { ts: Date.now(), items: finalItems })
   return finalItems
 }
