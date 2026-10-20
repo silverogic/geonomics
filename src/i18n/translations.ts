@@ -212,6 +212,10 @@ export const translations = {
     compareSpread: 'Policy Rate Spread (A - B)',
     compareChartTitle: '10-Year GDP Trajectory Overlay',
     compareChartLoading: 'Aggregating comparative data...',
+    compareModeH2H: '1:1 Head-to-Head',
+    compareModeCards: 'Cards',
+    compareScaleRatio: '{winner} is {ratio}x larger',
+    compareHigherBy: '{winner} is {diff}%p higher',
 
     // Ranking Table
     tableTitle: 'Global GDP & Exchange Rate Rankings',
@@ -462,6 +466,10 @@ export const translations = {
     compareSpread: '금리 스프레드 (A - B)',
     compareChartTitle: '10개년 GDP 궤적 동시 비교',
     compareChartLoading: '비교 데이터를 집계 중입니다...',
+    compareModeH2H: '1:1 대칭 비교',
+    compareModeCards: '개별 카드',
+    compareScaleRatio: '{winner}가 {ratio}배 더 큼',
+    compareHigherBy: '{winner}가 {diff}%p 더 높음',
 
     // Ranking Table
     tableTitle: '전 세계 GDP & 환율 순위표',
@@ -712,6 +720,10 @@ export const translations = {
     compareSpread: '金利スプレッド (A - B)',
     compareChartTitle: '10年間GDP推移の同時比較',
     compareChartLoading: '比較データを集計中...',
+    compareModeH2H: '1:1 対決比較',
+    compareModeCards: '個別カード',
+    compareScaleRatio: '{winner}が{ratio}倍',
+    compareHigherBy: '{winner}が{diff}%p高い',
 
     // Ranking Table
     tableTitle: '世界GDP & 為替レート ランキング',
@@ -962,6 +974,10 @@ export const translations = {
     compareSpread: 'Diferencial de Tasas (A - B)',
     compareChartTitle: 'Superposición de trayectoria del PIB en 10 años',
     compareChartLoading: 'Agregando datos comparativos...',
+    compareModeH2H: 'Cara a cara 1:1',
+    compareModeCards: 'Tarjetas',
+    compareScaleRatio: '{winner} es {ratio}x mayor',
+    compareHigherBy: '{winner} es {diff}%p mayor',
 
     // Ranking Table
     tableTitle: 'Clasificación mundial de PIB y tipos de cambio',
@@ -1212,6 +1228,10 @@ export const translations = {
     compareSpread: '利差 (A - B)',
     compareChartTitle: '10年 GDP 走势轨迹并排对比',
     compareChartLoading: '正在汇总对比数据...',
+    compareModeH2H: '1:1 对决比较',
+    compareModeCards: '独立卡片',
+    compareScaleRatio: '{winner}高出 {ratio}倍',
+    compareHigherBy: '{winner}高出 {diff}%p',
 
     // Ranking Table
     tableTitle: '全球 GDP 与实时汇率排行榜',
