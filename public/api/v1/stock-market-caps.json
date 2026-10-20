@@ -1044,16 +1044,16 @@
     "source": "World Bank (WFE 2017) × Live Index Multiplier (2.0224x via Yahoo Finance)"
   },
   "NZL": {
-    "marketCapUsd": 104994958999,
+    "marketCapUsd": 105005275886,
     "baseCapUsd": 103168870000,
     "baseYear": "2025",
     "year": "2026 Live Est.",
-    "indexMultiplier": 1.0177,
+    "indexMultiplier": 1.0178,
     "baseIndexPrice": 13423.18,
-    "currentIndexPrice": 13660.25,
+    "currentIndexPrice": 13662.33,
     "indexTicker": "^NZ50",
     "countryName": "New Zealand",
-    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0177x via Yahoo Finance)"
+    "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0178x via Yahoo Finance)"
   },
   "NGA": {
     "marketCapUsd": 86681931720,
