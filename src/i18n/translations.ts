@@ -28,6 +28,8 @@ export const translations = {
     newsCountrySectionTitle: 'Country & Sector Customized News',
     newsCountrySectionSubtitle:
       'Select any country and sector or enter a keyword (e.g., India + Semiconductor) to explore targeted global articles.',
+    newsCountryAll: 'Global Overall',
+    newsRelatedCountries: 'Related',
     newsTopicAll: 'All Economy & Business',
     newsTopicSemiAi: 'Semiconductors & AI',
     newsTopicCentralBank: 'Rates, FX & Inflation',
@@ -276,6 +278,8 @@ export const translations = {
     newsCountrySectionTitle: '국가별 · 산업별 맞춤 경제 뉴스',
     newsCountrySectionSubtitle:
       '국가와 산업 분야를 선택하거나 세부 키워드(예: 인도 + 반도체)를 입력해 글로벌 특화 기사를 탐색하세요.',
+    newsCountryAll: '세계종합',
+    newsRelatedCountries: '관련 국가',
     newsTopicAll: '경제 · 산업 전체',
     newsTopicSemiAi: '반도체 · AI · 테크',
     newsTopicCentralBank: '금리 · 환율 · 물가',
@@ -524,6 +528,8 @@ export const translations = {
     newsCountrySectionTitle: '国別・産業別 カスタム経済ニュース',
     newsCountrySectionSubtitle:
       '国と産業分野を選択するか、キーワード（例：インド + 半導体）を入力して世界の特化ニュースを検索できます。',
+    newsCountryAll: '世界総合',
+    newsRelatedCountries: '関連国',
     newsTopicAll: '経済・産業全般',
     newsTopicSemiAi: '半導体・AI・テック',
     newsTopicCentralBank: '金利・為替・物価',
@@ -772,6 +778,8 @@ export const translations = {
     newsCountrySectionTitle: 'Noticias Económicas por País y Sector',
     newsCountrySectionSubtitle:
       'Seleccione un país y sector o ingrese una palabra clave (ej. India + Semiconductores) para explorar noticias.',
+    newsCountryAll: 'Global General',
+    newsRelatedCountries: 'Países',
     newsTopicAll: 'Toda Economía y Negocios',
     newsTopicSemiAi: 'Semiconductores e IA',
     newsTopicCentralBank: 'Tasas, Divisas e Inflación',
@@ -1020,6 +1028,8 @@ export const translations = {
     newsCountrySectionTitle: '国家与行业定制财经新闻',
     newsCountrySectionSubtitle:
       '选择国家与行业领域，或输入关键词（如：印度 + 半导体）探索全球专题财经报道。',
+    newsCountryAll: '全球综合',
+    newsRelatedCountries: '相关国家',
     newsTopicAll: '经济与产业全部',
     newsTopicSemiAi: '半导体 · AI · 科技',
     newsTopicCentralBank: '利率 · 汇率 · 通胀',

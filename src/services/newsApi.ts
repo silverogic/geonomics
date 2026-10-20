@@ -87,6 +87,46 @@ const COUNTRY_KEYWORD_RULES: Array<{ id: string; regex: RegExp }> = [
     regex: /\b(Saudi Arabia|Saudi|Riyadh|Aramco|OPEC|Hormuz)\b/i,
   },
   {
+    id: 'VNM',
+    regex: /\b(Vietnam|Vietnamese|Hanoi|Dong|Ho Chi Minh)\b/i,
+  },
+  {
+    id: 'SGP',
+    regex: /\b(Singapore|MAS|Straits Times)\b/i,
+  },
+  {
+    id: 'CHE',
+    regex: /\b(Switzerland|Swiss|SNB|Zurich)\b/i,
+  },
+  {
+    id: 'BRA',
+    regex: /\b(Brazil|Brazilian|Bovespa|Brasilia|Real)\b/i,
+  },
+  {
+    id: 'MEX',
+    regex: /\b(Mexico|Mexican|Banxico|Peso)\b/i,
+  },
+  {
+    id: 'IDN',
+    regex: /\b(Indonesia|Indonesian|Jakarta|Rupiah|BI\b)\b/i,
+  },
+  {
+    id: 'TUR',
+    regex: /\b(Turkey|Turkish|Erdogan|Lira|TCMB)\b/i,
+  },
+  {
+    id: 'NLD',
+    regex: /\b(Netherlands|Dutch|ASML|Amsterdam|AEX)\b/i,
+  },
+  {
+    id: 'ESP',
+    regex: /\b(Spain|Spanish|Madrid|IBEX)\b/i,
+  },
+  {
+    id: 'ARE',
+    regex: /\b(UAE|Dubai|Abu Dhabi|Emirates)\b/i,
+  },
+  {
     id: 'IRN',
     regex: /\b(Iran|Iranian|Tehran|Hormuz)\b/i,
   },
@@ -94,32 +134,67 @@ const COUNTRY_KEYWORD_RULES: Array<{ id: string; regex: RegExp }> = [
     id: 'RUS',
     regex: /\b(Russia|Russian|Moscow|Ruble)\b/i,
   },
-  {
-    id: 'BRA',
-    regex: /\b(Brazil|Brazilian|Bovespa|Brasilia)\b/i,
-  },
-  {
-    id: 'CHE',
-    regex: /\b(Switzerland|Swiss|SNB|Zurich)\b/i,
-  },
-  {
-    id: 'SGP',
-    regex: /\b(Singapore|MAS|Straits Times)\b/i,
-  },
 ]
 
 const validCountryIds = new Set(COUNTRIES.map((c) => c.id))
 
-export function detectRelatedCountries(text: string): string[] {
+/**
+ * Detects countries related to an article based on keyword rules and appearance order.
+ * Returns up to `limit` unique ISO3 country codes.
+ */
+export function detectRelatedCountries(text: string, limit = 3): string[] {
   if (!text) return []
-  const matched: string[] = []
+
+  const hits: Array<{ id: string; index: number }> = []
+
+  // 1. Check specialized rules first, recording the first index where each appears
   for (const rule of COUNTRY_KEYWORD_RULES) {
-    if (validCountryIds.has(rule.id) && rule.regex.test(text)) {
-      matched.push(rule.id)
-      if (matched.length >= 3) break
+    if (!validCountryIds.has(rule.id)) continue
+    const idx = text.search(rule.regex)
+    if (idx !== -1) {
+      hits.push({ id: rule.id, index: idx })
     }
   }
-  return matched
+
+  // 2. Sort by earliest mention so the most focal country appears first
+  hits.sort((a, b) => a.index - b.index)
+
+  const seen = new Set<string>()
+  const result: string[] = []
+
+  for (const h of hits) {
+    if (!seen.has(h.id)) {
+      seen.add(h.id)
+      result.push(h.id)
+      if (result.length >= limit) return result
+    }
+  }
+
+  // 3. Fallback: Check other tracked countries in COUNTRIES if we still haven\'t reached limit
+  if (result.length < limit) {
+    const fallbackHits: Array<{ id: string; index: number }> = []
+    for (const c of COUNTRIES) {
+      if (seen.has(c.id)) continue
+      const escapedEn = c.nameEn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const escapedKo = c.nameKo ? c.nameKo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : ''
+      const pattern = escapedKo ? `\\b(${escapedEn})\\b|(${escapedKo})` : `\\b(${escapedEn})\\b`
+      const regex = new RegExp(pattern, 'i')
+      const idx = text.search(regex)
+      if (idx !== -1) {
+        fallbackHits.push({ id: c.id, index: idx })
+      }
+    }
+    fallbackHits.sort((a, b) => a.index - b.index)
+    for (const fb of fallbackHits) {
+      if (!seen.has(fb.id)) {
+        seen.add(fb.id)
+        result.push(fb.id)
+        if (result.length >= limit) break
+      }
+    }
+  }
+
+  return result
 }
 
 function normalizeCategory(rawCat: string, text = ''): Exclude<NewsCategory, 'ALL'> {
@@ -1065,15 +1140,18 @@ function parseGdeltDate(seendate: string): string {
 
 /**
  * Fetches country-specific & sector/topic-specific economic news on-demand.
+ * When `country` is null or `country.id === 'ALL'`, fetches Global Overall (세계종합) news.
  */
 export async function fetchCountrySpecificNews(
-  country: CountryMeta,
+  country: CountryMeta | null,
   topic: CountryTopicCategory,
   customQuery = '',
   forceRefresh = false
 ): Promise<CountryNewsArticle[]> {
+  const isAll = !country || country.id === 'ALL'
+  const scopeId = isAll ? 'ALL' : country.id
   const cleanCustom = customQuery.trim()
-  const cacheKey = `${country.id}::${topic}::${cleanCustom.toLowerCase()}`
+  const cacheKey = `${scopeId}::${topic}::${cleanCustom.toLowerCase()}`
   const now = Date.now()
 
   if (!forceRefresh) {
@@ -1084,7 +1162,7 @@ export async function fetchCountrySpecificNews(
   }
 
   const englishCustomQuery = cleanCustom ? await translateQueryToEnglish(cleanCustom) : ''
-  const countryProfile = getCountrySearchProfile(country)
+  const countryProfile = isAll ? null : getCountrySearchProfile(country)
   const topicConfig = TOPIC_CONFIG[topic]
 
   // Build custom regex if customQuery is provided
@@ -1105,17 +1183,35 @@ export async function fetchCountrySpecificNews(
 
   // Build Algolia sub-queries (targeted 2-part queries for <150ms high recall)
   const algoliaQueries: string[] = []
-  if (englishCustomQuery) {
-    // Query each main custom keyword with the country name
-    for (const tok of customTokens.slice(0, 3)) {
-      algoliaQueries.push(`${countryProfile.primary} ${tok}`)
-    }
-    if (algoliaQueries.length === 0) {
-      algoliaQueries.push(`${countryProfile.primary} ${englishCustomQuery}`)
+  if (isAll) {
+    if (englishCustomQuery) {
+      for (const tok of customTokens.slice(0, 3)) {
+        algoliaQueries.push(tok)
+      }
+      if (algoliaQueries.length === 0) {
+        algoliaQueries.push(englishCustomQuery)
+      }
+    } else {
+      if (topic === 'ALL') {
+        algoliaQueries.push('global economy', 'world markets', 'central bank', 'global trade')
+      } else {
+        for (const sub of topicConfig.subTerms.slice(0, 4)) {
+          algoliaQueries.push(sub)
+        }
+      }
     }
   } else {
-    for (const sub of topicConfig.subTerms.slice(0, 4)) {
-      algoliaQueries.push(`${countryProfile.primary} ${sub}`)
+    if (englishCustomQuery) {
+      for (const tok of customTokens.slice(0, 3)) {
+        algoliaQueries.push(`${countryProfile!.primary} ${tok}`)
+      }
+      if (algoliaQueries.length === 0) {
+        algoliaQueries.push(`${countryProfile!.primary} ${englishCustomQuery}`)
+      }
+    } else {
+      for (const sub of topicConfig.subTerms.slice(0, 4)) {
+        algoliaQueries.push(`${countryProfile!.primary} ${sub}`)
+      }
     }
   }
 
@@ -1125,22 +1221,43 @@ export async function fetchCountrySpecificNews(
     for (let i = 0; i < pool.length; i++) {
       const item = pool[i]
       const fullText = `${item.title} ${item.description}`
-      if (!countryProfile.regex.test(fullText)) continue
-      if (customRegex) {
-        if (!customRegex.test(fullText)) continue
-      } else if (!topicConfig.regex.test(fullText)) {
-        continue
+      if (isAll) {
+        if (customRegex) {
+          if (!customRegex.test(fullText)) continue
+        } else if (topic !== 'ALL' && !topicConfig.regex.test(fullText)) {
+          continue
+        }
+        const related = detectRelatedCountries(fullText)
+        matched.push({
+          id: `rss-ALL-${i}`,
+          title: item.title,
+          description: item.description || undefined,
+          url: item.url,
+          source: item.source,
+          publishedAt: item.publishedAt,
+          countryId: 'ALL',
+          topic,
+          relatedCountryIds: related,
+        })
+      } else {
+        if (!countryProfile!.regex.test(fullText)) continue
+        if (customRegex) {
+          if (!customRegex.test(fullText)) continue
+        } else if (!topicConfig.regex.test(fullText)) {
+          continue
+        }
+        matched.push({
+          id: `rss-${country!.id}-${i}`,
+          title: item.title,
+          description: item.description || undefined,
+          url: item.url,
+          source: item.source,
+          publishedAt: item.publishedAt,
+          countryId: country!.id,
+          topic,
+          relatedCountryIds: [country!.id],
+        })
       }
-      matched.push({
-        id: `rss-${country.id}-${i}`,
-        title: item.title,
-        description: item.description || undefined,
-        url: item.url,
-        source: item.source,
-        publishedAt: item.publishedAt,
-        countryId: country.id,
-        topic,
-      })
     }
     return matched
   })
@@ -1172,22 +1289,42 @@ export async function fetchCountrySpecificNews(
         const url = String(hit.url || '').trim()
         if (!title || !url) continue
         if (/^(Show HN|Ask HN|Tell HN|Launch HN)/i.test(title)) continue
-        if (!countryProfile.regex.test(title)) continue
-        if (customRegex) {
-          if (!customRegex.test(title)) continue
-        } else if (!topicConfig.regex.test(title)) {
-          continue
-        }
 
-        matched.push({
-          id: `alg-${hit.objectID || Math.random()}`,
-          title,
-          url,
-          source: formatPublisherFromUrl(url),
-          publishedAt: hit.created_at || new Date().toISOString(),
-          countryId: country.id,
-          topic,
-        })
+        if (isAll) {
+          if (customRegex) {
+            if (!customRegex.test(title)) continue
+          } else if (topic !== 'ALL' && !topicConfig.regex.test(title)) {
+            continue
+          }
+          const related = detectRelatedCountries(title)
+          matched.push({
+            id: `alg-${hit.objectID || Math.random()}`,
+            title,
+            url,
+            source: formatPublisherFromUrl(url),
+            publishedAt: hit.created_at || new Date().toISOString(),
+            countryId: 'ALL',
+            topic,
+            relatedCountryIds: related,
+          })
+        } else {
+          if (!countryProfile!.regex.test(title)) continue
+          if (customRegex) {
+            if (!customRegex.test(title)) continue
+          } else if (!topicConfig.regex.test(title)) {
+            continue
+          }
+          matched.push({
+            id: `alg-${hit.objectID || Math.random()}`,
+            title,
+            url,
+            source: formatPublisherFromUrl(url),
+            publishedAt: hit.created_at || new Date().toISOString(),
+            countryId: country!.id,
+            topic,
+            relatedCountryIds: [country!.id],
+          })
+        }
       }
     }
     return matched
@@ -1201,9 +1338,20 @@ export async function fetchCountrySpecificNews(
     }
     lastGdeltCallTime = Date.now()
 
-    const gdeltQuery = englishCustomQuery
-      ? `"${countryProfile.primary}" (${customTokens.join(' OR ') || englishCustomQuery}) sourcelang:english`
-      : `"${countryProfile.primary}" ${topicConfig.gdeltClause} sourcelang:english`
+    let gdeltQuery = ''
+    if (isAll) {
+      if (englishCustomQuery) {
+        gdeltQuery = `(${customTokens.join(' OR ') || englishCustomQuery}) sourcelang:english`
+      } else {
+        gdeltQuery = topicConfig.gdeltClause
+          ? `${topicConfig.gdeltClause} sourcelang:english`
+          : '("economy" OR "market" OR "trade" OR "central bank") sourcelang:english'
+      }
+    } else {
+      gdeltQuery = englishCustomQuery
+        ? `"${countryProfile!.primary}" (${customTokens.join(' OR ') || englishCustomQuery}) sourcelang:english`
+        : `"${countryProfile!.primary}" ${topicConfig.gdeltClause} sourcelang:english`
+    }
 
     const gdeltUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(
       gdeltQuery
@@ -1222,14 +1370,16 @@ export async function fetchCountrySpecificNews(
           const title = String(art.title || '').trim()
           const url = String(art.url || '').trim()
           if (!title || !url) return null
+          const related = isAll ? detectRelatedCountries(title) : [country!.id]
           return {
-            id: `gdelt-${country.id}-${idx}`,
+            id: `gdelt-${scopeId}-${idx}`,
             title,
             url,
             source: formatPublisherFromUrl(url, art.domain),
             publishedAt: parseGdeltDate(art.seendate),
-            countryId: country.id,
+            countryId: scopeId,
             topic,
+            relatedCountryIds: related,
           }
         })
         .filter((x: CountryNewsArticle | null): x is CountryNewsArticle => x !== null)

@@ -103,6 +103,8 @@ export interface CountryNewsArticle {
   publishedAt: string
   countryId: string
   topic: CountryTopicCategory
+  /** Global Overall mode only: tracked countries mentioned in the article (max 3, by first appearance) */
+  relatedCountryIds?: string[]
 }
 
 export interface EconomicNewsData {

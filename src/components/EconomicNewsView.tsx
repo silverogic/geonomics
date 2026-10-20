@@ -252,8 +252,26 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
     )
   }, [sortedCountries, countryFilterQuery, lang])
 
+  // Whether "Global Overall" matches the combobox search query
+  const isAllMatch = useMemo(() => {
+    const q = countryFilterQuery.trim().toLowerCase()
+    if (!q) return true
+    const allTokens = [
+      'all',
+      'global',
+      'world',
+      '세계종합',
+      '세계',
+      '종합',
+      '전체',
+      '글로벌',
+      t.newsCountryAll.toLowerCase(),
+    ]
+    return allTokens.some((tok) => tok.includes(q) || q.includes(tok))
+  }, [countryFilterQuery, t.newsCountryAll])
+
   const selectedTargetCountry = useMemo(
-    () => countryById.get(targetCountryId) || COUNTRIES[0],
+    () => (targetCountryId === 'ALL' ? null : countryById.get(targetCountryId) || COUNTRIES[0]),
     [countryById, targetCountryId]
   )
 
@@ -371,7 +389,12 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
               <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-800 text-emerald-300 border border-slate-700">
                 {countryArticles.length}
               </span>
-              {selectedTargetCountry && (
+              {targetCountryId === 'ALL' ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-xs font-semibold text-emerald-300">
+                  <Globe2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>{t.newsCountryAll}</span>
+                </span>
+              ) : selectedTargetCountry ? (
                 <button
                   type="button"
                   onClick={() => onSelectCountry(selectedTargetCountry)}
@@ -385,7 +408,7 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
                   />
                   <span>{getCountryName(selectedTargetCountry, lang)}</span>
                 </button>
-              )}
+              ) : null}
 
               {lang !== 'en' && isTranslating && (
                 <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-indigo-950/70 border border-indigo-500/30 text-indigo-300 text-xs font-medium">
@@ -476,19 +499,33 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
                   : 'border-slate-700/80 hover:border-slate-600'
               }`}
             >
-              <div className="flex items-center gap-2 truncate">
-                <CountryFlag
-                  iso2={selectedTargetCountry.iso2}
-                  className="w-4 h-3 rounded-[1px] shrink-0"
-                  alt={selectedTargetCountry.nameEn}
-                />
-                <span className="text-white font-bold truncate">
-                  {getCountryName(selectedTargetCountry, lang)}
-                </span>
-                <span className="text-[11px] font-mono text-slate-400">
-                  ({selectedTargetCountry.id})
-                </span>
-              </div>
+              {targetCountryId === 'ALL' ? (
+                <div className="flex items-center gap-2 truncate">
+                  <div className="w-4 h-3 rounded-[1px] bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                    <Globe2 className="w-3 h-3 text-emerald-400" />
+                  </div>
+                  <span className="text-white font-bold truncate">
+                    {t.newsCountryAll}
+                  </span>
+                  <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                    (ALL)
+                  </span>
+                </div>
+              ) : selectedTargetCountry ? (
+                <div className="flex items-center gap-2 truncate">
+                  <CountryFlag
+                    iso2={selectedTargetCountry.iso2}
+                    className="w-4 h-3 rounded-[1px] shrink-0"
+                    alt={selectedTargetCountry.nameEn}
+                  />
+                  <span className="text-white font-bold truncate">
+                    {getCountryName(selectedTargetCountry, lang)}
+                  </span>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    ({selectedTargetCountry.id})
+                  </span>
+                </div>
+              ) : null}
               <ChevronDown
                 className={`w-4 h-4 text-slate-400 shrink-0 ml-2 transition-transform duration-200 ${
                   isCountryMenuOpen ? 'rotate-180 text-indigo-400' : ''
@@ -519,6 +556,44 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
                     </button>
                   )}
                 </div>
+
+                {/* "Global Overall" Option (Pinned to top if query matches) */}
+                {isAllMatch && (
+                  <div className="pb-1 mb-1 border-b border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTargetCountryId('ALL')
+                        setIsCountryMenuOpen(false)
+                        setCountryFilterQuery('')
+                      }}
+                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all select-none cursor-pointer ${
+                        targetCountryId === 'ALL'
+                          ? 'bg-emerald-500/20 text-white border border-emerald-500/40 shadow-sm'
+                          : 'text-slate-300 hover:bg-slate-800/70 hover:text-white border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-4 h-3 rounded-[1px] bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                          <Globe2 className="w-3 h-3 text-emerald-400" />
+                        </div>
+                        <span
+                          className={`truncate ${
+                            targetCountryId === 'ALL' ? 'text-white font-bold' : 'text-slate-200'
+                          }`}
+                        >
+                          {t.newsCountryAll}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-400 shrink-0">
+                          ALL
+                        </span>
+                      </div>
+                      {targetCountryId === 'ALL' && (
+                        <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5] shrink-0" />
+                      )}
+                    </button>
+                  </div>
+                )}
 
                 <div className="max-h-64 overflow-y-auto space-y-0.5 pr-0.5">
                   {filteredComboboxCountries.length === 0 ? (
@@ -708,9 +783,9 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
                 className="group bg-slate-900/70 hover:bg-slate-900/95 border border-slate-800/90 hover:border-emerald-500/40 rounded-2xl p-4 flex flex-col justify-between gap-2.5 transition-all shadow-md"
               >
                 <div className="space-y-2">
-                  {/* Source Publisher + Relative Time + Read Article */}
+                  {/* Source Publisher + Relative Time + Related Country Flags + Read Article */}
                   <div className="flex items-center justify-between gap-2 text-xs">
-                    <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
                       <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold text-[11px] truncate">
                         {art.source}
                       </span>
@@ -718,6 +793,38 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
                         <span className="text-slate-400 text-[11px] font-mono shrink-0">
                           {formatRelativeTime(art.publishedAt, lang)}
                         </span>
+                      )}
+
+                      {/* Display related country flags when Global Overall is selected */}
+                      {targetCountryId === 'ALL' && art.relatedCountryIds && art.relatedCountryIds.length > 0 && (
+                        <div className="flex items-center gap-1 shrink-0 ml-0.5">
+                          {art.relatedCountryIds.slice(0, 3).map((cid) => {
+                            const c = countryById.get(cid)
+                            if (!c) return null
+                            return (
+                              <button
+                                key={cid}
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  e.stopPropagation()
+                                  onSelectCountry(c)
+                                }}
+                                data-tooltip={`${getCountryName(c, lang)} (${c.currencyCode})`}
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-800/90 hover:bg-emerald-500/20 border border-slate-700/80 hover:border-emerald-500/40 text-[11px] font-medium text-slate-200 transition-all cursor-pointer"
+                              >
+                                <CountryFlag
+                                  iso2={c.iso2}
+                                  className="w-3.5 h-2.5 rounded-[1px] shrink-0"
+                                  alt={c.nameEn}
+                                />
+                                <span className="hidden sm:inline font-semibold">
+                                  {getCountryName(c, lang)}
+                                </span>
+                              </button>
+                            )
+                          })}
+                        </div>
                       )}
                     </div>
 
