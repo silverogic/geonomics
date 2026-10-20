@@ -1050,7 +1050,7 @@
     "year": "2026 Live Est.",
     "indexMultiplier": 1.0178,
     "baseIndexPrice": 13423.18,
-    "currentIndexPrice": 13662.33,
+    "currentIndexPrice": 13662.42,
     "indexTicker": "^NZ50",
     "countryName": "New Zealand",
     "source": "World Bank (WFE 2025) × Live Index Multiplier (1.0178x via Yahoo Finance)"
