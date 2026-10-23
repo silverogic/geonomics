@@ -33,7 +33,7 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 - **Scale Multiples & Spreads**: Automatically computes GDP scale multiples, GDP per capita ratios, central bank interest rate spreads, bilateral FX cross-rates, Big Mac PPP valuations, and dual 10-year historical trajectory charts (`GdpChart`).
 
 ### 5. Country & Sector Customized Economic News (`EconomicNewsView`)
-- **Multi-Source Global Wire Aggregation (`newsApi.ts`)**: Queries 3 complementary real-time news sources in parallel—**Reuters/Bloomberg/CNBC/FT Wire RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)**, **Algolia Global Story Search**, and **GDELT DOC 2.0 Global News API** (with non-blocking timeout & cooldown guards).
+- **Two-Source Global News Aggregation (`newsApi.ts`)**: Combines a live **Macro Brief feed** (`givanchris/News` `brief.json`: macro, central banks, commodities, markets, trade, etc.) with the **Reuters/Bloomberg/CNBC/FT Wire RSS Pool** (`laapy/reuters-bloomberg-news-rss-pool`, 800+ deduplicated wire articles with summaries), with non-blocking timeout guards.
 - **Country × Sector & Custom Keyword Search**: Explore targeted economic articles for any country across **6 industry/macro themes** (**All Economy & Business**, **Semiconductors & AI**, **Rates, FX & Inflation**, **Energy, EV & Battery**, **Trade, Tariffs & Supply Chain**, **Stocks & Corporate**) or type custom keywords in any supported language (automatically translated to English for global querying).
 - **Financial Domain Real-Time Translation Pipeline**: Translates English wire headlines and summaries on-the-fly into Korean, Japanese, Spanish, and Chinese using ALL-CAPS headline normalization, a 60+ Wall Street idiom pre-glossary, and natural financial terminology post-processing, with instant **View Original (EN) / Auto-Translate** toggling and original English hover tooltips.
 
@@ -114,7 +114,7 @@ flowchart LR
     S3["CompaniesMarketCap<br/>+ WB / WFE"]
     S4["Fuel prices / Big Mac Index"]
     S5["Coinbase / open.er-api<br/>FX rates"]
-    S6["RSS pool / Algolia / GDELT<br/>News"]
+    S6["Macro brief JSON + RSS pool<br/>News"]
   end
 
   subgraph CI["GitHub Actions (daily build)"]
@@ -235,7 +235,7 @@ npm run lint
 - **Central Bank Policy Rates**: [Bank for International Settlements (BIS)](https://www.bis.org/) & National Central Banks
 - **Retail Gasoline Prices**: [Global Petrol Prices](https://www.globalpetrolprices.com/) & National Energy Ministries
 - **Big Mac Index (PPP)**: [The Economist Big Mac Index](https://github.com/TheEconomist/big-mac-data)
-- **Global Economic & Sector News**: [Reuters & Bloomberg RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)](https://github.com/laapy/reuters-bloomberg-news-rss-pool), [GDELT DOC 2.0 Global News API](https://www.gdeltproject.org/), & Algolia Story Search API
+- **Global Economic & Sector News**: [Reuters & Bloomberg RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)](https://github.com/laapy/reuters-bloomberg-news-rss-pool) & Macro Brief feed ([`givanchris/News`](https://github.com/givanchris/News)); headline translation via Google Translate web endpoint with MyMemory fallback
 
 ---
 

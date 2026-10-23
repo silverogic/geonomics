@@ -35,7 +35,7 @@ Geonomics 还提供**免费开放的静态 REST API v1 接口**，通过每日 G
 - **移动端优化**：提供 1:1 对称矩阵视图，滚动时国家对比头部（如“美国 vs 中国”）吸顶显示。
 
 ### 5. 国家与行业定制经济新闻（`EconomicNewsView`）
-- **多源全球通讯社聚合（`newsApi.ts`）**：并行查询 3 个互补的实时新闻源——**路透/彭博/CNBC/FT RSS 池（`laapy/reuters-bloomberg-news-rss-pool`）**、**Algolia 全球故事搜索**和 **GDELT DOC 2.0 全球新闻 API**（带非阻塞超时与冷却保护）。
+- **双源全球新闻聚合（`newsApi.ts`）**：结合实时**宏观简报源**（`givanchris/News` 的 `brief.json`：宏观、央行、大宗商品、市场、贸易等）与**路透/彭博/CNBC/FT 通讯社 RSS 池**（`laapy/reuters-bloomberg-news-rss-pool`，800 多篇带摘要的去重通讯稿），并带有非阻塞超时保护。
 - **国家 × 行业与自定义关键词搜索**：可针对任意国家，在 **6 大行业/宏观主题**（**经济与商业综合**、**半导体与 AI**、**利率、汇率与通胀**、**能源、电动车与电池**、**贸易、关税与供应链**、**股票与企业**）下浏览定向经济文章，或以任意受支持语言输入自定义关键词（自动翻译为英文进行全球查询）。
 - **金融领域实时翻译管线**：通过全大写标题规范化、60 多条华尔街习语预词表以及自然的金融术语后处理，将英文通讯稿标题与摘要即时翻译为韩语、日语、西班牙语和中文，并支持**查看原文（EN）/ 自动翻译**即时切换及英文原文悬停提示。
 
@@ -116,7 +116,7 @@ flowchart LR
     S3["CompaniesMarketCap<br/>+ WB / WFE"]
     S4["燃油价格 / 巨无霸指数"]
     S5["Coinbase / open.er-api<br/>汇率"]
-    S6["RSS 池 / Algolia / GDELT<br/>新闻"]
+    S6["宏观简报 JSON + RSS 池<br/>新闻"]
   end
 
   subgraph CI["GitHub Actions (每日构建)"]
@@ -250,7 +250,7 @@ npm run lint
 - **央行政策利率**：[国际清算银行（BIS）](https://www.bis.org/) 与各国央行
 - **零售汽油价格**：[Global Petrol Prices](https://www.globalpetrolprices.com/) 与各国能源部门
 - **巨无霸指数（PPP）**：[《经济学人》巨无霸指数](https://github.com/TheEconomist/big-mac-data)
-- **全球经济与行业新闻**：[路透与彭博 RSS 池（`laapy/reuters-bloomberg-news-rss-pool`）](https://github.com/laapy/reuters-bloomberg-news-rss-pool)、[GDELT DOC 2.0 全球新闻 API](https://www.gdeltproject.org/) 与 Algolia Story Search API
+- **全球经济与行业新闻**：[路透与彭博 RSS 池（`laapy/reuters-bloomberg-news-rss-pool`）](https://github.com/laapy/reuters-bloomberg-news-rss-pool) 与宏观简报源（[`givanchris/News`](https://github.com/givanchris/News)）；标题翻译使用 Google Translate 网页端点（MyMemory 作为备用）
 
 ---
 

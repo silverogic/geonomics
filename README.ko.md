@@ -33,7 +33,7 @@
 - **규모 배율 및 금리 스프레드**: 총 GDP 및 1인당 GDP 격차 배율, 양국 중앙은행 기준금리 격차(%p), 교차 환율, 빅맥 지수(PPP) 비교, 그리고 최근 10년간의 거시경제 추이 비교 차트(`GdpChart`)를 제공합니다.
 
 ### 5. 국가별 · 산업별 맞춤 경제 뉴스 탐색기 (`EconomicNewsView`)
-- **3중 글로벌 외신 온디맨드 검색 엔진 (`newsApi.ts`)**: **로이터·블룸버그·CNBC·FT 외신 풀(`laapy/reuters-bloomberg-news-rss-pool`)**, **Algolia Global Story Search**, **GDELT DOC 2.0 Global News API**(비차단 타임아웃 및 쿨다운 적용)를 병렬 연동하여 전 세계 국가별·산업별 최신 기사를 실시간 수집합니다.
+- **2중 소스 글로벌 뉴스 집계 (`newsApi.ts`)**: 실시간 **매크로 브리핑 피드**(`givanchris/News`의 `brief.json`: 거시경제·중앙은행·원자재·시장·무역 등)와 **로이터·블룸버그·CNBC·FT 통신 RSS 풀**(`laapy/reuters-bloomberg-news-rss-pool`, 요약이 포함된 중복 제거된 800여 건의 통신 기사)을 비차단 타임아웃 가드와 함께 결합해 국가별·산업별 최신 기사를 제공합니다.
 - **국가 × 6대 산업 테마 & 다국어 키워드 검색**: 기본값(**미국 · 금리·환율·물가**)을 비롯해 원하는 국가와 6대 테마(**경제·산업 전체**, **반도체·AI·테크**, **금리·환율·물가**, **에너지·전기차·배터리**, **무역·관세·공급망**, **증시·금융·기업**)를 조합하거나 한글·일본어·중국어·스페인어 세부 키워드(예: `반도체`, `원전`, `관세`)를 직접 입력해 글로벌 외신을 검색할 수 있습니다.
 - **금융 도메인 특화 실시간 자동 번역 파이프라인**: 영문 대문자 헤드라인 정규화, 60개 이상의 월가 금융 관용구 사전(`FINANCIAL_PRE_GLOSSARY`), 금융 저널리즘 후처리 사전을 결합해 외신 제목과 요약문을 실시간 번역하며, **영문 원문 보기 / 자동 번역 보기** 즉시 전환 및 원문(EN) 호버 툴팁을 지원합니다.
 
@@ -114,7 +114,7 @@ flowchart LR
     S3["CompaniesMarketCap<br/>+ WB / WFE"]
     S4["유가 / 빅맥지수"]
     S5["Coinbase / open.er-api<br/>환율"]
-    S6["RSS 풀 / Algolia / GDELT<br/>뉴스"]
+    S6["매크로 브리핑 JSON + RSS 풀<br/>뉴스"]
   end
 
   subgraph CI["GitHub Actions (일일 빌드)"]
@@ -235,7 +235,7 @@ npm run lint
 - **중앙은행 기준금리**: [국제결제은행 (BIS)](https://www.bis.org/) & 각국 중앙은행 공식 발표
 - **소매 휘발유 가격**: [Global Petrol Prices](https://www.globalpetrolprices.com/) & 각국 에너지 당국
 - **빅맥 지수 (PPP)**: [The Economist Big Mac Index](https://github.com/TheEconomist/big-mac-data)
-- **국가별 · 산업별 글로벌 외신 뉴스**: [Reuters & Bloomberg RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)](https://github.com/laapy/reuters-bloomberg-news-rss-pool), [GDELT DOC 2.0 Global News API](https://www.gdeltproject.org/), & Algolia Story Search API
+- **글로벌 경제·산업 뉴스**: [Reuters & Bloomberg RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)](https://github.com/laapy/reuters-bloomberg-news-rss-pool) 및 매크로 브리핑 피드([`givanchris/News`](https://github.com/givanchris/News)); 헤드라인 번역은 Google Translate 웹 엔드포인트(MyMemory 폴백) 사용
 
 ---
 
