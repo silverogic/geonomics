@@ -94,52 +94,38 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Navigation Tabs (Desktop) */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-950/60 p-1.5 rounded-xl border border-slate-800/80 shrink-0">
-            <button
-              onClick={() => setActiveTab('cards')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'cards'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              {t.navExplorer}
-            </button>
-            <button
-              onClick={() => setActiveTab('heatmap')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'heatmap'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-              {t.navStockHeatmap}
-            </button>
-            <button
-              onClick={() => setActiveTab('compare')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'compare'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-            >
-              <GitCompare className="w-4 h-4" />
-              {t.navCompare}
-            </button>
-            <button
-              onClick={() => setActiveTab('news')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                activeTab === 'news'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-            >
-              <Newspaper className="w-4 h-4" />
-              {t.navNews}
-            </button>
+          {/* Navigation Tabs (Desktop Open Menu with Underline Indicator) */}
+          <nav className="hidden md:flex items-center gap-1 sm:gap-2 shrink-0">
+            {[
+              { id: 'cards', label: t.navExplorer, icon: Layers },
+              { id: 'heatmap', label: t.navStockHeatmap, icon: LayoutGrid },
+              { id: 'compare', label: t.navCompare, icon: GitCompare },
+              { id: 'news', label: t.navNews, icon: Newspaper },
+            ].map(({ id, label, icon: Icon }) => {
+              const isActive = activeTab === id
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setActiveTab(id as typeof activeTab)}
+                  className={`group relative flex items-center gap-2 px-3 py-2 text-sm font-semibold transition-all whitespace-nowrap rounded-lg cursor-pointer ${
+                    isActive
+                      ? 'text-white font-bold'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/40'
+                  }`}
+                >
+                  <Icon
+                    className={`w-4 h-4 transition-colors ${
+                      isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-200'
+                    }`}
+                  />
+                  <span>{label}</span>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-400 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
+                  )}
+                </button>
+              )
+            })}
           </nav>
 
           {/* Controls: 777 FX Slot Roller, Language Switcher, and Base Currency */}
