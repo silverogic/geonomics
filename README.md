@@ -1,6 +1,6 @@
 # Geonomics — Real-Time Global Macroeconomic & Financial Intelligence Dashboard
 
-🌐 **Languages**: **English** | [한국어 (Korean)](./README.ko.md)
+🌐 **Languages**: **English** | [한국어 (Korean)](./README.ko.md) | [中文 (Chinese)](./README.zh.md)
 
 **Geonomics** is a serverless, client-side macroeconomic and financial market intelligence platform hosted on GitHub Pages. It synthesizes official **IMF World Economic Outlook (WEO)** and **World Bank** indicators, real-time foreign exchange rates, global equity market capitalizations, benchmark stock indices, central bank policy rates, retail gasoline prices, and **The Economist Big Mac Index (PPP)** across **125 economies**—with zero backend database overhead.
 
