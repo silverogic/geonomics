@@ -275,9 +275,28 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const toolbarRef = useRef<HTMLDivElement>(null)
+  const [toolbarHeight, setToolbarHeight] = useState(48)
+
+  useEffect(() => {
+    const el = toolbarRef.current
+    if (!el) return
+    const updateHeight = () => {
+      if (el.offsetHeight > 0) {
+        setToolbarHeight(el.offsetHeight)
+      }
+    }
+    updateHeight()
+    const ro = new ResizeObserver(updateHeight)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   useEffect(() => {
     const handleFsChange = () => {
-      setIsZenMode(!!document.fullscreenElement)
+      const isFs = !!document.fullscreenElement
+      setIsZenMode(isFs)
+      setViewportHeight(window.innerHeight)
     }
     document.addEventListener('fullscreenchange', handleFsChange)
     return () => document.removeEventListener('fullscreenchange', handleFsChange)
@@ -289,18 +308,32 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         document.documentElement.requestFullscreen().catch(() => {})
       }
       setIsZenMode(true)
+      setViewportHeight(window.innerHeight)
     } else {
       if (document.fullscreenElement && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {})
       }
       setIsZenMode(false)
+      setViewportHeight(window.innerHeight)
     }
   }
 
-  // Calculate full-screen height so the entire heatmap fits without vertical scroll
-  const unifiedCanvasHeight = isZenMode
-    ? Math.max(500, viewportHeight - 56)
-    : Math.max(500, viewportHeight - 130)
+  // Calculate full-screen height so the entire heatmap fits without vertical scroll or bottom clipping
+  const unifiedCanvasHeight = useMemo(() => {
+    if (isZenMode) {
+      // In Zen mode: container padding p-2 (16px) / sm:p-3 (24px) + space-y-2 (8px) + panel border (2px) + safe margin (6px)
+      const overhead = toolbarHeight + 40
+      return Math.max(300, viewportHeight - overhead)
+    }
+    // In normal mode: Navbar (64/80px) + main padding (12px) + toolbar + space-y-2 (8px) + bottom margin (24px)
+    const overhead = toolbarHeight + 124
+    return Math.max(450, viewportHeight - overhead)
+  }, [isZenMode, viewportHeight, toolbarHeight])
+
+  const zoomedCanvasHeight = useMemo(() => {
+    // Single continent panel with header bar (~34px)
+    return Math.max(300, unifiedCanvasHeight - 34)
+  }, [unifiedCanvasHeight])
 
   return (
     <div
@@ -311,7 +344,10 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       }
     >
       {/* 1. SINGLE-LINE ULTRA-STREAMLINED TOOLBAR */}
-      <div className="rounded-xl bg-slate-900/90 border border-slate-800/80 px-2.5 sm:px-3 py-1.5 shadow-md flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+      <div
+        ref={toolbarRef}
+        className="rounded-xl bg-slate-900/90 border border-slate-800/80 px-2.5 sm:px-3 py-1.5 shadow-md flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap"
+      >
         {/* Left: Global Market Cap & Trend Summary */}
         <div className="flex items-center gap-2 shrink-0">
           <div className="px-2 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1.5 font-mono text-xs shadow-sm">
@@ -481,7 +517,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       </div>
 
       {/* 2. FULL-WIDTH IMMERSIVE TREEMAP CANVAS */}
-      <div className="w-full flex-grow">
+      <div className="w-full flex-grow min-h-0 overflow-y-auto">
         {viewMode === 'unified' ? (
           /* UNIFIED VIEW: 100% Full-Width Treemap with Responsive Height & No Redundant Header */
           <TreemapPanel
@@ -596,7 +632,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             emoji={REGION_EMOJIS[selectedContinent]}
             region={selectedContinent}
             items={regionGroups.get(selectedContinent) || []}
-            height={unifiedCanvasHeight}
+            height={zoomedCanvasHeight}
             baseCurrency={baseCurrency}
             usdToBase={usdToBase}
             lang={lang}
