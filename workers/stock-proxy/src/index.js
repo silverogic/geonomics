@@ -47,7 +47,7 @@ async function fetchQuote(symbol) {
     const isOpen = regular ? now >= regular.start && now <= regular.end : false
 
     return {
-      price: Number(price.toFixed(2)),
+      price: typeof price === 'number' ? Number(price.toFixed(price < 10 ? 4 : 2)) : price,
       prevClose,
       changePct,
       time: meta.regularMarketTime || null,

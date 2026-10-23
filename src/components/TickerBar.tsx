@@ -1,7 +1,8 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react'
-import { TrendingUp, Clock, ChevronRight, ChevronLeft } from 'lucide-react'
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react'
+import { TrendingUp, ChevronRight, ChevronLeft } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo } from '../types/economics'
 import { getConversionRate } from '../services/exchangeApi'
+import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
 import { formatExchangeRate } from '../utils/formatters'
 import { translations } from '../i18n/translations'
 
@@ -85,13 +86,50 @@ export const TickerBar: React.FC<TickerBarProps> = ({
     }
   }, [exchangeRates, interestRates, baseCurrency, lang, updateScrollBounds, stopAutoScroll])
 
+  const [liveFxQuotes, setLiveFxQuotes] = useState<Record<string, LiveFxQuote>>({})
+
+  // Key currency codes to display in top ticker bar
+  const keyCurrencies = useMemo(
+    () => ['USD', 'EUR', 'JPY', 'CNY', 'GBP', 'KRW', 'CHF', 'AUD'].filter((c) => c !== baseCurrency),
+    [baseCurrency]
+  )
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadQuotes = (force = false) => {
+      fetchLiveFxQuotes(baseCurrency, keyCurrencies, force).then((quotes) => {
+        if (isMounted && Object.keys(quotes).length > 0) {
+          setLiveFxQuotes((prev) => ({ ...prev, ...quotes }))
+        }
+      })
+    }
+
+    loadQuotes(false)
+    const interval = setInterval(() => loadQuotes(true), 60 * 1000)
+
+    return () => {
+      isMounted = false
+      clearInterval(interval)
+    }
+  }, [baseCurrency, keyCurrencies])
+
   if (!exchangeRates) return null
 
   const t = translations[lang]
-
-  // Key currency codes to display in top ticker bar
-  const keyCurrencies = ['USD', 'EUR', 'JPY', 'CNY', 'GBP', 'KRW', 'CHF', 'AUD'].filter((c) => c !== baseCurrency)
   const keyRateCodes = ['US', 'KR', 'XM', 'JP', 'GB', 'CH', 'AU']
+
+  // Look for the latest quote timestamp if available
+  const latestQuoteEpoch = Object.values(liveFxQuotes).reduce<number | null>((acc, q) => {
+    if (typeof q.time === 'number') {
+      return acc === null ? q.time : Math.max(acc, q.time)
+    }
+    return acc
+  }, null)
+
+  const liveTooltipText = latestQuoteEpoch
+    ? `${t.asOf} ${new Date(latestQuoteEpoch * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
+    : `${t.asOf} ${exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}`
 
   return (
     <div className="relative bg-slate-900 border-b border-slate-800/80 text-xs text-slate-300">
@@ -140,7 +178,12 @@ export const TickerBar: React.FC<TickerBarProps> = ({
               {keyCurrencies.map((curr) => {
                 const isJpy = curr === 'JPY'
                 const multiplier = isJpy ? 100 : 1
-                const rate = getConversionRate(exchangeRates, curr, baseCurrency) * multiplier
+                const liveQuote = liveFxQuotes[curr]
+                const rate =
+                  liveQuote?.price && typeof liveQuote.price === 'number'
+                    ? liveQuote.price * multiplier
+                    : getConversionRate(exchangeRates, curr, baseCurrency) * multiplier
+                const changePct = liveQuote?.changePct
 
                 return (
                   <div
@@ -154,6 +197,26 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                     <span className="font-mono font-semibold text-emerald-400">
                       {formatExchangeRate(rate, isJpy ? 2 : 2)} {baseCurrency}
                     </span>
+
+                    {/* 24h Change Percentage Badge */}
+                    {changePct != null && (
+                      <span
+                        title={
+                          liveQuote?.prevClose
+                            ? `${lang === 'ko' ? '전일 종가' : lang === 'ja' ? '前日終値' : lang === 'zh' ? '前收盘价' : lang === 'es' ? 'Cierre anterior' : 'vs Prev Close'}: ${(liveQuote.prevClose * multiplier).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${baseCurrency}`
+                            : undefined
+                        }
+                        className={`inline-flex items-center text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                          changePct > 0
+                            ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                            : changePct < 0
+                              ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+                              : 'text-slate-400 bg-slate-800/40 border border-slate-700/40'
+                        }`}
+                      >
+                        {changePct > 0 ? `▲ +${changePct.toFixed(2)}%` : changePct < 0 ? `▼ ${changePct.toFixed(2)}%` : '0.00%'}
+                      </span>
+                    )}
                   </div>
                 )
               })}
@@ -185,15 +248,15 @@ export const TickerBar: React.FC<TickerBarProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-slate-400 shrink-0">
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          {/* Right Live Status Badge with As-Of Tooltip */}
+          <div className="flex items-center shrink-0">
+            <span
+              title={liveTooltipText}
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-help transition-all hover:bg-emerald-500/20 hover:border-emerald-500/40 select-none shadow-sm"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              {t.liveBadge || 'LIVE'}
+              <span>{t.liveBadge || 'LIVE'}</span>
             </span>
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3 text-slate-500" />
-              <span>{t.asOf} {exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}</span>
-            </div>
           </div>
         </div>
       </div>
