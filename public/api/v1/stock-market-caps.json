@@ -8,16 +8,16 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "CHN": {
-    "marketCapUsd": 10513868532372,
-    "baseCapUsd": 10513868532372,
+    "marketCapUsd": 10511920402970,
+    "baseCapUsd": 10511920402970,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "China",
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "JPN": {
-    "marketCapUsd": 7615912909973,
-    "baseCapUsd": 7615912909973,
+    "marketCapUsd": 7619954410743,
+    "baseCapUsd": 7619954410743,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Japan",
@@ -48,16 +48,16 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "IND": {
-    "marketCapUsd": 3863098777760,
-    "baseCapUsd": 3863098777760,
+    "marketCapUsd": 3860976612369,
+    "baseCapUsd": 3860976612369,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "India",
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "KOR": {
-    "marketCapUsd": 3143772145480,
-    "baseCapUsd": 3143772145480,
+    "marketCapUsd": 3158143191990,
+    "baseCapUsd": 3158143191990,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "South Korea",
@@ -96,8 +96,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "AUS": {
-    "marketCapUsd": 2010447725609,
-    "baseCapUsd": 2010447725609,
+    "marketCapUsd": 2010872332607,
+    "baseCapUsd": 2010872332607,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Australia",
@@ -128,8 +128,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "ITA": {
-    "marketCapUsd": 1246435323616,
-    "baseCapUsd": 1246435323616,
+    "marketCapUsd": 1246513597631,
+    "baseCapUsd": 1246513597631,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Italy",
@@ -152,8 +152,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "HKG": {
-    "marketCapUsd": 1120303072662,
-    "baseCapUsd": 1120303072662,
+    "marketCapUsd": 1122484658016,
+    "baseCapUsd": 1122484658016,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Hong Kong",
@@ -168,8 +168,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "SGP": {
-    "marketCapUsd": 710478473120,
-    "baseCapUsd": 710478473120,
+    "marketCapUsd": 710572720187,
+    "baseCapUsd": 710572720187,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Singapore",
@@ -256,16 +256,16 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "MYS": {
-    "marketCapUsd": 306851724901,
-    "baseCapUsd": 306851724901,
+    "marketCapUsd": 306870583755,
+    "baseCapUsd": 306870583755,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Malaysia",
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "IDN": {
-    "marketCapUsd": 259485897716,
-    "baseCapUsd": 259485897716,
+    "marketCapUsd": 259702981394,
+    "baseCapUsd": 259702981394,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Indonesia",
@@ -296,8 +296,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "VNM": {
-    "marketCapUsd": 183036794934,
-    "baseCapUsd": 183036794934,
+    "marketCapUsd": 183025956958,
+    "baseCapUsd": 183025956958,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Vietnam",
@@ -344,8 +344,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "NZL": {
-    "marketCapUsd": 106105887569,
-    "baseCapUsd": 106105887569,
+    "marketCapUsd": 106139503617,
+    "baseCapUsd": 106139503617,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "New Zealand",
