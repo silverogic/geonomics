@@ -23,6 +23,7 @@
 - **100% 자동화 실시간 시총 추정 파이프라인**: 공식 **세계은행(`CM.MKT.LCAP.CD`) / 세계거래소연맹(WFE)** 기준 시가총액에 **Yahoo Finance 실시간·히스토리컬 주가지수 변동 배율**($P_{\text{live}} / P_{\text{base}}$)과 일간 등락률(%)을 결합하여 최신 시가총액을 동적으로 산출합니다.
 - **통합 뷰 & 5대륙 분할 뷰**: 글로벌 전체 통합 히트맵과 5대륙(`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`) 분할 히트맵을 즉시 전환할 수 있습니다.
 - **전체화면 몰입(Zen) 모드 & 글래스모피즘 HUD**: 단일 행 툴바와 전체화면 토글을 지원하며, 타일 호버 시 30일 주가 추이 스파크라인(`StockSparkline`), 현재 지수, WFE 기준치 대비 변동 배율을 플로팅 HUD로 보여줍니다.
+- **준실시간 시세 (Cloudflare Worker 프록시)**: `VITE_STOCK_PROXY_URL`을 설정하면 장중 시세를 60초마다 갱신하며, 히트맵 툴바에 `LIVE` 뱃지, 국가 모달 주가 차트에 `LIVE` / `CLOSED` 장 상태 뱃지를 표시합니다. Yahoo Finance는 브라우저 직접 호출(CORS)을 막으므로, 작은 Worker(`workers/stock-proxy`)가 60초 엣지 캐시와 허용 도메인 제한을 두고 요청을 중계합니다. 프록시를 쓸 수 없으면 미리 빌드된 정적 데이터로 대체됩니다.
 
 ### 3. 인터랙티브 종합 순위 테이블 (`RankingTable`)
 - **카테고리 스위처**: **거시경제 지표**(총 GDP, 1인당 GDP, 경제성장률, 물가상승률, 정부부채 비율), **시장·금융 지표**(실시간 환율, 대표 주가지수 및 30일 스파크라인, 중앙은행 기준금리, 리터당 휘발유 가격, 빅맥 지수), **전체 보기**(총 12개 정렬 컬럼) 간 전환을 지원합니다.
@@ -31,6 +32,7 @@
 ### 4. 1:1 국가 경제 비교 (`CompareView`)
 - **양국 정밀 비교**: 주요 라이벌 프리셋(`미국 vs 중국`, `한국 vs 일본`, `독일 vs 영국`, `인도 vs 일본` 등) 또는 원하는 두 국가를 선택해 1:1로 비교합니다.
 - **규모 배율 및 금리 스프레드**: 총 GDP 및 1인당 GDP 격차 배율, 양국 중앙은행 기준금리 격차(%p), 교차 환율, 빅맥 지수(PPP) 비교, 그리고 최근 10년간의 거시경제 추이 비교 차트(`GdpChart`)를 제공합니다.
+- **모바일 최적화 1:1 매트릭스**: 좌우 대칭 지표 매트릭스와 함께, 스크롤해도 네비게이션 바 아래에 고정되는 국가 헤더(예: "미국 vs 중국")를 제공하며, 가운데 `VS` 배지는 한 번 눌러 국가를 맞바꾸는 버튼으로도 동작합니다.
 
 ### 5. 국가별 · 산업별 맞춤 경제 뉴스 탐색기 (`EconomicNewsView`)
 - **2중 소스 글로벌 뉴스 집계 (`newsApi.ts`)**: 실시간 **매크로 브리핑 피드**(`givanchris/News`의 `brief.json`: 거시경제·중앙은행·원자재·시장·무역 등)와 **로이터·블룸버그·CNBC·FT 통신 RSS 풀**(`laapy/reuters-bloomberg-news-rss-pool`, 요약이 포함된 중복 제거된 800여 건의 통신 기사)을 비차단 타임아웃 가드와 함께 결합해 국가별·산업별 최신 기사를 제공합니다.
@@ -159,11 +161,13 @@ geonomics/
 │   ├── fetchFuelPrices.js       # 170개국 소매 휘발유 가격을 수집하여 fuelPrices.ts 및 api/v1/fuel.json 갱신
 │   ├── fetchBigMacData.js       # 이코노미스트 빅맥 지수를 계산하여 bigMac.ts 및 api/v1/bigmac.json 갱신
 │   └── generatePixelMap.js      # 53x28 픽셀 세계지도 타일 좌표 생성
+├── workers/
+│   └── stock-proxy/             # Cloudflare Worker: 준실시간 주가 시세 프록시 (CORS + 60초 캐시)
 └── src/
     ├── components/              # UI 컴포넌트 (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, Navbar, TickerBar 등)
     ├── data/                    # 빌드 타임 동기화 데이터 및 오프라인 폴백 데이터
     ├── i18n/                    # 5개 국어 번역 사전 (en, ko, ja, es, zh)
-    ├── services/                # 인메모리 TTL 캐싱이 적용된 API 서비스 (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, newsApi, geonomicsApi)
+    ├── services/                # 인메모리 TTL 캐싱이 적용된 API 서비스 (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, liveStockApi, newsApi, geonomicsApi)
     ├── types/                   # 핵심 TypeScript 타입 정의 (economics.ts)
     └── utils/                   # Squarified Treemap 알고리즘, 통화/숫자 포맷터, 브라우저 로케일 감지, 동적 연도 유틸리티
 ```
@@ -178,6 +182,7 @@ geonomics/
 - **아이콘 & 국기**: `lucide-react`, `country-flag-icons`
 - **린터**: `oxlint`
 - **데이터 파이프라인 & 배포**: Node.js ESM 수집 스크립트, `xlsx`, GitHub Actions (매일 09:00 KST 스케줄러 및 `main` 브랜치 푸시 자동 빌드·배포)
+- **실시간 시세 프록시**: Cloudflare Workers (`workers/stock-proxy`, 무료 플랜)
 
 ---
 
@@ -198,6 +203,23 @@ npm run dev
 ```
 
 브라우저에서 `http://localhost:5173`으로 접속하여 확인할 수 있습니다.
+
+### 준실시간 주가 시세 (선택)
+
+프록시를 한 번 배포한 뒤 앱에 주소를 지정합니다.
+
+```bash
+cd workers/stock-proxy
+npx wrangler login
+npx wrangler deploy
+```
+
+```bash
+# .env.local (로컬 개발) 및 GitHub 저장소 Actions Variable (프로덕션 빌드)
+VITE_STOCK_PROXY_URL=https://<your-worker>.workers.dev
+```
+
+사이트가 다른 도메인에서 서비스되면 `workers/stock-proxy/wrangler.toml`의 `ALLOWED_ORIGINS`를 수정하세요. 변수를 설정하지 않으면 미리 빌드된 정적 주가 데이터만 사용합니다.
 
 ### 데이터 갱신 및 빌드 명령어
 

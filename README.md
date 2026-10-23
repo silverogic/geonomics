@@ -23,6 +23,7 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 - **Hybrid Live Valuation Engine**: Combines official **World Bank (`CM.MKT.LCAP.CD`) / World Federation of Exchanges (WFE)** baseline market caps with **Yahoo Finance live index tracking** ($P_{\text{live}} / P_{\text{base}}$) and intraday percentage fluctuations.
 - **Unified & 5-Continent Split Modes**: Toggle between a single global canvas and a 5-continent comparative grid (`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`).
 - **Zen Fullscreen Immersion & Floating Glassmorphic HUD**: Single-line control bar, one-click fullscreen mode, and hover HUD with 30-day index sparklines (`StockSparkline`), live index price, and WFE base multiplier breakdown.
+- **Near-Real-Time Quotes (Cloudflare Worker Proxy)**: When `VITE_STOCK_PROXY_URL` is set, intraday quotes are refreshed every 60 seconds with a `LIVE` badge in the heatmap toolbar, and `LIVE` / `CLOSED` market-state badges in the country modal stock chart. Yahoo Finance blocks direct browser calls (CORS), so a small Worker (`workers/stock-proxy`) relays requests with a 60s edge cache and an origin allow-list. If the proxy is unavailable, the app falls back to the prebuilt static data.
 
 ### 3. Interactive Ranking Table (`RankingTable`)
 - **Category Switcher**: Filter columns by **Macroeconomic** (Total GDP, GDP per Capita, Real Growth, Inflation, Gov Debt), **Market & Finance** (FX Rate, Stock Index & 30D Sparkline, Central Bank Policy Rate, Retail Fuel Price, Big Mac Index), or **All Metrics** (12 sortable columns).
@@ -31,6 +32,7 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 ### 4. 1:1 Economy Comparison (`CompareView`)
 - **Side-by-Side Benchmarking**: Compare any two countries with one-click rivalry presets (`USA vs CHN`, `KOR vs JPN`, `DEU vs GBR`, `IND vs JPN`, etc.).
 - **Scale Multiples & Spreads**: Automatically computes GDP scale multiples, GDP per capita ratios, central bank interest rate spreads, bilateral FX cross-rates, Big Mac PPP valuations, and dual 10-year historical trajectory charts (`GdpChart`).
+- **Mobile-Optimized Head-to-Head Matrix**: A symmetric 1:1 metric matrix with a sticky country header (e.g. "USA vs CHN") that stays pinned under the navbar while scrolling; the `VS` badge doubles as a one-tap swap button.
 
 ### 5. Country & Sector Customized Economic News (`EconomicNewsView`)
 - **Two-Source Global News Aggregation (`newsApi.ts`)**: Combines a live **Macro Brief feed** (`givanchris/News` `brief.json`: macro, central banks, commodities, markets, trade, etc.) with the **Reuters/Bloomberg/CNBC/FT Wire RSS Pool** (`laapy/reuters-bloomberg-news-rss-pool`, 800+ deduplicated wire articles with summaries), with non-blocking timeout guards.
@@ -159,11 +161,13 @@ geonomics/
 │   ├── fetchFuelPrices.js       # Updates retail gasoline prices into src/data/fuelPrices.ts & api/v1/fuel.json
 │   ├── fetchBigMacData.js       # Updates Big Mac PPP dataset into src/data/bigMac.ts & api/v1/bigmac.json
 │   └── generatePixelMap.js      # Generates 53x28 pixel world map coordinates
+├── workers/
+│   └── stock-proxy/             # Cloudflare Worker: near-real-time stock quote proxy (CORS + 60s cache)
 └── src/
     ├── components/              # UI Components (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, Navbar, TickerBar, etc.)
     ├── data/                    # Typed fallback & build-time synchronized datasets
     ├── i18n/                    # 5-language translation dictionary (en, ko, ja, es, zh)
-    ├── services/                # API clients with in-memory TTL caching (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, newsApi, geonomicsApi)
+    ├── services/                # API clients with in-memory TTL caching (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, liveStockApi, newsApi, geonomicsApi)
     ├── types/                   # Core TypeScript interfaces (economics.ts)
     └── utils/                   # Squarified treemap layout, currency/number formatters, locale detection, dynamic year helpers
 ```
@@ -178,6 +182,7 @@ geonomics/
 - **Icons & Flags**: `lucide-react`, `country-flag-icons`
 - **Linter**: `oxlint`
 - **Data Pipeline & CI/CD**: Node.js ESM data extractors, `xlsx`, GitHub Actions (daily cron + push deployment to GitHub Pages)
+- **Live Quote Proxy**: Cloudflare Workers (`workers/stock-proxy`, free tier)
 
 ---
 
@@ -198,6 +203,23 @@ npm run dev
 ```
 
 Open `http://localhost:5173` in your browser.
+
+### Near-Real-Time Stock Quotes (Optional)
+
+Deploy the proxy once, then point the app at it:
+
+```bash
+cd workers/stock-proxy
+npx wrangler login
+npx wrangler deploy
+```
+
+```bash
+# .env.local (local dev) and GitHub repo Actions Variable (production build)
+VITE_STOCK_PROXY_URL=https://<your-worker>.workers.dev
+```
+
+Edit `ALLOWED_ORIGINS` in `workers/stock-proxy/wrangler.toml` if the site is served from a different origin. Without the variable, only prebuilt static stock data is used.
 
 ### Data Pipeline & Build Scripts
 
