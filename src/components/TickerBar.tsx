@@ -183,7 +183,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         title={lang === 'ko' ? '클릭 시 7개 통화 전체 보기' : 'Click to view all rates'}
       >
         {/* Vertical Rolling Slot Reel Window */}
-        <div className="h-7 sm:h-8 overflow-hidden relative w-[135px] sm:w-[185px] xl:w-[255px]">
+        <div className="h-7 sm:h-8 overflow-hidden relative w-[135px] sm:w-[205px]">
           <div
             className="transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col"
             style={{ transform: `translateY(-${(currentIndex * 100) / reelItems.length}%)` }}
@@ -234,21 +234,6 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                     </span>
                   )}
                 </div>
-
-                {/* Reel 3: Central Bank Policy Rate (Only shown on extra wide xl: screens to keep normal laptops slim) */}
-                {item.centralBankName && item.policyRatePct != null && (
-                  <div
-                    className="hidden xl:flex items-center gap-1 pl-1.5 border-l border-slate-700/60 shrink-0 text-slate-300"
-                    title={`${item.centralBankName} (${item.policyRateDate || 'Latest'})`}
-                  >
-                    <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
-                      {item.centralBankName}:
-                    </span>
-                    <span className="font-mono font-bold text-indigo-400 text-xs whitespace-nowrap">
-                      {item.policyRatePct.toFixed(2)}%
-                    </span>
-                  </div>
-                )}
               </div>
             ))}
           </div>
