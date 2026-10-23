@@ -76,3 +76,19 @@
     width: 100%;
   }
 }
+
+@keyframes flashGlow {
+  0% {
+    opacity: 1;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-flash-glow {
+  animation: flashGlow 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

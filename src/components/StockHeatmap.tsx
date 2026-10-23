@@ -132,14 +132,64 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
   const [liveCapData, setLiveCapData] = useState<LiveMarketCapData | null>(null)
   const [liveVersion, setLiveVersion] = useState(0)
   const [liveUpdatedAt, setLiveUpdatedAt] = useState<number | null>(null)
+  const [flashingCountries, setFlashingCountries] = useState<Record<string, 'up' | 'down'>>({})
+  const [isToolbarFlashing, setIsToolbarFlashing] = useState(false)
+  const prevPricesRef = useRef<Map<string, number>>(new Map())
+  const isFirstLoadRef = useRef(true)
+  const flashTimerRef = useRef<number | null>(null)
+  const toolbarFlashTimerRef = useRef<number | null>(null)
 
   // Near-real-time quotes (via Cloudflare Worker proxy). Silently no-op if not configured.
   useEffect(() => {
     if (!isLiveStockEnabled()) return
+
+    // Pre-populate with initial static prices on first mount
+    const initialStocks = getAllStockPrices()
+    for (const [id, s] of Object.entries(initialStocks)) {
+      if (typeof s.currentPrice === 'number') {
+        prevPricesRef.current.set(id, s.currentPrice)
+      }
+    }
+
     let mounted = true
     const load = (force: boolean) => {
       fetchLiveStocks(force).then((ok) => {
         if (ok && mounted) {
+          const newStocks = getAllStockPrices()
+          const newFlashes: Record<string, 'up' | 'down'> = {}
+
+          if (!isFirstLoadRef.current) {
+            for (const [id, s] of Object.entries(newStocks)) {
+              const oldPrice = prevPricesRef.current.get(id)
+              if (oldPrice !== undefined && typeof s.currentPrice === 'number' && s.currentPrice !== oldPrice) {
+                newFlashes[id] = s.currentPrice > oldPrice ? 'up' : 'down'
+              }
+            }
+          } else {
+            isFirstLoadRef.current = false
+          }
+
+          // Update tracked prices for the next comparison
+          for (const [id, s] of Object.entries(newStocks)) {
+            if (typeof s.currentPrice === 'number') {
+              prevPricesRef.current.set(id, s.currentPrice)
+            }
+          }
+
+          if (Object.keys(newFlashes).length > 0) {
+            setFlashingCountries(newFlashes)
+            if (flashTimerRef.current !== null) window.clearTimeout(flashTimerRef.current)
+            flashTimerRef.current = window.setTimeout(() => {
+              if (mounted) setFlashingCountries({})
+            }, 1200)
+          }
+
+          setIsToolbarFlashing(true)
+          if (toolbarFlashTimerRef.current !== null) window.clearTimeout(toolbarFlashTimerRef.current)
+          toolbarFlashTimerRef.current = window.setTimeout(() => {
+            if (mounted) setIsToolbarFlashing(false)
+          }, 1200)
+
           setLiveVersion((v) => v + 1)
           setLiveUpdatedAt(Date.now())
         }
@@ -152,6 +202,8 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
     return () => {
       mounted = false
       window.clearInterval(timer)
+      if (flashTimerRef.current !== null) window.clearTimeout(flashTimerRef.current)
+      if (toolbarFlashTimerRef.current !== null) window.clearTimeout(toolbarFlashTimerRef.current)
     }
   }, [refreshKey])
 
@@ -377,10 +429,14 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
 
           {liveUpdatedAt && (
             <div
-              className="px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-300 shadow-sm"
+              className={`px-2 py-0.5 rounded-lg border flex items-center gap-1 text-[10px] font-mono font-bold shadow-sm transition-all duration-300 ${
+                isToolbarFlashing
+                  ? 'bg-emerald-500/25 border-emerald-400 text-white shadow-emerald-500/30 ring-2 ring-emerald-400/40'
+                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              }`}
               title={`Live quotes updated ${new Date(liveUpdatedAt).toLocaleTimeString()}`}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className={`w-1.5 h-1.5 rounded-full ${isToolbarFlashing ? 'bg-white scale-125' : 'bg-emerald-400'} animate-pulse`} />
               LIVE {new Date(liveUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           )}
@@ -539,6 +595,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             isZoomed={selectedContinent !== 'All'}
             showZoomBtn={selectedContinent !== 'All'}
             hideHeader={true}
+            flashingCountries={flashingCountries}
           />
         ) : selectedContinent === 'All' ? (
           /* BY CONTINENT VIEW: 5 Balanced Panels */
@@ -558,6 +615,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                 onSelect={onSelectCountry}
                 onZoom={() => setSelectedContinent('Americas')}
                 showZoomBtn
+                flashingCountries={flashingCountries}
               />
               <TreemapPanel
                 title="Asia"
@@ -573,6 +631,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                 onSelect={onSelectCountry}
                 onZoom={() => setSelectedContinent('Asia')}
                 showZoomBtn
+                flashingCountries={flashingCountries}
               />
             </div>
 
@@ -590,6 +649,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
               onSelect={onSelectCountry}
               onZoom={() => setSelectedContinent('Europe')}
               showZoomBtn
+              flashingCountries={flashingCountries}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -607,6 +667,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                 onSelect={onSelectCountry}
                 onZoom={() => setSelectedContinent('Oceania')}
                 showZoomBtn
+                flashingCountries={flashingCountries}
               />
               <TreemapPanel
                 title="Africa"
@@ -622,6 +683,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                 onSelect={onSelectCountry}
                 onZoom={() => setSelectedContinent('Africa')}
                 showZoomBtn
+                flashingCountries={flashingCountries}
               />
             </div>
           </div>
@@ -643,6 +705,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             isZoomed
             showZoomBtn
             hideHeader={false}
+            flashingCountries={flashingCountries}
           />
         )}
       </div>
@@ -670,6 +733,7 @@ interface TreemapPanelProps {
   isZoomed?: boolean
   showZoomBtn?: boolean
   hideHeader?: boolean
+  flashingCountries?: Record<string, 'up' | 'down'>
 }
 
 const TreemapPanel: React.FC<TreemapPanelProps> = ({
@@ -687,6 +751,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
   isZoomed = false,
   showZoomBtn = false,
   hideHeader = false,
+  flashingCountries,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(1200)
@@ -867,6 +932,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
               const item = r.data
               const isHovered = hoveredCountryId === item.country.id
               const colors = getPerformanceColor(item.changePct, isHovered)
+              const flashDirection = flashingCountries?.[item.country.id]
 
               // Adjust display based on rectangle dimensions
               const rectW = Math.max(0, r.w - 1.5)
@@ -897,6 +963,20 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
                     strokeWidth={isHovered ? 2 : 1}
                     className="transition-colors duration-150"
                   />
+
+                  {/* Flash Glow Effect for Live Price Changes */}
+                  {flashDirection && (
+                    <rect
+                      key={`flash-${item.country.id}-${flashDirection}`}
+                      width={rectW}
+                      height={rectH}
+                      rx={r.w > 40 && r.h > 30 ? 5 : 2}
+                      fill={flashDirection === 'up' ? 'rgba(52, 211, 153, 0.28)' : 'rgba(244, 63, 94, 0.28)'}
+                      stroke={flashDirection === 'up' ? '#34d399' : '#fb7185'}
+                      strokeWidth={2}
+                      className="pointer-events-none animate-flash-glow"
+                    />
+                  )}
 
                   {/* Content inside rectangle */}
                   {isExtraLarge ? (
