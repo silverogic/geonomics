@@ -405,9 +405,9 @@
     "ticker": "^N225",
     "isSupported": true,
     "currency": "JPY",
-    "currentPrice": 62327.84,
-    "changePct": -6.16,
-    "changePct30d": -4.51,
+    "currentPrice": 62300.24,
+    "changePct": -6.21,
+    "changePct30d": -4.55,
     "points": [
       {
         "date": "2026-09-08",
@@ -527,7 +527,7 @@
       },
       {
         "date": "2026-10-23",
-        "close": 62327.84
+        "close": 62300.24
       }
     ]
   },
@@ -538,9 +538,9 @@
     "ticker": "^NSEI",
     "isSupported": true,
     "currency": "INR",
-    "currentPrice": 22516.95,
-    "changePct": -5.67,
-    "changePct30d": -3.9,
+    "currentPrice": 22489.15,
+    "changePct": -5.78,
+    "changePct30d": -4.02,
     "points": [
       {
         "date": "2026-09-09",
@@ -660,7 +660,7 @@
       },
       {
         "date": "2026-10-23",
-        "close": 22516.95
+        "close": 22489.15
       }
     ]
   },
@@ -1482,9 +1482,9 @@
     "ticker": "^AXJO",
     "isSupported": true,
     "currency": "AUD",
-    "currentPrice": 8783.6,
-    "changePct": -0.63,
-    "changePct30d": 0.39,
+    "currentPrice": 8780.8,
+    "changePct": -0.66,
+    "changePct30d": 0.35,
     "points": [
       {
         "date": "2026-09-14",
@@ -1604,7 +1604,7 @@
       },
       {
         "date": "2026-10-23",
-        "close": 8783.6
+        "close": 8780.8
       }
     ]
   },
@@ -1615,9 +1615,9 @@
     "ticker": "^KS11",
     "isSupported": true,
     "currency": "KRW",
-    "currentPrice": 5489.72,
-    "changePct": -22.65,
-    "changePct30d": -21.06,
+    "currentPrice": 5483.42,
+    "changePct": -22.73,
+    "changePct30d": -21.15,
     "points": [
       {
         "date": "2026-09-08",
@@ -1737,7 +1737,7 @@
       },
       {
         "date": "2026-10-23",
-        "close": 5489.72
+        "close": 5483.42
       }
     ]
   },
@@ -3743,7 +3743,7 @@
     "ticker": "^STI",
     "isSupported": true,
     "currency": "SGD",
-    "currentPrice": 5409.9,
+    "currentPrice": 5409.92,
     "changePct": -3.08,
     "changePct30d": -5.39,
     "points": [
@@ -3865,7 +3865,7 @@
       },
       {
         "date": "2026-10-23",
-        "close": 5409.9
+        "close": 5409.92
       }
     ]
   },
