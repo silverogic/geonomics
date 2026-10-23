@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Globe, Layers, GitCompare, Coins, ChevronDown, LayoutGrid, Newspaper, Check } from 'lucide-react'
+import { Layers, GitCompare, Coins, ChevronDown, LayoutGrid, Newspaper, Check } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language, ExchangeRates, InterestRateInfo } from '../types/economics'
 import { translations } from '../i18n/translations'
@@ -73,18 +73,15 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-slate-100">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
-          {/* Brand Logo */}
-          <div className="flex items-center gap-3 cursor-pointer min-w-0" onClick={() => setActiveTab('cards')}>
-            <div className="hidden sm:flex w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-500 to-cyan-400 items-center justify-center shadow-lg shadow-indigo-500/25 shrink-0">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
+          {/* Brand Logo (Icon removed for compact header) */}
+          <div className="flex items-center cursor-pointer min-w-0 shrink-0" onClick={() => setActiveTab('cards')}>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-lg sm:text-xl font-black tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent truncate">
                   {t.appTitle}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block truncate">
+              <p className="text-[11px] text-slate-400 hidden lg:block truncate">
                 {t.appSubtitle}
               </p>
             </div>
@@ -174,8 +171,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
                 <span className="font-bold sm:hidden text-slate-100">{LANGUAGE_CONFIG[lang].short}</span>
 
-                {/* Desktop: Full label */}
-                <span className="hidden sm:inline font-semibold text-slate-100">{LANGUAGE_CONFIG[lang].label}</span>
+                {/* Compact flag + short code (KO, EN, etc.) */}
+                <span className="hidden sm:inline font-bold text-slate-100">{LANGUAGE_CONFIG[lang].short}</span>
                 <ChevronDown
                   className={`w-3 h-3 text-slate-400 group-hover:text-slate-200 shrink-0 opacity-70 transition-transform duration-200 ${
                     isLangOpen ? 'rotate-180 text-indigo-400 opacity-100' : ''
@@ -228,16 +225,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Base Currency Select Combobox */}
             {(() => {
               const activeCurrency = BASE_CURRENCIES.find((c) => c.code === baseCurrency) || BASE_CURRENCIES[0]
-              const currencyLabel =
-                lang === 'ko'
-                  ? activeCurrency.nameKo
-                  : lang === 'ja'
-                    ? activeCurrency.nameJa
-                    : lang === 'es'
-                      ? activeCurrency.nameEs
-                      : lang === 'zh'
-                        ? activeCurrency.nameZh
-                        : activeCurrency.nameEn
 
               return (
                 <div className="relative" ref={currencyMenuRef}>
@@ -261,12 +248,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span className="font-mono font-bold text-indigo-400 sm:hidden">{activeCurrency.symbol}</span>
                     <span className="font-bold sm:hidden text-slate-100">{activeCurrency.code}</span>
 
-                    {/* Desktop: Coins icon + Full Name */}
-                    <Coins className="w-4 h-4 text-indigo-400 hidden sm:inline shrink-0" />
-                    <span className="text-slate-400 hidden lg:inline mr-0.5">
-                      {t.baseCurrencyLabel}
-                    </span>
-                    <span className="hidden sm:inline font-semibold text-slate-100">{currencyLabel}</span>
+                    {/* Desktop: Coins icon + Currency Code ($ USD) */}
+                    <Coins className="w-3.5 h-3.5 text-indigo-400 hidden sm:inline shrink-0" />
+                    <span className="hidden sm:inline font-bold text-slate-100">{activeCurrency.code}</span>
+                    <span className="hidden xl:inline text-slate-400 text-xs font-mono">({activeCurrency.symbol})</span>
                     <ChevronDown
                       className={`w-3 h-3 text-slate-400 group-hover:text-slate-200 shrink-0 opacity-70 transition-transform duration-200 ${
                         isCurrencyOpen ? 'rotate-180 text-indigo-400 opacity-100' : ''

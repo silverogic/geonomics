@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
-import { ChevronRight, ChevronLeft, ChevronDown, Sparkles } from 'lucide-react'
+import { ChevronDown, Sparkles } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo } from '../types/economics'
 import { getConversionRate } from '../services/exchangeApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
@@ -172,40 +172,18 @@ export const TickerBar: React.FC<TickerBarProps> = ({
     ? `${lang === 'ko' ? '기준' : 'As of'}: ${new Date(latestQuoteEpoch * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
     : `${lang === 'ko' ? '기준' : 'As of'}: ${exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}`
 
-  const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setCurrentIndex((prev) => (prev - 1 + reelItems.length) % reelItems.length)
-  }
-
-  const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setCurrentIndex((prev) => (prev + 1) % reelItems.length)
-  }
-
   return (
-    <div className="relative flex items-center">
-      {/* 777 3-Reel Slot Machine Capsule */}
+    <div className="relative flex items-center shrink-0">
+      {/* 777 3-Reel Slot Machine Capsule (Compact Minimal Pill) */}
       <div
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
-        className="flex items-center gap-1 sm:gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-2 py-1 text-xs font-medium transition-all select-none shadow-sm group"
+        onClick={() => setIsPopoverOpen((prev) => !prev)}
+        className="flex items-center gap-1 sm:gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-2 sm:px-2.5 py-1 text-xs font-medium transition-all select-none shadow-sm cursor-pointer group"
+        title={lang === 'ko' ? '클릭 시 7개 통화 전체 보기' : 'Click to view all rates'}
       >
-        {/* Prev Button */}
-        <button
-          type="button"
-          onClick={handlePrev}
-          title="Previous currency"
-          className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded text-slate-400 hover:text-white hover:bg-slate-700/60 transition-colors shrink-0 cursor-pointer"
-        >
-          <ChevronLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-        </button>
-
         {/* Vertical Rolling Slot Reel Window */}
-        <div
-          onClick={() => setIsPopoverOpen((prev) => !prev)}
-          className="h-7 sm:h-8 overflow-hidden relative cursor-pointer min-w-[160px] sm:min-w-[230px] md:min-w-[280px] lg:min-w-[340px]"
-          title={lang === 'ko' ? '클릭 시 7개 통화 전체 보기' : 'Click to view all rates'}
-        >
+        <div className="h-7 sm:h-8 overflow-hidden relative w-[135px] sm:w-[185px] xl:w-[255px]">
           <div
             className="transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col"
             style={{ transform: `translateY(-${(currentIndex * 100) / reelItems.length}%)` }}
@@ -213,7 +191,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
             {reelItems.map((item) => (
               <div
                 key={item.currency}
-                className="h-7 sm:h-8 flex items-center justify-between gap-1.5 sm:gap-2 shrink-0 px-0.5"
+                className="h-7 sm:h-8 flex items-center justify-between gap-1 sm:gap-2 shrink-0 px-0.5"
               >
                 {/* Reel 1: Flag & Currency */}
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 min-w-0">
@@ -229,7 +207,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                 <span className="text-slate-600 text-xs shrink-0 hidden sm:inline">→</span>
 
                 {/* Reel 2: Live FX Rate & 24h Change */}
-                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                <div className="flex items-center gap-1 shrink-0">
                   <span className="font-mono font-bold text-emerald-400 text-xs sm:text-sm whitespace-nowrap">
                     {formatExchangeRate(item.rate, item.currency === 'JPY' ? 2 : 2)} {baseCurrency}
                   </span>
@@ -257,10 +235,10 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                   )}
                 </div>
 
-                {/* Reel 3: Central Bank Policy Rate */}
+                {/* Reel 3: Central Bank Policy Rate (Only shown on extra wide xl: screens to keep normal laptops slim) */}
                 {item.centralBankName && item.policyRatePct != null && (
                   <div
-                    className="hidden lg:flex items-center gap-1 pl-1.5 border-l border-slate-700/60 shrink-0 text-slate-300"
+                    className="hidden xl:flex items-center gap-1 pl-1.5 border-l border-slate-700/60 shrink-0 text-slate-300"
                     title={`${item.centralBankName} (${item.policyRateDate || 'Latest'})`}
                   >
                     <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
@@ -276,34 +254,12 @@ export const TickerBar: React.FC<TickerBarProps> = ({
           </div>
         </div>
 
-        {/* Counter & Toggle */}
-        <div className="flex items-center gap-0.5 shrink-0">
-          <span className="text-[10px] font-mono text-slate-500 font-semibold px-0.5 hidden xl:inline">
-            {currentIndex + 1}/{reelItems.length}
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsPopoverOpen((prev) => !prev)}
-            title={lang === 'ko' ? '전체 보기' : 'View all'}
-            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded text-slate-400 hover:text-white hover:bg-slate-700/60 transition-colors shrink-0 cursor-pointer"
-          >
-            <ChevronDown
-              className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-200 ${
-                isPopoverOpen ? 'rotate-180 text-indigo-400' : ''
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Next Button */}
-        <button
-          type="button"
-          onClick={handleNext}
-          title="Next currency"
-          className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded text-slate-400 hover:text-white hover:bg-slate-700/60 transition-colors shrink-0 cursor-pointer"
-        >
-          <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-        </button>
+        {/* Dropdown Chevron */}
+        <ChevronDown
+          className={`w-3 h-3 text-slate-400 group-hover:text-slate-200 shrink-0 opacity-70 transition-transform duration-200 ${
+            isPopoverOpen ? 'rotate-180 text-indigo-400 opacity-100' : ''
+          }`}
+        />
 
         {/* Live Indicator Dot */}
         <span
