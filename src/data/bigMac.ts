@@ -72,7 +72,7 @@ export function formatBigMacPrice(
   dollarPrice: number | null | undefined,
   baseCurrency: BaseCurrency,
   usdToBase: number,
-  _lang: Language = 'en'
+  lang: Language = 'en'
 ): string {
   if (dollarPrice === null || dollarPrice === undefined) {
     return '-'
@@ -81,7 +81,7 @@ export function formatBigMacPrice(
   const converted = dollarPrice * usdToBase
 
   if (baseCurrency === 'KRW') {
-    return `${Math.round(converted).toLocaleString()}원`
+    return lang === 'ko' ? `${Math.round(converted).toLocaleString()}원` : `₩${Math.round(converted).toLocaleString()}`
   }
   if (baseCurrency === 'JPY') {
     return `¥${Math.round(converted).toLocaleString()}`
@@ -94,6 +94,12 @@ export function formatBigMacPrice(
   }
   if (baseCurrency === 'CNY') {
     return `¥${converted.toFixed(2)}`
+  }
+  if (baseCurrency === 'CHF') {
+    return `CHF ${converted.toFixed(2)}`
+  }
+  if (baseCurrency === 'AUD') {
+    return `A$${converted.toFixed(2)}`
   }
 
   // Default USD

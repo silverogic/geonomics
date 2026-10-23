@@ -81,7 +81,7 @@ export function formatFuelPrice(
   priceUsd: number | null | undefined,
   baseCurrency: BaseCurrency,
   usdToBase: number,
-  _lang: Language = 'en'
+  lang: Language = 'en'
 ): string {
   if (priceUsd === null || priceUsd === undefined) {
     return '-'
@@ -90,7 +90,7 @@ export function formatFuelPrice(
   const converted = priceUsd * usdToBase
 
   if (baseCurrency === 'KRW') {
-    return `${Math.round(converted).toLocaleString()}원/L`
+    return lang === 'ko' ? `${Math.round(converted).toLocaleString()}원/L` : `₩${Math.round(converted).toLocaleString()}/L`
   }
   if (baseCurrency === 'JPY') {
     return `¥${Math.round(converted).toLocaleString()}/L`
@@ -103,6 +103,12 @@ export function formatFuelPrice(
   }
   if (baseCurrency === 'CNY') {
     return `¥${converted.toFixed(2)}/L`
+  }
+  if (baseCurrency === 'CHF') {
+    return `CHF ${converted.toFixed(2)}/L`
+  }
+  if (baseCurrency === 'AUD') {
+    return `A$${converted.toFixed(2)}/L`
   }
 
   // Default USD
