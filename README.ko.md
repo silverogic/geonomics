@@ -102,6 +102,49 @@ console.log(marketCaps.caps['KOR'])
 
 ---
 
+## 🧭 시스템 개요
+
+정적 데이터는 GitHub Actions가 미리 빌드해 GitHub Pages로 제공합니다. 브라우저는 환율과 뉴스를 직접 조회하고, 증시 실시간 시세는 작은 Cloudflare Worker 프록시를 거쳐 가져옵니다(Yahoo Finance는 CORS 때문에 브라우저 직접 호출이 불가). 프록시를 쓸 수 없으면 미리 빌드된 정적 데이터로 대체됩니다.
+
+```mermaid
+flowchart LR
+  subgraph SRC["데이터 소스"]
+    S1["IMF WEO / World Bank<br/>Excel (.xls)"]
+    S2["Yahoo Finance<br/>지수 이력"]
+    S3["CompaniesMarketCap<br/>+ WB / WFE"]
+    S4["유가 / 빅맥지수"]
+    S5["Coinbase / open.er-api<br/>환율"]
+    S6["RSS 풀 / Algolia / GDELT<br/>뉴스"]
+  end
+
+  subgraph CI["GitHub Actions (일일 빌드)"]
+    P1["scripts/*.js<br/>extract / fetch"]
+    P2["public/api/v1/*.json"]
+    P3["vite build<br/>docs/"]
+  end
+
+  subgraph HOST["GitHub Pages (CDN)"]
+    WEB["React SPA<br/>(TypeScript + Tailwind)"]
+    API["Open REST API v1<br/>static JSON"]
+  end
+
+  W["Cloudflare Worker<br/>stock-proxy<br/>(CORS + 60s cache)"]
+  U(["사용자 브라우저"])
+
+  S1 --> P1
+  S2 --> P1
+  S3 --> P1
+  S4 --> P1
+  P1 --> P2 --> P3 --> WEB
+  P2 --> API
+
+  U --> WEB
+  WEB -. "실시간 시세 (60초)" .-> W
+  W --> S2
+  WEB -. "실시간 환율" .-> S5
+  WEB -. "뉴스" .-> S6
+```
+
 ## 🗂️ 프로젝트 구조
 
 ```text

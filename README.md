@@ -102,6 +102,49 @@ console.log(marketCaps.caps['USA'])
 
 ---
 
+## 🧭 System Overview
+
+Static data is prebuilt by GitHub Actions and served from GitHub Pages. The browser additionally pulls live FX rates and news directly, and near-real-time stock quotes through a small Cloudflare Worker proxy (Yahoo Finance does not allow direct browser calls due to CORS). If the proxy is unavailable, the app falls back to the prebuilt static data.
+
+```mermaid
+flowchart LR
+  subgraph SRC["Data Sources"]
+    S1["IMF WEO / World Bank<br/>Excel (.xls)"]
+    S2["Yahoo Finance<br/>index history"]
+    S3["CompaniesMarketCap<br/>+ WB / WFE"]
+    S4["Fuel prices / Big Mac Index"]
+    S5["Coinbase / open.er-api<br/>FX rates"]
+    S6["RSS pool / Algolia / GDELT<br/>News"]
+  end
+
+  subgraph CI["GitHub Actions (daily build)"]
+    P1["scripts/*.js<br/>extract / fetch"]
+    P2["public/api/v1/*.json"]
+    P3["vite build<br/>docs/"]
+  end
+
+  subgraph HOST["GitHub Pages (CDN)"]
+    WEB["React SPA<br/>(TypeScript + Tailwind)"]
+    API["Open REST API v1<br/>static JSON"]
+  end
+
+  W["Cloudflare Worker<br/>stock-proxy<br/>(CORS + 60s cache)"]
+  U(["User browser"])
+
+  S1 --> P1
+  S2 --> P1
+  S3 --> P1
+  S4 --> P1
+  P1 --> P2 --> P3 --> WEB
+  P2 --> API
+
+  U --> WEB
+  WEB -. "live quotes (60s)" .-> W
+  W --> S2
+  WEB -. "real-time FX" .-> S5
+  WEB -. "news" .-> S6
+```
+
 ## 🗂️ Project Architecture
 
 ```text
