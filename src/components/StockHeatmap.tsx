@@ -167,6 +167,13 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             }
           } else {
             isFirstLoadRef.current = false
+            // On first live load, flash open markets that have active live quotes
+            for (const [id, s] of Object.entries(newStocks)) {
+              const oldPrice = prevPricesRef.current.get(id)
+              if (s.isMarketOpen || (oldPrice !== undefined && s.currentPrice !== oldPrice)) {
+                newFlashes[id] = s.changePct >= 0 ? 'up' : 'down'
+              }
+            }
           }
 
           // Update tracked prices for the next comparison
@@ -971,9 +978,12 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
                       width={rectW}
                       height={rectH}
                       rx={r.w > 40 && r.h > 30 ? 5 : 2}
-                      fill={flashDirection === 'up' ? 'rgba(52, 211, 153, 0.28)' : 'rgba(244, 63, 94, 0.28)'}
+                      fill={flashDirection === 'up' ? 'rgba(52, 211, 153, 0.35)' : 'rgba(244, 63, 94, 0.35)'}
                       stroke={flashDirection === 'up' ? '#34d399' : '#fb7185'}
-                      strokeWidth={2}
+                      strokeWidth={2.5}
+                      style={{
+                        animation: 'flashGlow 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                      }}
                       className="pointer-events-none animate-flash-glow"
                     />
                   )}
