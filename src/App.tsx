@@ -8,7 +8,6 @@ import { fetchInterestRates, getCountryInterestRate } from './services/interestR
 import { loadGlobalGdpOverview } from './services/worldBankApi'
 import { translations } from './i18n/translations'
 import { Navbar } from './components/Navbar'
-import { TickerBar } from './components/TickerBar'
 import { CountryModal } from './components/CountryModal'
 import { CompareView } from './components/CompareView'
 import type { CountryRowItem } from './components/RankingTable'
@@ -167,7 +166,7 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans pb-16 md:pb-0">
-      {/* Navigation Header */}
+      {/* Navigation Header with Integrated 777 FX & Policy Rate Slot Roller */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -175,17 +174,9 @@ export function App() {
         setBaseCurrency={setBaseCurrency}
         lang={lang}
         setLang={setLang}
+        exchangeRates={exchangeRates}
+        interestRates={interestRates}
       />
-
-      {/* Real-time FX Ticker (hidden in heatmap to maximize viewing area) */}
-      {activeTab !== 'heatmap' && (
-        <TickerBar
-          exchangeRates={exchangeRates}
-          interestRates={interestRates}
-          baseCurrency={baseCurrency}
-          lang={lang}
-        />
-      )}
 
       {/* Main Content Area */}
       <main

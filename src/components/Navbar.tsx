@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Globe, Layers, GitCompare, Coins, ChevronDown, LayoutGrid, Newspaper, Check } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
-import type { BaseCurrency, Language } from '../types/economics'
+import type { BaseCurrency, Language, ExchangeRates, InterestRateInfo } from '../types/economics'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
+import { TickerBar } from './TickerBar'
 
 const LANGUAGE_CONFIG: Record<Language, { label: string; short: string; flagIso2: string }> = {
   ko: { label: '한국어 (KO)', short: 'KO', flagIso2: 'KR' },
@@ -20,6 +21,8 @@ interface NavbarProps {
   setBaseCurrency: (c: BaseCurrency) => void
   lang: Language
   setLang: (l: Language) => void
+  exchangeRates: ExchangeRates | null
+  interestRates?: Record<string, InterestRateInfo> | null
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -29,6 +32,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setBaseCurrency,
   lang,
   setLang,
+  exchangeRates,
+  interestRates,
 }) => {
   const t = translations[lang]
 
@@ -133,8 +138,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Controls: Base Currency, Language Switcher, and Refresh */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          {/* Controls: 777 FX Slot Roller, Language Switcher, and Base Currency */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            {/* 777 FX & Policy Rate Slot Machine Roller */}
+            <TickerBar
+              exchangeRates={exchangeRates}
+              interestRates={interestRates}
+              baseCurrency={baseCurrency}
+              lang={lang}
+            />
+
             {/* Language Selector Combobox */}
             <div className="relative" ref={langMenuRef}>
               <button
