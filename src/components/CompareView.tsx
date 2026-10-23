@@ -239,9 +239,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
       {/* 1:1 Head-to-Head Symmetric Matrix View (Mobile Optimized) vs Individual Cards */}
       {compareMode === 'h2h' ? (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl overflow-hidden divide-y divide-slate-800/80">
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl divide-y divide-slate-800/80">
           {/* Header Country VS Banner */}
-          <div className="p-3.5 sm:p-5 bg-gradient-to-r from-indigo-950/40 via-slate-900 to-emerald-950/40 flex items-center justify-between gap-3">
+          <div className="sticky top-16 sm:top-20 z-30 bg-gradient-to-r from-indigo-950/95 via-slate-900/95 to-emerald-950/95 backdrop-blur-md rounded-t-2xl border-b border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
             {/* Country A */}
             <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
               <CountryFlag iso2={countryA.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameA} />
@@ -256,9 +256,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </div>
 
             {/* VS Badge */}
-            <div className="px-3 py-1 rounded-full bg-slate-800/90 border border-slate-700 text-xs font-black tracking-wider text-slate-300 shrink-0 shadow-inner">
-              VS
-            </div>
+            <button
+              type="button"
+              onClick={handleSwap}
+              title={t.swapCurrencies}
+              className="px-2.5 sm:px-3 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-slate-700 hover:border-indigo-400 text-[11px] sm:text-xs font-black tracking-wider text-slate-300 hover:text-white shrink-0 shadow-inner cursor-pointer transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1 group"
+            >
+              <span>VS</span>
+              <ArrowRightLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 group-hover:text-indigo-300 transition-colors" />
+            </button>
 
             {/* Country B */}
             <div className="flex items-center justify-end gap-2 sm:gap-3 flex-1 min-w-0 text-right">
@@ -286,7 +292,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               : `${nameB} ${(1 / gdpRatio).toFixed(2)}x`
 
             return (
-              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
                 <div className="flex items-center justify-between text-xs mb-1.5">
                   <span className="font-bold text-slate-300">
                     {t.cardTotalGdp} ({detailA?.latestYear ?? selectedYear})
@@ -333,7 +339,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               : `${nameB} ${(1 / perCapitaRatio).toFixed(2)}x`
 
             return (
-              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
                 <div className="flex items-center justify-between text-xs mb-1.5">
                   <span className="font-bold text-slate-300">{t.cardPerCapita}</span>
                   <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
@@ -487,7 +493,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
 
           {/* Metric 7: Exchange Rate to Base Currency */}
-          <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+          <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
             <div className="flex items-center justify-between text-xs mb-1.5">
               <span className="font-bold text-slate-300">{t.cardFxRate}</span>
               <span className="text-[10px] font-mono text-slate-400">vs {baseCurrency}</span>
@@ -509,7 +515,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             if (!bmA && !bmB) return null
 
             return (
-              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
                 <div className="flex items-center justify-between text-xs mb-1.5">
                   <span className="font-bold text-slate-300">🍔 {t.metricBigMac}</span>
                 </div>
