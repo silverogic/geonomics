@@ -175,8 +175,6 @@ export function App() {
         setBaseCurrency={setBaseCurrency}
         lang={lang}
         setLang={setLang}
-        onRefresh={() => loadData(true)}
-        isRefreshing={isLoading}
       />
 
       {/* Real-time FX Ticker (hidden in heatmap to maximize viewing area) */}
