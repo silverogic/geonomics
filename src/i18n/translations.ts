@@ -4,7 +4,7 @@ export const translations = {
   en: {
     // Header & Nav
     appTitle: 'Geonomics',
-    appSubtitle: 'Real-time Exchange Rates & World Bank · IMF Official Statistics',
+    appSubtitle: 'Global Economics',
     liveBadge: 'LIVE',
     navExplorer: 'Country Explorer',
     navStockHeatmap: 'Stock Heatmap',
@@ -258,7 +258,7 @@ export const translations = {
   ko: {
     // Header & Nav
     appTitle: 'Geonomics',
-    appSubtitle: '실시간 환율 & 세계은행(World Bank) · 국제통화기금(IMF) 공식 통계',
+    appSubtitle: '글로벌 거시경제',
     liveBadge: 'LIVE',
     navExplorer: '국가 탐색',
     navStockHeatmap: '증시 히트맵',
@@ -512,7 +512,7 @@ export const translations = {
   ja: {
     // Header & Nav
     appTitle: 'Geonomics',
-    appSubtitle: 'リアルタイム為替レート & 世界銀行・IMF公式マクロ経済統計',
+    appSubtitle: 'グローバル経済',
     liveBadge: 'LIVE',
     navExplorer: '国別探索',
     navStockHeatmap: '株式ヒートマップ',
@@ -766,7 +766,7 @@ export const translations = {
   es: {
     // Header & Nav
     appTitle: 'Geonomics',
-    appSubtitle: 'Tipos de cambio en tiempo real y estadísticas oficiales del Banco Mundial y el FMI',
+    appSubtitle: 'Economía Global',
     liveBadge: 'LIVE',
     navExplorer: 'Explorador de países',
     navStockHeatmap: 'Mapa Bursátil',
@@ -1020,7 +1020,7 @@ export const translations = {
   zh: {
     // Header & Nav
     appTitle: 'Geonomics',
-    appSubtitle: '实时汇率与世界银行 · 国际货币基金组织 (IMF) 官方宏观经济统计',
+    appSubtitle: '全球宏观经济',
     liveBadge: 'LIVE',
     navExplorer: '国家探索',
     navStockHeatmap: '股市热力图',
