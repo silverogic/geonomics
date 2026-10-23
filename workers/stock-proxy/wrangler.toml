@@ -1,0 +1,7 @@
+name = "geonomics-stock-proxy"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Comma-separated list of allowed browser origins (localhost is always allowed for dev)
+ALLOWED_ORIGINS = "https://silverogic.github.io"

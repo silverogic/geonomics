@@ -12,6 +12,7 @@ import {
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, Region } from '../types/economics'
 import { COUNTRIES } from '../data/countries'
 import { getAllStockPrices, type StockPriceInfo } from '../data/stockPrices'
+import { fetchLiveStocks, isLiveStockEnabled } from '../services/liveStockApi'
 import { getStockMarketCapUsd, formatStockMarketCap } from '../data/stockMarketCaps'
 import { fetchStockMarketCaps, calculateLiveMarketCap, type LiveMarketCapData } from '../services/stockMarketCapApi'
 import { computeSquarifiedTreemap, type TreemapRect } from '../utils/squarifiedTreemap'
@@ -129,6 +130,30 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
   const [searchQuery, setSearchQuery] = useState('')
   const [hoveredCountryId, setHoveredCountryId] = useState<string | null>(null)
   const [liveCapData, setLiveCapData] = useState<LiveMarketCapData | null>(null)
+  const [liveVersion, setLiveVersion] = useState(0)
+  const [liveUpdatedAt, setLiveUpdatedAt] = useState<number | null>(null)
+
+  // Near-real-time quotes (via Cloudflare Worker proxy). Silently no-op if not configured.
+  useEffect(() => {
+    if (!isLiveStockEnabled()) return
+    let mounted = true
+    const load = (force: boolean) => {
+      fetchLiveStocks(force).then((ok) => {
+        if (ok && mounted) {
+          setLiveVersion((v) => v + 1)
+          setLiveUpdatedAt(Date.now())
+        }
+      })
+    }
+    load(true)
+    const timer = window.setInterval(() => {
+      if (!document.hidden) load(false)
+    }, 60 * 1000)
+    return () => {
+      mounted = false
+      window.clearInterval(timer)
+    }
+  }, [refreshKey])
 
   useEffect(() => {
     let mounted = true
@@ -143,7 +168,8 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
   }, [refreshKey])
 
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
-  const allStocks = useMemo(() => getAllStockPrices(), [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const allStocks = useMemo(() => ({ ...getAllStockPrices() }), [liveVersion])
 
   // Build unified dataset of market items
   const allMarketItems: MarketItem[] = useMemo(() => {
@@ -312,6 +338,16 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                 : `${globalStats.avgChange.toFixed(2)}%`}
             </span>
           </div>
+
+          {liveUpdatedAt && (
+            <div
+              className="px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-300 shadow-sm"
+              title={`Live quotes updated ${new Date(liveUpdatedAt).toLocaleTimeString()}`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              LIVE {new Date(liveUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          )}
 
           {/* Gainers / Losers Count */}
           <div className="hidden md:flex items-center gap-1.5 text-xs font-mono px-2 py-0.5 rounded-lg bg-slate-950/60 border border-slate-800/80">

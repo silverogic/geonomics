@@ -42,6 +42,8 @@ jobs:
         run: npm ci || npm install
 
       - name: Build
+        env:
+          VITE_STOCK_PROXY_URL: ${{ vars.VITE_STOCK_PROXY_URL }}
         run: npm run build
 
       - name: Commit and push built docs to repository

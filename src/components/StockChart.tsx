@@ -15,6 +15,7 @@ import { Line } from 'react-chartjs-2'
 import { TrendingUp, TrendingDown, ShieldAlert } from 'lucide-react'
 import type { Language } from '../types/economics'
 import { getStockPriceData } from '../data/stockPrices'
+import { fetchLiveStocks } from '../services/liveStockApi'
 
 // Ensure ChartJS plugins are registered
 ChartJS.register(
@@ -37,6 +38,17 @@ export const StockChart: React.FC<StockChartProps> = ({
   countryId,
   lang = 'en',
 }) => {
+  const [, setLiveTick] = React.useState(0)
+  React.useEffect(() => {
+    let mounted = true
+    fetchLiveStocks().then((ok) => {
+      if (ok && mounted) setLiveTick((v) => v + 1)
+    })
+    return () => {
+      mounted = false
+    }
+  }, [countryId])
+
   const stockData = getStockPriceData(countryId)
 
   if (!stockData || !stockData.isSupported || stockData.points.length === 0) {
@@ -212,6 +224,19 @@ export const StockChart: React.FC<StockChartProps> = ({
               <span>{isPositive ? '+' : ''}{dailyChangePct.toFixed(2)}%</span>
               <span className="text-[10px] opacity-75 font-normal ml-0.5">(1D)</span>
             </div>
+            {stockData.isLive && (
+              <span
+                className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                  stockData.isMarketOpen
+                    ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30'
+                    : 'text-slate-400 bg-slate-800/60 border-slate-700'
+                }`}
+                title={stockData.liveTime ? new Date(stockData.liveTime * 1000).toLocaleString() : undefined}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${stockData.isMarketOpen ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+                {stockData.isMarketOpen ? 'LIVE' : 'CLOSED'}
+              </span>
+            )}
 
             {/* 30D Trend Tag */}
             <div
