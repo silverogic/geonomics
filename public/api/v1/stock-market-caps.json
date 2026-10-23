@@ -16,8 +16,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "JPN": {
-    "marketCapUsd": 7635990825950,
-    "baseCapUsd": 7635990825950,
+    "marketCapUsd": 7637756388309,
+    "baseCapUsd": 7637756388309,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Japan",
@@ -48,16 +48,16 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "IND": {
-    "marketCapUsd": 3795793038676,
-    "baseCapUsd": 3795793038676,
+    "marketCapUsd": 3798988204734,
+    "baseCapUsd": 3798988204734,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "India",
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "KOR": {
-    "marketCapUsd": 3182118401514,
-    "baseCapUsd": 3182118401514,
+    "marketCapUsd": 3184972266782,
+    "baseCapUsd": 3184972266782,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "South Korea",
@@ -96,8 +96,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "AUS": {
-    "marketCapUsd": 2011999556459,
-    "baseCapUsd": 2011999556459,
+    "marketCapUsd": 2012872627029,
+    "baseCapUsd": 2012872627029,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Australia",
@@ -296,8 +296,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "VNM": {
-    "marketCapUsd": 183796985567,
-    "baseCapUsd": 183796985567,
+    "marketCapUsd": 183767983616,
+    "baseCapUsd": 183767983616,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Vietnam",
@@ -344,8 +344,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "NZL": {
-    "marketCapUsd": 106186793729,
-    "baseCapUsd": 106186793729,
+    "marketCapUsd": 106223106597,
+    "baseCapUsd": 106223106597,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "New Zealand",
@@ -376,8 +376,8 @@
     "source": "CompaniesMarketCap (Real-Time Global Exchanges Consensus)"
   },
   "PAK": {
-    "marketCapUsd": 44165274724,
-    "baseCapUsd": 44165274724,
+    "marketCapUsd": 44191724588,
+    "baseCapUsd": 44191724588,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "countryName": "Pakistan",
