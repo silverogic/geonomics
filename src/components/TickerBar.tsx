@@ -266,7 +266,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         }
       >
         {/* Vertical Rolling Slot Reel Window */}
-        <div className="h-7 sm:h-8 overflow-hidden relative w-[140px] sm:w-[230px] lg:w-[245px]">
+        <div className="h-7 sm:h-8 overflow-hidden relative w-[130px] sm:w-[230px] lg:w-[245px]">
           <div
             className="transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col"
             style={{ transform: `translateY(-${(currentIndex * 100) / reelItems.length}%)` }}
@@ -301,7 +301,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                           ? `${lang === 'ko' ? '전일 종가' : 'Prev Close'}: ${formatLocalizedFxRate(item.prevClose, baseCurrency, lang)}`
                           : undefined
                       }
-                      className={`inline-flex items-center text-[10px] font-mono font-bold px-1 py-0.2 rounded shrink-0 whitespace-nowrap ${
+                      className={`hidden sm:inline-flex items-center text-[10px] font-mono font-bold px-1 py-0.2 rounded shrink-0 whitespace-nowrap ${
                         item.changePct > 0
                           ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
                           : item.changePct < 0
