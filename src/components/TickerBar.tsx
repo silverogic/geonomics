@@ -254,7 +254,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onClick={() => setIsPopoverOpen((prev) => !prev)}
-        className="flex items-center gap-1 sm:gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-2 sm:px-2.5 py-1 text-xs font-medium transition-all select-none shadow-sm cursor-pointer group"
+        className="h-9 flex items-center gap-1 sm:gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-2 sm:px-2.5 text-xs font-medium transition-all select-none shadow-sm cursor-pointer group"
         title={
           lang === 'ko'
             ? '클릭 시 주요 통화 환율 & 기준금리 요약 보기'
@@ -266,7 +266,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         }
       >
         {/* Vertical Rolling Slot Reel Window */}
-        <div className="h-7 sm:h-8 overflow-hidden relative w-[130px] sm:w-[230px] lg:w-[245px]">
+        <div className="h-7 overflow-hidden relative w-[130px] sm:w-[230px] lg:w-[245px]">
           <div
             className="transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col"
             style={{ transform: `translateY(-${(currentIndex * 100) / reelItems.length}%)` }}
@@ -274,7 +274,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
             {reelItems.map((item) => (
               <div
                 key={item.currency}
-                className="h-7 sm:h-8 flex items-center justify-between gap-1 sm:gap-2 shrink-0 px-0.5"
+                className="h-7 flex items-center justify-between gap-1 sm:gap-2 shrink-0 px-0.5"
               >
                 {/* Reel 1: Flag & Currency */}
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 min-w-0">

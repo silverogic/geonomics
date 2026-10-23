@@ -79,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <>
       <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-slate-100">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* Brand Logo (Icon removed for compact header) */}
           <div className="flex items-center cursor-pointer min-w-0 shrink-0" onClick={() => setActiveTab('cards')}>
             <div className="min-w-0">
@@ -151,7 +151,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-haspopup="dialog"
                 aria-expanded={isMobileMenuOpen}
                 aria-label="Language and currency settings"
-                className={`flex items-center gap-1 bg-slate-800/80 hover:bg-slate-800 border rounded-xl px-2 py-1.5 text-xs font-semibold transition-all select-none cursor-pointer ${
+                className={`h-9 flex items-center gap-1 bg-slate-800/80 hover:bg-slate-800 border rounded-xl px-2 text-xs font-semibold transition-all select-none cursor-pointer ${
                   isMobileMenuOpen
                     ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                     : 'border-slate-700/60 hover:border-slate-600'
@@ -273,7 +273,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-haspopup="listbox"
                 aria-expanded={isLangOpen}
                 aria-label="Select language"
-                className={`flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-medium transition-all cursor-pointer group select-none ${
+                className={`h-9 flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border rounded-xl px-2.5 text-xs sm:text-sm font-medium transition-all cursor-pointer group select-none ${
                   isLangOpen
                     ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                     : 'border-slate-700/60 hover:border-slate-600'
@@ -346,7 +346,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-haspopup="listbox"
                 aria-expanded={isCurrencyOpen}
                 aria-label="Select base currency"
-                className={`flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-medium transition-all cursor-pointer group select-none ${
+                className={`h-9 flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 border rounded-xl px-2.5 text-xs sm:text-sm font-medium transition-all cursor-pointer group select-none ${
                   isCurrencyOpen
                     ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                     : 'border-slate-700/60 hover:border-slate-600'
