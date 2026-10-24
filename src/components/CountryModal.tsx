@@ -476,10 +476,6 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 )
               })()}
             </div>
-          ) : null}
-          {false && (
-            <div>
-            </div>
           )}
 
           {/* 10-Year Historical GDP Chart */}
