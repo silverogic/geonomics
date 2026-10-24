@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { GitCompare, ArrowRightLeft, TrendingUp } from 'lucide-react'
+import { GitCompare, ArrowRightLeft, TrendingUp, Building2 } from 'lucide-react'
 import { COUNTRIES } from '../data/countries'
 import type { CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
@@ -13,6 +13,9 @@ import { GdpChart } from './GdpChart'
 import { getCountryName, getCountrySecondaryName } from '../utils/countryNames'
 import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
 import { Spinner } from './Spinner'
+import { CompanyLogo } from './CompanyLogo'
+import { fetchCountryTopCompanies, type TopCompanyItem } from '../services/topCompaniesApi'
+import { formatStockMarketCap } from '../data/stockMarketCaps'
 
 interface CompareViewProps {
   baseCurrency: BaseCurrency
@@ -39,9 +42,38 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const [detailA, setDetailA] = useState<CountryGdpDetail | null>(null)
   const [detailB, setDetailB] = useState<CountryGdpDetail | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
+  const [topCompaniesA, setTopCompaniesA] = useState<TopCompanyItem[]>([])
+  const [topCompaniesB, setTopCompaniesB] = useState<TopCompanyItem[]>([])
+  const [topCompaniesLoading, setTopCompaniesLoading] = useState<boolean>(true)
 
   const countryA = COUNTRIES.find((c) => c.id === countryAId) || COUNTRIES[0]
   const countryB = COUNTRIES.find((c) => c.id === countryBId) || COUNTRIES[1]
+
+  useEffect(() => {
+    let active = true
+    setTopCompaniesLoading(true)
+    Promise.all([
+      fetchCountryTopCompanies(countryA.id, lang, exchangeRates),
+      fetchCountryTopCompanies(countryB.id, lang, exchangeRates),
+    ])
+      .then(([resA, resB]) => {
+        if (active) {
+          setTopCompaniesA(resA.companies)
+          setTopCompaniesB(resB.companies)
+          setTopCompaniesLoading(false)
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setTopCompaniesA([])
+          setTopCompaniesB([])
+          setTopCompaniesLoading(false)
+        }
+      })
+    return () => {
+      active = false
+    }
+  }, [countryA.id, countryB.id, lang, exchangeRates])
 
   useEffect(() => {
     let active = true
@@ -821,6 +853,153 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </span>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Side-by-Side Top 5 Market Cap Companies Comparison */}
+      {(topCompaniesLoading || topCompaniesA.length > 0 || topCompaniesB.length > 0) && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-indigo-400 shrink-0" />
+              <span>{t.compareTop5Title}</span>
+            </h3>
+            <span className="text-xs text-slate-500 font-mono">{baseCurrency}</span>
+          </div>
+
+          {topCompaniesLoading ? (
+            <div className="py-8 flex items-center justify-center bg-slate-950/40 rounded-xl border border-slate-800/60">
+              <Spinner size="sm" label={t.top5Loading} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Country A Top 5 */}
+              <div className="bg-slate-950/60 border border-indigo-500/30 rounded-xl p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <CountryFlag iso2={countryA.iso2} className="w-6 h-4 rounded-sm shrink-0" alt={nameA} />
+                    <span className="text-sm font-bold text-white truncate">{nameA}</span>
+                  </div>
+                  {topCompaniesA.length > 0 && (
+                    <span className="text-xs font-mono font-bold text-indigo-300">
+                      {formatStockMarketCap(
+                        topCompaniesA.reduce((acc, c) => acc + c.marketCapUsd, 0),
+                        baseCurrency,
+                        usdToBase,
+                        lang
+                      )}
+                    </span>
+                  )}
+                </div>
+
+                {topCompaniesA.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-slate-500">{t.top5Empty}</div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {topCompaniesA.map((item) => (
+                      <div
+                        key={item.symbol}
+                        className="flex items-center justify-between gap-2 bg-slate-900/90 border border-slate-800/80 rounded-lg px-2.5 py-2"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="w-4.5 h-4.5 rounded bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[10px] font-mono font-black flex items-center justify-center shrink-0">
+                            {item.rank}
+                          </span>
+                          <CompanyLogo logoUrl={item.logoUrl} name={item.name} ticker={item.ticker} size="sm" />
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-white truncate max-w-[140px] sm:max-w-[190px]">
+                              {item.name}
+                            </div>
+                            <div className="text-[10px] font-mono text-slate-400 truncate">
+                              {item.ticker}{item.sector ? ` · ${item.sector}` : ''}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 font-mono text-right">
+                          <span className="text-xs font-black text-indigo-300">
+                            {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded min-w-[48px] text-center ${
+                              item.changePct >= 0
+                                ? 'bg-emerald-500/15 text-emerald-400'
+                                : 'bg-rose-500/15 text-rose-400'
+                            }`}
+                          >
+                            {item.changePct >= 0 ? `+${item.changePct.toFixed(1)}%` : `${item.changePct.toFixed(1)}%`}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Country B Top 5 */}
+              <div className="bg-slate-950/60 border border-emerald-500/30 rounded-xl p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <CountryFlag iso2={countryB.iso2} className="w-6 h-4 rounded-sm shrink-0" alt={nameB} />
+                    <span className="text-sm font-bold text-white truncate">{nameB}</span>
+                  </div>
+                  {topCompaniesB.length > 0 && (
+                    <span className="text-xs font-mono font-bold text-emerald-300">
+                      {formatStockMarketCap(
+                        topCompaniesB.reduce((acc, c) => acc + c.marketCapUsd, 0),
+                        baseCurrency,
+                        usdToBase,
+                        lang
+                      )}
+                    </span>
+                  )}
+                </div>
+
+                {topCompaniesB.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-slate-500">{t.top5Empty}</div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {topCompaniesB.map((item) => (
+                      <div
+                        key={item.symbol}
+                        className="flex items-center justify-between gap-2 bg-slate-900/90 border border-slate-800/80 rounded-lg px-2.5 py-2"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="w-4.5 h-4.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-mono font-black flex items-center justify-center shrink-0">
+                            {item.rank}
+                          </span>
+                          <CompanyLogo logoUrl={item.logoUrl} name={item.name} ticker={item.ticker} size="sm" />
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-white truncate max-w-[140px] sm:max-w-[190px]">
+                              {item.name}
+                            </div>
+                            <div className="text-[10px] font-mono text-slate-400 truncate">
+                              {item.ticker}{item.sector ? ` · ${item.sector}` : ''}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 font-mono text-right">
+                          <span className="text-xs font-black text-emerald-300">
+                            {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded min-w-[48px] text-center ${
+                              item.changePct >= 0
+                                ? 'bg-emerald-500/15 text-emerald-400'
+                                : 'bg-rose-500/15 text-rose-400'
+                            }`}
+                          >
+                            {item.changePct >= 0 ? `+${item.changePct.toFixed(1)}%` : `${item.changePct.toFixed(1)}%`}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

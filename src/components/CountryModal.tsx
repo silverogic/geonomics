@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Award, LineChart, AlertCircle } from 'lucide-react'
+import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Award, LineChart, AlertCircle, Building2 } from 'lucide-react'
 import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate } from '../services/exchangeApi'
@@ -15,6 +15,9 @@ import { getStockPriceData } from '../data/stockPrices'
 import { getCountryName, getCountrySecondaryName, getCurrencyName } from '../utils/countryNames'
 import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
 import { Spinner } from './Spinner'
+import { CompanyLogo } from './CompanyLogo'
+import { fetchCountryTopCompanies, type TopCompanyItem } from '../services/topCompaniesApi'
+import { getStockMarketCapUsd, formatStockMarketCap } from '../data/stockMarketCaps'
 
 interface CountryModalProps {
   country: CountryMeta
@@ -41,7 +44,30 @@ export const CountryModal: React.FC<CountryModalProps> = ({
   const interestRateInfo = getCountryInterestRate(interestRates, country)
   const [detail, setDetail] = useState<CountryGdpDetail | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [topCompanies, setTopCompanies] = useState<TopCompanyItem[]>([])
+  const [isTopCompaniesLoading, setIsTopCompaniesLoading] = useState<boolean>(true)
   const stockData = getStockPriceData(country.id)
+
+  useEffect(() => {
+    let isMounted = true
+    setIsTopCompaniesLoading(true)
+    fetchCountryTopCompanies(country.id, lang, exchangeRates)
+      .then((res) => {
+        if (isMounted) {
+          setTopCompanies(res.companies)
+          setIsTopCompaniesLoading(false)
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setTopCompanies([])
+          setIsTopCompaniesLoading(false)
+        }
+      })
+    return () => {
+      isMounted = false
+    }
+  }, [country.id, lang, exchangeRates])
 
   useEffect(() => {
     let isMounted = true
@@ -317,6 +343,142 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               </div>
 
               <StockChart countryId={country.id} lang={lang} />
+            </div>
+          )}
+
+          {/* Top 5 Companies by Market Capitalization (100% Dynamic Runtime) */}
+          {(isTopCompaniesLoading || topCompanies.length > 0) && (
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-3">
+              {(() => {
+                const top5SumUsd = topCompanies.reduce((acc, c) => acc + c.marketCapUsd, 0)
+                const rawNationalCapUsd = getStockMarketCapUsd(country.id, detail?.totalGdpUsd)
+                const effectiveNationalCapUsd = Math.max(rawNationalCapUsd, top5SumUsd * 1.12)
+                const top5SharePct =
+                  effectiveNationalCapUsd > 0
+                    ? Math.min(99.9, (top5SumUsd / effectiveNationalCapUsd) * 100)
+                    : 0
+                const maxCompanyCapUsd = topCompanies[0]?.marketCapUsd || 1
+
+                return (
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-indigo-400 shrink-0" />
+                        <h4 className="text-sm font-bold text-slate-200">
+                          {t.top5CompaniesTitle}
+                        </h4>
+                      </div>
+                      {!isTopCompaniesLoading && topCompanies.length > 0 && (
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="font-mono font-bold text-slate-300">
+                            {formatStockMarketCap(top5SumUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-mono font-bold text-[11px]">
+                            {t.top5ConcentrationLabel} {top5SharePct.toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {isTopCompaniesLoading ? (
+                      <div className="py-6 flex items-center justify-center">
+                        <Spinner size="sm" label={t.top5Loading} />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-2">
+                        {topCompanies.map((item) => {
+                          const sharePct =
+                            effectiveNationalCapUsd > 0
+                              ? (item.marketCapUsd / effectiveNationalCapUsd) * 100
+                              : 0
+                          const barWidthPct =
+                            maxCompanyCapUsd > 0
+                              ? Math.max(6, (item.marketCapUsd / maxCompanyCapUsd) * 100)
+                              : 0
+                          const rankBadgeClass =
+                            item.rank === 1
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                              : item.rank === 2
+                                ? 'bg-slate-400/20 text-slate-200 border-slate-400/40'
+                                : item.rank === 3
+                                  ? 'bg-orange-500/20 text-orange-300 border-orange-500/40'
+                                  : 'bg-slate-800/90 text-slate-400 border-slate-700'
+
+                          return (
+                            <div
+                              key={item.symbol}
+                              className="bg-slate-900/80 hover:bg-slate-900 border border-slate-800/80 rounded-lg px-3 py-2 transition-colors"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <span
+                                    className={`w-5 h-5 rounded-md border text-[11px] font-mono font-black flex items-center justify-center shrink-0 ${rankBadgeClass}`}
+                                  >
+                                    {item.rank}
+                                  </span>
+                                  <CompanyLogo
+                                    logoUrl={item.logoUrl}
+                                    name={item.name}
+                                    ticker={item.ticker}
+                                    size="md"
+                                  />
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[160px] sm:max-w-[260px]">
+                                        {item.name}
+                                      </span>
+                                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700/80 shrink-0">
+                                        {item.ticker}
+                                      </span>
+                                      {item.sector && (
+                                        <span className="hidden sm:inline-block text-[10px] px-1.5 py-0.2 rounded bg-indigo-950/60 text-indigo-300/90 border border-indigo-800/40 truncate max-w-[140px]">
+                                          {item.sector}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2.5 shrink-0 text-right font-mono">
+                                  <div>
+                                    <div className="text-xs sm:text-sm font-black text-white">
+                                      {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
+                                    </div>
+                                    <div className="text-[10px] text-slate-400">
+                                      {t.top5MarketShareLabel} {sharePct.toFixed(1)}%
+                                    </div>
+                                  </div>
+                                  <span
+                                    className={`text-[11px] font-bold px-1.5 py-0.5 rounded min-w-[54px] text-center ${
+                                      item.changePct >= 0
+                                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                                        : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                                    }`}
+                                  >
+                                    {item.changePct >= 0 ? `+${item.changePct.toFixed(2)}%` : `${item.changePct.toFixed(2)}%`}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Relative Market Cap Progress Bar */}
+                              <div className="mt-1.5 h-1 w-full bg-slate-800/80 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full transition-all duration-300"
+                                  style={{ width: `${barWidthPct}%` }}
+                                />
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </>
+                )
+              })()}
+            </div>
+          ) : null}
+          {false && (
+            <div>
             </div>
           )}
 

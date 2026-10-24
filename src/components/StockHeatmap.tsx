@@ -21,6 +21,8 @@ import { getCountryName } from '../utils/countryNames'
 import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { StockSparkline } from './StockSparkline'
+import { CompanyLogo } from './CompanyLogo'
+import { fetchCountryTopCompanies, type TopCompanyItem } from '../services/topCompaniesApi'
 
 interface StockHeatmapProps {
   baseCurrency: BaseCurrency
@@ -796,6 +798,35 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
     return items.find((it) => it.country.id === hoveredCountryId) || null
   }, [hoveredCountryId, items])
 
+  const [hoveredTopCompanies, setHoveredTopCompanies] = useState<TopCompanyItem[]>([])
+  const [isLoadingTopCompanies, setIsLoadingTopCompanies] = useState(false)
+
+  useEffect(() => {
+    if (!hoveredItem) {
+      setHoveredTopCompanies([])
+      setIsLoadingTopCompanies(false)
+      return
+    }
+    let active = true
+    setIsLoadingTopCompanies(true)
+    fetchCountryTopCompanies(hoveredItem.country.id, lang)
+      .then((res) => {
+        if (active) {
+          setHoveredTopCompanies(res.companies)
+          setIsLoadingTopCompanies(false)
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setHoveredTopCompanies([])
+          setIsLoadingTopCompanies(false)
+        }
+      })
+    return () => {
+      active = false
+    }
+  }, [hoveredItem?.country.id, lang])
+
   // Compute treemap rectangles
   const rects: TreemapRect<MarketItem>[] = useMemo(() => {
     if (items.length === 0 || containerWidth <= 0 || height <= 0) return []
@@ -854,7 +885,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
       <div ref={containerRef} className="w-full relative overflow-hidden bg-slate-950">
         {/* Floating Glassmorphic HUD */}
         {hoveredItem && (
-          <div className="absolute top-2 right-2 z-30 pointer-events-none w-64 rounded-xl bg-slate-900/95 backdrop-blur-md border border-slate-700/90 p-3 shadow-2xl shadow-black/80 space-y-1.5 animate-in fade-in zoom-in-95 duration-100">
+          <div className="absolute top-2 right-2 z-30 pointer-events-none w-72 rounded-xl bg-slate-900/95 backdrop-blur-md border border-slate-700/90 p-3 shadow-2xl shadow-black/80 space-y-1.5 animate-in fade-in zoom-in-95 duration-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <CountryFlag iso2={hoveredItem.country.iso2} className="w-5 h-3.5 rounded shadow-sm shrink-0" />
@@ -921,6 +952,56 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Dynamic Top 5 Companies in HUD */}
+            {(isLoadingTopCompanies || hoveredTopCompanies.length > 0) && (
+              <div className="pt-1.5 border-t border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between text-[10px] font-bold text-slate-300">
+                  <span>{translations[lang].top5CompaniesTitle}</span>
+                </div>
+                {isLoadingTopCompanies && hoveredTopCompanies.length === 0 ? (
+                  <div className="text-[10px] text-slate-500 font-mono py-1">
+                    {translations[lang].top5Loading}
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {hoveredTopCompanies.map((comp) => (
+                      <div
+                        key={comp.symbol}
+                        className="flex items-center justify-between gap-1.5 text-[10px] bg-slate-950/70 px-1.5 py-1 rounded border border-slate-800/60"
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="text-[9px] font-mono font-bold text-slate-400 w-3 shrink-0">
+                            {comp.rank}.
+                          </span>
+                          <CompanyLogo
+                            logoUrl={comp.logoUrl}
+                            name={comp.name}
+                            ticker={comp.ticker}
+                            size="xs"
+                          />
+                          <span className="font-semibold text-slate-200 truncate max-w-[105px]">
+                            {comp.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0 font-mono">
+                          <span className="font-bold text-indigo-300">
+                            {formatStockMarketCap(comp.marketCapUsd, baseCurrency, usdToBase, lang)}
+                          </span>
+                          <span
+                            className={`text-[9px] font-bold ${
+                              comp.changePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                            }`}
+                          >
+                            {comp.changePct >= 0 ? `+${comp.changePct.toFixed(1)}%` : `${comp.changePct.toFixed(1)}%`}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
