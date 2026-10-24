@@ -22,7 +22,7 @@
 - **약 $144조+ 규모의 글로벌 주식시장 시각화**: 전 세계 125개국의 국내 상장주식 시가총액을 Squarified Treemap으로 한눈에 비교합니다.
 - **100% 자동화 실시간 시총 추정 파이프라인**: 공식 **세계은행(`CM.MKT.LCAP.CD`) / 세계거래소연맹(WFE)** 기준 시가총액에 **Yahoo Finance 실시간·히스토리컬 주가지수 변동 배율**($P_{\text{live}} / P_{\text{base}}$)과 일간 등락률(%)을 결합하여 최신 시가총액을 동적으로 산출합니다.
 - **통합 뷰 & 5대륙 분할 뷰**: 글로벌 전체 통합 히트맵과 5대륙(`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`) 분할 히트맵을 즉시 전환할 수 있습니다.
-- **전체화면 몰입(Zen) 모드 & 글래스모피즘 HUD**: 단일 행 툴바와 전체화면 토글을 지원하며, 타일 호버 시 30일 주가 추이 스파크라인(`StockSparkline`), 현재 지수, WFE 기준치 대비 변동 배율을 플로팅 HUD로 보여줍니다.
+- **전체화면 몰입(Zen) 모드 & 글래스모피즘 HUD**: 단일 행 툴바와 전체화면 토글을 지원하며, 타일 호버 시 30일 주가 추이 스파크라인(`StockSparkline`), 현재 지수, WFE 기준치 대비 변동 배율, 그리고 **실시간 시가총액 상위 5대 기업(로고, 기업명, 시가총액, 당일 등락률 %)**을 플로팅 HUD로 보여줍니다.
 - **준실시간 시세 (Cloudflare Worker 프록시)**: `VITE_STOCK_PROXY_URL`을 설정하면 장중 시세를 60초마다 갱신하며, 히트맵 툴바에 `LIVE` 뱃지, 국가 모달 주가 차트에 `LIVE` / `CLOSED` 장 상태 뱃지를 표시합니다. Yahoo Finance는 브라우저 직접 호출(CORS)을 막으므로, 작은 Worker(`workers/stock-proxy`)가 60초 엣지 캐시와 허용 도메인 제한을 두고 요청을 중계합니다. 프록시를 쓸 수 없으면 미리 빌드된 정적 데이터로 대체됩니다.
 
 ### 3. 인터랙티브 종합 순위 테이블 (`RankingTable`)
@@ -33,6 +33,7 @@
 - **양국 정밀 비교**: 주요 라이벌 프리셋(`미국 vs 중국`, `한국 vs 일본`, `독일 vs 영국`, `인도 vs 일본` 등) 또는 원하는 두 국가를 선택해 1:1로 비교합니다.
 - **규모 배율 및 금리 스프레드**: 총 GDP 및 1인당 GDP 격차 배율, 양국 중앙은행 기준금리 격차(%p), 교차 환율, 빅맥 지수(PPP) 비교, 그리고 최근 10년간의 거시경제 추이 비교 차트(`GdpChart`)를 제공합니다.
 - **모바일 최적화 1:1 매트릭스**: 좌우 대칭 지표 매트릭스와 함께, 스크롤해도 네비게이션 바 아래에 고정되는 국가 헤더(예: "미국 vs 중국")를 제공하며, 가운데 `VS` 배지는 한 번 눌러 국가를 맞바꾸는 버튼으로도 동작합니다.
+- **양국 시가총액 상위 5대 기업 맞대결 비교**: 기준 국가(A)와 비교 국가(B)의 실시간 시가총액 Top 5 대장주(공식 로고, 티커, 현지화된 산업 섹터, 선택 기준 통화 환산 시가총액, 당일 등락률 %, 100% 증시 점유율 통합 누적 가로 바)를 나란히 비교합니다.
 
 ### 5. 국가별 · 산업별 맞춤 경제 뉴스 탐색기 (`EconomicNewsView`)
 - **2중 소스 글로벌 뉴스 집계 (`newsApi.ts`)**: 실시간 **매크로 브리핑 피드**(`givanchris/News`의 `brief.json`: 거시경제·중앙은행·원자재·시장·무역 등)와 **로이터·블룸버그·CNBC·FT 통신 RSS 풀**(`laapy/reuters-bloomberg-news-rss-pool`, 요약이 포함된 중복 제거된 800여 건의 통신 기사)을 비차단 타임아웃 가드와 함께 결합해 국가별·산업별 최신 기사를 제공합니다.
@@ -41,10 +42,13 @@
 
 ### 6. 국가별 심층 분석 모달 (`CountryModal`)
 - 지도 타일, 히트맵 블록, 순위 테이블 행을 클릭하면 열리며, **10개년 거시경제 추이 차트(`GdpChart`)**, **30일 대표 주가지수 차트(`StockChart`)**, **양방향 실시간 환율 계산기(`CurrencyConverter`)**, 기준금리, 유가, 빅맥 통화가치 평가 정보를 한 화면에서 제공합니다.
+- **100% 동적 런타임 시가총액 상위 5대 기업 조회 (`topCompaniesApi.ts`)**: 정적 JSON 파일에 저장하지 않고 브라우저 런타임에 **TradingView Global Scanner API**를 온디맨드로 호출(2분 인메모리 캐시)하여 국가별 실시간 시가총액 Top 5 기업의 테두리 없는 공식 로고(`CompanyLogo`), 티커, 현지화 산업 섹터, 선택 통화 환산 시가총액, 당일 등락률(%), 그리고 **전체 증시(100%) 대비 점유율 통합 누적 가로 바(`TopCompaniesStackedBar`, 1~5위 + 기타 상장사)**를 표시합니다.
+- **72개 본토 거래소 화이트리스트 & 대표 지수 정밀 검증**: 72개국 공식 본토 증권거래소 매핑(`COUNTRY_DOMESTIC_EXCHANGES`)과 대표 지수 편입 필터(예: 한국 `KOR`은 코스닥 `KRX:KOSDAQ`을 배제하고 코스피 `KRX:KOSPI` 상장 종목만, 미국 `USA`는 `SP:SPX`, 대만 `TWN`은 `TWSE` 본장, 중국 `CHN`은 상하이·선전 `SSE`/`SZSE` A주, 홍콩 `HKG`는 `HKEX`만 허용)를 적용하며, 정규화 기업명 기준 중복 제거로 동일 그룹 계열사(예: 삼성전자·삼성바이오로직스) 누락을 방지합니다.
 
 ### 7. 8개 기준 통화 & 5개 국어 다국어(i18n) 지원
 - **8개 기준 통화**: `USD ($)`, `EUR (€)`, `KRW (₩)`, `JPY (¥)`, `GBP (£)`, `CNY (¥)`, `CHF`, `AUD (A$)` 간 실시간 환산 및 언어별 단위 포맷팅(`조/억/만 원`, `兆/億/万円`, `万亿/亿/万元`, `T/B/M`)을 지원합니다.
 - **5개 언어 지원**: 한국어(`ko`), 영어(`en`), 일본어(`ja`), 스페인어(`es`), 중국어(`zh`)를 지원하며, 브라우저 로케일과 시간대를 감지해 초기 언어 및 기준 통화를 자동 설정합니다(`src/utils/locale.ts`).
+- **개방형 헤더 & 777 환율 슬롯 바 (`Navbar`, `TickerBar`)**: 데스크톱에서는 테두리 없는 개방형 메뉴 탭과 그라데이션 언더라인을 적용하고, 777 슬롯머신 실시간 환율 릴과 언어·통화 선택기의 높이를 `36px (h-9)`로 통일했으며, 모바일에서는 언어+기준통화 통합 팝오버 버튼(`[ 🇰🇷 KO · ₩ ▾ ]`)으로 공간 효율성을 극대화했습니다.
 
 ---
 
@@ -117,6 +121,7 @@ flowchart LR
     S4["유가 / 빅맥지수"]
     S5["Coinbase / open.er-api<br/>환율"]
     S6["매크로 브리핑 JSON + RSS 풀<br/>뉴스"]
+    S7["TradingView Scanner API<br/>실시간 Top 5 시가총액"]
   end
 
   subgraph CI["GitHub Actions (일일 빌드)"]
@@ -145,6 +150,7 @@ flowchart LR
   W --> S2
   WEB -. "실시간 환율" .-> S5
   WEB -. "뉴스" .-> S6
+  WEB -. "Top 5 기업 (실시간)" .-> S7
 ```
 
 ## 🗂️ 프로젝트 구조
@@ -164,10 +170,10 @@ geonomics/
 ├── workers/
 │   └── stock-proxy/             # Cloudflare Worker: 준실시간 주가 시세 프록시 (CORS + 60초 캐시)
 └── src/
-    ├── components/              # UI 컴포넌트 (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, Navbar, TickerBar 등)
+    ├── components/              # UI 컴포넌트 (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, TopCompaniesStackedBar, CompanyLogo, Navbar, TickerBar 등)
     ├── data/                    # 빌드 타임 동기화 데이터 및 오프라인 폴백 데이터
     ├── i18n/                    # 5개 국어 번역 사전 (en, ko, ja, es, zh)
-    ├── services/                # 인메모리 TTL 캐싱이 적용된 API 서비스 (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, liveStockApi, newsApi, geonomicsApi)
+    ├── services/                # 인메모리 TTL 캐싱이 적용된 API 서비스 (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, topCompaniesApi, liveStockApi, newsApi, geonomicsApi)
     ├── types/                   # 핵심 TypeScript 타입 정의 (economics.ts)
     └── utils/                   # Squarified Treemap 알고리즘, 통화/숫자 포맷터, 브라우저 로케일 감지, 동적 연도 유틸리티
 ```

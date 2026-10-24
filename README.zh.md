@@ -22,7 +22,7 @@ Geonomics 还提供**免费开放的静态 REST API v1 接口**，通过每日 G
 - **约 144 万亿美元以上的全球股市规模**：使用响应式 squarified treemap，可视化 125 个国家的本国股市市值。
 - **混合实时估值引擎**：将官方 **世界银行（`CM.MKT.LCAP.CD`）/ 世界交易所联合会（WFE）** 的基准市值，与 **Yahoo Finance 实时指数跟踪**（$P_{\text{live}} / P_{\text{base}}$）及日内涨跌幅相结合。
 - **统一视图与五大洲分栏模式**：可在单一全球画布与五大洲对比网格（`Americas`、`Asia`、`Europe`、`Oceania`、`Africa`）之间切换。
-- **Zen 全屏沉浸与悬浮毛玻璃 HUD**：单行控制栏、一键全屏模式，悬停 HUD 显示 30 日指数迷你图（`StockSparkline`）、实时指数价格及 WFE 基准倍数明细。
+- **Zen 全屏沉浸与悬浮毛玻璃 HUD**：单行控制栏、一键全屏模式，悬停 HUD 显示 30 日指数迷你图（`StockSparkline`）、实时指数价格、WFE 基准倍数明细及**实时市值前五强企业（企业图标、名称、市值、日涨跌幅 %）**。
 - **近实时行情（Cloudflare Worker 代理）**：当配置 `VITE_STOCK_PROXY_URL` 时，每 60 秒拉取一次盘中报价，并显示 `LIVE` 标识；代理不可用时自动回退到预构建的静态数据。
 
 ### 3. 交互式排名表（`RankingTable`）
@@ -33,6 +33,7 @@ Geonomics 还提供**免费开放的静态 REST API v1 接口**，通过每日 G
 - **并排基准对比**：一键切换对抗预设（`USA vs CHN`、`KOR vs JPN`、`DEU vs GBR`、`IND vs JPN` 等），任意两国均可对比。
 - **规模倍数与利差**：自动计算 GDP 规模倍数、人均 GDP 比率、央行利率差、双边汇率交叉汇率、巨无霸 PPP 估值，以及双 10 年历史走势图（`GdpChart`）。
 - **移动端优化**：提供 1:1 对称矩阵视图，滚动时国家对比头部（如“美国 vs 中国”）吸顶显示。
+- **两国市值前五强企业并排对比**：直接对比两国市值前五强龙头企业（官方图标、代码、本地化行业分类、按所选基准货币折算的实时市值、24 小时涨跌幅 %，以及 100% 股市占比堆叠横条）。
 
 ### 5. 国家与行业定制经济新闻（`EconomicNewsView`）
 - **双源全球新闻聚合（`newsApi.ts`）**：结合实时**宏观简报源**（`givanchris/News` 的 `brief.json`：宏观、央行、大宗商品、市场、贸易等）与**路透/彭博/CNBC/FT 通讯社 RSS 池**（`laapy/reuters-bloomberg-news-rss-pool`，800 多篇带摘要的去重通讯稿），并带有非阻塞超时保护。
@@ -41,6 +42,8 @@ Geonomics 还提供**免费开放的静态 REST API v1 接口**，通过每日 G
 
 ### 6. 国家深度详情弹窗（`CountryModal`）
 - **一站式国家档案**：展示 10 年历史宏观经济走势图（`GdpChart`）、30 日股指表现图（`StockChart`，含 `LIVE`/`CLOSED` 状态标识）、交互式双向**货币转换器（`CurrencyConverter`）**、央行政策利率、燃油价格以及巨无霸 PPP 估值。
+- **100% 动态运行时市值前五强企业查询（`topCompaniesApi.ts`）**：零静态 JSON 存储，浏览器运行时按需直连 **TradingView Global Scanner API**（2 分钟内存缓存），展示无边框官方企业图标（`CompanyLogo`）、股票代码、本地化行业、实时市值、日涨跌幅 %，以及**占本国股市 100% 堆叠横条（`TopCompaniesStackedBar`，前 1–5 强 + 其他上市企业）**。
+- **72 个本土交易所白名单与基准指数校验**：内置 72 国本土证券交易所映射（`COUNTRY_DOMESTIC_EXCHANGES`）与指数成分校验（例如韩国 `KOR` 严格限定 `KRX:KOSPI` 并排除 `KOSDAQ`，美国 `USA` 校验 `SP:SPX`，中国大陆 `CHN` 限定 `SSE`/`SZSE` A 股，中国香港 `HKG` 限定 `HKEX`，中国台湾 `TWN` 限定 `TWSE` 主板），并按规范化公司名称去重以完整保留同集团独立上市子公司（如三星电子与三星生物制剂）。
 
 ### 7. 多币种与五语言本地化（i18n）
 - **8 种基准货币**：`USD ($)`、`EUR (€)`、`KRW (₩)`、`JPY (¥)`、`GBP (£)`、`CNY (¥)`、`CHF` 和 `AUD (A$)`，采用本地单位格式（`조/억/만`、`兆/億/万円`、`万亿/亿/万元`、`T/B/M`）。
@@ -164,10 +167,10 @@ geonomics/
 ├── workers/
 │   └── stock-proxy/             # Cloudflare Worker：近实时股票行情代理（CORS + 60 秒缓存）
 └── src/
-    ├── components/              # UI 组件（GdpWorldMap、GdpTreemap、TileWorldMap、StockHeatmap、RankingTable、CompareView、EconomicNewsView、CountryModal、Navbar、TickerBar 等）
+    ├── components/              # UI 组件（GdpWorldMap、GdpTreemap、TileWorldMap、StockHeatmap、RankingTable、CompareView、EconomicNewsView、CountryModal、TopCompaniesStackedBar、CompanyLogo、Navbar、TickerBar 等）
     ├── data/                    # 带类型的回退数据与构建时同步数据集
     ├── i18n/                    # 5 语言翻译词典 (en, ko, ja, es, zh)
-    ├── services/                # 带内存 TTL 缓存的 API 客户端（worldBankApi、exchangeApi、interestRateApi、stockMarketCapApi、liveStockApi、newsApi、geonomicsApi）
+    ├── services/                # 带内存 TTL 缓存的 API 客户端（worldBankApi、exchangeApi、interestRateApi、stockMarketCapApi、topCompaniesApi、liveStockApi、newsApi、geonomicsApi）
     ├── types/                   # 核心 TypeScript 接口 (economics.ts)
     └── utils/                   # Squarified treemap 布局、货币/数字格式化、语言检测、动态年份工具
 ```

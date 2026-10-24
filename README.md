@@ -22,7 +22,7 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 - **~$144T+ Global Equity Universe**: Visualizes domestic equity market capitalization across 125 countries using a responsive squarified treemap.
 - **Hybrid Live Valuation Engine**: Combines official **World Bank (`CM.MKT.LCAP.CD`) / World Federation of Exchanges (WFE)** baseline market caps with **Yahoo Finance live index tracking** ($P_{\text{live}} / P_{\text{base}}$) and intraday percentage fluctuations.
 - **Unified & 5-Continent Split Modes**: Toggle between a single global canvas and a 5-continent comparative grid (`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`).
-- **Zen Fullscreen Immersion & Floating Glassmorphic HUD**: Single-line control bar, one-click fullscreen mode, and hover HUD with 30-day index sparklines (`StockSparkline`), live index price, and WFE base multiplier breakdown.
+- **Zen Fullscreen Immersion & Floating Glassmorphic HUD**: Single-line control bar, one-click fullscreen mode, and hover HUD with 30-day index sparklines (`StockSparkline`), live index price, WFE base multiplier breakdown, and **live Top 5 companies by market cap** (company logo, name, market cap, and 24h change %).
 - **Near-Real-Time Quotes (Cloudflare Worker Proxy)**: When `VITE_STOCK_PROXY_URL` is set, intraday quotes are refreshed every 60 seconds with a `LIVE` badge in the heatmap toolbar, and `LIVE` / `CLOSED` market-state badges in the country modal stock chart. Yahoo Finance blocks direct browser calls (CORS), so a small Worker (`workers/stock-proxy`) relays requests with a 60s edge cache and an origin allow-list. If the proxy is unavailable, the app falls back to the prebuilt static data.
 
 ### 3. Interactive Ranking Table (`RankingTable`)
@@ -33,6 +33,7 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 - **Side-by-Side Benchmarking**: Compare any two countries with one-click rivalry presets (`USA vs CHN`, `KOR vs JPN`, `DEU vs GBR`, `IND vs JPN`, etc.).
 - **Scale Multiples & Spreads**: Automatically computes GDP scale multiples, GDP per capita ratios, central bank interest rate spreads, bilateral FX cross-rates, Big Mac PPP valuations, and dual 10-year historical trajectory charts (`GdpChart`).
 - **Mobile-Optimized Head-to-Head Matrix**: A symmetric 1:1 metric matrix with a sticky country header (e.g. "USA vs CHN") that stays pinned under the navbar while scrolling; the `VS` badge doubles as a one-tap swap button.
+- **Side-by-Side Top 5 Market Cap Companies Comparison**: Directly compares the Top 5 flagship companies of Country A and Country B (with official logos, tickers, localized sectors, live market caps in the selected base currency, 24h change %, and 100% national market share stacked bars).
 
 ### 5. Country & Sector Customized Economic News (`EconomicNewsView`)
 - **Two-Source Global News Aggregation (`newsApi.ts`)**: Combines a live **Macro Brief feed** (`givanchris/News` `brief.json`: macro, central banks, commodities, markets, trade, etc.) with the **Reuters/Bloomberg/CNBC/FT Wire RSS Pool** (`laapy/reuters-bloomberg-news-rss-pool`, 800+ deduplicated wire articles with summaries), with non-blocking timeout guards.
@@ -41,10 +42,13 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 
 ### 6. Country Deep-Dive Modal (`CountryModal`)
 - **All-in-One Country Profile**: Displays 10-year historical macroeconomic trajectory charts (`GdpChart`), 30-day stock index performance charts (`StockChart`), an interactive two-way **Currency Converter (`CurrencyConverter`)**, central bank policy rate, fuel price, and Big Mac PPP valuation.
+- **100% Dynamic Runtime Top 5 Companies by Market Cap (`topCompaniesApi.ts`)**: Queries the **TradingView Global Scanner API** on-demand at runtime (zero static JSON storage, 2-minute in-memory TTL cache) to display each country's live Top 5 companies with borderless official SVG logos (`CompanyLogo`), tickers, localized industry sectors, live market cap in `baseCurrency`, 24h price change %, and a **Unified 100% Market Share Stacked Bar (`TopCompaniesStackedBar`)** visualizing Top 1–5 concentration vs. the rest of the market.
+- **Strict 72-Exchange & Benchmark Index Verification**: Enforces a 72-country domestic exchange whitelist (`COUNTRY_DOMESTIC_EXCHANGES`) and index membership rules (e.g. strictly `KRX:KOSPI` excluding `KOSDAQ` for South Korea, `SP:SPX` for the US, `TWSE` main board for Taiwan, `SSE`/`SZSE` A-shares for mainland China, `HKEX` for Hong Kong) while deduplicating dual-class shares by normalized company name so conglomerate affiliates (e.g. Samsung Electronics vs. Samsung Biologics) are accurately preserved.
 
 ### 7. Multi-Currency & 5-Language Localization (i18n)
 - **8 Base Currencies**: `USD ($)`, `EUR (€)`, `KRW (₩)`, `JPY (¥)`, `GBP (£)`, `CNY (¥)`, `CHF`, and `AUD (A$)` with native unit formatting (`조/억/만 원`, `兆/億/万円`, `万亿/亿/万元`, `T/B/M`).
 - **5 Languages**: English (`en`), Korean (`ko`), Japanese (`ja`), Spanish (`es`), and Chinese (`zh`), with automatic browser locale and regional currency detection (`src/utils/locale.ts`).
+- **Streamlined Header & 777 FX Slot Reel (`Navbar`, `TickerBar`)**: Features a borderless open desktop navigation bar with gradient active indicators, unified 36px (`h-9`) control height across the localized 777 slot-machine FX reel and selectors, and a unified mobile language + currency quick-switch popover (`[ 🇰🇷 KO · ₩ ▾ ]`).
 
 ---
 
@@ -117,6 +121,7 @@ flowchart LR
     S4["Fuel prices / Big Mac Index"]
     S5["Coinbase / open.er-api<br/>FX rates"]
     S6["Macro brief JSON + RSS pool<br/>News"]
+    S7["TradingView Scanner API<br/>Live Top 5 Market Cap"]
   end
 
   subgraph CI["GitHub Actions (daily build)"]
@@ -145,6 +150,7 @@ flowchart LR
   W --> S2
   WEB -. "real-time FX" .-> S5
   WEB -. "news" .-> S6
+  WEB -. "Top 5 companies (live)" .-> S7
 ```
 
 ## 🗂️ Project Architecture
@@ -164,10 +170,10 @@ geonomics/
 ├── workers/
 │   └── stock-proxy/             # Cloudflare Worker: near-real-time stock quote proxy (CORS + 60s cache)
 └── src/
-    ├── components/              # UI Components (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, Navbar, TickerBar, etc.)
+    ├── components/              # UI Components (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, TopCompaniesStackedBar, CompanyLogo, Navbar, TickerBar, etc.)
     ├── data/                    # Typed fallback & build-time synchronized datasets
     ├── i18n/                    # 5-language translation dictionary (en, ko, ja, es, zh)
-    ├── services/                # API clients with in-memory TTL caching (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, liveStockApi, newsApi, geonomicsApi)
+    ├── services/                # API clients with in-memory TTL caching (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, topCompaniesApi, liveStockApi, newsApi, geonomicsApi)
     ├── types/                   # Core TypeScript interfaces (economics.ts)
     └── utils/                   # Squarified treemap layout, currency/number formatters, locale detection, dynamic year helpers
 ```
