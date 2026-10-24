@@ -105,6 +105,24 @@ const COUNTRY_DOMESTIC_EXCHANGES: Record<string, string[]> = {
   GRC: ['ATHEX'],
   ROU: ['BVB'],
   HUN: ['BET'],
+  CZE: ['PSECZ'],
+  MAR: ['CSEMA'],
+  SVK: ['BSSE'],
+  VEN: ['BVCV'],
+  KEN: ['NSEKE'],
+  BGR: ['BSESOF'],
+  LKA: ['CSELK'],
+  HRV: ['ZSE'],
+  SRB: ['BELEX'],
+  LTU: ['OMXVSE'],
+  SVN: ['LJSE'],
+  TUN: ['BVMT'],
+  BHR: ['BAHRAIN'],
+  LVA: ['OMXRSE'],
+  EST: ['OMXTSE'],
+  ISL: ['OMXICE'],
+  CYP: ['CSECY'],
+  LUX: ['LUXSE'],
 }
 
 /**
@@ -227,6 +245,17 @@ export async function fetchCountryTopCompanies(
   const isDedicatedEndpoint = Boolean(DEDICATED_MARKET_ENDPOINTS[upperId])
   const domesticExchanges = COUNTRY_DOMESTIC_EXCHANGES[upperId]
 
+  // Strictly require a verified domestic exchange mapping (or dedicated endpoint)
+  // so unmapped countries never fall back to foreign exchange listings (e.g. OTC/NYSE/LSE/JSE).
+  if ((!domesticExchanges || domesticExchanges.length === 0) && !isDedicatedEndpoint) {
+    return {
+      countryId: upperId,
+      companies: [],
+      totalListedCount: 0,
+      fetchedAt: Date.now(),
+    }
+  }
+
   const filter: Array<Record<string, unknown>> = [
     { left: 'type', operation: 'equal', right: 'stock' },
     { left: 'typespecs', operation: 'has_none_of', right: ['preferred', 'dr'] },
@@ -342,6 +371,9 @@ export async function fetchCountryTopCompanies(
 
         const ticker = String(rawTicker || row.s.split(':')[1] || row.s)
         const exchange = row.s.includes(':') ? row.s.split(':')[0] : ''
+        if (domesticExchanges && domesticExchanges.length > 0 && !domesticExchanges.includes(exchange)) {
+          continue
+        }
         const cleanedName = cleanCompanyName(String(rawDesc || ticker), ticker)
         const logoId = typeof rawLogoId === 'string' && rawLogoId.trim() ? rawLogoId.trim() : null
 
