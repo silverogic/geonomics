@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ArrowLeftRight, Coins } from 'lucide-react'
+import { ArrowLeftRight, Coins, ChevronUp, ChevronDown } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, CountryMeta, Language } from '../types/economics'
 import { getConversionRate } from '../services/exchangeApi'
 import { formatExchangeRate } from '../utils/formatters'
@@ -49,6 +49,17 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
     setToCurrency(fromCurrency)
   }
 
+  const getStepSize = (currency: string) => {
+    if (currency === 'KRW' || currency === 'IDR' || currency === 'VND') return 10000
+    if (currency === 'JPY') return 1000
+    return 10
+  }
+
+  const handleStep = (delta: 1 | -1) => {
+    const step = getStepSize(fromCurrency)
+    setAmount((prev) => Math.max(0, prev + delta * step))
+  }
+
   return (
     <div className="bg-gradient-to-r from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-900/40 rounded-xl p-4 space-y-3">
       {/* Header: Title + Official Rate Summary */}
@@ -83,13 +94,36 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             <span className="truncate">{t.converterSending}</span>
             <span className="text-slate-300 font-bold font-mono shrink-0 ml-1">{fromCurrency}</span>
           </div>
-          <input
-            type="number"
-            value={amount === 0 ? '' : amount}
-            onChange={(e) => setAmount(Number(e.target.value) || 0)}
-            className="w-full bg-transparent text-base sm:text-lg font-mono font-bold text-white focus:outline-none"
-            placeholder="0"
-          />
+          <div className="flex items-center gap-1.5">
+            <input
+              type="number"
+              min={0}
+              step={getStepSize(fromCurrency)}
+              value={amount === 0 ? '' : amount}
+              onChange={(e) => setAmount(Math.max(0, Number(e.target.value) || 0))}
+              className="w-full min-w-0 bg-transparent text-base sm:text-lg font-mono font-bold text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              placeholder="0"
+            />
+            {/* App-Themed Custom Number Spinner */}
+            <div className="flex flex-col shrink-0 rounded-md overflow-hidden border border-slate-800 bg-slate-900/90 shadow-inner">
+              <button
+                type="button"
+                onClick={() => handleStep(1)}
+                className="px-1.5 py-0.5 text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/20 active:bg-indigo-500/30 transition-colors border-b border-slate-800/80 flex items-center justify-center"
+                aria-label="Increase amount"
+              >
+                <ChevronUp className="w-3 h-3 stroke-[2.5]" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleStep(-1)}
+                className="px-1.5 py-0.5 text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/20 active:bg-indigo-500/30 transition-colors flex items-center justify-center"
+                aria-label="Decrease amount"
+              >
+                <ChevronDown className="w-3 h-3 stroke-[2.5]" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Swap Button */}
@@ -116,4 +150,3 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
     </div>
   )
 }
-

@@ -2,6 +2,7 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
     /* Navbar height tokens (used for sticky offset + scroll-padding-top)
@@ -13,7 +14,8 @@
   }
 
   @media (min-width: 640px) {
-    :root { --navbar-h: 80px; }
+    :root {
+    color-scheme: dark; --navbar-h: 80px; }
   }
 
   /* Ensure data rows are always positioned below the dock when anchor-scrolling.
