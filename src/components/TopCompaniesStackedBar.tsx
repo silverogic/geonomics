@@ -4,13 +4,15 @@ import type { TopCompanyItem } from '../services/topCompaniesApi'
 const SEGMENT_COLORS = [
   { bar: 'bg-amber-400', dot: 'bg-amber-400', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
   { bar: 'bg-indigo-400', dot: 'bg-indigo-400', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' },
-  { bar: 'bg-cyan-400', dot: 'bg-cyan-400', badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' },
-  { bar: 'bg-emerald-400', dot: 'bg-emerald-400', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
-  { bar: 'bg-purple-400', dot: 'bg-purple-400', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
+  { bar: 'bg-cyan-400', dot: 'bg-cyan-400', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
+  { bar: 'bg-emerald-400', dot: 'bg-emerald-400', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
+  { bar: 'bg-purple-400', dot: 'bg-purple-400', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
 ]
 
 export function getRankBadgeStyle(rank: number): string {
-  return SEGMENT_COLORS[rank - 1]?.badge || 'bg-slate-800/90 text-slate-400 border-slate-700'
+  if (rank === 1) return 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+  if (rank === 2) return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
+  return 'bg-slate-800/90 text-slate-400 border-slate-700/80'
 }
 
 interface TopCompaniesStackedBarProps {

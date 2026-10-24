@@ -13,6 +13,7 @@ export interface TopCompanyItem {
   priceCurrency: string   // Trading currency code (e.g. "USD", "KRW")
   changePct: number       // 24h price change percentage
   sector: string          // Localized industry sector
+  sectorKey: string       // Canonical English sector key for reliable grouping across languages
   logoUrl: string | null  // Official SVG logo URL if available
 }
 
@@ -398,6 +399,7 @@ export async function fetchCountryTopCompanies(
         const price = typeof rawClose === 'number' ? rawClose : 0
         const priceCurrency = typeof rawPriceCurrency === 'string' ? rawPriceCurrency : fundCurrency
         const changePct = typeof rawChange === 'number' ? Number(rawChange.toFixed(2)) : 0
+        const sectorKey = String(rawSectorEn || 'Other').trim() || 'Other'
         const sector = String(rawSectorTr || rawSectorEn || '')
 
         companies.push({
@@ -411,6 +413,7 @@ export async function fetchCountryTopCompanies(
           priceCurrency,
           changePct,
           sector,
+          sectorKey,
           logoUrl: logoId ? `https://s3-symbol-logo.tradingview.com/${logoId}.svg` : null,
         })
 
@@ -441,4 +444,98 @@ export async function fetchCountryTopCompanies(
 
   inflightRequests.set(cacheKey, requestPromise)
   return requestPromise
+}
+
+/**
+ * Tier 1 flagship global stock markets (top 25 by market capitalization, covering >96% of global cap)
+ * for instant first-stage rendering in the Top 5 Companies Heatmap & Sector Views.
+ */
+export const TIER1_MARKET_IDS: string[] = [
+  'USA', 'CHN', 'JPN', 'IND', 'GBR',
+  'FRA', 'DEU', 'CAN', 'TWN', 'KOR',
+  'CHE', 'AUS', 'SAU', 'NLD', 'HKG',
+  'ESP', 'ITA', 'BRA', 'SWE', 'SGP',
+  'ARE', 'DNK', 'IDN', 'MEX', 'ZAF',
+]
+
+/**
+ * All supported stock market country IDs with verified domestic exchanges.
+ */
+export const ALL_SUPPORTED_MARKET_IDS: string[] = [
+  ...Object.keys(COUNTRY_DOMESTIC_EXCHANGES),
+  ...Object.keys(DEDICATED_MARKET_ENDPOINTS),
+]
+
+/**
+ * Fetches Top 5 companies for a batch of countries concurrently with controlled concurrency.
+ */
+export async function fetchBatchTopCompanies(
+  countryIds: string[],
+  lang: Language = 'en',
+  exchangeRates?: ExchangeRates | null,
+  forceRefresh = false
+): Promise<Record<string, TopCompanyItem[]>> {
+  const results: Record<string, TopCompanyItem[]> = {}
+  const CONCURRENCY = 10
+
+  for (let i = 0; i < countryIds.length; i += CONCURRENCY) {
+    const chunk = countryIds.slice(i, i + CONCURRENCY)
+    const settled = await Promise.all(
+      chunk.map((id) => fetchCountryTopCompanies(id, lang, exchangeRates, forceRefresh))
+    )
+    for (const res of settled) {
+      if (res.companies.length > 0) {
+        results[res.countryId] = res.companies
+      }
+    }
+  }
+
+  return results
+}
+
+/**
+ * Maps canonical TradingView English sector keys to visual emojis for sector treemap headers & pills.
+ */
+export function getSectorEmoji(sectorKey: string): string {
+  switch (sectorKey) {
+    case 'Electronic Technology':
+      return '💻'
+    case 'Technology Services':
+      return '☁️'
+    case 'Finance':
+      return '🏦'
+    case 'Health Technology':
+    case 'Health Services':
+      return '🧬'
+    case 'Producer Manufacturing':
+      return '🏭'
+    case 'Energy Minerals':
+      return '🛢️'
+    case 'Retail Trade':
+      return '🛒'
+    case 'Consumer Durables':
+      return '🚗'
+    case 'Consumer Non-Durables':
+      return '🛍️'
+    case 'Consumer Services':
+      return '🍽️'
+    case 'Communications':
+      return '📡'
+    case 'Process Industries':
+      return '⚗️'
+    case 'Utilities':
+      return '⚡'
+    case 'Transportation':
+      return '🚢'
+    case 'Non-Energy Minerals':
+      return '⛏️'
+    case 'Industrial Services':
+      return '🏗️'
+    case 'Commercial Services':
+      return '💼'
+    case 'Distribution Services':
+      return '📦'
+    default:
+      return '🏢'
+  }
 }

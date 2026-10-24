@@ -8,6 +8,9 @@ import {
   Minimize2,
   LayoutGrid,
   Columns,
+  Building2,
+  Layers,
+  Loader2,
 } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, Region } from '../types/economics'
 import { COUNTRIES } from '../data/countries'
@@ -22,7 +25,16 @@ import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { StockSparkline } from './StockSparkline'
 import { CompanyLogo } from './CompanyLogo'
-import { fetchCountryTopCompanies, type TopCompanyItem } from '../services/topCompaniesApi'
+import {
+  fetchCountryTopCompanies,
+  fetchBatchTopCompanies,
+  TIER1_MARKET_IDS,
+  ALL_SUPPORTED_MARKET_IDS,
+  getSectorEmoji,
+  type TopCompanyItem,
+} from '../services/topCompaniesApi'
+import { CompanyTreemapPanel, type CompanyHeatmapItem } from './CompanyTreemapPanel'
+import { SectorIcon } from './SectorIcon'
 
 interface StockHeatmapProps {
   baseCurrency: BaseCurrency
@@ -128,7 +140,12 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
 }) => {
   const t = translations[lang]
   const [selectedContinent, setSelectedContinent] = useState<Region | 'All'>('All')
-  const [viewMode, setViewMode] = useState<'unified' | 'byContinent'>('unified')
+  const [viewMode, setViewMode] = useState<
+    'unified' | 'byContinent' | 'companiesUnified' | 'companiesBySector'
+  >('unified')
+  const [selectedSector, setSelectedSector] = useState<string>('All')
+  const [topCompaniesByCountry, setTopCompaniesByCountry] = useState<Record<string, TopCompanyItem[]>>({})
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [hoveredCountryId, setHoveredCountryId] = useState<string | null>(null)
   const [liveCapData, setLiveCapData] = useState<LiveMarketCapData | null>(null)
@@ -140,6 +157,42 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
   const isFirstLoadRef = useRef(true)
   const flashTimerRef = useRef<number | null>(null)
   const toolbarFlashTimerRef = useRef<number | null>(null)
+
+  const isCompanyMode = viewMode === 'companiesUnified' || viewMode === 'companiesBySector'
+
+  // Progressive 2-stage batch loading of Top 5 companies when in company view modes
+  useEffect(() => {
+    if (!isCompanyMode) return
+    let active = true
+
+    const loadAllCompanies = async () => {
+      setIsLoadingCompanies(true)
+      try {
+        // Stage 1: Instant load of top 25 flagship markets (>96% of global cap)
+        const tier1Data = await fetchBatchTopCompanies(TIER1_MARKET_IDS, lang, exchangeRates)
+        if (!active) return
+        setTopCompaniesByCountry((prev) => ({ ...prev, ...tier1Data }))
+        setIsLoadingCompanies(false)
+
+        // Stage 2: Background load of remaining exchanges
+        const tier1Set = new Set(TIER1_MARKET_IDS)
+        const tier2Ids = ALL_SUPPORTED_MARKET_IDS.filter((id) => !tier1Set.has(id))
+        if (tier2Ids.length > 0) {
+          const tier2Data = await fetchBatchTopCompanies(tier2Ids, lang, exchangeRates)
+          if (!active) return
+          setTopCompaniesByCountry((prev) => ({ ...prev, ...tier2Data }))
+        }
+      } catch (err) {
+        console.warn('Batch top companies fetch error:', err)
+        if (active) setIsLoadingCompanies(false)
+      }
+    }
+
+    loadAllCompanies()
+    return () => {
+      active = false
+    }
+  }, [isCompanyMode, lang, exchangeRates, refreshKey])
 
   // Near-real-time quotes (via Cloudflare Worker proxy). Silently no-op if not configured.
   useEffect(() => {
@@ -325,6 +378,89 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
     return map
   }, [filteredBySearch])
 
+  // Build flat list of Top 5 company items filtered by continent and search query
+  const companyBaseFilteredItems: CompanyHeatmapItem[] = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim()
+    const marketMap = new Map(allMarketItems.map((m) => [m.country.id, m]))
+    const list: CompanyHeatmapItem[] = []
+
+    for (const [countryId, companies] of Object.entries(topCompaniesByCountry)) {
+      const marketItem = marketMap.get(countryId)
+      if (!marketItem) continue
+      const country = marketItem.country
+
+      if (selectedContinent !== 'All' && country.region !== selectedContinent) {
+        continue
+      }
+
+      for (const comp of companies) {
+        if (q) {
+          const matchCompany =
+            comp.name.toLowerCase().includes(q) ||
+            comp.ticker.toLowerCase().includes(q) ||
+            comp.symbol.toLowerCase().includes(q) ||
+            comp.sector.toLowerCase().includes(q) ||
+            comp.sectorKey.toLowerCase().includes(q) ||
+            country.nameEn.toLowerCase().includes(q) ||
+            country.nameKo.toLowerCase().includes(q) ||
+            country.id.toLowerCase().includes(q)
+          if (!matchCompany) continue
+        }
+
+        list.push({
+          id: `${country.id}:${comp.symbol}`,
+          country,
+          company: comp,
+          nationalCapUsd: marketItem.marketCapUsd,
+        })
+      }
+    }
+
+    list.sort((a, b) => b.company.marketCapUsd - a.company.marketCapUsd)
+    return list
+  }, [topCompaniesByCountry, allMarketItems, selectedContinent, searchQuery])
+
+  // Group companies by canonical sectorKey, sorted by total sector market cap descending
+  const sectorGroups = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        sectorKey: string
+        label: string
+        emoji: string
+        totalCap: number
+        items: CompanyHeatmapItem[]
+      }
+    >()
+
+    for (const item of companyBaseFilteredItems) {
+      const key = item.company.sectorKey || 'Other'
+      let group = map.get(key)
+      if (!group) {
+        group = {
+          sectorKey: key,
+          label: item.company.sector || key,
+          emoji: getSectorEmoji(key),
+          totalCap: 0,
+          items: [],
+        }
+        map.set(key, group)
+      }
+      group.totalCap += item.company.marketCapUsd
+      group.items.push(item)
+    }
+
+    return Array.from(map.values()).sort((a, b) => b.totalCap - a.totalCap)
+  }, [companyBaseFilteredItems])
+
+  // Final filtered companies when a specific sector is selected in `companiesUnified` or `companiesBySector`
+  const finalCompanyItems = useMemo(() => {
+    if (selectedSector === 'All') return companyBaseFilteredItems
+    return companyBaseFilteredItems.filter(
+      (item) => (item.company.sectorKey || 'Other') === selectedSector
+    )
+  }, [companyBaseFilteredItems, selectedSector])
+
   const [isZenMode, setIsZenMode] = useState(false)
   const [viewportHeight, setViewportHeight] = useState(
     typeof window !== 'undefined' ? window.innerHeight : 900
@@ -381,20 +517,26 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
 
   // Calculate full-screen height so the entire heatmap fits without vertical scroll or bottom clipping
   const unifiedCanvasHeight = useMemo(() => {
+    const sectorBarExtra = isCompanyMode ? 38 : 0
     if (isZenMode) {
       // In Zen mode: container padding p-2 (16px) / sm:p-3 (24px) + space-y-2 (8px) + panel border (2px) + safe margin (6px)
-      const overhead = toolbarHeight + 40
+      const overhead = toolbarHeight + sectorBarExtra + 40
       return Math.max(300, viewportHeight - overhead)
     }
     // In normal mode: Navbar (64/80px) + main padding (12px) + toolbar + space-y-2 (8px) + bottom margin (24px)
-    const overhead = toolbarHeight + 124
+    const overhead = toolbarHeight + sectorBarExtra + 124
     return Math.max(450, viewportHeight - overhead)
-  }, [isZenMode, viewportHeight, toolbarHeight])
+  }, [isZenMode, viewportHeight, toolbarHeight, isCompanyMode])
 
   const zoomedCanvasHeight = useMemo(() => {
-    // Single continent panel with header bar (~34px)
+    // Single continent or single sector panel with header bar (~34px)
     return Math.max(300, unifiedCanvasHeight - 34)
   }, [unifiedCanvasHeight])
+
+  const activeSectorGroup = useMemo(() => {
+    if (selectedSector === 'All') return null
+    return sectorGroups.find((g) => g.sectorKey === selectedSector) || null
+  }, [selectedSector, sectorGroups])
 
   return (
     <div
@@ -499,6 +641,32 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
               <Columns className="w-3 h-3" />
               <span className="hidden sm:inline">{t.heatmapViewByContinent}</span>
             </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('companiesUnified')}
+              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 ${
+                viewMode === 'companiesUnified'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+              title={t.heatmapViewCompaniesUnified}
+            >
+              <Building2 className="w-3 h-3" />
+              <span className="hidden sm:inline">{t.heatmapViewCompaniesUnified}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('companiesBySector')}
+              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 ${
+                viewMode === 'companiesBySector'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+              title={t.heatmapViewCompaniesBySector}
+            >
+              <Layers className="w-3 h-3" />
+              <span className="hidden sm:inline">{t.heatmapViewCompaniesBySector}</span>
+            </button>
           </div>
 
           {/* Continent Pills */}
@@ -581,9 +749,133 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         </div>
       </div>
 
+      {/* 1.5 SECTOR FILTER BAR (Visible in Top 5 Companies Unified & By Sector modes) */}
+      {isCompanyMode && (
+        <div className="rounded-xl bg-slate-900/75 border border-slate-800/80 px-2.5 py-1 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          <button
+            type="button"
+            onClick={() => setSelectedSector('All')}
+            className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1 shrink-0 ${
+              selectedSector === 'All'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
+            }`}
+          >
+            <SectorIcon sectorKey="All" className="w-3 h-3 shrink-0" />
+            <span>{t.heatmapAllSectors}</span>
+            <span className="text-[10px] font-mono opacity-80">
+              ({companyBaseFilteredItems.length})
+            </span>
+          </button>
+
+          {sectorGroups.map((group) => {
+            const isSelected = selectedSector === group.sectorKey
+            return (
+              <button
+                key={group.sectorKey}
+                type="button"
+                onClick={() =>
+                  setSelectedSector(isSelected ? 'All' : group.sectorKey)
+                }
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1 shrink-0 ${
+                  isSelected
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
+                }`}
+              >
+                <SectorIcon
+                  sectorKey={group.sectorKey}
+                  className={`w-3 h-3 shrink-0 ${isSelected ? 'text-white' : 'text-indigo-400'}`}
+                />
+                <span>{group.label}</span>
+                <span className="text-[10px] font-mono opacity-75">
+                  ({group.items.length})
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       {/* 2. FULL-WIDTH IMMERSIVE TREEMAP CANVAS */}
       <div className="w-full flex-grow min-h-0 overflow-y-auto">
-        {viewMode === 'unified' ? (
+        {isCompanyMode ? (
+          isLoadingCompanies && companyBaseFilteredItems.length === 0 ? (
+            <div
+              className="rounded-xl bg-slate-950 border border-slate-800/80 flex flex-col items-center justify-center gap-2 text-slate-400"
+              style={{ height: `${unifiedCanvasHeight}px` }}
+            >
+              <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+              <span className="text-xs font-medium">{t.heatmapCompaniesLoading}</span>
+            </div>
+          ) : viewMode === 'companiesUnified' ? (
+            /* TOP 5 COMPANIES UNIFIED VIEW */
+            <CompanyTreemapPanel
+              title={
+                activeSectorGroup
+                  ? activeSectorGroup.label
+                  : t.heatmapViewCompaniesUnified
+              }
+              sectorKey={activeSectorGroup ? activeSectorGroup.sectorKey : 'Other'}
+              items={finalCompanyItems}
+              height={activeSectorGroup ? zoomedCanvasHeight : unifiedCanvasHeight}
+              baseCurrency={baseCurrency}
+              usdToBase={usdToBase}
+              lang={lang}
+              onSelectCountry={onSelectCountry}
+              onZoom={activeSectorGroup ? () => setSelectedSector('All') : undefined}
+              isZoomed={Boolean(activeSectorGroup)}
+              showZoomBtn={Boolean(activeSectorGroup)}
+              hideHeader={!activeSectorGroup}
+            />
+          ) : activeSectorGroup ? (
+            /* SINGLE SECTOR ZOOMED VIEW */
+            <CompanyTreemapPanel
+              title={activeSectorGroup.label}
+              sectorKey={activeSectorGroup.sectorKey}
+              items={activeSectorGroup.items}
+              height={zoomedCanvasHeight}
+              baseCurrency={baseCurrency}
+              usdToBase={usdToBase}
+              lang={lang}
+              onSelectCountry={onSelectCountry}
+              onZoom={() => setSelectedSector('All')}
+              isZoomed={true}
+              showZoomBtn={true}
+              hideHeader={false}
+            />
+          ) : (
+            /* BY SECTOR MULTI-PANEL VIEW (Sorted by Sector Total Market Cap) */
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 pb-2">
+              {sectorGroups.map((group, idx) => {
+                const panelHeight =
+                  idx < 2
+                    ? Math.max(260, Math.round(unifiedCanvasHeight * 0.48))
+                    : idx < 6
+                      ? Math.max(220, Math.round(unifiedCanvasHeight * 0.40))
+                      : Math.max(190, Math.round(unifiedCanvasHeight * 0.34))
+
+                return (
+                  <CompanyTreemapPanel
+                    key={group.sectorKey}
+                    title={group.label}
+                    sectorKey={group.sectorKey}
+                    items={group.items}
+                    height={panelHeight}
+                    baseCurrency={baseCurrency}
+                    usdToBase={usdToBase}
+                    lang={lang}
+                    onSelectCountry={onSelectCountry}
+                    onZoom={() => setSelectedSector(group.sectorKey)}
+                    isZoomed={false}
+                    showZoomBtn={true}
+                    hideHeader={false}
+                  />
+                )
+              })}
+            </div>
+          )
+        ) : viewMode === 'unified' ? (
           /* UNIFIED VIEW: 100% Full-Width Treemap with Responsive Height & No Redundant Header */
           <TreemapPanel
             title={
