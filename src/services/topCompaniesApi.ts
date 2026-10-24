@@ -47,6 +47,83 @@ const TV_COUNTRY_NAME_OVERRIDES: Record<string, string> = {
 }
 
 /**
+ * Strict domestic stock exchange whitelist per country.
+ * Prevents foreign-listed stocks (e.g. NYSE/NASDAQ/HKEX/LSE cross-listings or tax-inversion companies)
+ * from polluting a country's domestic stock market Top 5.
+ */
+const COUNTRY_DOMESTIC_EXCHANGES: Record<string, string[]> = {
+  USA: ['NASDAQ', 'NYSE', 'AMEX'],
+  KOR: ['KRX'],
+  CHN: ['SSE', 'SZSE'],
+  HKG: ['HKEX'],
+  JPN: ['TSE'],
+  TWN: ['TWSE'], // Strictly TWSE main board (excludes TPEX/OTC)
+  IND: ['NSE', 'BSE'],
+  GBR: ['LSE'],
+  DEU: ['XETR', 'FWB'],
+  FRA: ['EURONEXT'],
+  ITA: ['MIL'],
+  ESP: ['BME'],
+  NLD: ['EURONEXT'],
+  CHE: ['SIX'],
+  SWE: ['OMXSTO'],
+  CAN: ['TSX'],
+  BRA: ['BMFBOVESPA'],
+  AUS: ['ASX'],
+  MEX: ['BMV'],
+  IRL: ['EURONEXT'],
+  SGP: ['SGX'],
+  NZL: ['NZX'],
+  NGA: ['NSENG'],
+  ISR: ['TASE'],
+  SAU: ['TADAWUL'],
+  ARE: ['ADX', 'DFM'],
+  ZAF: ['JSE'],
+  IDN: ['IDX'],
+  TUR: ['BIST'],
+  POL: ['GPW'],
+  BEL: ['EURONEXT'],
+  NOR: ['OSL'],
+  AUT: ['VIE'],
+  DNK: ['OMXCOP'],
+  FIN: ['OMXHEX'],
+  PRT: ['EURONEXT'],
+  THA: ['SET'],
+  MYS: ['MYX'],
+  PHL: ['PSE'],
+  VNM: ['HOSE', 'HNX'],
+  EGY: ['EGX'],
+  ARG: ['BCBA'],
+  CHL: ['BCS'],
+  COL: ['BVC'],
+  PER: ['BVL'],
+  QAT: ['QSE'],
+  KWT: ['KSE'],
+  KAZ: ['KASE'],
+  PAK: ['PSX'],
+  BGD: ['DSEBD'],
+  GRC: ['ATHEX'],
+  ROU: ['BVB'],
+  HUN: ['BET'],
+}
+
+/**
+ * Countries whose stock exchanges are unsanctioned/unsupported in live global feeds
+ * and must NEVER fall back to regional or proxy country tickers.
+ */
+const UNSUPPORTED_COUNTRIES = new Set<string>([
+  'IRN', // Iran (Tehran Stock Exchange - never mix with Saudi/UAE)
+  'PRK', // North Korea
+  'CUB', // Cuba
+  'SYR', // Syria
+  'AFG', // Afghanistan
+  'YEM', // Yemen
+  'SDN', // Sudan
+  'MMR', // Myanmar
+  'ETH', // Ethiopia
+])
+
+/**
  * Cleans verbose legal/share-class suffixes from scanner company descriptions
  * so that names render cleanly across modal cards, heatmap HUDs, and comparison views.
  */
@@ -62,9 +139,11 @@ function cleanCompanyName(rawName: string, ticker: string): string {
   if (name === '엘지에너지솔루션') name = 'LG에너지솔루션'
   if (name === '엘지전자') name = 'LG전자'
   if (name === '엘지화학') name = 'LG화학'
+  if (name === '삼성바이오로직스') name = '삼성바이오로직스'
 
   // Strip verbose share class / ADR / legal suffixes
   name = name
+    .replace(/\s+TEMP$/i, '')
     .replace(/\s+Sponsored\s+ADR.*$/i, '')
     .replace(/\s+Units\s+Cons\..*$/i, '')
     .replace(/\s+\(Persero\)\s+Tbk.*$/i, '')
@@ -85,18 +164,16 @@ function cleanCompanyName(rawName: string, ticker: string): string {
 }
 
 /**
- * Generates a normalized deduplication key so dual-class listings
- * (e.g. GOOGL / GOOG, BRK.A / BRK.B, PETR3 / PETR4) only appear once in the Top 5.
+ * Generates a normalized deduplication key based strictly on the company's cleaned name
+ * (NOT `logoid`, because conglomerate affiliates like Samsung Electronics, Samsung Biologics,
+ * and Samsung Electro-Mechanics share the same `logoid: "samsung"`!).
  */
-function getDeduplicationKey(logoid: string | null | undefined, cleanedName: string): string {
-  if (logoid && typeof logoid === 'string' && logoid.trim().length > 0) {
-    return `logo:${logoid.trim().toLowerCase()}`
-  }
+function getDeduplicationKey(cleanedName: string): string {
   const normalized = cleanedName
     .toLowerCase()
-    .replace(/\b(inc|corp|ltd|plc|sa|ag|nv|se|spa|bhd|group|holdings|holding|company|co)\b/g, '')
+    .replace(/\b(inc|corp|ltd|plc|sa|ag|nv|se|spa|bhd|limited|company|co|temp)\b/g, '')
     .replace(/[^a-z0-9가-힣一-龥ぁ-んァ-ヶ]/g, '')
-    .slice(0, 14)
+    .slice(0, 18)
   return `name:${normalized}`
 }
 
@@ -111,6 +188,16 @@ export async function fetchCountryTopCompanies(
   forceRefresh = false
 ): Promise<CountryTopCompaniesResult> {
   const upperId = countryId.toUpperCase()
+
+  if (UNSUPPORTED_COUNTRIES.has(upperId)) {
+    return {
+      countryId: upperId,
+      companies: [],
+      totalListedCount: 0,
+      fetchedAt: Date.now(),
+    }
+  }
+
   const cacheKey = `${upperId}:${lang}`
 
   if (!forceRefresh) {
@@ -138,14 +225,29 @@ export async function fetchCountryTopCompanies(
 
   const endpoint = DEDICATED_MARKET_ENDPOINTS[upperId] || 'https://scanner.tradingview.com/global/scan'
   const isDedicatedEndpoint = Boolean(DEDICATED_MARKET_ENDPOINTS[upperId])
+  const domesticExchanges = COUNTRY_DOMESTIC_EXCHANGES[upperId]
 
   const filter: Array<Record<string, unknown>> = [
-    { left: 'is_primary', operation: 'equal', right: true },
+    { left: 'type', operation: 'equal', right: 'stock' },
     { left: 'typespecs', operation: 'has_none_of', right: ['preferred', 'dr'] },
   ]
 
+  // Keep is_primary=true except for Canada (TSX), where dual-listed Canadian giants like Shopify (TSX:SHOP)
+  // have NASDAQ marked as primary in TradingView
+  if (upperId !== 'CAN') {
+    filter.push({ left: 'is_primary', operation: 'equal', right: true })
+  }
+
   if (!isDedicatedEndpoint && tvCountryName) {
     filter.unshift({ left: 'country', operation: 'equal', right: tvCountryName })
+  }
+
+  if (domesticExchanges && domesticExchanges.length > 0) {
+    filter.push(
+      domesticExchanges.length === 1
+        ? { left: 'exchange', operation: 'equal', right: domesticExchanges[0] }
+        : { left: 'exchange', operation: 'in_range', right: domesticExchanges }
+    )
   }
 
   const tvLang = lang === 'ko' ? 'ko' : lang === 'ja' ? 'ja' : lang === 'zh' ? 'zh' : lang === 'es' ? 'es' : 'en'
@@ -171,12 +273,14 @@ export async function fetchCountryTopCompanies(
             'logoid',
             'sector.tr',
             'sector',
+            'indexes',
+            'country',
           ],
           sort: {
             sortBy: 'market_cap_basic',
             sortOrder: 'desc',
           },
-          range: [0, 16],
+          range: [0, 20],
         }),
       })
 
@@ -206,17 +310,42 @@ export async function fetchCountryTopCompanies(
           rawLogoId,
           rawSectorTr,
           rawSectorEn,
+          rawIndexes,
+          rawRowCountry,
         ] = row.d
 
         const marketCapBasic = typeof rawMarketCap === 'number' ? rawMarketCap : 0
         if (marketCapBasic <= 0) continue
+
+        // Strict country match check (prevents any cross-country contamination)
+        if (!isDedicatedEndpoint && tvCountryName && typeof rawRowCountry === 'string' && rawRowCountry !== tvCountryName) {
+          continue
+        }
+
+        // Benchmark index membership enforcement:
+        // 1) South Korea (KOR): Benchmark is KOSPI (^KS11) -> Strictly require KRX:KOSPI and exclude KOSDAQ (KRX:KOSDAQ)
+        // 2) United States (USA): Benchmark is S&P 500 (^GSPC) -> Require SP:SPX membership to exclude pre-IPO/synthetic tickers
+        const indexPronames: string[] = Array.isArray(rawIndexes)
+          ? rawIndexes
+              .map((idx) => (idx && typeof idx === 'object' && 'proname' in idx ? String((idx as { proname: unknown }).proname) : ''))
+              .filter(Boolean)
+          : []
+
+        if (upperId === 'KOR') {
+          if (indexPronames.includes('KRX:KOSDAQ')) continue
+          if (indexPronames.length > 0 && !indexPronames.includes('KRX:KOSPI')) continue
+        }
+
+        if (upperId === 'USA' && indexPronames.length > 0) {
+          if (!indexPronames.includes('SP:SPX')) continue
+        }
 
         const ticker = String(rawTicker || row.s.split(':')[1] || row.s)
         const exchange = row.s.includes(':') ? row.s.split(':')[0] : ''
         const cleanedName = cleanCompanyName(String(rawDesc || ticker), ticker)
         const logoId = typeof rawLogoId === 'string' && rawLogoId.trim() ? rawLogoId.trim() : null
 
-        const dedupKey = getDeduplicationKey(logoId, cleanedName)
+        const dedupKey = getDeduplicationKey(cleanedName)
         if (seenKeys.has(dedupKey)) continue
         seenKeys.add(dedupKey)
 
