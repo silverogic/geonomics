@@ -5206,9 +5206,9 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13700.62,
+    "currentPrice": 13701.78,
     "changePct": -1.08,
-    "changePct30d": 0.92,
+    "changePct30d": 0.93,
     "points": [
       {
         "date": "2026-09-14",
@@ -5328,7 +5328,7 @@
       },
       {
         "date": "2026-10-26",
-        "close": 13700.62
+        "close": 13701.78
       }
     ]
   },
