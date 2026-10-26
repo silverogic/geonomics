@@ -81,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* Brand Logo (Icon removed for compact header) */}
-          <div className="flex items-center cursor-pointer min-w-0 shrink-0" onClick={() => setActiveTab('cards')}>
+          <div className="flex items-center cursor-pointer min-w-0 shrink-0" onClick={() => setActiveTab('heatmap')}>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-lg sm:text-xl font-black tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent truncate">
@@ -97,8 +97,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Navigation Tabs (Desktop Open Menu with Underline Indicator) */}
           <nav className="hidden md:flex items-center gap-1 sm:gap-2 shrink-0">
             {[
-              { id: 'cards', label: t.navExplorer, icon: Layers },
               { id: 'heatmap', label: t.navStockHeatmap, icon: LayoutGrid },
+              { id: 'cards', label: t.navExplorer, icon: Layers },
               { id: 'compare', label: t.navCompare, icon: GitCompare },
               { id: 'news', label: t.navNews, icon: Newspaper },
             ].map(({ id, label, icon: Icon }) => {
@@ -424,17 +424,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       >
         <div className="max-w-lg mx-auto grid grid-cols-4 gap-1">
           <button
-            onClick={() => setActiveTab('cards')}
-            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
-              activeTab === 'cards'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[11px] font-bold tracking-tight truncate">{t.navExplorer}</span>
-          </button>
-          <button
             onClick={() => setActiveTab('heatmap')}
             className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
               activeTab === 'heatmap'
@@ -444,6 +433,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
             <span className="text-[11px] font-bold tracking-tight truncate">{t.navStockHeatmap}</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('cards')}
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
+              activeTab === 'cards'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navExplorer}</span>
           </button>
           <button
             onClick={() => setActiveTab('compare')}

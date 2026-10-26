@@ -48,7 +48,7 @@ export function App() {
   }, [lang])
 
   const t = translations[lang]
-  const [activeTab, setActiveTab] = useState<'cards' | 'heatmap' | 'compare' | 'news'>('cards')
+  const [activeTab, setActiveTab] = useState<'cards' | 'heatmap' | 'compare' | 'news'>('heatmap')
 
   // Selected economic year: Default current year (e.g. 2026)
   const [selectedYear, setSelectedYear] = useState<EconomicYear>(DEFAULT_ECONOMIC_YEAR)
