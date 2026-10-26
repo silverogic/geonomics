@@ -248,7 +248,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
     : `${lang === 'ko' ? '기준' : 'As of'}: ${exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}`
 
   return (
-    <div className="relative flex items-center shrink-0">
+    <div ref={popoverRef} className="relative flex items-center shrink-0">
       {/* 777 3-Reel Slot Machine Capsule (Compact Minimal Pill) */}
       <div
         onMouseEnter={() => setIsPaused(true)}
@@ -336,16 +336,15 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         />
       </div>
 
-      {/* Full View Glassmorphic Popover Modal */}
+      {/* Full View Glassmorphic Popover Modal (Fixed full-width with safe margins on mobile, right-aligned on desktop) */}
       {isPopoverOpen && (
         <div
-          ref={popoverRef}
-          className="absolute right-0 top-full mt-2 w-[92vw] sm:w-[460px] max-w-[480px] bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-3 shadow-2xl shadow-black/90 z-50 animate-in fade-in zoom-in-95 duration-150"
+          className="fixed left-3 right-3 top-[68px] w-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[460px] max-w-[480px] mx-auto sm:mx-0 bg-slate-900/98 backdrop-blur-xl border border-slate-800 rounded-2xl p-3 shadow-2xl shadow-black/90 z-50 animate-in fade-in zoom-in-95 duration-150"
         >
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>
+          <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-800">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200 min-w-0">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+              <span className="truncate">
                 {lang === 'ko'
                   ? '주요 통화 환율 & 기준금리 요약'
                   : lang === 'ja'
@@ -355,7 +354,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                       : 'Key FX Rates & Policy Rates'}
               </span>
             </div>
-            <span className="text-[10px] font-mono text-slate-400">
+            <span className="text-[10px] font-mono text-slate-400 shrink-0">
               {lang === 'ko' ? '기준 통화: ' : lang === 'ja' ? '基準通貨: ' : lang === 'zh' ? '基准货币: ' : 'Base: '}
               <strong className="text-white">{baseCurrency}</strong>
             </span>
@@ -370,29 +369,29 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                   setCurrentIndex(idx)
                   setIsPopoverOpen(false)
                 }}
-                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-colors cursor-pointer ${
+                className={`w-full flex items-center justify-between gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs transition-colors cursor-pointer ${
                   currentIndex === idx
                     ? 'bg-indigo-600/20 border border-indigo-500/40 text-white shadow-sm'
                     : 'hover:bg-slate-800/60 text-slate-300 border border-transparent'
                 }`}
               >
                 {/* Left: Flag & Currency */}
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
                   <CountryFlag iso2={item.flagIso2} className="w-4 h-3 rounded shadow-sm shrink-0" />
-                  <span className="font-bold text-slate-200">
+                  <span className="font-bold text-slate-200 whitespace-nowrap">
                     {item.displayName}
                     <span className="text-[10px] text-slate-400 ml-1 font-normal font-mono">({item.currency})</span>
                   </span>
                 </div>
 
                 {/* Center: Rate & Change */}
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-semibold text-emerald-400">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="font-mono font-semibold text-emerald-400 whitespace-nowrap">
                     {formatLocalizedFxRate(item.rate, baseCurrency, lang)}
                   </span>
                   {item.changePct != null && (
                     <span
-                      className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                      className={`text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded whitespace-nowrap ${
                         item.changePct > 0
                           ? 'text-emerald-400 bg-emerald-500/10'
                           : item.changePct < 0
@@ -407,12 +406,14 @@ export const TickerBar: React.FC<TickerBarProps> = ({
 
                 {/* Right: Policy Rate */}
                 {item.centralBankName && item.policyRatePct != null ? (
-                  <div className="flex items-center gap-1 font-mono text-[11px] text-indigo-300">
-                    <span className="text-slate-500 text-[10px]">{item.centralBankName}</span>
+                  <div className="flex items-center gap-1 font-mono text-[10px] sm:text-[11px] text-indigo-300 shrink-0 whitespace-nowrap">
+                    <span className="text-slate-500 text-[9px] sm:text-[10px] hidden xs:inline sm:inline">
+                      {item.centralBankName}
+                    </span>
                     <span className="font-bold">{item.policyRatePct.toFixed(2)}%</span>
                   </div>
                 ) : (
-                  <span className="text-slate-600 text-[10px]">-</span>
+                  <span className="text-slate-600 text-[10px] shrink-0">-</span>
                 )}
               </button>
             ))}
