@@ -80,7 +80,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   const handleCategoryChange = (category: TableCategory) => {
     setActiveCategory(category)
     if (category === 'market') {
-      const marketFields: SortField[] = ['rank', 'countryName', 'fxRate', 'stockChangePct', 'fuelPriceUsd', 'bigMacPriceUsd', 'interestRatePct']
+      const marketFields: SortField[] = ['rank', 'countryName', 'fxRate', 'interestRatePct', 'stockChangePct', 'fuelPriceUsd', 'bigMacPriceUsd']
       if (!marketFields.includes(sortField)) {
         setSortField('rank')
         setSortDirection('asc')
@@ -458,6 +458,18 @@ export const RankingTable: React.FC<RankingTableProps> = ({
               </div>
             </th>
 
+            {/* Policy Rate (Placed right next to FX Rate) */}
+            <th
+              onClick={() => handleSort('interestRatePct')}
+              style={getColStyle()}
+              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[68px] sm:min-w-[85px]"
+            >
+              <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                <span>{t.colInterestRate}</span>
+                {renderSortIcon('interestRatePct')}
+              </div>
+            </th>
+
             <th
               onClick={() => handleSort('stockChangePct')}
               style={getColStyle()}
@@ -469,7 +481,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
               </div>
             </th>
 
-            {/* Fuel Price (Between Stock Index and Policy Rate) */}
+            {/* Fuel Price */}
             <th
               onClick={() => handleSort('fuelPriceUsd')}
               style={getColStyle()}
@@ -485,24 +497,13 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             <th
               onClick={() => handleSort('bigMacPriceUsd')}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[96px] sm:min-w-[125px]"
-            >
-              <div className="flex items-center justify-end gap-1 sm:gap-1.5">
-                <span>{t.metricBigMac}</span>
-                {renderSortIcon('bigMacPriceUsd')}
-              </div>
-            </th>
-
-            <th
-              onClick={() => handleSort('interestRatePct')}
-              style={getColStyle()}
-              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[68px] sm:min-w-[85px] ${
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[96px] sm:min-w-[125px] ${
                 activeCategory === 'market' ? 'rounded-none sm:rounded-tr-xl last:rounded-none sm:last:rounded-tr-xl' : ''
               }`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
-                <span>{t.colInterestRate}</span>
-                {renderSortIcon('interestRatePct')}
+                <span>{t.metricBigMac}</span>
+                {renderSortIcon('bigMacPriceUsd')}
               </div>
             </th>
           </>
@@ -885,6 +886,20 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                           {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
                         </td>
 
+                        {/* Central Bank Policy Rate (Placed right next to FX Rate) */}
+                        <td
+                          className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[68px] sm:min-w-[85px]"
+                          title={item.centralBankName ?? undefined}
+                        >
+                          {item.interestRatePct !== null && item.interestRatePct !== undefined ? (
+                            <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
+                              {item.interestRatePct.toFixed(2)}%
+                            </span>
+                          ) : (
+                            <span className="text-slate-600 font-mono text-xs">-</span>
+                          )}
+                        </td>
+
                         {/* Stock Market Mini Chart */}
                         <td className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right min-w-[128px] sm:min-w-[160px]">
                           {(() => {
@@ -936,7 +951,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                           })()}
                         </td>
 
-                        {/* Fuel Price (Between Stock Market and Policy Rate) */}
+                        {/* Fuel Price */}
                         <td
                           className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[88px] sm:min-w-[110px]"
                           title={item.fuelPriceUsd !== null && item.fuelPriceUsd !== undefined ? `RON 95: $${item.fuelPriceUsd.toFixed(2)}/L` : undefined}
@@ -988,20 +1003,6 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                                 </span>
                               )}
                             </div>
-                          ) : (
-                            <span className="text-slate-600 font-mono text-xs">-</span>
-                          )}
-                        </td>
-
-                        {/* Central Bank Policy Rate */}
-                        <td
-                          className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right whitespace-nowrap min-w-[68px] sm:min-w-[85px]"
-                          title={item.centralBankName ?? undefined}
-                        >
-                          {item.interestRatePct !== null && item.interestRatePct !== undefined ? (
-                            <span className="font-mono font-bold text-slate-200 text-xs sm:text-sm">
-                              {item.interestRatePct.toFixed(2)}%
-                            </span>
                           ) : (
                             <span className="text-slate-600 font-mono text-xs">-</span>
                           )}
