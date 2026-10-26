@@ -3479,8 +3479,12 @@
     "currency": "ILS",
     "currentPrice": 4108.05,
     "changePct": -1.58,
-    "changePct30d": -1.94,
+    "changePct30d": -2.88,
     "points": [
+      {
+        "date": "2026-09-07",
+        "close": 4230.05
+      },
       {
         "date": "2026-09-08",
         "close": 4189.31
@@ -3596,10 +3600,6 @@
       {
         "date": "2026-10-23",
         "close": 4034.99
-      },
-      {
-        "date": "2026-10-26",
-        "close": 4108.05
       }
     ]
   },
@@ -4011,8 +4011,12 @@
     "currency": "ZAR",
     "currentPrice": 100977.01,
     "changePct": -0.45,
-    "changePct30d": -4.8,
+    "changePct30d": -6.29,
     "points": [
+      {
+        "date": "2026-09-11",
+        "close": 107759.5
+      },
       {
         "date": "2026-09-14",
         "close": 106066.2
@@ -4128,10 +4132,6 @@
       {
         "date": "2026-10-23",
         "close": 99990.9
-      },
-      {
-        "date": "2026-10-26",
-        "close": 100977.01
       }
     ]
   },
@@ -5206,9 +5206,9 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13701.78,
+    "currentPrice": 13700.43,
     "changePct": -1.08,
-    "changePct30d": 0.93,
+    "changePct30d": 0.92,
     "points": [
       {
         "date": "2026-09-14",
@@ -5328,7 +5328,7 @@
       },
       {
         "date": "2026-10-26",
-        "close": 13701.78
+        "close": 13700.43
       }
     ]
   },
@@ -6009,6 +6009,10 @@
     "changePct30d": 12.74,
     "points": [
       {
+        "date": "2026-09-14",
+        "close": 73.8
+      },
+      {
         "date": "2026-09-15",
         "close": 73.8
       },
@@ -6123,10 +6127,6 @@
       {
         "date": "2026-10-23",
         "close": 84.2
-      },
-      {
-        "date": "2026-10-26",
-        "close": 83.2
       }
     ]
   },
@@ -6272,8 +6272,12 @@
     "currency": "EUR",
     "currentPrice": 2569.82,
     "changePct": 3.09,
-    "changePct30d": -4.65,
+    "changePct30d": -4.64,
     "points": [
+      {
+        "date": "2026-09-14",
+        "close": 2694.96
+      },
       {
         "date": "2026-09-15",
         "close": 2695.21
@@ -6389,10 +6393,6 @@
       {
         "date": "2026-10-23",
         "close": 2530.46
-      },
-      {
-        "date": "2026-10-26",
-        "close": 2569.82
       }
     ]
   },
@@ -7531,8 +7531,12 @@
     "currency": "EUR",
     "currentPrice": 3.26,
     "changePct": -2.69,
-    "changePct30d": -1.81,
+    "changePct30d": -2.4,
     "points": [
+      {
+        "date": "2026-09-14",
+        "close": 3.34
+      },
       {
         "date": "2026-09-15",
         "close": 3.32
@@ -7648,10 +7652,6 @@
       {
         "date": "2026-10-23",
         "close": 3.28
-      },
-      {
-        "date": "2026-10-26",
-        "close": 3.26
       }
     ]
   },
@@ -7664,8 +7664,12 @@
     "currency": "EUR",
     "currentPrice": 16.2,
     "changePct": 35.56,
-    "changePct30d": -6.63,
+    "changePct30d": -5.26,
     "points": [
+      {
+        "date": "2026-09-14",
+        "close": 17.1
+      },
       {
         "date": "2026-09-15",
         "close": 17.35
@@ -7781,10 +7785,6 @@
       {
         "date": "2026-10-23",
         "close": 16.2
-      },
-      {
-        "date": "2026-10-26",
-        "close": 16.2
       }
     ]
   },
@@ -7797,8 +7797,12 @@
     "currency": "EUR",
     "currentPrice": 21.6,
     "changePct": -3.79,
-    "changePct30d": -3.57,
+    "changePct30d": -2.7,
     "points": [
+      {
+        "date": "2026-09-14",
+        "close": 22.2
+      },
       {
         "date": "2026-09-15",
         "close": 22.4
@@ -7914,10 +7918,6 @@
       {
         "date": "2026-10-23",
         "close": 21.7
-      },
-      {
-        "date": "2026-10-26",
-        "close": 21.6
       }
     ]
   },
