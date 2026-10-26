@@ -10,7 +10,7 @@ import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColo
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { GdpChart } from './GdpChart'
-import { getCountryName, getCountrySecondaryName } from '../utils/countryNames'
+import { getCountryName } from '../utils/countryNames'
 import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
 import { Spinner } from './Spinner'
 import { CompanyLogo } from './CompanyLogo'
@@ -38,7 +38,6 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const t = translations[lang]
   const [countryAId, setCountryAId] = useState<string>('USA')
   const [countryBId, setCountryBId] = useState<string>('CHN')
-  const [compareMode, setCompareMode] = useState<'h2h' | 'cards'>('h2h')
 
   const [detailA, setDetailA] = useState<CountryGdpDetail | null>(null)
   const [detailB, setDetailB] = useState<CountryGdpDetail | null>(null)
@@ -163,32 +162,6 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </div>
             )}
 
-            {/* View Mode Switcher (1:1 Head-to-Head vs Individual Cards) */}
-            <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
-              <button
-                type="button"
-                onClick={() => setCompareMode('h2h')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  compareMode === 'h2h'
-                    ? 'bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                }`}
-              >
-                {t.compareModeH2H}
-              </button>
-              <button
-                type="button"
-                onClick={() => setCompareMode('cards')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  compareMode === 'cards'
-                    ? 'bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                }`}
-              >
-                {t.compareModeCards}
-              </button>
-            </div>
-
             {/* Preset Buttons with Vector Flags */}
             <div className="flex flex-wrap items-center gap-1.5 text-xs">
               <button
@@ -270,577 +243,322 @@ export const CompareView: React.FC<CompareViewProps> = ({
         </div>
       </div>
 
-      {/* 1:1 Head-to-Head Symmetric Matrix View (Mobile Optimized) vs Individual Cards */}
-      {compareMode === 'h2h' ? (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl divide-y divide-slate-800/80">
-          {/* Header Country VS Banner */}
-          <div className="sticky top-16 sm:top-20 z-30 bg-gradient-to-r from-indigo-950/95 via-slate-900/95 to-emerald-950/95 backdrop-blur-md rounded-t-2xl border-b border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
-            {/* Country A */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-              <CountryFlag iso2={countryA.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameA} />
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-sm sm:text-lg font-bold text-white truncate">{nameA}</span>
-                  <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    {countryA.currencyCode}
-                  </span>
-                </div>
+      {/* 1:1 Head-to-Head Symmetric Matrix View */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl divide-y divide-slate-800/80">
+        {/* Header Country VS Banner */}
+        <div className="sticky top-16 sm:top-20 z-30 bg-gradient-to-r from-indigo-950/95 via-slate-900/95 to-emerald-950/95 backdrop-blur-md rounded-t-2xl border-b border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
+          {/* Country A */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <CountryFlag iso2={countryA.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameA} />
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-sm sm:text-lg font-bold text-white truncate">{nameA}</span>
+                <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  {countryA.currencyCode}
+                </span>
               </div>
-            </div>
-
-            {/* VS Badge */}
-            <button
-              type="button"
-              onClick={handleSwap}
-              title={t.swapCurrencies}
-              className="px-2.5 sm:px-3 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-slate-700 hover:border-indigo-400 text-[11px] sm:text-xs font-black tracking-wider text-slate-300 hover:text-white shrink-0 shadow-inner cursor-pointer transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1 group"
-            >
-              <span>VS</span>
-              <ArrowRightLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 group-hover:text-indigo-300 transition-colors" />
-            </button>
-
-            {/* Country B */}
-            <div className="flex items-center justify-end gap-2 sm:gap-3 flex-1 min-w-0 text-right">
-              <div className="min-w-0">
-                <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                  <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    {countryB.currencyCode}
-                  </span>
-                  <span className="text-sm sm:text-lg font-bold text-white truncate">{nameB}</span>
-                </div>
-              </div>
-              <CountryFlag iso2={countryB.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameB} />
             </div>
           </div>
 
-          {/* Metric 1: Total GDP with Dual Ratio Visualizer Bar */}
-          {(() => {
-            const gdpA = detailA?.totalGdpUsd || 0
-            const gdpB = detailB?.totalGdpUsd || 0
-            const sum = gdpA + gdpB
-            const pctA = sum > 0 ? (gdpA / sum) * 100 : 50
-            const pctB = 100 - pctA
-            const ratioText = gdpRatio >= 1
-              ? `${nameA} ${gdpRatio.toFixed(2)}x`
-              : `${nameB} ${(1 / gdpRatio).toFixed(2)}x`
+          {/* VS Badge */}
+          <button
+            type="button"
+            onClick={handleSwap}
+            title={t.swapCurrencies}
+            className="px-2.5 sm:px-3 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-slate-700 hover:border-indigo-400 text-[11px] sm:text-xs font-black tracking-wider text-slate-300 hover:text-white shrink-0 shadow-inner cursor-pointer transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1 group"
+          >
+            <span>VS</span>
+            <ArrowRightLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 group-hover:text-indigo-300 transition-colors" />
+          </button>
 
-            return (
-              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="font-bold text-slate-300">
-                    {t.cardTotalGdp} ({detailA?.latestYear ?? selectedYear})
-                  </span>
-                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-                    {ratioText}
-                  </span>
-                </div>
-
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-base sm:text-lg font-bold font-mono text-indigo-400">
-                    {detailA ? formatGdpCompact(gdpA, baseCurrency, usdToBase, lang) : '...'}
-                  </span>
-                  <span className="text-base sm:text-lg font-bold font-mono text-emerald-400 text-right">
-                    {detailB ? formatGdpCompact(gdpB, baseCurrency, usdToBase, lang) : '...'}
-                  </span>
-                </div>
-
-                {sum > 0 && (
-                  <div className="mt-2 space-y-1">
-                    <div className="h-2 w-full rounded-full bg-slate-800 flex overflow-hidden shadow-inner">
-                      <div className="bg-indigo-500 h-full transition-all duration-500" style={{ width: `${pctA}%` }} />
-                      <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${pctB}%` }} />
-                    </div>
-                    <div className="flex justify-between text-[10px] font-mono text-slate-500 px-0.5">
-                      <span>{pctA.toFixed(1)}%</span>
-                      <span>{pctB.toFixed(1)}%</span>
-                    </div>
-                  </div>
-                )}
+          {/* Country B */}
+          <div className="flex items-center justify-end gap-2 sm:gap-3 flex-1 min-w-0 text-right">
+            <div className="min-w-0">
+              <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  {countryB.currencyCode}
+                </span>
+                <span className="text-sm sm:text-lg font-bold text-white truncate">{nameB}</span>
               </div>
-            )
-          })()}
+            </div>
+            <CountryFlag iso2={countryB.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameB} />
+          </div>
+        </div>
 
-          {/* Metric 2: GDP per Capita with Dual Ratio Visualizer Bar */}
-          {(() => {
-            const capA = detailA?.gdpPerCapitaUsd || 0
-            const capB = detailB?.gdpPerCapitaUsd || 0
-            const sum = capA + capB
-            const pctA = sum > 0 ? (capA / sum) * 100 : 50
-            const pctB = 100 - pctA
-            const ratioText = perCapitaRatio >= 1
-              ? `${nameA} ${perCapitaRatio.toFixed(2)}x`
-              : `${nameB} ${(1 / perCapitaRatio).toFixed(2)}x`
+        {/* Metric 1: Total GDP with Dual Ratio Visualizer Bar */}
+        {(() => {
+          const gdpA = detailA?.totalGdpUsd || 0
+          const gdpB = detailB?.totalGdpUsd || 0
+          const sum = gdpA + gdpB
+          const pctA = sum > 0 ? (gdpA / sum) * 100 : 50
+          const pctB = 100 - pctA
+          const ratioText = gdpRatio >= 1
+            ? `${nameA} ${gdpRatio.toFixed(2)}x`
+            : `${nameB} ${(1 / gdpRatio).toFixed(2)}x`
 
-            return (
-              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="font-bold text-slate-300">{t.cardPerCapita}</span>
-                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                    {ratioText}
-                  </span>
-                </div>
-
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className={`text-base sm:text-lg font-bold font-mono ${getPerCapitaColorClass(capA)}`}>
-                    {detailA ? formatPerCapita(capA, baseCurrency, usdToBase, lang) : '...'}
-                  </span>
-                  <span className={`text-base sm:text-lg font-bold font-mono text-right ${getPerCapitaColorClass(capB)}`}>
-                    {detailB ? formatPerCapita(capB, baseCurrency, usdToBase, lang) : '...'}
-                  </span>
-                </div>
-
-                {sum > 0 && (
-                  <div className="mt-2 space-y-1">
-                    <div className="h-2 w-full rounded-full bg-slate-800 flex overflow-hidden shadow-inner">
-                      <div className="bg-indigo-500 h-full transition-all duration-500" style={{ width: `${pctA}%` }} />
-                      <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${pctB}%` }} />
-                    </div>
-                    <div className="flex justify-between text-[10px] font-mono text-slate-500 px-0.5">
-                      <span>{pctA.toFixed(1)}%</span>
-                      <span>{pctB.toFixed(1)}%</span>
-                    </div>
-                  </div>
-                )}
+          return (
+            <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="font-bold text-slate-300">
+                  {t.cardTotalGdp} ({detailA?.latestYear ?? selectedYear})
+                </span>
+                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                  {ratioText}
+                </span>
               </div>
-            )
-          })()}
 
-          {/* Metric 3: Policy Interest Rate */}
-          <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-bold text-slate-300">{t.compareInterestRate}</span>
-              {interestSpread !== null && (
-                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-800 text-indigo-300 border border-slate-700">
-                  {interestSpread > 0 ? nameA : nameB} +{Math.abs(interestSpread).toFixed(2)}%p
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-base sm:text-lg font-bold font-mono text-indigo-400">
+                  {detailA ? formatGdpCompact(gdpA, baseCurrency, usdToBase, lang) : '...'}
+                </span>
+                <span className="text-base sm:text-lg font-bold font-mono text-emerald-400 text-right">
+                  {detailB ? formatGdpCompact(gdpB, baseCurrency, usdToBase, lang) : '...'}
+                </span>
+              </div>
+
+              {sum > 0 && (
+                <div className="mt-2 space-y-1">
+                  <div className="h-2 w-full rounded-full bg-slate-800 flex overflow-hidden shadow-inner">
+                    <div className="bg-indigo-500 h-full transition-all duration-500" style={{ width: `${pctA}%` }} />
+                    <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${pctB}%` }} />
+                  </div>
+                  <div className="flex justify-between text-[10px] font-mono text-slate-500 px-0.5">
+                    <span>{pctA.toFixed(1)}%</span>
+                    <span>{pctB.toFixed(1)}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })()}
+
+        {/* Metric 2: GDP per Capita with Dual Ratio Visualizer Bar */}
+        {(() => {
+          const capA = detailA?.gdpPerCapitaUsd || 0
+          const capB = detailB?.gdpPerCapitaUsd || 0
+          const sum = capA + capB
+          const pctA = sum > 0 ? (capA / sum) * 100 : 50
+          const pctB = 100 - pctA
+          const ratioText = perCapitaRatio >= 1
+            ? `${nameA} ${perCapitaRatio.toFixed(2)}x`
+            : `${nameB} ${(1 / perCapitaRatio).toFixed(2)}x`
+
+          return (
+            <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="font-bold text-slate-300">{t.cardPerCapita}</span>
+                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  {ratioText}
+                </span>
+              </div>
+
+              <div className="flex items-baseline justify-between gap-3">
+                <span className={`text-base sm:text-lg font-bold font-mono ${getPerCapitaColorClass(capA)}`}>
+                  {detailA ? formatPerCapita(capA, baseCurrency, usdToBase, lang) : '...'}
+                </span>
+                <span className={`text-base sm:text-lg font-bold font-mono text-right ${getPerCapitaColorClass(capB)}`}>
+                  {detailB ? formatPerCapita(capB, baseCurrency, usdToBase, lang) : '...'}
+                </span>
+              </div>
+
+              {sum > 0 && (
+                <div className="mt-2 space-y-1">
+                  <div className="h-2 w-full rounded-full bg-slate-800 flex overflow-hidden shadow-inner">
+                    <div className="bg-indigo-500 h-full transition-all duration-500" style={{ width: `${pctA}%` }} />
+                    <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${pctB}%` }} />
+                  </div>
+                  <div className="flex justify-between text-[10px] font-mono text-slate-500 px-0.5">
+                    <span>{pctA.toFixed(1)}%</span>
+                    <span>{pctB.toFixed(1)}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })()}
+
+        {/* Metric 3: Policy Interest Rate */}
+        <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="font-bold text-slate-300">{t.compareInterestRate}</span>
+            {interestSpread !== null && (
+              <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-800 text-indigo-300 border border-slate-700">
+                {interestSpread > 0 ? nameA : nameB} +{Math.abs(interestSpread).toFixed(2)}%p
+              </span>
+            )}
+          </div>
+          <div className="flex items-baseline justify-between gap-3">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-base sm:text-lg font-bold font-mono text-indigo-300">
+                {interestA ? `${interestA.ratePct.toFixed(2)}%` : 'N/A'}
+              </span>
+              {interestA && (
+                <span className="text-[10px] text-slate-400 font-mono hidden sm:inline truncate max-w-[120px]">
+                  ({interestA.centralBankName})
                 </span>
               )}
             </div>
-            <div className="flex items-baseline justify-between gap-3">
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-base sm:text-lg font-bold font-mono text-indigo-300">
-                  {interestA ? `${interestA.ratePct.toFixed(2)}%` : 'N/A'}
-                </span>
-                {interestA && (
-                  <span className="text-[10px] text-slate-400 font-mono hidden sm:inline truncate max-w-[120px]">
-                    ({interestA.centralBankName})
-                  </span>
-                )}
-              </div>
-              <div className="flex items-baseline justify-end gap-1.5 text-right">
-                {interestB && (
-                  <span className="text-[10px] text-slate-400 font-mono hidden sm:inline truncate max-w-[120px]">
-                    ({interestB.centralBankName})
-                  </span>
-                )}
-                <span className="text-base sm:text-lg font-bold font-mono text-emerald-300">
-                  {interestB ? `${interestB.ratePct.toFixed(2)}%` : 'N/A'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Metric 4: Real GDP Growth Rate */}
-          <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-bold text-slate-300">{t.cardGrowthRate}</span>
-              {detailA?.growthRatePct != null && detailB?.growthRatePct != null && (
-                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
-                  {detailA.growthRatePct > detailB.growthRatePct ? nameA : nameB} +{Math.abs(detailA.growthRatePct - detailB.growthRatePct).toFixed(2)}%p
+            <div className="flex items-baseline justify-end gap-1.5 text-right">
+              {interestB && (
+                <span className="text-[10px] text-slate-400 font-mono hidden sm:inline truncate max-w-[120px]">
+                  ({interestB.centralBankName})
                 </span>
               )}
-            </div>
-            <div className="flex items-baseline justify-between gap-3">
-              <span
-                className={`text-base sm:text-lg font-bold font-mono ${
-                  detailA?.growthRatePct == null
-                    ? 'text-slate-400'
-                    : detailA.growthRatePct >= 0
-                    ? 'text-emerald-400'
-                    : 'text-rose-400'
-                }`}
-              >
-                {detailA?.growthRatePct != null ? `${detailA.growthRatePct > 0 ? '+' : ''}${detailA.growthRatePct.toFixed(2)}%` : 'N/A'}
-              </span>
-              <span
-                className={`text-base sm:text-lg font-bold font-mono text-right ${
-                  detailB?.growthRatePct == null
-                    ? 'text-slate-400'
-                    : detailB.growthRatePct >= 0
-                    ? 'text-emerald-400'
-                    : 'text-rose-400'
-                }`}
-              >
-                {detailB?.growthRatePct != null ? `${detailB.growthRatePct > 0 ? '+' : ''}${detailB.growthRatePct.toFixed(2)}%` : 'N/A'}
+              <span className="text-base sm:text-lg font-bold font-mono text-emerald-300">
+                {interestB ? `${interestB.ratePct.toFixed(2)}%` : 'N/A'}
               </span>
             </div>
           </div>
-
-          {/* Metric 5: Inflation Rate (CPI) */}
-          <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-bold text-slate-300">{t.compareInflationRate}</span>
-            </div>
-            <div className="flex items-baseline justify-between gap-3">
-              <span className={`text-base sm:text-lg font-bold font-mono ${getInflationColorClass(detailA?.inflationRatePct)}`}>
-                {detailA?.inflationRatePct != null ? `${detailA.inflationRatePct.toFixed(1)}%` : 'N/A'}
-              </span>
-              <span className={`text-base sm:text-lg font-bold font-mono text-right ${getInflationColorClass(detailB?.inflationRatePct)}`}>
-                {detailB?.inflationRatePct != null ? `${detailB.inflationRatePct.toFixed(1)}%` : 'N/A'}
-              </span>
-            </div>
-          </div>
-
-          {/* Metric 6: Government Debt Ratio (% GDP) */}
-          <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-bold text-slate-300">{t.compareDebtRatio}</span>
-            </div>
-            <div className="flex items-baseline justify-between gap-3">
-              <span
-                className={`text-base sm:text-lg font-bold font-mono ${
-                  detailA?.debtRatioPct == null
-                    ? 'text-slate-400'
-                    : detailA.debtRatioPct < 60
-                    ? 'text-emerald-400'
-                    : detailA.debtRatioPct < 90
-                    ? 'text-amber-400'
-                    : 'text-rose-400'
-                }`}
-              >
-                {detailA?.debtRatioPct != null ? `${detailA.debtRatioPct.toFixed(1)}%` : 'N/A'}
-              </span>
-              <span
-                className={`text-base sm:text-lg font-bold font-mono text-right ${
-                  detailB?.debtRatioPct == null
-                    ? 'text-slate-400'
-                    : detailB.debtRatioPct < 60
-                    ? 'text-emerald-400'
-                    : detailB.debtRatioPct < 90
-                    ? 'text-amber-400'
-                    : 'text-rose-400'
-                }`}
-              >
-                {detailB?.debtRatioPct != null ? `${detailB.debtRatioPct.toFixed(1)}%` : 'N/A'}
-              </span>
-            </div>
-          </div>
-
-          {/* Metric 7: Exchange Rate to Base Currency */}
-          <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-bold text-slate-300">{t.cardFxRate}</span>
-              <span className="text-[10px] font-mono text-slate-400">vs {baseCurrency}</span>
-            </div>
-            <div className="flex items-baseline justify-between gap-3 text-xs sm:text-sm font-mono font-bold">
-              <span className="text-indigo-300">
-                1 {countryA.currencyCode} = {formatExchangeRate(rateA, countryA.currencyCode === 'KRW' ? 4 : 2)}
-              </span>
-              <span className="text-emerald-300 text-right">
-                1 {countryB.currencyCode} = {formatExchangeRate(rateB, countryB.currencyCode === 'KRW' ? 4 : 2)}
-              </span>
-            </div>
-          </div>
-
-          {/* Metric 8: Big Mac Index */}
-          {(() => {
-            const bmA = getBigMacData(countryA.id)
-            const bmB = getBigMacData(countryB.id)
-            if (!bmA && !bmB) return null
-
-            return (
-              <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="font-bold text-slate-300">🍔 {t.metricBigMac}</span>
-                </div>
-                <div className="flex items-baseline justify-between gap-3 font-mono">
-                  <div className="flex items-baseline gap-1.5">
-                    {bmA ? (
-                      <>
-                        <span className="text-sm sm:text-base font-bold text-slate-200">
-                          {formatBigMacPrice(bmA.dollarPrice, baseCurrency, usdToBase, lang)}
-                        </span>
-                        <span className="text-xs font-bold" style={{ color: getBigMacColor(bmA.valuationRawPct) }}>
-                          {bmA.valuationRawPct > 0 ? `+${bmA.valuationRawPct.toFixed(1)}%` : `${bmA.valuationRawPct.toFixed(1)}%`}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-xs text-slate-500">N/A</span>
-                    )}
-                  </div>
-
-                  <div className="flex items-baseline justify-end gap-1.5 text-right">
-                    {bmB ? (
-                      <>
-                        <span className="text-xs font-bold" style={{ color: getBigMacColor(bmB.valuationRawPct) }}>
-                          {bmB.valuationRawPct > 0 ? `+${bmB.valuationRawPct.toFixed(1)}%` : `${bmB.valuationRawPct.toFixed(1)}%`}
-                        </span>
-                        <span className="text-sm sm:text-base font-bold text-slate-200">
-                          {formatBigMacPrice(bmB.dollarPrice, baseCurrency, usdToBase, lang)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-xs text-slate-500">N/A</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })()}
         </div>
-      ) : (
-        /* Original Side-by-Side Metrics Cards */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        {/* Country A Card */}
-        <div className="bg-slate-900/80 border-2 border-indigo-500/30 rounded-2xl p-5 shadow-lg shadow-indigo-500/5">
-          <div
-            className="flex items-center gap-3 mb-4"
-            title={`${nameA} (${getCountrySecondaryName(countryA, lang)})`}
-          >
-            <CountryFlag iso2={countryA.iso2} className="w-10 h-7 shrink-0" alt={nameA} />
-            <div className="flex items-center gap-2 min-w-0">
-              <h3 className="text-xl font-bold text-white truncate">{nameA}</h3>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
-                {countryA.currencyCode}
-              </span>
-            </div>
-          </div>
 
-          <div className="space-y-2.5">
-            <div
-              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-              title={detailA ? `$${(detailA.totalGdpUsd / 1e12).toFixed(2)}T USD` : undefined}
-            >
-              <span className="text-xs text-slate-400">{t.cardTotalGdp} ({detailA?.latestYear ?? selectedYear})</span>
-              <span className="text-base font-bold font-mono text-indigo-400">
-                {detailA ? formatGdpCompact(detailA.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
+        {/* Metric 4: Real GDP Growth Rate */}
+        <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="font-bold text-slate-300">{t.cardGrowthRate}</span>
+            {detailA?.growthRatePct != null && detailB?.growthRatePct != null && (
+              <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                {detailA.growthRatePct > detailB.growthRatePct ? nameA : nameB} +{Math.abs(detailA.growthRatePct - detailB.growthRatePct).toFixed(2)}%p
               </span>
-            </div>
-
-            <div
-              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-              title={detailA ? `$${Math.round(detailA.gdpPerCapitaUsd).toLocaleString()} USD` : undefined}
-            >
-              <span className="text-xs text-slate-400">{t.cardPerCapita}</span>
-              <span className={`text-base font-bold font-mono ${getPerCapitaColorClass(detailA?.gdpPerCapitaUsd)}`}>
-                {detailA ? formatPerCapita(detailA.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
-              </span>
-            </div>
-
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.cardFxRate}</span>
-              <span className="text-sm font-mono font-bold text-slate-200">
-                1 {countryA.currencyCode} = {formatExchangeRate(rateA, countryA.currencyCode === 'KRW' ? 4 : 2)} {baseCurrency}
-              </span>
-            </div>
-
-            {interestA && (
-              <div
-                className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-                title={interestA.centralBankName}
-              >
-                <span className="text-xs text-slate-400">{t.compareInterestRate}</span>
-                <span className="text-sm font-mono font-bold text-indigo-300">
-                  {interestA.ratePct.toFixed(2)}%
-                </span>
-              </div>
             )}
-
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
-              <span
-                className={`text-sm font-mono font-bold ${detailA?.growthRatePct === null || detailA?.growthRatePct === undefined
-                    ? 'text-slate-400'
-                    : detailA.growthRatePct >= 0
-                      ? 'text-emerald-400'
-                      : 'text-rose-400'
-                  }`}
-              >
-                {detailA?.growthRatePct !== null && detailA?.growthRatePct !== undefined
-                  ? `${detailA.growthRatePct > 0 ? '+' : ''}${detailA.growthRatePct.toFixed(2)}%`
-                  : 'N/A'}
-              </span>
-            </div>
-
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.compareInflationRate}</span>
-              <span
-                className={`text-sm font-mono font-bold ${getInflationColorClass(detailA?.inflationRatePct)}`}
-              >
-                {detailA?.inflationRatePct !== null && detailA?.inflationRatePct !== undefined
-                  ? `${detailA.inflationRatePct.toFixed(1)}%`
-                  : 'N/A'}
-              </span>
-            </div>
-
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.compareDebtRatio}</span>
-              <span
-                className={`text-sm font-mono font-bold ${detailA?.debtRatioPct === null || detailA?.debtRatioPct === undefined
-                    ? 'text-slate-400'
-                    : detailA.debtRatioPct < 60
-                      ? 'text-emerald-400'
-                      : detailA.debtRatioPct < 90
-                        ? 'text-amber-400'
-                        : 'text-rose-400'
-                  }`}
-              >
-                {detailA?.debtRatioPct !== null && detailA?.debtRatioPct !== undefined
-                  ? `${detailA.debtRatioPct.toFixed(1)}%`
-                  : 'N/A'}
-              </span>
-            </div>
-
-            {/* Big Mac Index Comparison */}
-            {(() => {
-              const bm = getBigMacData(countryA.id)
-              if (!bm) return null
-              const color = getBigMacColor(bm.valuationRawPct)
-              return (
-                <div
-                  className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-                  title={`${bm.localPrice.toLocaleString()} ${bm.currencyCode}`}
-                >
-                  <span className="text-xs text-slate-400">🍔 {t.metricBigMac}</span>
-                  <div className="flex items-baseline gap-1.5 font-mono">
-                    <span className="text-sm font-bold text-slate-200">
-                      {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
-                    </span>
-                    <span className="text-xs font-bold" style={{ color }}>
-                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
-                    </span>
-                  </div>
-                </div>
-              )
-            })()}
+          </div>
+          <div className="flex items-baseline justify-between gap-3">
+            <span
+              className={`text-base sm:text-lg font-bold font-mono ${
+                detailA?.growthRatePct == null
+                  ? 'text-slate-400'
+                  : detailA.growthRatePct >= 0
+                  ? 'text-emerald-400'
+                  : 'text-rose-400'
+              }`}
+            >
+              {detailA?.growthRatePct != null ? `${detailA.growthRatePct > 0 ? '+' : ''}${detailA.growthRatePct.toFixed(2)}%` : 'N/A'}
+            </span>
+            <span
+              className={`text-base sm:text-lg font-bold font-mono text-right ${
+                detailB?.growthRatePct == null
+                  ? 'text-slate-400'
+                  : detailB.growthRatePct >= 0
+                  ? 'text-emerald-400'
+                  : 'text-rose-400'
+              }`}
+            >
+              {detailB?.growthRatePct != null ? `${detailB.growthRatePct > 0 ? '+' : ''}${detailB.growthRatePct.toFixed(2)}%` : 'N/A'}
+            </span>
           </div>
         </div>
 
-        {/* Country B Card */}
-        <div className="bg-slate-900/80 border-2 border-emerald-500/30 rounded-2xl p-5 shadow-lg shadow-emerald-500/5">
-          <div
-            className="flex items-center gap-3 mb-4"
-            title={`${nameB} (${getCountrySecondaryName(countryB, lang)})`}
-          >
-            <CountryFlag iso2={countryB.iso2} className="w-10 h-7 shrink-0" alt={nameB} />
-            <div className="flex items-center gap-2 min-w-0">
-              <h3 className="text-xl font-bold text-white truncate">{nameB}</h3>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
-                {countryB.currencyCode}
-              </span>
-            </div>
+        {/* Metric 5: Inflation Rate (CPI) */}
+        <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="font-bold text-slate-300">{t.compareInflationRate}</span>
           </div>
+          <div className="flex items-baseline justify-between gap-3">
+            <span className={`text-base sm:text-lg font-bold font-mono ${getInflationColorClass(detailA?.inflationRatePct)}`}>
+              {detailA?.inflationRatePct != null ? `${detailA.inflationRatePct.toFixed(1)}%` : 'N/A'}
+            </span>
+            <span className={`text-base sm:text-lg font-bold font-mono text-right ${getInflationColorClass(detailB?.inflationRatePct)}`}>
+              {detailB?.inflationRatePct != null ? `${detailB.inflationRatePct.toFixed(1)}%` : 'N/A'}
+            </span>
+          </div>
+        </div>
 
-          <div className="space-y-2.5">
-            <div
-              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-              title={detailB ? `$${(detailB.totalGdpUsd / 1e12).toFixed(2)}T USD` : undefined}
+        {/* Metric 6: Government Debt Ratio (% GDP) */}
+        <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="font-bold text-slate-300">{t.compareDebtRatio}</span>
+          </div>
+          <div className="flex items-baseline justify-between gap-3">
+            <span
+              className={`text-base sm:text-lg font-bold font-mono ${
+                detailA?.debtRatioPct == null
+                  ? 'text-slate-400'
+                  : detailA.debtRatioPct < 60
+                  ? 'text-emerald-400'
+                  : detailA.debtRatioPct < 90
+                  ? 'text-amber-400'
+                  : 'text-rose-400'
+              }`}
             >
-              <span className="text-xs text-slate-400">{t.cardTotalGdp} ({detailB?.latestYear ?? selectedYear})</span>
-              <span className="text-base font-bold font-mono text-emerald-400">
-                {detailB ? formatGdpCompact(detailB.totalGdpUsd, baseCurrency, usdToBase, lang) : '...'}
-              </span>
-            </div>
-
-            <div
-              className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-              title={detailB ? `$${Math.round(detailB.gdpPerCapitaUsd).toLocaleString()} USD` : undefined}
+              {detailA?.debtRatioPct != null ? `${detailA.debtRatioPct.toFixed(1)}%` : 'N/A'}
+            </span>
+            <span
+              className={`text-base sm:text-lg font-bold font-mono text-right ${
+                detailB?.debtRatioPct == null
+                  ? 'text-slate-400'
+                  : detailB.debtRatioPct < 60
+                  ? 'text-emerald-400'
+                  : detailB.debtRatioPct < 90
+                  ? 'text-amber-400'
+                  : 'text-rose-400'
+              }`}
             >
-              <span className="text-xs text-slate-400">{t.cardPerCapita}</span>
-              <span className={`text-base font-bold font-mono ${getPerCapitaColorClass(detailB?.gdpPerCapitaUsd)}`}>
-                {detailB ? formatPerCapita(detailB.gdpPerCapitaUsd, baseCurrency, usdToBase, lang) : '...'}
-              </span>
-            </div>
+              {detailB?.debtRatioPct != null ? `${detailB.debtRatioPct.toFixed(1)}%` : 'N/A'}
+            </span>
+          </div>
+        </div>
 
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.cardFxRate}</span>
-              <span className="text-sm font-mono font-bold text-slate-200">
-                1 {countryB.currencyCode} = {formatExchangeRate(rateB, countryB.currencyCode === 'KRW' ? 4 : 2)} {baseCurrency}
-              </span>
-            </div>
+        {/* Metric 7: Exchange Rate to Base Currency */}
+        <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="font-bold text-slate-300">{t.cardFxRate}</span>
+            <span className="text-[10px] font-mono text-slate-400">vs {baseCurrency}</span>
+          </div>
+          <div className="flex items-baseline justify-between gap-3 text-xs sm:text-sm font-mono font-bold">
+            <span className="text-indigo-300">
+              1 {countryA.currencyCode} = {formatExchangeRate(rateA, countryA.currencyCode === 'KRW' ? 4 : 2)}
+            </span>
+            <span className="text-emerald-300 text-right">
+              1 {countryB.currencyCode} = {formatExchangeRate(rateB, countryB.currencyCode === 'KRW' ? 4 : 2)}
+            </span>
+          </div>
+        </div>
 
-            {interestB && (
-              <div
-                className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-                title={interestB.centralBankName}
-              >
-                <span className="text-xs text-slate-400">{t.compareInterestRate}</span>
-                <span className="text-sm font-mono font-bold text-indigo-300">
-                  {interestB.ratePct.toFixed(2)}%
-                </span>
+        {/* Metric 8: Big Mac Index */}
+        {(() => {
+          const bmA = getBigMacData(countryA.id)
+          const bmB = getBigMacData(countryB.id)
+          if (!bmA && !bmB) return null
+
+          return (
+            <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="font-bold text-slate-300">🍔 {t.metricBigMac}</span>
               </div>
-            )}
-
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.cardGrowthRate}</span>
-              <span
-                className={`text-sm font-mono font-bold ${detailB?.growthRatePct === null || detailB?.growthRatePct === undefined
-                    ? 'text-slate-400'
-                    : detailB.growthRatePct >= 0
-                      ? 'text-emerald-400'
-                      : 'text-rose-400'
-                  }`}
-              >
-                {detailB?.growthRatePct !== null && detailB?.growthRatePct !== undefined
-                  ? `${detailB.growthRatePct > 0 ? '+' : ''}${detailB.growthRatePct.toFixed(2)}%`
-                  : 'N/A'}
-              </span>
-            </div>
-
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.compareInflationRate}</span>
-              <span
-                className={`text-sm font-mono font-bold ${getInflationColorClass(detailB?.inflationRatePct)}`}
-              >
-                {detailB?.inflationRatePct !== null && detailB?.inflationRatePct !== undefined
-                  ? `${detailB.inflationRatePct.toFixed(1)}%`
-                  : 'N/A'}
-              </span>
-            </div>
-
-            <div className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center">
-              <span className="text-xs text-slate-400">{t.compareDebtRatio}</span>
-              <span
-                className={`text-sm font-mono font-bold ${detailB?.debtRatioPct === null || detailB?.debtRatioPct === undefined
-                    ? 'text-slate-400'
-                    : detailB.debtRatioPct < 60
-                      ? 'text-emerald-400'
-                      : detailB.debtRatioPct < 90
-                        ? 'text-amber-400'
-                        : 'text-rose-400'
-                  }`}
-              >
-                {detailB?.debtRatioPct !== null && detailB?.debtRatioPct !== undefined
-                  ? `${detailB.debtRatioPct.toFixed(1)}%`
-                  : 'N/A'}
-              </span>
-            </div>
-
-            {/* Big Mac Index Comparison */}
-            {(() => {
-              const bm = getBigMacData(countryB.id)
-              if (!bm) return null
-              const color = getBigMacColor(bm.valuationRawPct)
-              return (
-                <div
-                  className="bg-slate-950/70 p-3 rounded-xl flex justify-between items-center"
-                  title={`${bm.localPrice.toLocaleString()} ${bm.currencyCode}`}
-                >
-                  <span className="text-xs text-slate-400">🍔 {t.metricBigMac}</span>
-                  <div className="flex items-baseline gap-1.5 font-mono">
-                    <span className="text-sm font-bold text-slate-200">
-                      {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
-                    </span>
-                    <span className="text-xs font-bold" style={{ color }}>
-                      {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
-                    </span>
-                  </div>
+              <div className="flex items-baseline justify-between gap-3 font-mono">
+                <div className="flex items-baseline gap-1.5">
+                  {bmA ? (
+                    <>
+                      <span className="text-sm sm:text-base font-bold text-slate-200">
+                        {formatBigMacPrice(bmA.dollarPrice, baseCurrency, usdToBase, lang)}
+                      </span>
+                      <span className="text-xs font-bold" style={{ color: getBigMacColor(bmA.valuationRawPct) }}>
+                        {bmA.valuationRawPct > 0 ? `+${bmA.valuationRawPct.toFixed(1)}%` : `${bmA.valuationRawPct.toFixed(1)}%`}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-slate-500">N/A</span>
+                  )}
                 </div>
-              )
-            })()}
-          </div>
-        </div>
+
+                <div className="flex items-baseline justify-end gap-1.5 text-right">
+                  {bmB ? (
+                    <>
+                      <span className="text-xs font-bold" style={{ color: getBigMacColor(bmB.valuationRawPct) }}>
+                        {bmB.valuationRawPct > 0 ? `+${bmB.valuationRawPct.toFixed(1)}%` : `${bmB.valuationRawPct.toFixed(1)}%`}
+                      </span>
+                      <span className="text-sm sm:text-base font-bold text-slate-200">
+                        {formatBigMacPrice(bmB.dollarPrice, baseCurrency, usdToBase, lang)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-slate-500">N/A</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
       </div>
-      )}
 
       {/* Comparison Insights Banner */}
       {detailA && detailB && (
