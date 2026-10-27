@@ -196,7 +196,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
       {/* 1:1 Head-to-Head Symmetric Matrix View */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl divide-y divide-slate-800/80">
         {/* Header Country VS Banner (with seamless inline country selectors) */}
-        <div className="sticky top-16 sm:top-20 z-30 bg-gradient-to-r from-indigo-950/95 via-slate-900/95 to-emerald-950/95 backdrop-blur-md rounded-t-2xl border-b border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
+        <div className="sticky top-16 z-30 bg-slate-950 -mx-[1px] -mt-[1px]">
+          <div className="bg-slate-900 bg-gradient-to-r from-indigo-950 via-slate-900 to-emerald-950 rounded-t-2xl border border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
           {/* Country A Seamless Selector */}
           <div className="relative group flex items-center gap-2 sm:gap-3 flex-1 min-w-0 rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors hover:bg-indigo-500/10 cursor-pointer">
             <CountryFlag iso2={countryA.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameA} />
@@ -266,6 +267,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </select>
           </div>
         </div>
+
+          </div>
 
         {/* Metric 1: Total GDP with Dual Ratio Visualizer Bar */}
         {(() => {
