@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { GitCompare, ArrowRightLeft, TrendingUp, Building2 } from 'lucide-react'
+import { GitCompare, ArrowRightLeft, TrendingUp, Building2, ChevronDown } from 'lucide-react'
 import { COUNTRIES } from '../data/countries'
 import type { CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
@@ -135,7 +135,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
     <div className="space-y-6">
       {/* Top Header & Presets */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
             <GitCompare className="w-6 h-6 text-indigo-400" />
             {t.compareTitle}
@@ -191,73 +191,39 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </div>
           </div>
         </div>
-
-        {/* Selectors */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Country A Picker */}
-          <div className="flex-1 min-w-0 bg-slate-950/80 border border-indigo-500/40 rounded-xl p-2 sm:p-3 overflow-hidden">
-            <label htmlFor="countryASelect" className="text-[10px] sm:text-xs font-semibold text-indigo-400 block mb-0.5 sm:mb-1 truncate">
-              {t.compareBaseCountry}
-            </label>
-            <select
-              id="countryASelect"
-              value={countryAId}
-              onChange={(e) => setCountryAId(e.target.value)}
-              className="w-full bg-transparent text-sm sm:text-base md:text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c.id} value={c.id} className="bg-slate-900 text-white">
-                  {c.flagEmoji} {getCountryName(c, lang)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Swap Button */}
-          <button
-            onClick={handleSwap}
-            className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-all transform hover:rotate-180 duration-200 shrink-0"
-            title={t.swapCurrencies}
-          >
-            <ArrowRightLeft className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
-          </button>
-
-          {/* Country B Picker */}
-          <div className="flex-1 min-w-0 bg-slate-950/80 border border-emerald-500/40 rounded-xl p-2 sm:p-3 overflow-hidden">
-            <label htmlFor="countryBSelect" className="text-[10px] sm:text-xs font-semibold text-emerald-400 block mb-0.5 sm:mb-1 truncate">
-              {t.compareTargetCountry}
-            </label>
-            <select
-              id="countryBSelect"
-              value={countryBId}
-              onChange={(e) => setCountryBId(e.target.value)}
-              className="w-full bg-transparent text-sm sm:text-base md:text-lg font-bold text-white focus:outline-none cursor-pointer truncate"
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c.id} value={c.id} className="bg-slate-900 text-white">
-                  {c.flagEmoji} {getCountryName(c, lang)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
       </div>
 
       {/* 1:1 Head-to-Head Symmetric Matrix View */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl divide-y divide-slate-800/80">
-        {/* Header Country VS Banner */}
+        {/* Header Country VS Banner (with seamless inline country selectors) */}
         <div className="sticky top-16 sm:top-20 z-30 bg-gradient-to-r from-indigo-950/95 via-slate-900/95 to-emerald-950/95 backdrop-blur-md rounded-t-2xl border-b border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
-          {/* Country A */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          {/* Country A Seamless Selector */}
+          <div className="relative group flex items-center gap-2 sm:gap-3 flex-1 min-w-0 rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors hover:bg-indigo-500/10 cursor-pointer">
             <CountryFlag iso2={countryA.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameA} />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-sm sm:text-lg font-bold text-white truncate">{nameA}</span>
+                <span className="text-sm sm:text-lg font-bold text-white group-hover:text-indigo-200 transition-colors truncate flex items-center gap-1">
+                  <span className="truncate">{nameA}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400/70 group-hover:text-indigo-300 transition-colors shrink-0" />
+                </span>
                 <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                   {countryA.currencyCode}
                 </span>
               </div>
             </div>
+            <select
+              id="countryASelect"
+              aria-label={t.compareBaseCountry}
+              value={countryAId}
+              onChange={(e) => setCountryAId(e.target.value)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.id} value={c.id} className="bg-slate-900 text-white">
+                  {c.flagEmoji} {getCountryName(c, lang)}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* VS Badge */}
@@ -271,17 +237,33 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <ArrowRightLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 group-hover:text-indigo-300 transition-colors" />
           </button>
 
-          {/* Country B */}
-          <div className="flex items-center justify-end gap-2 sm:gap-3 flex-1 min-w-0 text-right">
+          {/* Country B Seamless Selector */}
+          <div className="relative group flex items-center justify-end gap-2 sm:gap-3 flex-1 min-w-0 text-right rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors hover:bg-emerald-500/10 cursor-pointer">
             <div className="min-w-0">
               <div className="flex items-center justify-end gap-1.5 flex-wrap">
                 <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   {countryB.currencyCode}
                 </span>
-                <span className="text-sm sm:text-lg font-bold text-white truncate">{nameB}</span>
+                <span className="text-sm sm:text-lg font-bold text-white group-hover:text-emerald-200 transition-colors truncate flex items-center gap-1">
+                  <span className="truncate">{nameB}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400/70 group-hover:text-emerald-300 transition-colors shrink-0" />
+                </span>
               </div>
             </div>
             <CountryFlag iso2={countryB.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameB} />
+            <select
+              id="countryBSelect"
+              aria-label={t.compareTargetCountry}
+              value={countryBId}
+              onChange={(e) => setCountryBId(e.target.value)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.id} value={c.id} className="bg-slate-900 text-white">
+                  {c.flagEmoji} {getCountryName(c, lang)}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
