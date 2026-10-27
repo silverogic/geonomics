@@ -4275,10 +4275,14 @@
     "ticker": "^OMXC25",
     "isSupported": true,
     "currency": "DKK",
-    "currentPrice": 1917.56,
-    "changePct": 4.59,
-    "changePct30d": 3.58,
+    "currentPrice": 1881.45,
+    "changePct": 2.62,
+    "changePct30d": 1.71,
     "points": [
+      {
+        "date": "2026-09-15",
+        "close": 1849.82
+      },
       {
         "date": "2026-09-16",
         "close": 1851.33
@@ -4394,10 +4398,6 @@
       {
         "date": "2026-10-26",
         "close": 1906.74
-      },
-      {
-        "date": "2026-10-27",
-        "close": 1917.56
       }
     ]
   },
@@ -5206,9 +5206,9 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13624.65,
-    "changePct": -1.71,
-    "changePct30d": 0.36,
+    "currentPrice": 13617.52,
+    "changePct": -1.76,
+    "changePct30d": 0.31,
     "points": [
       {
         "date": "2026-09-14",
@@ -5328,7 +5328,7 @@
       },
       {
         "date": "2026-10-27",
-        "close": 13624.65
+        "close": 13617.52
       }
     ]
   },
