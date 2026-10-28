@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { GitCompare, ArrowRightLeft, TrendingUp, Building2, ChevronDown } from 'lucide-react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { GitCompare, ArrowRightLeft, TrendingUp, Building2, ChevronDown, Search, Check, X } from 'lucide-react'
 import { COUNTRIES } from '../data/countries'
 import type { CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
@@ -39,6 +39,14 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const [countryAId, setCountryAId] = useState<string>('USA')
   const [countryBId, setCountryBId] = useState<string>('CHN')
 
+  // Custom App-Themed Combobox States & Refs
+  const [isCountryAOpen, setIsCountryAOpen] = useState<boolean>(false)
+  const [isCountryBOpen, setIsCountryBOpen] = useState<boolean>(false)
+  const [queryA, setQueryA] = useState<string>('')
+  const [queryB, setQueryB] = useState<string>('')
+  const countryARef = useRef<HTMLDivElement>(null)
+  const countryBRef = useRef<HTMLDivElement>(null)
+
   const [detailA, setDetailA] = useState<CountryGdpDetail | null>(null)
   const [detailB, setDetailB] = useState<CountryGdpDetail | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
@@ -48,6 +56,59 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
   const countryA = COUNTRIES.find((c) => c.id === countryAId) || COUNTRIES[0]
   const countryB = COUNTRIES.find((c) => c.id === countryBId) || COUNTRIES[1]
+
+  // Close combobox popovers on outside click or Escape key
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (countryARef.current && !countryARef.current.contains(target)) {
+        setIsCountryAOpen(false)
+      }
+      if (countryBRef.current && !countryBRef.current.contains(target)) {
+        setIsCountryBOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsCountryAOpen(false)
+        setIsCountryBOpen(false)
+      }
+    }
+    if (isCountryAOpen || isCountryBOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isCountryAOpen, isCountryBOpen])
+
+  const filteredCountriesA = useMemo(() => {
+    const q = queryA.trim().toLowerCase()
+    if (!q) return COUNTRIES
+    return COUNTRIES.filter(
+      (c) =>
+        getCountryName(c, lang).toLowerCase().includes(q) ||
+        c.nameEn.toLowerCase().includes(q) ||
+        c.nameKo.toLowerCase().includes(q) ||
+        c.id.toLowerCase().includes(q) ||
+        c.currencyCode.toLowerCase().includes(q)
+    )
+  }, [queryA, lang])
+
+  const filteredCountriesB = useMemo(() => {
+    const q = queryB.trim().toLowerCase()
+    if (!q) return COUNTRIES
+    return COUNTRIES.filter(
+      (c) =>
+        getCountryName(c, lang).toLowerCase().includes(q) ||
+        c.nameEn.toLowerCase().includes(q) ||
+        c.nameKo.toLowerCase().includes(q) ||
+        c.id.toLowerCase().includes(q) ||
+        c.currencyCode.toLowerCase().includes(q)
+    )
+  }, [queryB, lang])
 
   useEffect(() => {
     let active = true
@@ -104,11 +165,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
     const temp = countryAId
     setCountryAId(countryBId)
     setCountryBId(temp)
+    setIsCountryAOpen(false)
+    setIsCountryBOpen(false)
   }
 
   const setPreset = (a: string, b: string) => {
     setCountryAId(a)
     setCountryBId(b)
+    setIsCountryAOpen(false)
+    setIsCountryBOpen(false)
   }
 
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
@@ -195,80 +260,253 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
       {/* 1:1 Head-to-Head Symmetric Matrix View */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl divide-y divide-slate-800/80">
-        {/* Header Country VS Banner (with seamless inline country selectors) */}
+        {/* Header Country VS Banner (with seamless app-themed country selectors) */}
         <div className="sticky top-16 z-30 bg-slate-950 -mx-[1px] -mt-[1px]">
           <div className="bg-slate-900 bg-gradient-to-r from-indigo-950 via-slate-900 to-emerald-950 rounded-t-2xl border border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
-          {/* Country A Seamless Selector */}
-          <div className="relative group flex items-center gap-2 sm:gap-3 flex-1 min-w-0 rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors hover:bg-indigo-500/10 cursor-pointer">
-            <CountryFlag iso2={countryA.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameA} />
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-sm sm:text-lg font-bold text-white group-hover:text-indigo-200 transition-colors truncate flex items-center gap-1">
-                  <span className="truncate">{nameA}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400/70 group-hover:text-indigo-300 transition-colors shrink-0" />
-                </span>
-                <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  {countryA.currencyCode}
-                </span>
-              </div>
-            </div>
-            <select
-              id="countryASelect"
-              aria-label={t.compareBaseCountry}
-              value={countryAId}
-              onChange={(e) => setCountryAId(e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c.id} value={c.id} className="bg-slate-900 text-white">
-                  {c.flagEmoji} {getCountryName(c, lang)}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Country A App-Themed Combobox */}
+            <div className="relative flex-1 min-w-0" ref={countryARef}>
+              <button
+                type="button"
+                id="countryASelect"
+                aria-haspopup="listbox"
+                aria-expanded={isCountryAOpen}
+                aria-label={t.compareBaseCountry}
+                onClick={() => {
+                  setIsCountryAOpen((prev) => !prev)
+                  setIsCountryBOpen(false)
+                  setQueryA('')
+                }}
+                className={`group flex items-center gap-2 sm:gap-3 w-full min-w-0 text-left rounded-xl px-2 py-1 -mx-2 -my-1 transition-all cursor-pointer select-none ${
+                  isCountryAOpen
+                    ? 'bg-indigo-500/15 ring-1 ring-indigo-500/40'
+                    : 'hover:bg-indigo-500/10'
+                }`}
+              >
+                <CountryFlag iso2={countryA.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameA} />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-sm sm:text-lg font-bold text-white group-hover:text-indigo-200 transition-colors truncate flex items-center gap-1">
+                      <span className="truncate">{nameA}</span>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 text-slate-400/70 group-hover:text-indigo-300 transition-transform duration-200 shrink-0 ${
+                          isCountryAOpen ? 'rotate-180 text-indigo-400' : ''
+                        }`}
+                      />
+                    </span>
+                    <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      {countryA.currencyCode}
+                    </span>
+                  </div>
+                </div>
+              </button>
 
-          {/* VS Badge */}
-          <button
-            type="button"
-            onClick={handleSwap}
-            title={t.swapCurrencies}
-            className="px-2.5 sm:px-3 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-slate-700 hover:border-indigo-400 text-[11px] sm:text-xs font-black tracking-wider text-slate-300 hover:text-white shrink-0 shadow-inner cursor-pointer transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1 group"
-          >
-            <span>VS</span>
-            <ArrowRightLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 group-hover:text-indigo-300 transition-colors" />
-          </button>
+              {isCountryAOpen && (
+                <div
+                  role="listbox"
+                  aria-label={t.compareBaseCountry}
+                  className="absolute left-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-24px)] bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/80 z-50 animate-in fade-in zoom-in-95 duration-150"
+                >
+                  {/* Quick search filter */}
+                  <div className="relative mb-1.5">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={queryA}
+                      onChange={(e) => setQueryA(e.target.value)}
+                      placeholder={t.searchPlaceholder}
+                      autoFocus
+                      className="w-full bg-slate-950/90 border border-slate-800 focus:border-indigo-500 rounded-xl pl-8 pr-7 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+                    />
+                    {queryA && (
+                      <button
+                        type="button"
+                        onClick={() => setQueryA('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
 
-          {/* Country B Seamless Selector */}
-          <div className="relative group flex items-center justify-end gap-2 sm:gap-3 flex-1 min-w-0 text-right rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors hover:bg-emerald-500/10 cursor-pointer">
-            <div className="min-w-0">
-              <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  {countryB.currencyCode}
-                </span>
-                <span className="text-sm sm:text-lg font-bold text-white group-hover:text-emerald-200 transition-colors truncate flex items-center gap-1">
-                  <span className="truncate">{nameB}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400/70 group-hover:text-emerald-300 transition-colors shrink-0" />
-                </span>
-              </div>
+                  <div className="max-h-64 overflow-y-auto space-y-0.5 pr-0.5 [scrollbar-width:thin]">
+                    {filteredCountriesA.length === 0 ? (
+                      <div className="py-4 text-center text-xs text-slate-500">
+                        {t.noCountriesFound}
+                      </div>
+                    ) : (
+                      filteredCountriesA.map((c) => {
+                        const isSelected = c.id === countryAId
+                        const cName = getCountryName(c, lang)
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            onClick={() => {
+                              setCountryAId(c.id)
+                              setIsCountryAOpen(false)
+                              setQueryA('')
+                            }}
+                            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all select-none cursor-pointer ${
+                              isSelected
+                                ? 'bg-indigo-600/20 text-white border border-indigo-500/30 shadow-sm'
+                                : 'text-slate-300 hover:bg-slate-800/70 hover:text-white border border-transparent'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <CountryFlag
+                                iso2={c.iso2}
+                                className="w-4 h-3 rounded-[1px] shrink-0 shadow-sm"
+                                alt={c.nameEn}
+                              />
+                              <span className={`truncate ${isSelected ? 'text-white font-bold' : 'text-slate-200'}`}>
+                                {cName}
+                              </span>
+                              <span className="text-[10px] font-mono text-indigo-400/90 shrink-0">
+                                {c.currencyCode}
+                              </span>
+                            </div>
+                            {isSelected && (
+                              <Check className="w-3.5 h-3.5 text-indigo-400 stroke-[2.5] shrink-0 ml-1.5" />
+                            )}
+                          </button>
+                        )
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-            <CountryFlag iso2={countryB.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameB} />
-            <select
-              id="countryBSelect"
-              aria-label={t.compareTargetCountry}
-              value={countryBId}
-              onChange={(e) => setCountryBId(e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+
+            {/* VS Badge */}
+            <button
+              type="button"
+              onClick={handleSwap}
+              title={t.swapCurrencies}
+              className="px-2.5 sm:px-3 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-slate-700 hover:border-indigo-400 text-[11px] sm:text-xs font-black tracking-wider text-slate-300 hover:text-white shrink-0 shadow-inner cursor-pointer transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1 group"
             >
-              {COUNTRIES.map((c) => (
-                <option key={c.id} value={c.id} className="bg-slate-900 text-white">
-                  {c.flagEmoji} {getCountryName(c, lang)}
-                </option>
-              ))}
-            </select>
+              <span>VS</span>
+              <ArrowRightLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 group-hover:text-indigo-300 transition-colors" />
+            </button>
+
+            {/* Country B App-Themed Combobox */}
+            <div className="relative flex-1 min-w-0 flex justify-end" ref={countryBRef}>
+              <button
+                type="button"
+                id="countryBSelect"
+                aria-haspopup="listbox"
+                aria-expanded={isCountryBOpen}
+                aria-label={t.compareTargetCountry}
+                onClick={() => {
+                  setIsCountryBOpen((prev) => !prev)
+                  setIsCountryAOpen(false)
+                  setQueryB('')
+                }}
+                className={`group flex items-center justify-end gap-2 sm:gap-3 w-full min-w-0 text-right rounded-xl px-2 py-1 -mx-2 -my-1 transition-all cursor-pointer select-none ${
+                  isCountryBOpen
+                    ? 'bg-emerald-500/15 ring-1 ring-emerald-500/40'
+                    : 'hover:bg-emerald-500/10'
+                }`}
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                    <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      {countryB.currencyCode}
+                    </span>
+                    <span className="text-sm sm:text-lg font-bold text-white group-hover:text-emerald-200 transition-colors truncate flex items-center gap-1">
+                      <span className="truncate">{nameB}</span>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 text-slate-400/70 group-hover:text-emerald-300 transition-transform duration-200 shrink-0 ${
+                          isCountryBOpen ? 'rotate-180 text-emerald-400' : ''
+                        }`}
+                      />
+                    </span>
+                  </div>
+                </div>
+                <CountryFlag iso2={countryB.iso2} className="w-8 h-6 sm:w-10 sm:h-7 shrink-0 rounded-sm shadow" alt={nameB} />
+              </button>
+
+              {isCountryBOpen && (
+                <div
+                  role="listbox"
+                  aria-label={t.compareTargetCountry}
+                  className="absolute right-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-24px)] bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/80 z-50 animate-in fade-in zoom-in-95 duration-150 text-left"
+                >
+                  {/* Quick search filter */}
+                  <div className="relative mb-1.5">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={queryB}
+                      onChange={(e) => setQueryB(e.target.value)}
+                      placeholder={t.searchPlaceholder}
+                      autoFocus
+                      className="w-full bg-slate-950/90 border border-slate-800 focus:border-emerald-500 rounded-xl pl-8 pr-7 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+                    />
+                    {queryB && (
+                      <button
+                        type="button"
+                        onClick={() => setQueryB('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-64 overflow-y-auto space-y-0.5 pr-0.5 [scrollbar-width:thin]">
+                    {filteredCountriesB.length === 0 ? (
+                      <div className="py-4 text-center text-xs text-slate-500">
+                        {t.noCountriesFound}
+                      </div>
+                    ) : (
+                      filteredCountriesB.map((c) => {
+                        const isSelected = c.id === countryBId
+                        const cName = getCountryName(c, lang)
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            onClick={() => {
+                              setCountryBId(c.id)
+                              setIsCountryBOpen(false)
+                              setQueryB('')
+                            }}
+                            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all select-none cursor-pointer ${
+                              isSelected
+                                ? 'bg-emerald-500/20 text-white border border-emerald-500/30 shadow-sm'
+                                : 'text-slate-300 hover:bg-slate-800/70 hover:text-white border border-transparent'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <CountryFlag
+                                iso2={c.iso2}
+                                className="w-4 h-3 rounded-[1px] shrink-0 shadow-sm"
+                                alt={c.nameEn}
+                              />
+                              <span className={`truncate ${isSelected ? 'text-white font-bold' : 'text-slate-200'}`}>
+                                {cName}
+                              </span>
+                              <span className="text-[10px] font-mono text-emerald-400/90 shrink-0">
+                                {c.currencyCode}
+                              </span>
+                            </div>
+                            {isSelected && (
+                              <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5] shrink-0 ml-1.5" />
+                            )}
+                          </button>
+                        )
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-          </div>
 
         {/* Metric 1: Total GDP with Dual Ratio Visualizer Bar */}
         {(() => {
