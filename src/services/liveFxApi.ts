@@ -14,6 +14,29 @@ export interface LiveFxQuote {
   time: number | null
 }
 
+/**
+ * Relative unit value ranking from highest per-unit value to lowest.
+ * When targetCurrency has a lower unit value than baseCurrency (e.g. JPY or KRW vs USD),
+ * Yahoo Finance truncates direct quotes like `JPYUSD=X` (0.0063) and the proxy rounds them (0.01).
+ * Querying the inverse pair `USDJPY=X` (157.66) and inverting `1 / price` preserves full precision.
+ */
+const CURRENCY_UNIT_RANK: Record<string, number> = {
+  GBP: 8,
+  CHF: 7,
+  EUR: 6,
+  USD: 5,
+  AUD: 4,
+  CNY: 3,
+  JPY: 2,
+  KRW: 1,
+}
+
+function shouldUseInversePair(target: string, base: string): boolean {
+  const targetRank = CURRENCY_UNIT_RANK[target] ?? 0
+  const baseRank = CURRENCY_UNIT_RANK[base] ?? 0
+  return targetRank < baseRank
+}
+
 const fxCache = new Map<string, { quote: LiveFxQuote; timestamp: number }>()
 let inFlightRequest: Promise<Record<string, LiveFxQuote>> | null = null
 
@@ -21,7 +44,7 @@ export const isLiveFxEnabled = (): boolean => !!PROXY_URL
 
 /**
  * Fetches near-real-time FX quotes and 24h change percentages for key currency pairs.
- * Target symbols: e.g. USDKRW=X, EURKRW=X, JPYKRW=X.
+ * Always queries the direction where rate >= 1 (e.g. USDJPY=X instead of JPYUSD=X) to prevent rounding loss.
  */
 export async function fetchLiveFxQuotes(
   baseCurrency: BaseCurrency,
@@ -54,7 +77,9 @@ export async function fetchLiveFxQuotes(
 
   inFlightRequest = (async () => {
     try {
-      const symbols = neededCurrencies.map((c) => `${c}${baseCurrency}=X`)
+      const symbols = neededCurrencies.map((c) =>
+        shouldUseInversePair(c, baseCurrency) ? `${baseCurrency}${c}=X` : `${c}${baseCurrency}=X`
+      )
       const url = `${PROXY_URL}/?symbols=${encodeURIComponent(symbols.join(','))}`
       const response = await fetch(url)
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -65,11 +90,33 @@ export async function fetchLiveFxQuotes(
       const result: Record<string, LiveFxQuote> = {}
       for (const c of targetCurrencies) {
         if (c === baseCurrency) continue
-        const sym = `${c}${baseCurrency}=X`
+        const inverse = shouldUseInversePair(c, baseCurrency)
+        const sym = inverse ? `${baseCurrency}${c}=X` : `${c}${baseCurrency}=X`
         const q = quotes[sym]
-        if (q && typeof q.price === 'number') {
-          fxCache.set(`${c}_${baseCurrency}`, { quote: q, timestamp: now })
-          result[c] = q
+
+        if (q && typeof q.price === 'number' && q.price > 0) {
+          let normalizedQuote: LiveFxQuote
+          if (inverse) {
+            const price = 1 / q.price
+            const prevClose = q.prevClose && q.prevClose > 0 ? 1 / q.prevClose : null
+            const changePct =
+              prevClose && prevClose > 0
+                ? Number((((price - prevClose) / prevClose) * 100).toFixed(2))
+                : q.changePct != null
+                  ? -q.changePct
+                  : null
+            normalizedQuote = {
+              price,
+              prevClose,
+              changePct,
+              time: q.time,
+            }
+          } else {
+            normalizedQuote = q
+          }
+
+          fxCache.set(`${c}_${baseCurrency}`, { quote: normalizedQuote, timestamp: now })
+          result[c] = normalizedQuote
         } else {
           const cached = fxCache.get(`${c}_${baseCurrency}`)
           if (cached) result[c] = cached.quote

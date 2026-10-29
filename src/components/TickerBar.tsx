@@ -3,7 +3,6 @@ import { ChevronDown, Sparkles } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo } from '../types/economics'
 import { getConversionRate } from '../services/exchangeApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
-import { formatExchangeRate } from '../utils/formatters'
 import { CountryFlag } from './CountryFlag'
 
 interface TickerBarProps {
@@ -44,8 +43,14 @@ function getLocalizedTargetCurrencyName(currency: string, lang: Language): strin
 }
 
 function formatLocalizedFxRate(rate: number, baseCurrency: BaseCurrency, lang: Language): string {
-  const digits = baseCurrency === 'KRW' || baseCurrency === 'JPY' ? 2 : 2
-  const formattedNum = formatExchangeRate(rate, digits)
+  const digits = 2
+  const formattedNum =
+    !rate || isNaN(rate)
+      ? '0.00'
+      : rate.toLocaleString(undefined, {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits,
+        })
 
   if (lang === 'ko') {
     switch (baseCurrency) {
