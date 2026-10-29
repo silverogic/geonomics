@@ -100,6 +100,34 @@ function formatLocalizedFxRate(rate: number, baseCurrency: BaseCurrency, lang: L
   return `${formattedNum} ${baseCurrency}`
 }
 
+/**
+ * Returns text color class for FX rate based on 24h change percentage.
+ * - Rising (> +0.01%): Green (emerald-400)
+ * - Falling (< -0.01%): Red (rose-400)
+ * - Minimal change (-0.01% ~ +0.01%) or unavailable: White (slate-100)
+ */
+function getFxRateColorClass(changePct?: number | null): string {
+  if (changePct == null || Math.abs(changePct) <= 0.01) {
+    return 'text-slate-100'
+  }
+  return changePct > 0.01 ? 'text-emerald-400' : 'text-rose-400'
+}
+
+function getFxBadgeColorClass(changePct: number): string {
+  if (Math.abs(changePct) <= 0.01) {
+    return 'text-slate-100 bg-slate-800/40 border border-slate-700/40'
+  }
+  return changePct > 0.01
+    ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+    : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+}
+
+function formatFxChangeBadgeText(changePct: number): string {
+  if (changePct > 0.01) return `▲ +${changePct.toFixed(2)}%`
+  if (changePct < -0.01) return `▼ ${changePct.toFixed(2)}%`
+  return `${changePct > 0 ? '+' : ''}${changePct.toFixed(2)}%`
+}
+
 const CURRENCY_FLAGS: Record<string, string> = {
   USD: 'US',
   EUR: 'EU',
@@ -291,7 +319,11 @@ export const TickerBar: React.FC<TickerBarProps> = ({
 
                 {/* Reel 2: Live FX Rate & 24h Change */}
                 <div className="flex items-center gap-1 shrink-0">
-                  <span className="font-mono font-bold text-emerald-400 text-xs sm:text-sm whitespace-nowrap">
+                  <span
+                    className={`font-mono font-bold text-xs sm:text-sm whitespace-nowrap transition-colors ${getFxRateColorClass(
+                      item.changePct
+                    )}`}
+                  >
                     {formatLocalizedFxRate(item.rate, baseCurrency, lang)}
                   </span>
                   {item.changePct != null && (
@@ -301,19 +333,11 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                           ? `${lang === 'ko' ? '전일 종가' : 'Prev Close'}: ${formatLocalizedFxRate(item.prevClose, baseCurrency, lang)}`
                           : undefined
                       }
-                      className={`hidden sm:inline-flex items-center text-[10px] font-mono font-bold px-1 py-0.2 rounded shrink-0 whitespace-nowrap ${
-                        item.changePct > 0
-                          ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
-                          : item.changePct < 0
-                            ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
-                            : 'text-slate-400 bg-slate-800/40 border border-slate-700/40'
-                      }`}
+                      className={`hidden sm:inline-flex items-center text-[10px] font-mono font-bold px-1 py-0.2 rounded shrink-0 whitespace-nowrap ${getFxBadgeColorClass(
+                        item.changePct
+                      )}`}
                     >
-                      {item.changePct > 0
-                        ? `▲ +${item.changePct.toFixed(2)}%`
-                        : item.changePct < 0
-                          ? `▼ ${item.changePct.toFixed(2)}%`
-                          : '0.00%'}
+                      {formatFxChangeBadgeText(item.changePct)}
                     </span>
                   )}
                 </div>
@@ -386,20 +410,20 @@ export const TickerBar: React.FC<TickerBarProps> = ({
 
                 {/* Center: Rate & Change */}
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="font-mono font-semibold text-emerald-400 whitespace-nowrap">
+                  <span
+                    className={`font-mono font-semibold whitespace-nowrap ${getFxRateColorClass(
+                      item.changePct
+                    )}`}
+                  >
                     {formatLocalizedFxRate(item.rate, baseCurrency, lang)}
                   </span>
                   {item.changePct != null && (
                     <span
-                      className={`text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded whitespace-nowrap ${
-                        item.changePct > 0
-                          ? 'text-emerald-400 bg-emerald-500/10'
-                          : item.changePct < 0
-                            ? 'text-rose-400 bg-rose-500/10'
-                            : 'text-slate-400 bg-slate-800/50'
-                      }`}
+                      className={`text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded whitespace-nowrap ${getFxBadgeColorClass(
+                        item.changePct
+                      )}`}
                     >
-                      {item.changePct > 0 ? `▲ +${item.changePct.toFixed(2)}%` : `▼ ${item.changePct.toFixed(2)}%`}
+                      {formatFxChangeBadgeText(item.changePct)}
                     </span>
                   )}
                 </div>
