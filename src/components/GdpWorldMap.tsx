@@ -351,7 +351,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   return (
     <div className="space-y-6">
       {/* 1. UNIFIED MAP HEADER & CONTROL BAR */}
-      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
+      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-4 sm:p-6 shadow-xl space-y-3 sm:space-y-4">
         {/* Upper Row: Title */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
@@ -359,9 +359,9 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
           </h1>
         </div>
 
-        {/* Lower Row: Filter HUD (Metric, Region, Year, Map Style & Search) */}
-        <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 pt-4 border-t border-slate-800/80">
-          <div className="flex flex-wrap items-center gap-3">
+        {/* Lower Row: Filter HUD (Metric, Region, View Mode Switcher & Year Switcher) */}
+        <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-2.5 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-800/80">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
             {/* Metric Selector Combobox */}
             <div className="relative" ref={metricMenuRef}>
               <button
@@ -370,7 +370,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 onClick={() => setIsMetricMenuOpen((prev) => !prev)}
                 aria-haspopup="listbox"
                 aria-expanded={isMetricMenuOpen}
-                className={`flex items-center gap-2 bg-slate-950/90 border rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isMetricMenuOpen
+                className={`flex items-center gap-1.5 sm:gap-2 bg-slate-950/90 border rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isMetricMenuOpen
                   ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                   : 'border-slate-800 hover:border-slate-700'
                   }`}
@@ -379,7 +379,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <Activity className="w-3.5 h-3.5 text-indigo-400" />
                   <span className="hidden sm:inline">{t.mapMetricLabel}:</span>
                 </span>
-                <span className="text-slate-100 font-bold max-w-[130px] sm:max-w-[180px] truncate">
+                <span className="text-slate-100 font-bold max-w-[120px] sm:max-w-[180px] truncate">
                   {getMetricLabel(metric)}
                 </span>
                 <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isMetricMenuOpen ? 'rotate-180' : ''}`} />
@@ -423,7 +423,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 onClick={() => setIsRegionMenuOpen((prev) => !prev)}
                 aria-haspopup="listbox"
                 aria-expanded={isRegionMenuOpen}
-                className={`flex items-center gap-2 bg-slate-950/90 border rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isRegionMenuOpen
+                className={`flex items-center gap-1.5 sm:gap-2 bg-slate-950/90 border rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isRegionMenuOpen
                   ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                   : 'border-slate-800 hover:border-slate-700'
                   }`}
@@ -432,7 +432,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <Filter className="w-3.5 h-3.5 text-indigo-400" />
                   <span className="hidden sm:inline">{lang === 'ko' ? '대륙' : lang === 'ja' ? '地域' : lang === 'es' ? 'Región' : lang === 'zh' ? '大洲' : 'Region'}:</span>
                 </span>
-                <span className="text-slate-100 font-bold max-w-[130px] sm:max-w-[180px] truncate">
+                <span className="text-slate-100 font-bold max-w-[110px] sm:max-w-[180px] truncate">
                   {getRegionButtonLabel()}
                 </span>
                 {!isAllRegions && (
@@ -562,33 +562,12 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               )}
             </div>
 
-            {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
-            {metric !== 'fuelPrice' && metric !== 'bigMac' && (
-              <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
-                <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
-                  {t.yearLabel}
-                </span>
-                {ECONOMIC_YEAR_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.year}
-                    onClick={() => onYearChange(opt.year)}
-                    className={`px-2 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
-                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                      }`}
-                  >
-                    {t[opt.labelKey].replace('{year}', opt.year)}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* View Mode Switcher: World Map vs Heatmap */}
+            {/* View Mode Switcher: World Map vs Heatmap (Placed right next to Region Filter to share Row 1 on mobile) */}
             <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0">
               <button
                 type="button"
                 onClick={() => handleVisualModeChange('map')}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   activeVisualMode === 'map'
                     ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -604,7 +583,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 onClick={() => {
                   if (isHeatmapSupported) handleVisualModeChange('treemap')
                 }}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   !isHeatmapSupported
                     ? 'opacity-35 cursor-not-allowed text-slate-500'
                     : activeVisualMode === 'treemap'
@@ -617,6 +596,27 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <span>{t.mapViewModeTreemap}</span>
               </button>
             </div>
+
+            {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}
+            {metric !== 'fuelPrice' && metric !== 'bigMac' && (
+              <div className="flex items-center bg-slate-950/90 border border-slate-800 p-1 rounded-xl shrink-0 overflow-x-auto scrollbar-none">
+                <span className="text-[11px] font-semibold text-slate-400 px-2 hidden sm:inline">
+                  {t.yearLabel}
+                </span>
+                {ECONOMIC_YEAR_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.year}
+                    onClick={() => onYearChange(opt.year)}
+                    className={`px-2 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
+                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      }`}
+                  >
+                    {t[opt.labelKey].replace('{year}', opt.year)}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -789,7 +789,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     <span className="text-slate-300 font-mono font-medium">
                       &gt; 4.5%
                       <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
-                        ({lang === 'ko' ? '과열' : lang === 'ja' ? '過熱' : lang === 'es' ? 'Alta' : lang === 'zh' ? '过热' : 'High'})
+                        ({lang === 'ko' ? '과열' : lang === 'ja' ? '過열' : lang === 'es' ? 'Alta' : lang === 'zh' ? '过热' : 'High'})
                       </span>
                     </span>
                   </div>
