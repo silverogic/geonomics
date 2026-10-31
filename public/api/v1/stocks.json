@@ -4275,9 +4275,9 @@
     "ticker": "^OMXC25",
     "isSupported": true,
     "currency": "DKK",
-    "currentPrice": 1974.38,
-    "changePct": 0.07,
-    "changePct30d": 6.23,
+    "currentPrice": 1881.45,
+    "changePct": -4.64,
+    "changePct30d": 1.23,
     "points": [
       {
         "date": "2026-09-21",
