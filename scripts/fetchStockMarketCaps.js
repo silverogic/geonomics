@@ -1,14 +1,18 @@
 /**
- * Automated Stock Market Capitalization Fetcher & Sync Pipeline (Zero Hardcoding)
+ * Automated Stock Market Capitalization Fetcher & Sync Pipeline (3-Tier Dynamic, Zero Hardcoding)
  *
- * 1. Primary Source (72 Major Markets, >99.7% of Global Market Cap):
+ * 1. Tier 1 Primary Source (71 Major Markets, >99.6% of Global Market Cap):
  *    Queries the TradingView Global Scanner API across each country's verified
  *    representative mainboard stock exchange (`COUNTRY_DOMESTIC_EXCHANGES`), summing
  *    primary-listed common stock market capitalizations regardless of headquarters domicile.
- * 2. Secondary Dynamic Source (Smaller/Developing Economies):
+ * 2. Tier 2 Secondary Official Source (21 Developing Markets with National Exchanges):
+ *    Queries the World Bank Open Data API (`CM.MKT.LCAP.CD` — official national exchange
+ *    market capitalization reported by Kazakhstan, Iran, Oman, Jordan, Panama, Uzbekistan,
+ *    Ghana, Jamaica, Mauritius, etc.), strictly filtered to tracked ISO3 country codes.
+ * 3. Tier 3 Dynamic Fallback (32 Smaller/Frontier Economies without Live Feeds):
  *    Dynamically computes estimated market capitalization from official IMF nominal GDP
  *    (`totalGdpUsd`) and GDP per capita (`gdpPerCapitaUsd`) in `public/api/v1/economics.json`.
- * 3. Outputs strictly the tracked economies to `public/api/v1/stock-market-caps.json`.
+ * 4. Outputs strictly the 124 tracked economies to `public/api/v1/stock-market-caps.json`.
  */
 
 import fs from 'fs'
@@ -141,6 +145,42 @@ function loadImfEconomicsData() {
     console.warn('Failed to load economics.json:', err.message)
     return {}
   }
+}
+
+/**
+ * Fetches official national stock exchange market capitalization from World Bank Open Data API
+ * (`CM.MKT.LCAP.CD`), strictly filtered to tracked country codes (ignoring all regional aggregates).
+ */
+async function fetchWorldBankMarketCaps(trackedIsoSet) {
+  const wbMap = {}
+  const currentYear = new Date().getFullYear()
+  const url = `https://api.worldbank.org/v2/country/all/indicator/CM.MKT.LCAP.CD?date=2015:${currentYear}&per_page=10000&format=json`
+
+  try {
+    const res = await fetch(url)
+    if (!res.ok) return wbMap
+    const json = await res.json()
+    const rows = Array.isArray(json?.[1]) ? json[1] : []
+
+    for (const row of rows) {
+      const code = row?.countryiso3code
+      const val = row?.value
+      const yr = Number(row?.date)
+      if (!code || !trackedIsoSet.has(code)) continue
+      if (typeof val !== 'number' || val <= 0 || !Number.isFinite(yr)) continue
+
+      if (!wbMap[code] || yr > wbMap[code].year) {
+        wbMap[code] = {
+          marketCapUsd: Math.round(val),
+          year: yr,
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('World Bank API fetch warning:', err.message)
+  }
+
+  return wbMap
 }
 
 /**
@@ -350,15 +390,20 @@ async function fetchTradingViewDomesticMarketCap(country, fxRates) {
 }
 
 async function main() {
-  console.log('Starting TradingView Mainboard Exchange Market Cap Pipeline (Zero Hardcoding)...')
+  console.log('Starting 3-Tier Dynamic Market Cap Pipeline (TradingView -> World Bank API -> IMF GDP Model)...')
 
   const countries = loadTrackedCountries()
+  const trackedIsoSet = new Set(countries.map((c) => c.id))
   const economicsData = loadImfEconomicsData()
-  const fxRates = await fetchUsdExchangeRates()
+  const [fxRates, wbCapsMap] = await Promise.all([
+    fetchUsdExchangeRates(),
+    fetchWorldBankMarketCaps(trackedIsoSet),
+  ])
   const currentYear = new Date().getFullYear()
 
   const outputData = {}
   let tvSuccessCount = 0
+  let wbSuccessCount = 0
   let dynamicGdpCount = 0
 
   // Concurrency 8 across all tracked countries
@@ -380,6 +425,17 @@ async function main() {
           source: `TradingView Mainboard Exchange Aggregate (${tvResult.exchanges}, ${tvResult.listedCount} stocks)`,
         }
         tvSuccessCount++
+      } else if (wbCapsMap[iso] && wbCapsMap[iso].marketCapUsd > 0) {
+        const wb = wbCapsMap[iso]
+        outputData[iso] = {
+          marketCapUsd: wb.marketCapUsd,
+          baseCapUsd: wb.marketCapUsd,
+          year: `${wb.year} Official`,
+          indexMultiplier: 1.0,
+          countryName: country.nameEn,
+          source: `World Bank Official Exchange Statistics (${wb.year})`,
+        }
+        wbSuccessCount++
       } else {
         const dynamicCap = computeDynamicGdpMarketCap(iso, economicsData)
         outputData[iso] = {
@@ -403,7 +459,7 @@ async function main() {
   )
   const sortedOutput = Object.fromEntries(sortedEntries)
 
-  console.log(`\n--- ${currentYear} TradingView Mainboard Exchange Market Cap Top 15 ---`)
+  console.log(`\n--- ${currentYear} Global Market Cap Top 15 ---`)
   for (const [code, item] of sortedEntries.slice(0, 15)) {
     const capT = (item.marketCapUsd / 1e12).toFixed(2)
     console.log(`${code.padEnd(4)} (${item.countryName.padEnd(16)}): $${capT.padStart(5)}T | ${item.source}`)
@@ -416,7 +472,7 @@ async function main() {
   const outFile = path.join(outDir, 'stock-market-caps.json')
   fs.writeFileSync(outFile, JSON.stringify(sortedOutput, null, 2), 'utf8')
   console.log(
-    `\nSuccessfully saved ${sortedEntries.length} countries (${tvSuccessCount} TradingView live, ${dynamicGdpCount} IMF GDP dynamic model) to ${outFile}`
+    `\nSuccessfully saved ${sortedEntries.length} countries (${tvSuccessCount} TradingView live, ${wbSuccessCount} World Bank official, ${dynamicGdpCount} IMF GDP dynamic model) to ${outFile}`
   )
 }
 
