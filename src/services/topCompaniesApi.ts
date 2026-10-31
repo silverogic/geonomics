@@ -48,18 +48,18 @@ const TV_COUNTRY_NAME_OVERRIDES: Record<string, string> = {
 }
 
 /**
- * Strict domestic stock exchange whitelist per country.
- * Prevents foreign-listed stocks (e.g. NYSE/NASDAQ/HKEX/LSE cross-listings or tax-inversion companies)
- * from polluting a country's domestic stock market Top 5.
+ * Strict representative mainboard stock exchange whitelist per country.
+ * Synchronized with fetchStockMarketCaps.js so Top 5 companies and total market cap
+ * represent the exact same stock market regardless of company headquarters domicile.
  */
 const COUNTRY_DOMESTIC_EXCHANGES: Record<string, string[]> = {
-  USA: ['NASDAQ', 'NYSE', 'AMEX'],
+  USA: ['NASDAQ', 'NYSE'],
   KOR: ['KRX'],
-  CHN: ['SSE', 'SZSE'],
+  CHN: ['SSE'],
   HKG: ['HKEX'],
   JPN: ['TSE'],
   TWN: ['TWSE'], // Strictly TWSE main board (excludes TPEX/OTC)
-  IND: ['NSE', 'BSE'],
+  IND: ['NSE'],
   GBR: ['LSE'],
   DEU: ['XETR', 'FWB'],
   FRA: ['EURONEXT'],
@@ -92,7 +92,7 @@ const COUNTRY_DOMESTIC_EXCHANGES: Record<string, string[]> = {
   THA: ['SET'],
   MYS: ['MYX'],
   PHL: ['PSE'],
-  VNM: ['HOSE', 'HNX'],
+  VNM: ['HOSE'],
   EGY: ['EGX'],
   ARG: ['BCBA'],
   CHL: ['BCS'],
@@ -125,6 +125,15 @@ const COUNTRY_DOMESTIC_EXCHANGES: Record<string, string[]> = {
   CYP: ['CSECY'],
   LUX: ['LUXSE'],
 }
+
+/**
+ * Multi-country pan-European exchange (`EURONEXT`) shared across France, Netherlands,
+ * Belgium, Portugal, and Ireland in TradingView. Only these 5 countries require the
+ * `country` filter to separate Paris / Amsterdam / Brussels / Lisbon / Dublin boards;
+ * all other exchanges select top companies strictly by the stock exchange's market cap
+ * regardless of headquarters domicile.
+ */
+const SHARED_EXCHANGE_COUNTRY_IDS = new Set<string>(['FRA', 'NLD', 'BEL', 'PRT', 'IRL'])
 
 /**
  * Countries whose stock exchanges are unsanctioned/unsupported in live global feeds
@@ -197,8 +206,8 @@ function getDeduplicationKey(cleanedName: string): string {
 }
 
 /**
- * Dynamically fetches the Top 5 companies by market capitalization for a given country
- * directly at runtime with zero static JSON storage.
+ * Dynamically fetches the Top 5 companies by market capitalization for a given country's
+ * representative stock exchange directly at runtime with zero static JSON storage.
  */
 export async function fetchCountryTopCompanies(
   countryId: string,
@@ -268,7 +277,11 @@ export async function fetchCountryTopCompanies(
     filter.push({ left: 'is_primary', operation: 'equal', right: true })
   }
 
-  if (!isDedicatedEndpoint && tvCountryName) {
+  // Only apply headquarters `country` filter when an exchange code is shared across multiple countries
+  // (i.e. EURONEXT shared by FRA/NLD/BEL/PRT/IRL). All dedicated national exchanges (HKEX, NYSE/NASDAQ,
+  // KRX, TSE, SSE, TWSE, NSE, LSE, etc.) rank strictly by exchange market cap regardless of company domicile.
+  const requiresCountryFilter = SHARED_EXCHANGE_COUNTRY_IDS.has(upperId)
+  if (requiresCountryFilter && tvCountryName) {
     filter.unshift({ left: 'country', operation: 'equal', right: tvCountryName })
   }
 
@@ -347,8 +360,8 @@ export async function fetchCountryTopCompanies(
         const marketCapBasic = typeof rawMarketCap === 'number' ? rawMarketCap : 0
         if (marketCapBasic <= 0) continue
 
-        // Strict country match check (prevents any cross-country contamination)
-        if (!isDedicatedEndpoint && tvCountryName && typeof rawRowCountry === 'string' && rawRowCountry !== tvCountryName) {
+        // Only enforce country match for multi-country shared exchanges (EURONEXT)
+        if (requiresCountryFilter && tvCountryName && typeof rawRowCountry === 'string' && rawRowCountry !== tvCountryName) {
           continue
         }
 

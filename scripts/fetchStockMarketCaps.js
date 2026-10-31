@@ -3,8 +3,8 @@
  *
  * 1. Primary Source (72 Major Markets, >99.7% of Global Market Cap):
  *    Queries the TradingView Global Scanner API across each country's verified
- *    domestic stock exchanges (`COUNTRY_DOMESTIC_EXCHANGES`), summing primary-listed
- *    common stock market capitalizations converted to USD via live FX rates.
+ *    representative mainboard stock exchange (`COUNTRY_DOMESTIC_EXCHANGES`), summing
+ *    primary-listed common stock market capitalizations regardless of headquarters domicile.
  * 2. Secondary/Fallback Source (Smaller/Developing Economies):
  *    Uses the curated baseline values from `FALLBACK_CAPS_USD` (`src/data/stockMarketCaps.ts`).
  * 3. Outputs strictly the tracked economies to `public/api/v1/stock-market-caps.json`
@@ -109,6 +109,15 @@ const COUNTRY_DOMESTIC_EXCHANGES = {
   LUX: ['LUXSE'],
 }
 
+/**
+ * Multi-country pan-European exchange (`EURONEXT`) shared across France, Netherlands,
+ * Belgium, Portugal, and Ireland in TradingView. Only these 5 countries require the
+ * `country` filter to separate Paris / Amsterdam / Brussels / Lisbon / Dublin boards;
+ * all other exchanges sum primary-listed companies strictly by the stock exchange
+ * regardless of headquarters domicile.
+ */
+const SHARED_EXCHANGE_COUNTRY_IDS = new Set(['FRA', 'NLD', 'BEL', 'PRT', 'IRL'])
+
 function loadTrackedCountries() {
   const countriesPath = path.resolve(__dirname, '../src/data/countries.ts')
   const src = fs.readFileSync(countriesPath, 'utf8')
@@ -202,10 +211,8 @@ async function fetchTradingViewDomesticMarketCap(country, fxRates) {
     filter.push({ left: 'is_primary', operation: 'equal', right: true })
   }
 
-  // Hong Kong (HKEX) and Singapore (SGX) mainboards include primary-listed companies
-  // headquartered in Mainland China/Asia that form the core of Hang Seng (^HSI) and STI (^STI)
-  const skipCountryFilter = isDedicatedEndpoint || upperId === 'HKG' || upperId === 'SGP'
-  if (!skipCountryFilter && tvCountryName) {
+  const requiresCountryFilter = SHARED_EXCHANGE_COUNTRY_IDS.has(upperId)
+  if (requiresCountryFilter && tvCountryName) {
     filter.unshift({ left: 'country', operation: 'equal', right: tvCountryName })
   }
 
@@ -251,7 +258,7 @@ async function fetchTradingViewDomesticMarketCap(country, fxRates) {
       const [rawTicker, rawDesc, rawMarketCap, rawFundCurrency, rawPriceCurrency, rawRowCountry, rawIndexes] = row.d
       if (typeof rawMarketCap !== 'number' || rawMarketCap <= 0) continue
 
-      if (!skipCountryFilter && tvCountryName && typeof rawRowCountry === 'string' && rawRowCountry !== tvCountryName) {
+      if (requiresCountryFilter && tvCountryName && typeof rawRowCountry === 'string' && rawRowCountry !== tvCountryName) {
         continue
       }
 
