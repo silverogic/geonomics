@@ -15,6 +15,7 @@ import {
   LayoutGrid,
   Sparkles,
   X,
+  ArrowUpDown,
 } from 'lucide-react'
 import type {
   CountryMeta,
@@ -55,6 +56,7 @@ interface EconomicCalendarViewProps {
 type CategoryFilter = 'ALL' | EventCategory
 type ViewMode = 'timeline' | 'grid'
 type TimezoneMode = 'KST' | 'LOCAL'
+type SortOrder = 'desc' | 'asc'
 
 const CATEGORY_META: Record<
   CategoryFilter,
@@ -259,6 +261,20 @@ const UI_TEXT = {
     es: 'No hay eventos que coincidan con su filtro.',
     zh: '该月份暂无符合筛选条件的日程。',
   },
+  sortDesc: {
+    en: 'Newest',
+    ko: '최신순',
+    ja: '新しい順',
+    es: 'Recientes',
+    zh: '最新',
+  },
+  sortAsc: {
+    en: 'Oldest',
+    ko: '과거순',
+    ja: '古い順',
+    es: 'Antiguos',
+    zh: '最旧',
+  },
   todayBadge: {
     en: 'TODAY',
     ko: '오늘',
@@ -290,6 +306,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('ALL')
   const [coreOnly, setCoreOnly] = useState<boolean>(true)
   const [tzMode, setTzMode] = useState<TimezoneMode>(() => (lang === 'ko' ? 'KST' : 'LOCAL'))
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
@@ -461,8 +478,16 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
       list.push(ev)
       map.set(ev.activeDateKey, list)
     }
-    return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]))
-  }, [filteredMonthEvents])
+    return [...map.entries()]
+      .sort((a, b) => (sortOrder === 'desc' ? b[0].localeCompare(a[0]) : a[0].localeCompare(b[0])))
+      .map(([dateKey, list]) => [
+        dateKey,
+        [...list].sort((a, b) => {
+          const diff = new Date(a.dateUtc).getTime() - new Date(b.dateUtc).getTime()
+          return sortOrder === 'desc' ? -diff : diff
+        }),
+      ] as const)
+  }, [filteredMonthEvents, sortOrder])
 
   const calendarGridDays = useMemo(() => {
     const firstDayOfMonth = new Date(selectedYear, selectedMonth - 1, 1)
@@ -834,6 +859,22 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
             >
               {tzMode === 'KST' ? 'KST' : activeMarket.localTzShort}
             </button>
+
+            {/* Date Sort Order Toggle (List View: Default Descending / Newest First) */}
+            {viewMode === 'timeline' && (
+              <button
+                type="button"
+                onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
+                className="h-7 sm:h-8 px-2 sm:px-2.5 rounded-lg bg-slate-950 border border-slate-800 hover:border-slate-700 text-[11px] sm:text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1 cursor-pointer"
+                title={sortOrder === 'desc' ? UI_TEXT.sortDesc[lang] : UI_TEXT.sortAsc[lang]}
+              >
+                <ArrowUpDown className="w-3 h-3 text-indigo-400 shrink-0" />
+                <span>
+                  {sortOrder === 'desc' ? UI_TEXT.sortDesc[lang] : UI_TEXT.sortAsc[lang]}
+                  {sortOrder === 'desc' ? ' ↓' : ' ↑'}
+                </span>
+              </button>
+            )}
 
             {/* Search Icon Toggle */}
             <button
