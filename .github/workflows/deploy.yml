@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
   workflow_dispatch:
   schedule:
-    # Run daily at 00:00 UTC (9:00 AM KST/JST) to keep stock charts up to date
+    # Run daily at 00:00 UTC (9:00 AM KST/JST) to keep stock charts and market caps up to date
     - cron: '0 0 * * *'
 
 # Sets permissions of the GITHUB_TOKEN to allow committing built docs
@@ -26,6 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -36,7 +41,22 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
-      - name: Build
+      - name: Check if data pipeline scripts changed
+        id: check_data
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "run_data=true" >> $GITHUB_OUTPUT
+          elif git diff --name-only HEAD~1 HEAD | grep -qE '^(scripts/|public/data/)'; then
+            echo "run_data=true" >> $GITHUB_OUTPUT
+          else
+            echo "run_data=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Refresh static API data (daily cron or when scripts/ change)
+        if: steps.check_data.outputs.run_data == 'true'
+        run: npm run fetch:all
+
+      - name: Build frontend bundle
         env:
           VITE_STOCK_PROXY_URL: ${{ vars.VITE_STOCK_PROXY_URL }}
         run: npm run build
@@ -45,5 +65,9 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/ public/api/v1/ public/data/
+          if [ "${{ steps.check_data.outputs.run_data }}" = "true" ]; then
+            git add docs/ public/api/v1/ public/data/
+          else
+            git add docs/
+          fi
           git diff --staged --quiet || (git commit -m "chore: update docs production build [skip ci]" && git pull --rebase origin main && git push)

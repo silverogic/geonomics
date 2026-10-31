@@ -1,5 +1,7 @@
 # Geonomics — 实时全球宏观经济与金融情报仪表盘
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/silverogic/geonomics)
+
 🌐 **语言**: [English](./README.md) | [한국어 (Korean)](./README.ko.md) | **中文**
 
 **Geonomics** 是一个托管在 GitHub Pages 上的无服务器（serverless）、纯客户端宏观经济与金融市场情报平台。它整合了 **IMF 世界经济展望（WEO）** 与 **世界银行** 官方指标、实时汇率、全球股市市值、基准股指、央行政策利率、零售汽油价格以及 **《经济学人》巨无霸指数（PPP）**，覆盖 **125 个经济体**——无需任何后端数据库。
