@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import {
-  Clock,
   ChevronLeft,
   ChevronRight,
   Landmark,
@@ -15,7 +14,6 @@ import {
   List,
   LayoutGrid,
   Sparkles,
-  ChevronDown,
   X,
 } from 'lucide-react'
 import type {
@@ -84,7 +82,7 @@ const CATEGORY_META: Record<
     dotClass: 'bg-violet-400',
     badgeClass: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
     label: {
-      en: 'FOMC · Fed',
+      en: 'FOMC · Rate',
       ko: 'FOMC · 금리',
       ja: 'FOMC · 金利',
       es: 'FOMC · Fed',
@@ -97,10 +95,10 @@ const CATEGORY_META: Record<
     badgeClass: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
     label: {
       en: 'Inflation',
-      ko: '물가 (CPI·PCE)',
-      ja: '物価 (CPI·PCE)',
+      ko: '물가',
+      ja: '物価',
       es: 'Inflación',
-      zh: '通胀 (CPI·PCE)',
+      zh: '通胀',
     },
   },
   EMPLOYMENT: {
@@ -108,7 +106,7 @@ const CATEGORY_META: Record<
     dotClass: 'bg-amber-400',
     badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
     label: {
-      en: 'Employment',
+      en: 'Jobs',
       ko: '고용',
       ja: '雇用',
       es: 'Empleo',
@@ -121,10 +119,10 @@ const CATEGORY_META: Record<
     badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
     label: {
       en: 'GDP · PMI',
-      ko: '성장 (GDP·PMI)',
-      ja: '成長 (GDP·PMI)',
+      ko: '성장',
+      ja: '成長',
       es: 'PIB · PMI',
-      zh: '增长 (GDP·PMI)',
+      zh: '增长',
     },
   },
   CONSUMER: {
@@ -143,32 +141,32 @@ const CATEGORY_META: Record<
 
 const UI_TEXT = {
   headerTitle: {
-    en: 'U.S. Fed & Key Macroeconomic Calendar',
-    ko: '미국 연준(FED) · 핵심 경제지표 달력',
-    ja: '米FRB・主要マクロ経済カレンダー',
-    es: 'Calendario de la Fed e Indicadores Clave',
-    zh: '美联储 (FED) 与核心宏观经济日历',
+    en: 'U.S. Fed & Macro Calendar',
+    ko: '미국 연준(FED) · 경제지표 달력',
+    ja: '米FRB・経済指標カレンダー',
+    es: 'Calendario Fed e Indicadores',
+    zh: '美联储与宏观经济日历',
   },
   nextFomcLabel: {
     en: 'Next FOMC',
-    ko: '다음 FOMC 금리결정',
-    ja: '次回 FOMC',
-    es: 'Próximo FOMC',
-    zh: '下次 FOMC 决议',
+    ko: '다음 FOMC',
+    ja: '次回FOMC',
+    es: 'Próx. FOMC',
+    zh: '下次FOMC',
   },
   currentRateLabel: {
-    en: 'Fed Funds Rate',
-    ko: '미국 기준금리',
-    ja: '米政策金利',
+    en: 'Fed Rate',
+    ko: '기준금리',
+    ja: '政策金利',
     es: 'Tasa Fed',
-    zh: '美联储基准利率',
+    zh: '基准利率',
   },
   nextReleaseLabel: {
-    en: 'Up Next',
-    ko: '다음 주요 발표',
-    ja: '次回の主要発表',
-    es: 'Próximo Dato',
-    zh: '下一重点公布',
+    en: 'Next',
+    ko: '다음 발표',
+    ja: '次回発表',
+    es: 'Próximo',
+    zh: '下一公布',
   },
   viewTimeline: {
     en: 'List',
@@ -185,18 +183,18 @@ const UI_TEXT = {
     zh: '日历',
   },
   coreOnly: {
-    en: 'Key Only',
+    en: 'Key',
     ko: '핵심만',
     ja: '重要のみ',
     es: 'Clave',
-    zh: '仅看核心',
+    zh: '核心',
   },
   includeAll: {
-    en: 'All Events',
-    ko: '전체 일정',
-    ja: '全日程',
+    en: 'All',
+    ko: '전체',
+    ja: '全体',
     es: 'Todos',
-    zh: '全部日程',
+    zh: '全部',
   },
   thisMonthBtn: {
     en: 'Today',
@@ -220,43 +218,36 @@ const UI_TEXT = {
     zh: '预测',
   },
   previousLabel: {
-    en: 'Previous',
+    en: 'Prev',
     ko: '이전',
     ja: '前回',
     es: 'Ant.',
     zh: '前值',
   },
-  pendingRelease: {
-    en: 'Pending',
-    ko: '발표 예정',
-    ja: '発表予定',
-    es: 'Pendiente',
-    zh: '待公布',
-  },
   statementEvent: {
-    en: 'Policy / Speech',
-    ko: '통화정책 · 연설',
-    ja: '金融政策・講演',
-    es: 'Política / Discurso',
-    zh: '政策 / 讲话',
+    en: 'Statement / Speech',
+    ko: '성명 · 연설',
+    ja: '声明・講演',
+    es: 'Discurso',
+    zh: '声明 / 讲话',
   },
   relatedNewsBtn: {
-    en: 'News',
-    ko: '뉴스',
-    ja: 'ニュース',
-    es: 'Noticias',
-    zh: '新闻',
+    en: 'Related News',
+    ko: '관련 뉴스 보기',
+    ja: '関連ニュース',
+    es: 'Ver Noticias',
+    zh: '查看相关新闻',
   },
   officialSourceBtn: {
     en: 'Official Source',
-    ko: '공식 출처',
+    ko: '공식 발표 원문',
     ja: '公式発表元',
     es: 'Fuente Oficial',
     zh: '官方来源',
   },
   searchPlaceholder: {
-    en: 'Search (e.g. FOMC, CPI, PCE, NFP, GDP)...',
-    ko: '지표 검색 (예: FOMC, CPI, 물가, 고용, GDP)...',
+    en: 'Search indicator (e.g. FOMC, CPI, PCE, NFP, GDP)...',
+    ko: '지표명 검색 (예: FOMC, CPI, 물가, 고용, GDP)...',
     ja: '指標を検索 (例: FOMC, CPI, 雇用, GDP)...',
     es: 'Buscar (ej. FOMC, IPC, PCE, PIB)...',
     zh: '搜索指标 (如: FOMC, CPI, 非农, GDP)...',
@@ -285,7 +276,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
   refreshKey = 0,
 }) => {
   const enabledMarkets = useMemo(() => CALENDAR_MARKETS.filter((m) => m.enabled), [])
-  const [selectedMarketId, setSelectedMarketId] = useState<CalendarMarketId>('USA')
+  const [selectedMarketId] = useState<CalendarMarketId>('USA')
   const activeMarket = useMemo(
     () => enabledMarkets.find((m) => m.id === selectedMarketId) || CALENDAR_MARKETS[0],
     [enabledMarkets, selectedMarketId]
@@ -297,9 +288,9 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
 
   const [viewMode, setViewMode] = useState<ViewMode>('timeline')
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('ALL')
-  // Default to core headline indicators (importance === 3) to keep visual fatigue low
   const [coreOnly, setCoreOnly] = useState<boolean>(true)
   const [tzMode, setTzMode] = useState<TimezoneMode>(() => (lang === 'ko' ? 'KST' : 'LOCAL'))
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
   const [selectedGridDateKey, setSelectedGridDateKey] = useState<string | null>(null)
@@ -354,7 +345,6 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     return tzMode === 'KST' ? t.kstDateKey : t.etDateKey
   }, [lang, activeMarket.localTimezone, tzMode])
 
-  // Next FOMC Rate Decision
   const nextFomcDecision = useMemo(() => {
     const nowMs = Date.now()
     return (
@@ -388,7 +378,6 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     return 3.75
   }, [enrichedEvents, interestRates, usCountryMeta])
 
-  // Next Upcoming 3-Star Event
   const nextHighImpactEvent = useMemo(() => {
     const nowMs = Date.now()
     return (
@@ -405,13 +394,22 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     return `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`
   }, [selectedYear, selectedMonth])
 
-  // In "Core Only" mode, show 3-star events + Beige Book / GDPNow / Michigan Sentiment / PPI MoM
-  // while hiding duplicate sub-variants (e.g. Press Conference on same day as Rate Decision, or weekly minor claims)
+  /**
+   * Item 4: In `★ 핵심만` (`coreOnly`) mode, deduplicate simultaneous YoY/MoM pairs
+   * (keep headline YoY for CPI, Core CPI, and Core PCE; hide simultaneous Press Conference/Statement)
+   * so mobile users aren't flooded with 4-5 identical rows at the same release timestamp.
+   */
   const isHeadlineCoreEvent = (ev: EconomicCalendarEvent): boolean => {
-    if (/Fed Press Conference|FOMC Statement/i.test(ev.titleEn)) return false
+    if (
+      /Fed Press Conference|FOMC Statement|Inflation Rate MoM|Core Inflation Rate MoM|Core PCE Price Index MoM/i.test(
+        ev.titleEn
+      )
+    ) {
+      return false
+    }
     if (ev.importance === 3) return true
     if (
-      /Fed Beige Book|PPI MoM|Core PPI MoM|Michigan Consumer Sentiment Prel|Atlanta Fed GDPNow|ADP Employment Change|Initial Jobless Claims/i.test(
+      /Fed Beige Book|PPI MoM|Michigan Consumer Sentiment Prel|Atlanta Fed GDPNow|ADP Employment Change|Initial Jobless Claims/i.test(
         ev.titleEn
       )
     ) {
@@ -546,7 +544,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     const d = new Date(selectedYear, selectedMonth - 1, 1)
     return new Intl.DateTimeFormat(lang === 'es' ? 'es-ES' : 'en-US', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
     }).format(d)
   }, [selectedYear, selectedMonth, lang])
 
@@ -558,6 +556,12 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   }, [lang])
 
+  /**
+   * Item 3: Single-line compact event row on both mobile and desktop.
+   * - No repeated `실제 / 예상 / 이전` labels inside every row (shown once in the date group header).
+   * - Secondary time (`ET`), reference period (`Oct`), commentary, and `[관련 뉴스]` button
+   *   are tucked cleanly into the tap-to-expand drawer.
+   */
   const renderEventRow = (ev: (typeof enrichedEvents)[number]) => {
     const isExpanded = expandedEventId === ev.id
     const isReleased = ev.actual !== null
@@ -568,150 +572,134 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     return (
       <div
         key={ev.id}
-        className="rounded-xl bg-slate-950/65 hover:bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors"
+        className={`rounded-xl border transition-colors ${
+          isExpanded
+            ? 'bg-slate-900 border-indigo-500/40'
+            : 'bg-slate-950/60 hover:bg-slate-950 border-slate-800/70 hover:border-slate-700'
+        }`}
       >
         <div
           onClick={() => setExpandedEventId(isExpanded ? null : ev.id)}
-          className="px-3.5 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 cursor-pointer select-none"
+          className="px-2.5 sm:px-3.5 py-2 flex items-center justify-between gap-2 cursor-pointer select-none"
         >
-          {/* Left: Time + Category Dot + Title + Period */}
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            {/* Compact Time Column */}
-            <div className="w-16 shrink-0 text-left">
-              <div className="text-xs sm:text-sm font-mono font-bold text-slate-200">
-                {ev.activeTime}
-              </div>
-              <div className="text-[10px] font-mono text-slate-500">
-                {ev.secondaryTime}
-              </div>
-            </div>
+          {/* Left: Time + Category Dot + Concise Title */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="w-10 sm:w-12 shrink-0 text-[11px] sm:text-xs font-mono font-semibold text-slate-400">
+              {ev.activeTime}
+            </span>
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${catMeta.dotClass}`} />
+            <span
+              className={`text-xs sm:text-sm truncate ${
+                ev.importance === 3 ? 'text-white font-bold' : 'text-slate-200 font-medium'
+              }`}
+            >
+              {ev.titleLocalized}
+            </span>
+            {ev.importance === 3 && (
+              <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />
+            )}
+          </div>
 
-            {/* Category Dot */}
-            <span className={`w-2 h-2 rounded-full shrink-0 ${catMeta.dotClass}`} />
-
-            {/* Clean Title & Minimal Inline Tags */}
-            <div className="min-w-0 flex-1 flex items-center gap-2 flex-wrap">
-              <span
-                className={`text-sm font-semibold truncate ${
-                  ev.importance === 3 ? 'text-white font-bold' : 'text-slate-200'
+          {/* Right: 3-Column Numbers Only (Actual | Forecast | Previous) */}
+          {hasNumericComparison ? (
+            <div className="w-[150px] sm:w-[228px] shrink-0 grid grid-cols-3 gap-1 text-right font-mono text-xs sm:text-sm items-center">
+              {/* Actual */}
+              <div
+                className={`font-bold truncate ${
+                  !isReleased
+                    ? 'text-slate-600'
+                    : ev.surprise?.direction === 'beat'
+                      ? 'text-emerald-400'
+                      : ev.surprise?.direction === 'miss'
+                        ? 'text-rose-400'
+                        : 'text-white'
                 }`}
               >
-                {ev.titleLocalized}
-              </span>
-
-              {ev.period && (
-                <span className="px-1.5 py-0.5 rounded bg-slate-800/80 text-[10px] font-mono text-slate-400">
-                  {ev.period}
-                </span>
-              )}
-
-              {ev.importance === 3 && (
-                <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />
-              )}
-            </div>
-          </div>
-
-          {/* Right: Clean Unified 3-Column Comparison (Actual | Forecast | Previous) + News Button */}
-          <div className="flex items-center justify-between sm:justify-end gap-2.5 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-800/50">
-            {hasNumericComparison ? (
-              <div className="grid grid-cols-3 divide-x divide-slate-800/80 rounded-lg bg-slate-900/90 border border-slate-800/90 min-w-[220px] sm:min-w-[260px] text-right">
-                {/* Actual */}
-                <div className="px-2.5 py-1">
-                  <div className="text-[10px] text-slate-500">{UI_TEXT.actualLabel[lang]}</div>
-                  {isReleased ? (
-                    <div className="text-xs sm:text-sm font-mono font-bold text-white flex items-center justify-end gap-1">
-                      <span>{formatCalendarValue(ev.actual, ev.unit, ev.scale)}</span>
-                      {ev.surprise && ev.surprise.direction !== 'inline' && (
-                        <span
-                          className={`text-[9px] font-mono px-1 rounded ${
-                            ev.surprise.direction === 'beat'
-                              ? 'text-emerald-400 bg-emerald-500/10'
-                              : 'text-rose-400 bg-rose-500/10'
-                          }`}
-                        >
-                          {ev.surprise.diffText}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-xs font-mono text-slate-500">
-                      {UI_TEXT.pendingRelease[lang]}
-                    </div>
-                  )}
-                </div>
-
-                {/* Forecast */}
-                <div className="px-2.5 py-1">
-                  <div className="text-[10px] text-slate-500">{UI_TEXT.forecastLabel[lang]}</div>
-                  <div className="text-xs sm:text-sm font-mono font-semibold text-amber-300/90">
-                    {formatCalendarValue(ev.forecast, ev.unit, ev.scale)}
-                  </div>
-                </div>
-
-                {/* Previous */}
-                <div className="px-2.5 py-1">
-                  <div className="text-[10px] text-slate-500">{UI_TEXT.previousLabel[lang]}</div>
-                  <div className="text-xs sm:text-sm font-mono text-slate-400">
-                    {formatCalendarValue(ev.previous, ev.unit, ev.scale)}
-                  </div>
-                </div>
+                {isReleased ? formatCalendarValue(ev.actual, ev.unit, ev.scale) : '—'}
               </div>
-            ) : (
-              <span className="text-xs text-slate-400 px-2.5 py-1 rounded-lg bg-slate-900/70 border border-slate-800/80">
+
+              {/* Forecast */}
+              <div className="text-amber-300/90 font-medium truncate">
+                {formatCalendarValue(ev.forecast, ev.unit, ev.scale)}
+              </div>
+
+              {/* Previous */}
+              <div className="text-slate-400 truncate">
+                {formatCalendarValue(ev.previous, ev.unit, ev.scale)}
+              </div>
+            </div>
+          ) : (
+            <div className="w-[150px] sm:w-[228px] shrink-0 text-right">
+              <span className="text-[11px] text-slate-400 px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
                 {UI_TEXT.statementEvent[lang]}
               </span>
-            )}
-
-            <div className="flex items-center gap-1 shrink-0">
-              {onJumpToNews && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onJumpToNews({
-                      countryId: activeMarket.countryId,
-                      topic: ev.newsTopic,
-                      keyword: ev.newsKeyword,
-                    })
-                  }}
-                  title={UI_TEXT.relatedNewsBtn[lang]}
-                  className="h-7 px-2 rounded-lg bg-slate-800/80 hover:bg-indigo-600/30 border border-slate-700/70 hover:border-indigo-500/50 text-[11px] font-semibold text-slate-300 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <Newspaper className="w-3 h-3 text-indigo-400" />
-                  <span className="hidden md:inline">{UI_TEXT.relatedNewsBtn[lang]}</span>
-                </button>
-              )}
-              <ChevronDown
-                className={`w-4 h-4 text-slate-500 transition-transform ${
-                  isExpanded ? 'rotate-180 text-indigo-400' : ''
-                }`}
-              />
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Expanded Details Drawer */}
+        {/* Tap-to-Expand Drawer: Secondary Time, Period, Surprise Delta, Description, News & Source */}
         {isExpanded && (
-          <div className="px-4 pb-3 pt-2 border-t border-slate-800/70 bg-slate-900/40 rounded-b-xl space-y-1.5 text-xs text-slate-300">
-            {ev.comment && <p className="leading-relaxed text-slate-300">{ev.comment}</p>}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-400">
-              <div className="flex flex-wrap items-center gap-3 font-mono">
-                <span>KST: {ev.tz.kstDateKey} {ev.tz.kstTime}</span>
-                <span>{ev.tz.etTzAbbr}: {ev.tz.etDateKey} {ev.tz.etTime}</span>
-                {ev.source && <span className="font-sans">출처: {ev.source}</span>}
+          <div className="px-3 sm:px-4 pb-3 pt-2 border-t border-slate-800/70 bg-slate-950/70 rounded-b-xl space-y-2 text-xs text-slate-300">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-slate-400">
+                {ev.period && (
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 font-bold">
+                    {ev.period}
+                  </span>
+                )}
+                <span>KST {ev.tz.kstDateKey} {ev.tz.kstTime}</span>
+                <span>·</span>
+                <span>{ev.tz.etTzAbbr} {ev.tz.etDateKey} {ev.tz.etTime}</span>
+                {ev.surprise && ev.surprise.direction !== 'inline' && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded font-bold ${
+                      ev.surprise.direction === 'beat'
+                        ? 'bg-emerald-500/15 text-emerald-300'
+                        : 'bg-rose-500/15 text-rose-300'
+                    }`}
+                  >
+                    {ev.surprise.diffText}
+                  </span>
+                )}
               </div>
-              {ev.sourceUrl && (
-                <a
-                  href={ev.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-semibold"
-                >
-                  <span>{UI_TEXT.officialSourceBtn[lang]}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
+
+              <div className="flex items-center gap-2">
+                {onJumpToNews && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onJumpToNews({
+                        countryId: activeMarket.countryId,
+                        topic: ev.newsTopic,
+                        keyword: ev.newsKeyword,
+                      })
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-[11px] font-bold text-indigo-200 flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <Newspaper className="w-3 h-3 text-indigo-300" />
+                    <span>{UI_TEXT.relatedNewsBtn[lang]}</span>
+                  </button>
+                )}
+                {ev.sourceUrl && (
+                  <a
+                    href={ev.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-slate-200 inline-flex items-center gap-1"
+                  >
+                    <span>{UI_TEXT.officialSourceBtn[lang]}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
             </div>
+
+            {ev.comment && (
+              <p className="text-[11px] sm:text-xs leading-relaxed text-slate-400">
+                {ev.comment}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -719,120 +707,91 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
   }
 
   return (
-    <div className="space-y-4">
-      {/* 1. Compact Header & Key Status Strip (Low Visual Fatigue) */}
-      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center shrink-0">
-            <CountryFlag iso2={activeMarket.iso2} className="w-5 h-3.5 rounded-[2px]" alt={activeMarket.centralBankCode} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-black text-white">
-                {UI_TEXT.headerTitle[lang]}
-              </h1>
-              {enabledMarkets.length > 1 && (
-                <div className="flex items-center gap-1">
-                  {enabledMarkets.map((m) => (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setSelectedMarketId(m.id)}
-                      className={`px-2 py-0.5 rounded-lg text-xs font-bold border cursor-pointer ${
-                        m.id === selectedMarketId
-                          ? 'bg-indigo-600/25 border-indigo-500/50 text-white'
-                          : 'bg-slate-800 border-slate-700 text-slate-400'
-                      }`}
-                    >
-                      {m.centralBankCode}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {activeMarket.centralBankName[lang]} · FOMC · CPI · PCE · NFP · GDP
-            </p>
-          </div>
+    <div className="space-y-3">
+      {/* 1. Item 1: Single-Line Slim Header & Status Strip */}
+      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <CountryFlag
+            iso2={activeMarket.iso2}
+            className="w-5 h-3.5 rounded-[2px] shrink-0"
+            alt={activeMarket.centralBankCode}
+          />
+          <h1 className="text-sm sm:text-lg font-black text-white truncate">
+            {UI_TEXT.headerTitle[lang]}
+          </h1>
         </div>
 
-        {/* 3 Compact KPI Pills */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        {/* Single-Line Horizontal KPI Pills (No 3-Row Vertical Stacking on Mobile) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden whitespace-nowrap">
           {/* Pill 1: Current US Policy Rate */}
-          <div
+          <button
+            type="button"
             onClick={() => usCountryMeta && onSelectCountry?.(usCountryMeta)}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 flex items-center justify-between gap-3 cursor-pointer transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs cursor-pointer shrink-0"
           >
-            <span className="text-xs font-semibold text-slate-400">
-              {UI_TEXT.currentRateLabel[lang]}
-            </span>
-            <span className="text-base sm:text-lg font-mono font-black text-emerald-400">
+            <span className="text-slate-400 font-medium">{UI_TEXT.currentRateLabel[lang]}</span>
+            <span className="font-mono font-black text-emerald-400">
               {latestFomcActualRate.toFixed(2)}%
             </span>
-          </div>
+          </button>
 
           {/* Pill 2: Next FOMC Rate Decision */}
-          <div
-            onClick={() => nextFomcDecision && handleJumpToDateKey(nextFomcDecision.activeDateKey)}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-violet-500/30 hover:border-violet-400/50 flex items-center justify-between gap-3 cursor-pointer transition-colors"
-          >
-            <div className="min-w-0">
-              <div className="text-[11px] font-semibold text-violet-300">
-                {UI_TEXT.nextFomcLabel[lang]}
-              </div>
-              <div className="text-xs font-mono font-bold text-white truncate">
-                {nextFomcDecision ? `${nextFomcDecision.activeDateKey} (${nextFomcDecision.activeTime})` : '—'}
-              </div>
-            </div>
-            {nextFomcDecision && (
-              <span className="px-2 py-0.5 rounded-md bg-violet-500/20 text-violet-200 text-xs font-mono font-black shrink-0">
+          {nextFomcDecision && (
+            <button
+              type="button"
+              onClick={() => handleJumpToDateKey(nextFomcDecision.activeDateKey)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-950/35 border border-violet-500/35 text-xs cursor-pointer shrink-0"
+            >
+              <span className="text-violet-300 font-semibold">{UI_TEXT.nextFomcLabel[lang]}</span>
+              <span className="font-mono font-bold text-white">
+                {nextFomcDecision.activeDateKey.slice(5).replace('-', '/')}
+              </span>
+              <span className="px-1.5 py-0.2 rounded bg-violet-500/25 text-violet-200 text-[10px] font-mono font-black">
                 {formatDdayBadge(nextFomcDecision.dateUtc)}
               </span>
-            )}
-          </div>
+            </button>
+          )}
 
           {/* Pill 3: Next Upcoming High-Impact Indicator */}
-          <div
-            onClick={() => nextHighImpactEvent && handleJumpToDateKey(nextHighImpactEvent.activeDateKey)}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 hover:border-amber-400/50 flex items-center justify-between gap-3 cursor-pointer transition-colors"
-          >
-            <div className="min-w-0">
-              <div className="text-[11px] font-semibold text-amber-300">
-                {UI_TEXT.nextReleaseLabel[lang]}
-              </div>
-              <div className="text-xs font-bold text-white truncate">
-                {nextHighImpactEvent ? nextHighImpactEvent.titleLocalized : '—'}
-              </div>
-            </div>
-            {nextHighImpactEvent && (
-              <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-200 text-xs font-mono font-black shrink-0">
+          {nextHighImpactEvent && (
+            <button
+              type="button"
+              onClick={() => handleJumpToDateKey(nextHighImpactEvent.activeDateKey)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/30 border border-amber-500/30 text-xs cursor-pointer shrink-0"
+            >
+              <span className="text-amber-300 font-semibold">{UI_TEXT.nextReleaseLabel[lang]}</span>
+              <span className="font-bold text-white max-w-[120px] sm:max-w-[160px] truncate">
+                {nextHighImpactEvent.titleLocalized}
+              </span>
+              <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200 text-[10px] font-mono font-black">
                 {formatDdayBadge(nextHighImpactEvent.dateUtc)}
               </span>
-            )}
-          </div>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* 2. Clean Filter & Navigation Toolbar */}
-      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-3.5 sm:p-4 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* 2. Item 2: Compact 2-Row Filter Bar (Single-Line Swipe Categories + Collapsible Search Icon) */}
+      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-2.5 sm:p-3.5 space-y-2.5">
+        {/* Row 1: Month Navigator + Compact Control Chips */}
+        <div className="flex items-center justify-between gap-1.5">
           {/* Month Navigator */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-200 cursor-pointer"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-200 cursor-pointer"
               aria-label="Previous month"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="min-w-[125px] text-center text-sm sm:text-base font-black text-white">
+            <div className="min-w-[96px] sm:min-w-[120px] text-center text-xs sm:text-base font-black text-white">
               {formattedMonthHeader}
             </div>
             <button
               type="button"
               onClick={handleNextMonth}
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-200 cursor-pointer"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-200 cursor-pointer"
               aria-label="Next month"
             >
               <ChevronRight className="w-4 h-4" />
@@ -844,135 +803,100 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                 setSelectedMonth(now.getMonth() + 1)
                 setSelectedGridDateKey(null)
               }}
-              className="ml-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 cursor-pointer"
+              className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] sm:text-xs font-bold text-slate-200 cursor-pointer"
             >
               {UI_TEXT.thisMonthBtn[lang]}
             </button>
           </div>
 
-          {/* Right Controls: Core Toggle, Timezone, View Mode */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Core vs All Toggle */}
-            <div className="inline-flex rounded-lg bg-slate-950 p-0.5 border border-slate-800">
-              <button
-                type="button"
-                onClick={() => setCoreOnly(true)}
-                className={`px-2.5 py-1 rounded-md text-xs font-bold transition-colors cursor-pointer ${
-                  coreOnly ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                ★ {UI_TEXT.coreOnly[lang]}
-              </button>
-              <button
-                type="button"
-                onClick={() => setCoreOnly(false)}
-                className={`px-2.5 py-1 rounded-md text-xs font-bold transition-colors cursor-pointer ${
-                  !coreOnly ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                {UI_TEXT.includeAll[lang]}
-              </button>
-            </div>
+          {/* Right Compact Chips */}
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            {/* Single-Chip Core vs All Toggle */}
+            <button
+              type="button"
+              onClick={() => setCoreOnly((prev) => !prev)}
+              className={`h-7 sm:h-8 px-2 sm:px-2.5 rounded-lg text-[11px] sm:text-xs font-bold border transition-colors cursor-pointer flex items-center gap-1 ${
+                coreOnly
+                  ? 'bg-indigo-600/25 border-indigo-500/50 text-indigo-200'
+                  : 'bg-slate-950 border-slate-800 text-slate-300'
+              }`}
+            >
+              <Star className={`w-3 h-3 ${coreOnly ? 'text-amber-400 fill-amber-400' : 'text-slate-500'}`} />
+              <span>{coreOnly ? UI_TEXT.coreOnly[lang] : UI_TEXT.includeAll[lang]}</span>
+            </button>
 
-            {/* Timezone Toggle */}
-            <div className="inline-flex rounded-lg bg-slate-950 p-0.5 border border-slate-800">
-              <button
-                type="button"
-                onClick={() => setTzMode('KST')}
-                className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold transition-colors cursor-pointer ${
-                  tzMode === 'KST'
-                    ? 'bg-slate-800 text-emerald-300'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Clock className="w-3 h-3 inline mr-1" />
-                KST
-              </button>
-              <button
-                type="button"
-                onClick={() => setTzMode('LOCAL')}
-                className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold transition-colors cursor-pointer ${
-                  tzMode === 'LOCAL'
-                    ? 'bg-slate-800 text-emerald-300'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                US {activeMarket.localTzShort}
-              </button>
-            </div>
+            {/* Single-Chip Timezone Toggle (KST <-> US ET) */}
+            <button
+              type="button"
+              onClick={() => setTzMode((prev) => (prev === 'KST' ? 'LOCAL' : 'KST'))}
+              className="h-7 sm:h-8 px-2 sm:px-2.5 rounded-lg bg-slate-950 border border-slate-800 hover:border-slate-700 text-[11px] sm:text-xs font-mono font-bold text-emerald-300 cursor-pointer"
+              title="Toggle KST / US ET Timezone"
+            >
+              {tzMode === 'KST' ? 'KST' : activeMarket.localTzShort}
+            </button>
 
-            {/* View Mode Toggle */}
+            {/* Search Icon Toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchOpen((prev) => {
+                  if (prev) setSearchQuery('')
+                  return !prev
+                })
+              }}
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center transition-colors cursor-pointer ${
+                isSearchOpen || searchQuery
+                  ? 'bg-indigo-600 text-white border-indigo-500'
+                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+              }`}
+              aria-label="Toggle search"
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
+
+            {/* View Mode Toggle (List vs Calendar Grid) */}
             <div className="inline-flex rounded-lg bg-slate-950 p-0.5 border border-slate-800">
               <button
                 type="button"
                 onClick={() => setViewMode('timeline')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-colors cursor-pointer ${
+                className={`p-1 sm:px-2 sm:py-1 rounded-md text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 ${
                   viewMode === 'timeline'
                     ? 'bg-indigo-600 text-white'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
+                title={UI_TEXT.viewTimeline[lang]}
               >
                 <List className="w-3.5 h-3.5" />
-                <span>{UI_TEXT.viewTimeline[lang]}</span>
+                <span className="hidden sm:inline">{UI_TEXT.viewTimeline[lang]}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-colors cursor-pointer ${
+                className={`p-1 sm:px-2 sm:py-1 rounded-md text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 ${
                   viewMode === 'grid'
                     ? 'bg-indigo-600 text-white'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
+                title={UI_TEXT.viewGrid[lang]}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
-                <span>{UI_TEXT.viewGrid[lang]}</span>
+                <span className="hidden sm:inline">{UI_TEXT.viewGrid[lang]}</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Category Pills + Search */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pt-2 border-t border-slate-800/70">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {(Object.keys(CATEGORY_META) as CategoryFilter[]).map((catKey) => {
-              const meta = CATEGORY_META[catKey]
-              const isSelected = categoryFilter === catKey
-              const count = monthCategoryCounts[catKey] || 0
-              return (
-                <button
-                  key={catKey}
-                  type="button"
-                  onClick={() => setCategoryFilter(catKey)}
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
-                    isSelected
-                      ? 'bg-indigo-600 text-white border-indigo-500'
-                      : 'bg-slate-950/70 text-slate-300 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  {catKey !== 'ALL' && (
-                    <span className={`w-1.5 h-1.5 rounded-full ${meta.dotClass}`} />
-                  )}
-                  <span>{meta.label[lang]}</span>
-                  <span
-                    className={`text-[10px] font-mono ${
-                      isSelected ? 'text-indigo-100' : 'text-slate-500'
-                    }`}
-                  >
-                    {count}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="relative w-full md:w-64">
+        {/* Collapsible Search Input (Only visible when Search icon is toggled) */}
+        {isSearchOpen && (
+          <div className="relative">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
+              autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={UI_TEXT.searchPlaceholder[lang]}
-              className="w-full h-8 pl-8 pr-7 rounded-lg bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-100 placeholder:text-slate-500"
+              className="w-full h-8 pl-8 pr-7 rounded-lg bg-slate-950 border border-slate-700 focus:border-indigo-500 focus:outline-none text-xs text-slate-100 placeholder:text-slate-500"
             />
             {searchQuery && (
               <button
@@ -984,6 +908,39 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
               </button>
             )}
           </div>
+        )}
+
+        {/* Row 2: Single-Line Horizontal Scroll Category Chips (Never wraps onto multiple lines on mobile) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden whitespace-nowrap pt-1">
+          {(Object.keys(CATEGORY_META) as CategoryFilter[]).map((catKey) => {
+            const meta = CATEGORY_META[catKey]
+            const isSelected = categoryFilter === catKey
+            const count = monthCategoryCounts[catKey] || 0
+            return (
+              <button
+                key={catKey}
+                type="button"
+                onClick={() => setCategoryFilter(catKey)}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer shrink-0 ${
+                  isSelected
+                    ? 'bg-indigo-600 text-white border-indigo-500'
+                    : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                {catKey !== 'ALL' && (
+                  <span className={`w-1.5 h-1.5 rounded-full ${meta.dotClass}`} />
+                )}
+                <span>{meta.label[lang]}</span>
+                <span
+                  className={`text-[10px] font-mono ${
+                    isSelected ? 'text-indigo-100' : 'text-slate-500'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -993,13 +950,13 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
           <Spinner size="lg" />
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="space-y-4">
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4">
-            <div className="grid grid-cols-7 gap-1.5 mb-1.5">
+        <div className="space-y-3">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5 sm:p-4">
+            <div className="grid grid-cols-7 gap-1 mb-1">
               {weekdayHeaders.map((dayLabel, idx) => (
                 <div
                   key={dayLabel}
-                  className={`text-center text-xs font-bold py-1 ${
+                  className={`text-center text-[11px] font-bold py-1 ${
                     idx === 0
                       ? 'text-rose-400'
                       : idx === 6
@@ -1012,13 +969,13 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
               ))}
             </div>
 
-            <div className="grid grid-cols-7 gap-1.5">
+            <div className="grid grid-cols-7 gap-1">
               {calendarGridDays.map((cell, idx) => {
                 if (!cell.dateKey || cell.dayNum === null) {
                   return (
                     <div
                       key={`empty-${idx}`}
-                      className="min-h-[76px] sm:min-h-[104px] rounded-xl bg-slate-950/25 border border-slate-900/40"
+                      className="min-h-[64px] sm:min-h-[100px] rounded-xl bg-slate-950/25 border border-slate-900/40"
                     />
                   )
                 }
@@ -1035,7 +992,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                         selectedGridDateKey === cell.dateKey ? null : cell.dateKey
                       )
                     }
-                    className={`min-h-[76px] sm:min-h-[104px] rounded-xl p-1.5 sm:p-2 border transition-all cursor-pointer flex flex-col justify-between ${
+                    className={`min-h-[64px] sm:min-h-[100px] rounded-xl p-1 sm:p-2 border transition-all cursor-pointer flex flex-col justify-between ${
                       isSelected
                         ? 'bg-indigo-950/50 border-indigo-400'
                         : isToday
@@ -1049,9 +1006,9 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <span
-                        className={`text-xs font-mono font-bold ${
+                        className={`text-[11px] sm:text-xs font-mono font-bold ${
                           isToday
-                            ? 'px-1.5 py-0.2 rounded bg-indigo-600 text-white'
+                            ? 'px-1 rounded bg-indigo-600 text-white'
                             : 'text-slate-300'
                         }`}
                       >
@@ -1064,20 +1021,20 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                       )}
                     </div>
 
-                    <div className="space-y-1 mt-1 overflow-hidden">
+                    <div className="space-y-0.5 mt-1 overflow-hidden">
                       {cell.events.slice(0, 2).map((ev) => {
                         const catMeta = CATEGORY_META[ev.category]
                         return (
                           <div
                             key={ev.id}
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-medium truncate border ${catMeta.badgeClass}`}
+                            className={`px-1 py-0.5 rounded text-[9px] sm:text-[10px] font-medium truncate border ${catMeta.badgeClass}`}
                           >
                             {ev.titleLocalized}
                           </div>
                         )
                       })}
                       {cell.events.length > 2 && (
-                        <div className="text-[10px] font-mono text-slate-500 pl-1">
+                        <div className="text-[9px] font-mono text-slate-500 pl-0.5">
                           +{cell.events.length - 2}
                         </div>
                       )}
@@ -1089,20 +1046,27 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
           </div>
 
           {selectedGridDateKey && (
-            <div className="bg-slate-900/90 border border-indigo-500/40 rounded-2xl p-4 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black text-white font-mono">
+            <div className="bg-slate-900/90 border border-indigo-500/40 rounded-2xl p-3 sm:p-4 space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-xs sm:text-sm font-black text-white font-mono">
                   {selectedGridDateKey} ({tzMode === 'KST' ? 'KST' : activeMarket.localTzShort})
                 </h3>
-                <button
-                  type="button"
-                  onClick={() => setSelectedGridDateKey(null)}
-                  className="text-slate-400 hover:text-white cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-[150px] sm:w-[228px] grid grid-cols-3 gap-1 text-right text-[10px] font-semibold text-slate-500">
+                    <span>{UI_TEXT.actualLabel[lang]}</span>
+                    <span>{UI_TEXT.forecastLabel[lang]}</span>
+                    <span>{UI_TEXT.previousLabel[lang]}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGridDateKey(null)}
+                    className="text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {filteredMonthEvents
                   .filter((e) => e.activeDateKey === selectedGridDateKey)
                   .map((ev) => renderEventRow(ev))}
@@ -1115,34 +1079,42 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
           {UI_TEXT.noEventsFound[lang]}
         </div>
       ) : (
-        <div className="space-y-3">
+        /* Item 3: Date-Grouped Timeline with ONE Column Header (`실제 | 예상 | 이전`) per Date Group */
+        <div className="space-y-2.5">
           {groupedByDate.map(([dateKey, dayEvents]) => {
             const isToday = dateKey === todayDateKey
             const sample = dayEvents[0]
             return (
               <div
                 key={dateKey}
-                className={`rounded-2xl border p-3 sm:p-4 space-y-2 ${
+                className={`rounded-2xl border p-2.5 sm:p-3.5 space-y-1.5 ${
                   isToday
                     ? 'bg-indigo-950/20 border-indigo-500/50'
                     : 'bg-slate-900/70 border-slate-800/80'
                 }`}
               >
-                <div className="flex items-center justify-between px-1 pb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-black text-white">
+                {/* Date Group Header + Single `실제 | 예상 | 이전` Table Header */}
+                <div className="flex items-center justify-between gap-2 px-1 pb-1 border-b border-slate-800/60">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs sm:text-sm font-black text-white truncate">
                       {sample.activeDateLabel}
                     </span>
-                    <span className="text-xs font-mono text-slate-500">{dateKey}</span>
                     {isToday && (
-                      <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-bold">
+                      <span className="px-1.5 py-0.2 rounded bg-indigo-600 text-white text-[10px] font-bold shrink-0">
                         {UI_TEXT.todayBadge[lang]}
                       </span>
                     )}
                   </div>
+
+                  {/* Single 3-Column Header for the Day */}
+                  <div className="w-[150px] sm:w-[228px] shrink-0 grid grid-cols-3 gap-1 text-right text-[10px] font-semibold text-slate-500">
+                    <span>{UI_TEXT.actualLabel[lang]}</span>
+                    <span>{UI_TEXT.forecastLabel[lang]}</span>
+                    <span>{UI_TEXT.previousLabel[lang]}</span>
+                  </div>
                 </div>
 
-                <div className="space-y-1.5">{dayEvents.map((ev) => renderEventRow(ev))}</div>
+                <div className="space-y-1">{dayEvents.map((ev) => renderEventRow(ev))}</div>
               </div>
             )
           })}
