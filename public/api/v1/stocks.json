@@ -5477,10 +5477,6 @@
     "changePct30d": 1.16,
     "points": [
       {
-        "date": "2026-09-18",
-        "close": 4.81
-      },
-      {
         "date": "2026-09-21",
         "close": 4.81
       },
@@ -5595,6 +5591,10 @@
       {
         "date": "2026-10-29",
         "close": 4.9
+      },
+      {
+        "date": "2026-10-30",
+        "close": 4.87
       }
     ]
   },
@@ -5873,12 +5873,8 @@
     "currency": "CZK",
     "currentPrice": 1366,
     "changePct": 1.19,
-    "changePct30d": -0.36,
+    "changePct30d": -0.8,
     "points": [
-      {
-        "date": "2026-09-16",
-        "close": 1371
-      },
       {
         "date": "2026-09-17",
         "close": 1377
@@ -5994,6 +5990,10 @@
       {
         "date": "2026-10-29",
         "close": 1368
+      },
+      {
+        "date": "2026-10-30",
+        "close": 1366
       }
     ]
   },
@@ -6006,12 +6006,8 @@
     "currency": "RON",
     "currentPrice": 83.2,
     "changePct": 2.46,
-    "changePct30d": 15.56,
+    "changePct30d": 16.53,
     "points": [
-      {
-        "date": "2026-09-18",
-        "close": 72
-      },
       {
         "date": "2026-09-21",
         "close": 71.4
@@ -6127,6 +6123,10 @@
       {
         "date": "2026-10-29",
         "close": 83
+      },
+      {
+        "date": "2026-10-30",
+        "close": 83.2
       }
     ]
   },
@@ -6538,12 +6538,8 @@
     "currency": "HUF",
     "currentPrice": 41800,
     "changePct": -10.86,
-    "changePct30d": -10.84,
+    "changePct30d": -9.45,
     "points": [
-      {
-        "date": "2026-09-17",
-        "close": 46880
-      },
       {
         "date": "2026-09-18",
         "close": 46160
@@ -6659,6 +6655,10 @@
       {
         "date": "2026-10-29",
         "close": 42750
+      },
+      {
+        "date": "2026-10-30",
+        "close": 41800
       }
     ]
   },
@@ -6950,12 +6950,8 @@
     "currency": "PKR",
     "currentPrice": 131.87,
     "changePct": -58,
-    "changePct30d": -58.54,
+    "changePct30d": -58.46,
     "points": [
-      {
-        "date": "2026-09-18",
-        "close": 318.06
-      },
       {
         "date": "2026-09-21",
         "close": 317.49
@@ -7071,6 +7067,10 @@
       {
         "date": "2026-10-29",
         "close": 306.21
+      },
+      {
+        "date": "2026-10-30",
+        "close": 306.78
       }
     ]
   },
@@ -7651,7 +7651,7 @@
       },
       {
         "date": "2026-10-30",
-        "close": 3.27
+        "close": 3.25
       }
     ]
   },
@@ -7917,7 +7917,7 @@
       },
       {
         "date": "2026-10-30",
-        "close": 21.45
+        "close": 21.55
       }
     ]
   },
@@ -7930,12 +7930,8 @@
     "currency": "EUR",
     "currentPrice": 53.6,
     "changePct": -10.07,
-    "changePct30d": -15.08,
+    "changePct30d": -14.73,
     "points": [
-      {
-        "date": "2026-09-18",
-        "close": 63.12
-      },
       {
         "date": "2026-09-21",
         "close": 62.86
@@ -8051,6 +8047,10 @@
       {
         "date": "2026-10-29",
         "close": 54.78
+      },
+      {
+        "date": "2026-10-30",
+        "close": 53.6
       }
     ]
   },
@@ -8196,12 +8196,8 @@
     "currency": "EUR",
     "currentPrice": 108.4,
     "changePct": -5.08,
-    "changePct30d": -11.51,
+    "changePct30d": -8.75,
     "points": [
-      {
-        "date": "2026-09-17",
-        "close": 122.5
-      },
       {
         "date": "2026-09-18",
         "close": 118.8
@@ -8317,6 +8313,10 @@
       {
         "date": "2026-10-29",
         "close": 107.4
+      },
+      {
+        "date": "2026-10-30",
+        "close": 108.4
       }
     ]
   },
@@ -9127,12 +9127,8 @@
     "currency": "EUR",
     "currentPrice": 56.1,
     "changePct": -3.36,
-    "changePct30d": -7.96,
+    "changePct30d": -8.85,
     "points": [
-      {
-        "date": "2026-09-17",
-        "close": 60.95
-      },
       {
         "date": "2026-09-18",
         "close": 61.55
@@ -9248,6 +9244,10 @@
       {
         "date": "2026-10-29",
         "close": 57.1
+      },
+      {
+        "date": "2026-10-30",
+        "close": 56.1
       }
     ]
   }
