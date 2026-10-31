@@ -7,7 +7,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 7580.07,
-    "changePct": 1.92,
+    "changePct": -1.82,
     "changePct30d": -2.38,
     "points": [
       {
@@ -140,7 +140,7 @@
     "isSupported": true,
     "currency": "CNY",
     "currentPrice": 3599.02,
-    "changePct": -5.41,
+    "changePct": -1.44,
     "changePct30d": -7.44,
     "points": [
       {
@@ -273,7 +273,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 25818.21,
-    "changePct": 0.81,
+    "changePct": -0.85,
     "changePct30d": 0.95,
     "points": [
       {
@@ -406,7 +406,7 @@
     "isSupported": true,
     "currency": "JPY",
     "currentPrice": 63290.11,
-    "changePct": 2.3,
+    "changePct": -2.12,
     "changePct30d": -0.31,
     "points": [
       {
@@ -539,7 +539,7 @@
     "isSupported": true,
     "currency": "INR",
     "currentPrice": 23053.1,
-    "changePct": -5.2,
+    "changePct": 0.51,
     "changePct30d": -0.93,
     "points": [
       {
@@ -672,7 +672,7 @@
     "isSupported": true,
     "currency": "GBP",
     "currentPrice": 10729.78,
-    "changePct": -1.54,
+    "changePct": 0.07,
     "changePct30d": -0.09,
     "points": [
       {
@@ -805,7 +805,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 7969.42,
-    "changePct": -6.08,
+    "changePct": -0.01,
     "changePct30d": -2.08,
     "points": [
       {
@@ -938,7 +938,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 49500.97,
-    "changePct": -5,
+    "changePct": -1,
     "changePct30d": -5.48,
     "points": [
       {
@@ -1071,7 +1071,7 @@
     "isSupported": true,
     "currency": "BRL",
     "currentPrice": 167921.8,
-    "changePct": -5.21,
+    "changePct": -0.75,
     "changePct30d": -9.34,
     "points": [
       {
@@ -1204,7 +1204,7 @@
     "isSupported": true,
     "currency": "CAD",
     "currentPrice": 35620.03,
-    "changePct": 0.32,
+    "changePct": -1.74,
     "changePct30d": -0.52,
     "points": [
       {
@@ -1350,7 +1350,7 @@
     "isSupported": true,
     "currency": "MXN",
     "currentPrice": 69779.2,
-    "changePct": 3.7,
+    "changePct": -0.01,
     "changePct30d": 9.82,
     "points": [
       {
@@ -1483,7 +1483,7 @@
     "isSupported": true,
     "currency": "AUD",
     "currentPrice": 8908.1,
-    "changePct": -0.66,
+    "changePct": 0,
     "changePct30d": 1.72,
     "points": [
       {
@@ -1616,7 +1616,7 @@
     "isSupported": true,
     "currency": "KRW",
     "currentPrice": 5730.74,
-    "changePct": 2.45,
+    "changePct": -3.48,
     "changePct30d": -13.53,
     "points": [
       {
@@ -1749,7 +1749,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 18652.9,
-    "changePct": -5.59,
+    "changePct": -1.09,
     "changePct30d": -5.43,
     "points": [
       {
@@ -1882,7 +1882,7 @@
     "isSupported": true,
     "currency": "IDR",
     "currentPrice": 5057.05,
-    "changePct": -18.25,
+    "changePct": -0.8,
     "changePct30d": -20.79,
     "points": [
       {
@@ -2015,7 +2015,7 @@
     "isSupported": true,
     "currency": "TRY",
     "currentPrice": 10759.56,
-    "changePct": -19.06,
+    "changePct": -3.63,
     "changePct30d": -19.01,
     "points": [
       {
@@ -2148,7 +2148,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 1134.44,
-    "changePct": 2.69,
+    "changePct": -0.68,
     "changePct30d": 2.91,
     "points": [
       {
@@ -2281,7 +2281,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 34.22,
-    "changePct": -7.31,
+    "changePct": -0.67,
     "changePct30d": -7.91,
     "points": [
       {
@@ -2414,7 +2414,7 @@
     "isSupported": true,
     "currency": "CHF",
     "currentPrice": 14810.66,
-    "changePct": 2.91,
+    "changePct": 0.36,
     "changePct30d": 6.12,
     "points": [
       {
@@ -2547,7 +2547,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 43.4,
-    "changePct": 1.5,
+    "changePct": -2.95,
     "changePct30d": -4.97,
     "points": [
       {
@@ -2680,7 +2680,7 @@
     "isSupported": true,
     "currency": "SEK",
     "currentPrice": 3271.4,
-    "changePct": 1.17,
+    "changePct": -0.29,
     "changePct30d": -1.08,
     "points": [
       {
@@ -2813,7 +2813,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 5840.99,
-    "changePct": 3.29,
+    "changePct": 0.01,
     "changePct30d": 1.34,
     "points": [
       {
@@ -2946,7 +2946,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 79.18,
-    "changePct": -17.65,
+    "changePct": -2.82,
     "changePct30d": -14.3,
     "points": [
       {
@@ -3079,7 +3079,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 14206.59,
-    "changePct": 4.04,
+    "changePct": -0.81,
     "changePct30d": -0.87,
     "points": [
       {
@@ -3212,7 +3212,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 37.64,
-    "changePct": 9.13,
+    "changePct": 0.03,
     "changePct30d": 2.98,
     "points": [
       {
@@ -3345,7 +3345,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 6420.03,
-    "changePct": -0.54,
+    "changePct": -0.86,
     "changePct30d": -5.56,
     "points": [
       {
@@ -3478,7 +3478,7 @@
     "isSupported": true,
     "currency": "ILS",
     "currentPrice": 3936.27,
-    "changePct": -2.12,
+    "changePct": -1.86,
     "changePct30d": -4.6,
     "points": [
       {
@@ -3611,7 +3611,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 19,
-    "changePct": -1.55,
+    "changePct": -1.2,
     "changePct30d": -5.28,
     "points": [
       {
@@ -3744,7 +3744,7 @@
     "isSupported": true,
     "currency": "SGD",
     "currentPrice": 5376.74,
-    "changePct": -5.23,
+    "changePct": -0.36,
     "changePct30d": -5.26,
     "points": [
       {
@@ -3877,7 +3877,7 @@
     "isSupported": true,
     "currency": "MYR",
     "currentPrice": 1615.6,
-    "changePct": -6.09,
+    "changePct": 0.28,
     "changePct30d": -3.08,
     "points": [
       {
@@ -4010,7 +4010,7 @@
     "isSupported": true,
     "currency": "ZAR",
     "currentPrice": 99412.34,
-    "changePct": -4.19,
+    "changePct": -2.42,
     "changePct30d": -5.54,
     "points": [
       {
@@ -4143,7 +4143,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 22.33,
-    "changePct": -13.08,
+    "changePct": -0.53,
     "changePct30d": -4.2,
     "points": [
       {
@@ -4276,7 +4276,7 @@
     "isSupported": true,
     "currency": "DKK",
     "currentPrice": 1974.38,
-    "changePct": 5.75,
+    "changePct": 0.07,
     "changePct30d": 6.23,
     "points": [
       {
@@ -4409,7 +4409,7 @@
     "isSupported": true,
     "currency": "EGP",
     "currentPrice": 81.2,
-    "changePct": -42.12,
+    "changePct": -32.28,
     "changePct30d": -38.72,
     "points": [
       {
@@ -4542,7 +4542,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 61.04,
-    "changePct": -4.01,
+    "changePct": -2.68,
     "changePct30d": -11.32,
     "points": [
       {
@@ -4675,7 +4675,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 16.64,
-    "changePct": -4.17,
+    "changePct": -1.74,
     "changePct30d": -4.39,
     "points": [
       {
@@ -4808,7 +4808,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 25.3,
-    "changePct": -3.03,
+    "changePct": -2.8,
     "changePct30d": -13.12,
     "points": [
       {
@@ -4941,7 +4941,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 68.46,
-    "changePct": -5.1,
+    "changePct": -2.12,
     "changePct30d": -6.84,
     "points": [
       {
@@ -5074,7 +5074,7 @@
     "isSupported": true,
     "currency": "HKD",
     "currentPrice": 23294.42,
-    "changePct": -9.92,
+    "changePct": 1.46,
     "changePct30d": -5.32,
     "points": [
       {
@@ -5207,7 +5207,7 @@
     "isSupported": true,
     "currency": "NZD",
     "currentPrice": 13797,
-    "changePct": 0.25,
+    "changePct": 0,
     "changePct30d": -0.18,
     "points": [
       {
@@ -5340,7 +5340,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 6191.03,
-    "changePct": -0.19,
+    "changePct": -1.25,
     "changePct30d": -5.99,
     "points": [
       {
@@ -5473,7 +5473,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 4.87,
-    "changePct": 9.52,
+    "changePct": -0.69,
     "changePct30d": 1.16,
     "points": [
       {
@@ -5606,7 +5606,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 17.19,
-    "changePct": 0.88,
+    "changePct": -0.52,
     "changePct30d": 2.08,
     "points": [
       {
@@ -5739,7 +5739,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 34.73,
-    "changePct": -12.78,
+    "changePct": -2.2,
     "changePct30d": -13.09,
     "points": [
       {
@@ -5872,7 +5872,7 @@
     "isSupported": true,
     "currency": "CZK",
     "currentPrice": 1366,
-    "changePct": 1.19,
+    "changePct": -0.15,
     "changePct30d": -0.8,
     "points": [
       {
@@ -6005,7 +6005,7 @@
     "isSupported": true,
     "currency": "RON",
     "currentPrice": 83.2,
-    "changePct": 2.46,
+    "changePct": 0.24,
     "changePct30d": 16.53,
     "points": [
       {
@@ -6138,7 +6138,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 80.18,
-    "changePct": -7.67,
+    "changePct": -4.24,
     "changePct30d": -12.03,
     "points": [
       {
@@ -6271,7 +6271,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 2619.08,
-    "changePct": 1.83,
+    "changePct": -0.15,
     "changePct30d": -1.59,
     "points": [
       {
@@ -6404,7 +6404,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 16.16,
-    "changePct": -7.42,
+    "changePct": -0.34,
     "changePct30d": -4.24,
     "points": [
       {
@@ -6537,7 +6537,7 @@
     "isSupported": true,
     "currency": "HUF",
     "currentPrice": 41800,
-    "changePct": -10.86,
+    "changePct": -2.22,
     "changePct30d": -9.45,
     "points": [
       {
@@ -6670,7 +6670,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 35.1,
-    "changePct": -3.56,
+    "changePct": -0.53,
     "changePct30d": -5.1,
     "points": [
       {
@@ -6816,7 +6816,7 @@
     "isSupported": true,
     "currency": "TWD",
     "currentPrice": 45211.83,
-    "changePct": 13.22,
+    "changePct": -2.49,
     "changePct30d": -1.42,
     "points": [
       {
@@ -6949,7 +6949,7 @@
     "isSupported": true,
     "currency": "PKR",
     "currentPrice": 131.87,
-    "changePct": -58,
+    "changePct": -56.93,
     "changePct30d": -58.46,
     "points": [
       {
@@ -7082,7 +7082,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 91.27,
-    "changePct": 2.5,
+    "changePct": -3.58,
     "changePct30d": -5.37,
     "points": [
       {
@@ -7293,7 +7293,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 156.61,
-    "changePct": -10.58,
+    "changePct": -1.19,
     "changePct30d": -3.67,
     "points": [
       {
@@ -7530,7 +7530,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 3.25,
-    "changePct": -2.4,
+    "changePct": -0.61,
     "changePct30d": -1.81,
     "points": [
       {
@@ -7663,7 +7663,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 16.5,
-    "changePct": 27.91,
+    "changePct": 0,
     "changePct30d": -3.79,
     "points": [
       {
@@ -7796,7 +7796,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 21.55,
-    "changePct": -4.01,
+    "changePct": 0.47,
     "changePct30d": -4.01,
     "points": [
       {
@@ -7929,7 +7929,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 53.6,
-    "changePct": -10.07,
+    "changePct": -2.15,
     "changePct30d": -14.73,
     "points": [
       {
@@ -8062,7 +8062,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 4.65,
-    "changePct": 30.25,
+    "changePct": -4.91,
     "changePct30d": -20.92,
     "points": [
       {
@@ -8195,7 +8195,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 108.4,
-    "changePct": -5.08,
+    "changePct": 0.93,
     "changePct30d": -8.75,
     "points": [
       {
@@ -8328,7 +8328,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 47.72,
-    "changePct": -3.98,
+    "changePct": 0.65,
     "changePct30d": -1.61,
     "points": [
       {
@@ -8461,7 +8461,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 19,
-    "changePct": -1.55,
+    "changePct": -1.2,
     "changePct30d": -5.28,
     "points": [
       {
@@ -8594,7 +8594,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 25.3,
-    "changePct": -3.03,
+    "changePct": -2.8,
     "changePct30d": -13.12,
     "points": [
       {
@@ -8727,7 +8727,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 32.13,
-    "changePct": -9.19,
+    "changePct": -1.68,
     "changePct30d": -9.47,
     "points": [
       {
@@ -8860,7 +8860,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 61.78,
-    "changePct": -3.63,
+    "changePct": -3.6,
     "changePct30d": -9.45,
     "points": [
       {
@@ -8993,7 +8993,7 @@
     "isSupported": true,
     "currency": "USD",
     "currentPrice": 79.3,
-    "changePct": -1.75,
+    "changePct": -1.58,
     "changePct30d": -7.85,
     "points": [
       {
@@ -9126,7 +9126,7 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 56.1,
-    "changePct": -3.36,
+    "changePct": -1.75,
     "changePct30d": -8.85,
     "points": [
       {

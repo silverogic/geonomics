@@ -278,15 +278,11 @@ async function fetchTicker(item) {
     const currentPrice = meta.regularMarketPrice || recent30Points[recent30Points.length - 1].close
     const firstPrice = recent30Points[0].close
 
-    // Previous trading day close (meta.chartPreviousClose or the second to last point)
-    let prevClose = meta.chartPreviousClose
-    if (!prevClose || prevClose <= 0) {
-      if (recent30Points.length >= 2) {
-        prevClose = recent30Points[recent30Points.length - 2].close
-      } else {
-        prevClose = firstPrice
-      }
-    }
+    // Previous trading day close (second-to-last point in recent30Points; note that
+    // meta.chartPreviousClose on range=3mo is the 3-month-ago baseline, not yesterday's close)
+    const prevClose = recent30Points.length >= 2
+      ? recent30Points[recent30Points.length - 2].close
+      : firstPrice
 
     // 1-Day daily change percentage (전일 대비 1일 등락률)
     const changePct = prevClose > 0
