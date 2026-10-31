@@ -98,10 +98,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <nav className="hidden md:flex items-center gap-1 sm:gap-2 shrink-0">
             {[
               { id: 'heatmap', label: t.navStockHeatmap, icon: LayoutGrid },
+              { id: 'calendar', label: t.navCalendar, icon: CalendarClock },
+              { id: 'news', label: t.navNews, icon: Newspaper },
               { id: 'cards', label: t.navExplorer, icon: Layers },
               { id: 'compare', label: t.navCompare, icon: GitCompare },
-              { id: 'news', label: t.navNews, icon: Newspaper },
-              { id: 'calendar', label: t.navCalendar, icon: CalendarClock },
             ].map(({ id, label, icon: Icon }) => {
               const isActive = activeTab === id
               return (
@@ -436,6 +436,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="text-[11px] font-bold tracking-tight truncate">{t.navStockHeatmap}</span>
           </button>
           <button
+            onClick={() => setActiveTab('calendar')}
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
+              activeTab === 'calendar'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <CalendarClock className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navCalendar}</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('news')}
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
+              activeTab === 'news'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <Newspaper className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navNews}</span>
+          </button>
+          <button
             onClick={() => setActiveTab('cards')}
             className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
               activeTab === 'cards'
@@ -456,28 +478,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <GitCompare className="w-3.5 h-3.5 shrink-0" />
             <span className="text-[11px] font-bold tracking-tight truncate">{t.navCompare}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('news')}
-            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
-              activeTab === 'news'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <Newspaper className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[11px] font-bold tracking-tight truncate">{t.navNews}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('calendar')}
-            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
-              activeTab === 'calendar'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <CalendarClock className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[11px] font-bold tracking-tight truncate">{t.navCalendar}</span>
           </button>
         </div>
       </nav>
