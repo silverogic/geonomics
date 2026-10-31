@@ -34,6 +34,12 @@ interface EconomicNewsViewProps {
   lang: Language
   onSelectCountry: (country: CountryMeta) => void
   refreshKey?: number
+  initialSearch?: {
+    countryId: string
+    topic: CountryTopicCategory
+    keyword: string
+    seq: number
+  } | null
 }
 
 const PRIORITY_COUNTRY_IDS = [
@@ -167,6 +173,7 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
   lang,
   onSelectCountry,
   refreshKey = 0,
+  initialSearch = null,
 }) => {
   const t = translations[lang]
 
@@ -180,6 +187,15 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
   const [submittedKeyword, setSubmittedKeyword] = useState<string>('')
   const [countryArticles, setCountryArticles] = useState<CountryNewsArticle[]>([])
   const [isLoadingCountryNews, setIsLoadingCountryNews] = useState<boolean>(true)
+
+  useEffect(() => {
+    if (initialSearch) {
+      setTargetCountryId(initialSearch.countryId || 'USA')
+      setTargetTopic(initialSearch.topic || 'CENTRAL_BANK')
+      setCustomKeywordInput(initialSearch.keyword || '')
+      setSubmittedKeyword(initialSearch.keyword || '')
+    }
+  }, [initialSearch])
 
   // Custom App-Themed Combobox States & Refs
   const [isCountryMenuOpen, setIsCountryMenuOpen] = useState(false)

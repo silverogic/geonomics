@@ -87,6 +87,39 @@ export default {
     }
 
     const url = new URL(request.url)
+
+    // Optional live Economic Calendar proxy endpoint: ?calendar=US&from=...&to=...
+    const calendarCountries = url.searchParams.get('calendar')
+    if (calendarCountries && /^[A-Z,]{2,30}$/.test(calendarCountries)) {
+      const fromIso = url.searchParams.get('from') || ''
+      const toIso = url.searchParams.get('to') || ''
+      const tvUrl = `https://economic-calendar.tradingview.com/events?from=${encodeURIComponent(fromIso)}&to=${encodeURIComponent(toIso)}&countries=${encodeURIComponent(calendarCountries)}`
+      try {
+        const tvRes = await fetch(tvUrl, {
+          headers: {
+            Origin: 'https://www.tradingview.com',
+            Referer: 'https://www.tradingview.com/',
+            'User-Agent': 'Mozilla/5.0 (compatible; GeonomicsProxy/1.0)',
+          },
+        })
+        if (tvRes.ok) {
+          const tvData = await tvRes.text()
+          return new Response(tvData, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=120',
+              ...corsHeaders(origin),
+            },
+          })
+        }
+      } catch {
+        // Fall through on error
+      }
+      return new Response(JSON.stringify({ result: [] }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+      })
+    }
     const symbols = [...new Set((url.searchParams.get('symbols') || '').split(',').map((s) => s.trim()).filter(Boolean))]
     if (symbols.length === 0 || symbols.length > MAX_SYMBOLS || !symbols.every((s) => SYMBOL_PATTERN.test(s))) {
       return new Response(JSON.stringify({ error: 'invalid symbols' }), {
