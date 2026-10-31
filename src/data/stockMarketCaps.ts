@@ -1,158 +1,80 @@
 import type { BaseCurrency, Language } from '../types/economics'
 import stockMarketCapsDataJson from '../../public/api/v1/stock-market-caps.json'
+import { getImfCountryData } from './imfEconomic'
 
-const PREBUILT_CAPS = stockMarketCapsDataJson as Record<string, { marketCapUsd?: number }>
+export interface StockMarketCapRecord {
+  marketCapUsd: number
+  baseCapUsd?: number
+  year?: string
+  indexMultiplier?: number
+  listedCount?: number
+  countryName?: string
+  source?: string
+}
 
-/**
- * Domestic Market Capitalization Baseline & Fallback Table.
- * - Primary 72 markets are dynamically aggregated from TradingView Representative Mainboard Exchanges
- *   into `public/api/v1/stock-market-caps.json`.
- * - Smaller/developing economies use the curated static baselines below.
- */
+const PREBUILT_CAPS = stockMarketCapsDataJson as Record<string, StockMarketCapRecord>
+
 export const MARKET_CAP_REPORT_DATE = `${new Date().getFullYear()} Live`
 export const MARKET_CAP_DATA_SOURCE = 'TradingView Mainboard Exchange Aggregate'
 
-export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
-  // --- Americas ---
-  USA: 80_410_000_000_000, // NYSE + NASDAQ Domestic Listed (~$80.4T)
-  CAN: 4_236_000_000_000,  // TMX / Toronto Stock Exchange (~$4.24T)
-  BRA: 1_152_000_000_000,  // B3 Brasil Bolsa Balcão (~$1.15T)
-  MEX: 534_000_000_000,    // BMV Bolsa Mexicana de Valores (~$534B)
-  CHL: 169_000_000_000,    // Santiago Stock Exchange (~$169B)
-  PER: 135_000_000_000,    // BVL Bolsa de Valores de Lima (~$135B)
-  ARG: 152_000_000_000,    // BYMA Bolsas y Mercados Argentinos (~$152B)
-  COL: 105_000_000_000,    // BVC Bolsa de Valores de Colombia (~$105B)
-  PRI: 25_000_000_000,     // Puerto Rico (~$25B)
-  PAN: 20_000_000_000,     // Panama Stock Exchange (~$20B)
-  ECU: 18_000_000_000,     // Ecuador (~$18B)
-  JAM: 16_000_000_000,     // Jamaica Stock Exchange (~$16B)
-  TTO: 16_000_000_000,     // Trinidad and Tobago Stock Exchange (TTSE) (~$16B)
-  DOM: 15_000_000_000,     // Dominican Republic (~$15B)
-  CRI: 15_000_000_000,     // Costa Rica (~$15B)
-  BOL: 12_000_000_000,     // Bolivia (~$12B)
-  GTM: 10_000_000_000,     // Guatemala (~$10B)
-  URY: 10_000_000_000,     // Uruguay (~$10B)
-  VEN: 10_000_000_000,     // Caracas Stock Exchange (~$10B)
-  HND: 8_000_000_000,      // Honduras (~$8B)
-  NIC: 6_000_000_000,      // Nicaragua (~$6B)
-  PRY: 6_000_000_000,      // Paraguay (~$6B)
+/**
+ * Dynamically estimates domestic equity market capitalization from IMF nominal GDP
+ * and GDP per capita (Buffett Indicator tiered progression: 10% to 35% of GDP)
+ * for smaller developing economies not directly covered by TradingView live exchange feeds.
+ */
+export function estimateMarketCapFromImfGdp(countryId: string, explicitGdpUsd?: number): number {
+  const code = countryId.toUpperCase()
+  const imfRecord = getImfCountryData(code)
 
-  // --- Asia ---
-  CHN: 10_832_000_000_000, // Shanghai Stock Exchange (SSE) (~$10.83T)
-  JPN: 7_734_000_000_000,  // Tokyo Stock Exchange (TSE) (~$7.73T)
-  IND: 3_907_000_000_000,  // National Stock Exchange of India (NSE) (~$3.91T)
-  HKG: 3_340_000_000_000,  // Hong Kong Exchanges and Clearing (HKEX) (~$3.34T)
-  TWN: 4_088_000_000_000,  // Taiwan Stock Exchange (TWSE) (~$4.09T)
-  SAU: 2_388_000_000_000,  // Saudi Tadawul (~$2.39T)
-  KOR: 3_440_000_000_000,  // Korea Exchange KOSPI Mainboard (~$3.44T)
-  ARE: 1_006_000_000_000,  // ADX Abu Dhabi + DFM Dubai (~$1.01T)
-  SGP: 719_000_000_000,    // Singapore Exchange (SGX) (~$719B)
-  IDN: 252_000_000_000,    // Indonesia Stock Exchange (IDX) (~$252B)
-  THA: 464_000_000_000,    // Stock Exchange of Thailand (SET) (~$464B)
-  TUR: 202_000_000_000,    // Borsa Istanbul (BIST) (~$202B)
-  MYS: 305_000_000_000,    // Bursa Malaysia (~$305B)
-  ISR: 549_000_000_000,    // Tel Aviv Stock Exchange (TASE) (~$549B)
-  PHL: 96_000_000_000,     // Philippine Stock Exchange (PSE) (~$96B)
-  VNM: 175_000_000_000,    // Ho Chi Minh Stock Exchange (HOSE) (~$175B)
-  QAT: 144_000_000_000,    // Qatar Stock Exchange (~$144B)
-  KWT: 156_000_000_000,    // Boursa Kuwait (~$156B)
-  KAZ: 75_000_000_000,     // Kazakhstan Stock Exchange (KASE) (~$75B)
-  BGD: 48_000_000_000,     // Dhaka Stock Exchange (~$48B)
-  PAK: 44_000_000_000,     // Pakistan Stock Exchange (PSX) (~$44B)
-  JOR: 26_000_000_000,     // Amman Stock Exchange (~$26B)
-  OMN: 41_000_000_000,     // Muscat Stock Exchange (~$41B)
-  BHR: 19_000_000_000,     // Bahrain Bourse (~$19B)
-  LKA: 18_000_000_000,     // Colombo Stock Exchange (~$18B)
-  UZB: 15_000_000_000,     // Tashkent Stock Exchange (~$15B)
-  IRQ: 15_000_000_000,     // Iraq Stock Exchange (~$15B)
-  LBN: 14_000_000_000,     // Beirut Stock Exchange (~$14B)
-  BRN: 12_000_000_000,     // Brunei Darussalam (~$12B)
-  ARM: 6_000_000_000,      // Armenia Securities Exchange (~$6B)
-  GEO: 5_000_000_000,      // Georgian Stock Exchange (~$5B)
-  MNG: 4_500_000_000,      // Mongolian Stock Exchange (~$4.5B)
-  NPL: 4_000_000_000,      // Nepal Stock Exchange (~$4B)
-  KHM: 7_000_000_000,      // Cambodia Securities Exchange (~$7B)
+  let totalGdpUsd = explicitGdpUsd ?? 0
+  let gdpPerCapitaUsd = 0
 
-  // --- Europe ---
-  GBR: 4_020_000_000_000,  // London Stock Exchange (LSE) (~$4.02T)
-  FRA: 2_896_000_000_000,  // Euronext Paris (~$2.90T)
-  DEU: 2_872_000_000_000,  // Deutsche Börse Frankfurt (~$2.87T)
-  CHE: 2_620_000_000_000,  // SIX Swiss Exchange (~$2.62T)
-  NLD: 1_510_000_000_000,  // Euronext Amsterdam (~$1.51T)
-  SWE: 1_313_000_000_000,  // Nasdaq Stockholm (~$1.31T)
-  ITA: 1_010_000_000_000,  // Borsa Italiana (~$1.01T)
-  ESP: 1_346_000_000_000,  // BME Bolsas y Mercados Españoles (~$1.35T)
-  DNK: 618_000_000_000,    // Nasdaq Copenhagen (~$618B)
-  BEL: 464_000_000_000,    // Euronext Brussels (~$464B)
-  NOR: 437_000_000_000,    // Oslo Børs (~$437B)
-  FIN: 400_000_000_000,    // Nasdaq Helsinki (~$400B)
-  POL: 332_000_000_000,    // Warsaw Stock Exchange (GPW) (~$332B)
-  AUT: 248_000_000_000,    // Wiener Börse (~$248B)
-  IRL: 123_500_000_000,    // Euronext Dublin (~$123.5B)
-  GRC: 156_000_000_000,    // Athens Stock Exchange (~$156B)
-  PRT: 94_000_000_000,     // Euronext Lisbon (~$94B)
-  ROU: 80_000_000_000,     // Bucharest Stock Exchange (BVB) (~$80B)
-  HUN: 52_000_000_000,     // Budapest Stock Exchange (~$52B)
-  CZE: 48_000_000_000,     // Prague Stock Exchange (~$48B)
-  LUX: 48_000_000_000,     // Luxembourg Stock Exchange (~$48B)
-  HRV: 28_000_000_000,     // Zagreb Stock Exchange (~$28B)
-  MLT: 24_000_000_000,     // Malta Stock Exchange (~$24B)
-  ISL: 22_000_000_000,     // Nasdaq Iceland (~$22B)
-  BGR: 20_000_000_000,     // Bulgarian Stock Exchange (~$20B)
-  SVN: 16_000_000_000,     // Ljubljana Stock Exchange (~$16B)
-  SRB: 14_000_000_000,     // Belgrade Stock Exchange (~$14B)
-  UKR: 15_000_000_000,     // PFTS Ukraine (~$15B)
-  CYP: 12_000_000_000,     // Cyprus Stock Exchange (~$12B)
-  LTU: 8_500_000_000,      // Nasdaq Vilnius (~$8.5B)
-  SVK: 7_000_000_000,      // Bratislava Stock Exchange (~$7B)
-  EST: 6_000_000_000,      // Nasdaq Tallinn (~$6B)
-  BIH: 4_800_000_000,      // Sarajevo + Banja Luka Stock Exchanges (~$4.8B)
-  MDA: 4_500_000_000,      // Moldova Stock Exchange (~$4.5B)
-  ALB: 4_500_000_000,      // Tirana Stock Exchange (~$4.5B)
-  MKD: 4_200_000_000,      // Macedonian Stock Exchange (MSE) (~$4.2B)
-  LVA: 1_500_000_000,      // Nasdaq Riga (~$1.5B)
+  if (imfRecord && imfRecord.years) {
+    const yearKeys = Object.keys(imfRecord.years).sort((a, b) => Number(b) - Number(a))
+    for (const yr of yearKeys) {
+      const m = imfRecord.years[yr as keyof typeof imfRecord.years]
+      if (m && m.totalGdpUsd > 0) {
+        if (totalGdpUsd <= 0) totalGdpUsd = m.totalGdpUsd
+        if (m.gdpPerCapitaUsd > 0) gdpPerCapitaUsd = m.gdpPerCapitaUsd
+        break
+      }
+    }
+  }
 
-  // --- Oceania ---
-  AUS: 2_100_000_000_000,  // Australian Securities Exchange (ASX) (~$2.1T)
-  NZL: 120_000_000_000,    // New Zealand Exchange (NZX) (~$120B)
-  PNG: 7_000_000_000,      // Port Moresby Stock Exchange (~$7B)
+  if (totalGdpUsd <= 0) {
+    return 5_000_000_000
+  }
 
-  // --- Africa ---
-  ZAF: 1_100_000_000_000,  // Johannesburg Stock Exchange (JSE) (~$1.1T)
-  MAR: 85_000_000_000,     // Casablanca Stock Exchange (~$85B)
-  EGY: 55_000_000_000,     // Egyptian Exchange (EGX) (~$55B)
-  NGA: 48_000_000_000,     // Nigerian Exchange (NGX) (~$48B)
-  BWA: 22_000_000_000,     // Botswana Stock Exchange (~$22B)
-  KEN: 16_000_000_000,     // Nairobi Securities Exchange (~$16B)
-  CIV: 14_000_000_000,     // BRVM (West Africa Regional) (~$14B)
-  TUN: 12_000_000_000,     // Bourse de Tunis (~$12B)
-  GHA: 10_000_000_000,     // Ghana Stock Exchange (~$10B)
-  MUS: 9_500_000_000,      // Stock Exchange of Mauritius (SEM) (~$9.5B)
-  ETH: 9_000_000_000,      // Ethiopia Securities Exchange (~$9B)
-  TZA: 8_000_000_000,      // Dar es Salaam Stock Exchange (~$8B)
-  AGO: 7_000_000_000,      // Bodiva Angola (~$7B)
-  UGA: 7_000_000_000,      // Uganda Securities Exchange (~$7B)
-  DZA: 6_000_000_000,      // Algiers Stock Exchange (~$6B)
-  SEN: 6_000_000_000,      // Senegal (BRVM) (~$6B)
-  CMR: 4_500_000_000,      // Douala Stock Exchange (~$4.5B)
-  NAM: 3_200_000_000,      // Namibian Stock Exchange (NSX Domestic) (~$3.2B)
+  // Smooth linear interpolation of Market Cap / GDP ratio between $2,000 (10%) and $30,000 (35%) per capita
+  const minRatio = 0.10
+  const maxRatio = 0.35
+  const clampedPerCapita = Math.max(2000, Math.min(30000, gdpPerCapitaUsd || 5000))
+  const t = (clampedPerCapita - 2000) / (30000 - 2000)
+  const ratio = minRatio + t * (maxRatio - minRatio)
+
+  return Math.round(totalGdpUsd * ratio)
 }
 
 /**
+ * Dynamically constructed baseline map from `public/api/v1/stock-market-caps.json`
+ * (zero hardcoded country numbers in source code).
+ */
+export const STOCK_MARKET_CAPS_USD: Record<string, number> = Object.fromEntries(
+  Object.entries(PREBUILT_CAPS)
+    .filter(([, item]) => item && typeof item.marketCapUsd === 'number' && item.marketCapUsd > 0)
+    .map(([code, item]) => [code, item.marketCapUsd])
+)
+
+/**
  * Returns domestic stock market capitalization in USD.
- * If not specifically tracked, estimates based on country's nominal GDP.
+ * Reads from the dynamically generated `stock-market-caps.json` dataset first,
+ * and falls back to dynamic IMF GDP-based calculation if not present.
  */
 export function getStockMarketCapUsd(countryId: string, gdpUsd?: number): number {
   const code = countryId.toUpperCase()
   const prebuilt = PREBUILT_CAPS[code]?.marketCapUsd
   if (typeof prebuilt === 'number' && prebuilt > 0) return prebuilt
-  const cap = STOCK_MARKET_CAPS_USD[code]
-  if (cap && cap > 0) return cap
-  // Reasonable fallback for unlisted: ~30% of Nominal GDP
-  if (gdpUsd && gdpUsd > 0) {
-    return Math.round(gdpUsd * 0.3)
-  }
-  return 5_000_000_000 // default baseline $5B
+  return estimateMarketCapFromImfGdp(code, gdpUsd)
 }
 
 /**

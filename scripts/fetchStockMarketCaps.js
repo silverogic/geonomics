@@ -1,14 +1,14 @@
 /**
- * Automated Stock Market Capitalization Fetcher & Sync Pipeline
+ * Automated Stock Market Capitalization Fetcher & Sync Pipeline (Zero Hardcoding)
  *
  * 1. Primary Source (72 Major Markets, >99.7% of Global Market Cap):
  *    Queries the TradingView Global Scanner API across each country's verified
  *    representative mainboard stock exchange (`COUNTRY_DOMESTIC_EXCHANGES`), summing
  *    primary-listed common stock market capitalizations regardless of headquarters domicile.
- * 2. Secondary/Fallback Source (Smaller/Developing Economies):
- *    Uses the curated baseline values from `FALLBACK_CAPS_USD` (`src/data/stockMarketCaps.ts`).
- * 3. Outputs strictly the tracked economies to `public/api/v1/stock-market-caps.json`
- *    (no regional/income-group dummy codes).
+ * 2. Secondary Dynamic Source (Smaller/Developing Economies):
+ *    Dynamically computes estimated market capitalization from official IMF nominal GDP
+ *    (`totalGdpUsd`) and GDP per capita (`gdpPerCapitaUsd`) in `public/api/v1/economics.json`.
+ * 3. Outputs strictly the tracked economies to `public/api/v1/stock-market-caps.json`.
  */
 
 import fs from 'fs'
@@ -132,16 +132,49 @@ function loadTrackedCountries() {
   }))
 }
 
-function loadFallbackCaps() {
-  const fallbackPath = path.resolve(__dirname, '../src/data/stockMarketCaps.ts')
-  const src = fs.readFileSync(fallbackPath, 'utf8')
-  const map = {}
-  for (const m of src.matchAll(/^\s*([A-Z]{3}):\s*([0-9_]+)\s*,/gm)) {
-    const code = m[1]
-    const val = Number(m[2].replace(/_/g, ''))
-    if (val > 0) map[code] = val
+function loadImfEconomicsData() {
+  try {
+    const econPath = path.resolve(__dirname, '../public/api/v1/economics.json')
+    const raw = fs.readFileSync(econPath, 'utf8')
+    return JSON.parse(raw)
+  } catch (err) {
+    console.warn('Failed to load economics.json:', err.message)
+    return {}
   }
-  return map
+}
+
+/**
+ * Dynamically computes estimated market capitalization from IMF nominal GDP and GDP per capita
+ * (smooth linear progression from 10% of GDP at $2,000 per capita to 35% of GDP at $30,000+ per capita).
+ */
+function computeDynamicGdpMarketCap(iso, economicsData) {
+  const rec = economicsData[iso]
+  let totalGdpUsd = 0
+  let gdpPerCapitaUsd = 0
+
+  if (rec && rec.years) {
+    const yearKeys = Object.keys(rec.years).sort((a, b) => Number(b) - Number(a))
+    for (const yr of yearKeys) {
+      const m = rec.years[yr]
+      if (m && m.totalGdpUsd > 0) {
+        totalGdpUsd = m.totalGdpUsd
+        gdpPerCapitaUsd = m.gdpPerCapitaUsd || 0
+        break
+      }
+    }
+  }
+
+  if (totalGdpUsd <= 0) {
+    return 5_000_000_000
+  }
+
+  const minRatio = 0.10
+  const maxRatio = 0.35
+  const clampedPerCapita = Math.max(2000, Math.min(30000, gdpPerCapitaUsd || 5000))
+  const t = (clampedPerCapita - 2000) / (30000 - 2000)
+  const ratio = minRatio + t * (maxRatio - minRatio)
+
+  return Math.round(totalGdpUsd * ratio)
 }
 
 async function fetchUsdExchangeRates() {
@@ -317,16 +350,16 @@ async function fetchTradingViewDomesticMarketCap(country, fxRates) {
 }
 
 async function main() {
-  console.log('Starting TradingView Domestic Exchange Market Cap Pipeline...')
+  console.log('Starting TradingView Mainboard Exchange Market Cap Pipeline (Zero Hardcoding)...')
 
   const countries = loadTrackedCountries()
-  const fallbackCaps = loadFallbackCaps()
+  const economicsData = loadImfEconomicsData()
   const fxRates = await fetchUsdExchangeRates()
   const currentYear = new Date().getFullYear()
 
   const outputData = {}
   let tvSuccessCount = 0
-  let fallbackCount = 0
+  let dynamicGdpCount = 0
 
   // Concurrency 8 across all tracked countries
   let cursor = 0
@@ -344,20 +377,20 @@ async function main() {
           indexMultiplier: 1.0,
           listedCount: tvResult.listedCount,
           countryName: country.nameEn,
-          source: `TradingView Domestic Exchange Aggregate (${tvResult.exchanges}, ${tvResult.listedCount} stocks)`,
+          source: `TradingView Mainboard Exchange Aggregate (${tvResult.exchanges}, ${tvResult.listedCount} stocks)`,
         }
         tvSuccessCount++
       } else {
-        const fallbackCap = fallbackCaps[iso] || 5_000_000_000
+        const dynamicCap = computeDynamicGdpMarketCap(iso, economicsData)
         outputData[iso] = {
-          marketCapUsd: fallbackCap,
-          baseCapUsd: fallbackCap,
+          marketCapUsd: dynamicCap,
+          baseCapUsd: dynamicCap,
           year: `${currentYear} Est.`,
           indexMultiplier: 1.0,
           countryName: country.nameEn,
-          source: 'Curated National Exchange Baseline',
+          source: 'IMF WEO Nominal GDP Dynamic Model',
         }
-        fallbackCount++
+        dynamicGdpCount++
       }
     }
   })
@@ -370,7 +403,7 @@ async function main() {
   )
   const sortedOutput = Object.fromEntries(sortedEntries)
 
-  console.log(`\n--- ${currentYear} TradingView Domestic Exchange Market Cap Top 15 ---`)
+  console.log(`\n--- ${currentYear} TradingView Mainboard Exchange Market Cap Top 15 ---`)
   for (const [code, item] of sortedEntries.slice(0, 15)) {
     const capT = (item.marketCapUsd / 1e12).toFixed(2)
     console.log(`${code.padEnd(4)} (${item.countryName.padEnd(16)}): $${capT.padStart(5)}T | ${item.source}`)
@@ -383,7 +416,7 @@ async function main() {
   const outFile = path.join(outDir, 'stock-market-caps.json')
   fs.writeFileSync(outFile, JSON.stringify(sortedOutput, null, 2), 'utf8')
   console.log(
-    `\nSuccessfully saved ${ sortedEntries.length } countries (${tvSuccessCount} TradingView live, ${fallbackCount} static baseline) to ${outFile}`
+    `\nSuccessfully saved ${sortedEntries.length} countries (${tvSuccessCount} TradingView live, ${dynamicGdpCount} IMF GDP dynamic model) to ${outFile}`
   )
 }
 
