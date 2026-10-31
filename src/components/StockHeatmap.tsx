@@ -294,7 +294,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       const multiplier = liveCapData?.multipliers?.[c.id] ?? 1.0
       const currentYear = new Date().getFullYear()
       const capYear = liveCapData?.years[c.id] ?? `${currentYear} Live Est.`
-      const capSource = liveCapData?.sources[c.id] ?? 'World Bank (WFE) × Live Index Tracking'
+      const capSource = liveCapData?.sources[c.id] ?? 'TradingView Mainboard Exchange Aggregate'
       // Ensure 1-Day daily change percentage (전일 대비 1일 등락률 보장)
       let changePct = stock?.changePct ?? 0
       if (stock?.points && stock.points.length >= 2) {
@@ -1236,7 +1236,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
               {hoveredItem.multiplier && hoveredItem.multiplier !== 1.0 && (
                 <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 bg-slate-950/60 px-1.5 py-0.5 rounded border border-slate-800/60">
                   <span>
-                    {lang === 'ko' ? 'WFE 기준치 대비' : 'vs. WFE Base'}:
+                    {lang === 'ko' ? '기준치 대비' : 'vs. Base'}:
                   </span>
                   <span className="text-emerald-400 font-bold">
                     {hoveredItem.multiplier > 1.0 ? `+${Math.round((hoveredItem.multiplier - 1) * 100)}%` : `${Math.round((hoveredItem.multiplier - 1) * 100)}%`} ({hoveredItem.multiplier}x)
@@ -1402,7 +1402,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
                               {formatStockMarketCap(item.marketCapUsd, baseCurrency, usdToBase, lang)}
                             </span>
                             <span className="text-[8px] sm:text-[9px] leading-none text-slate-400 font-mono block">
-                              WFE
+                              CAP
                             </span>
                           </div>
                         </div>

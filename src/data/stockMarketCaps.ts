@@ -5,12 +5,12 @@ const PREBUILT_CAPS = stockMarketCapsDataJson as Record<string, { marketCapUsd?:
 
 /**
  * Domestic Market Capitalization Baseline & Fallback Table.
- * - Primary 72 markets are dynamically aggregated from TradingView Domestic Exchanges
+ * - Primary 72 markets are dynamically aggregated from TradingView Representative Mainboard Exchanges
  *   into `public/api/v1/stock-market-caps.json`.
  * - Smaller/developing economies use the curated static baselines below.
  */
-export const WFE_REPORT_DATE = `${new Date().getFullYear()} Live`
-export const WFE_DATA_SOURCE = 'TradingView Domestic Exchange Aggregate'
+export const MARKET_CAP_REPORT_DATE = `${new Date().getFullYear()} Live`
+export const MARKET_CAP_DATA_SOURCE = 'TradingView Mainboard Exchange Aggregate'
 
 export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   // --- Americas ---
@@ -38,13 +38,13 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   PRY: 6_000_000_000,      // Paraguay (~$6B)
 
   // --- Asia ---
-  CHN: 10_832_000_000_000, // Shanghai + Shenzhen + Beijing (~$10.83T)
-  JPN: 7_734_000_000_000,  // Japan Exchange Group (JPX) (~$7.73T)
-  IND: 3_907_000_000_000,  // NSE + BSE India Domestic (~$3.91T)
-  HKG: 1_150_000_000_000,  // Hong Kong Exchanges and Clearing (HKEX) (~$1.15T)
+  CHN: 10_832_000_000_000, // Shanghai Stock Exchange (SSE) (~$10.83T)
+  JPN: 7_734_000_000_000,  // Tokyo Stock Exchange (TSE) (~$7.73T)
+  IND: 3_907_000_000_000,  // National Stock Exchange of India (NSE) (~$3.91T)
+  HKG: 3_340_000_000_000,  // Hong Kong Exchanges and Clearing (HKEX) (~$3.34T)
   TWN: 4_088_000_000_000,  // Taiwan Stock Exchange (TWSE) (~$4.09T)
   SAU: 2_388_000_000_000,  // Saudi Tadawul (~$2.39T)
-  KOR: 3_217_000_000_000,  // Korea Exchange (KRX: KOSPI 약 4,584조 원 / ~$3.22T)
+  KOR: 3_440_000_000_000,  // Korea Exchange KOSPI Mainboard (~$3.44T)
   ARE: 1_006_000_000_000,  // ADX Abu Dhabi + DFM Dubai (~$1.01T)
   SGP: 719_000_000_000,    // Singapore Exchange (SGX) (~$719B)
   IDN: 252_000_000_000,    // Indonesia Stock Exchange (IDX) (~$252B)
@@ -53,7 +53,7 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   MYS: 305_000_000_000,    // Bursa Malaysia (~$305B)
   ISR: 549_000_000_000,    // Tel Aviv Stock Exchange (TASE) (~$549B)
   PHL: 96_000_000_000,     // Philippine Stock Exchange (PSE) (~$96B)
-  VNM: 175_000_000_000,    // Ho Chi Minh Stock Exchange (HoSE) (~$175B)
+  VNM: 175_000_000_000,    // Ho Chi Minh Stock Exchange (HOSE) (~$175B)
   QAT: 144_000_000_000,    // Qatar Stock Exchange (~$144B)
   KWT: 156_000_000_000,    // Boursa Kuwait (~$156B)
   KAZ: 75_000_000_000,     // Kazakhstan Stock Exchange (KASE) (~$75B)
@@ -74,13 +74,13 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   KHM: 7_000_000_000,      // Cambodia Securities Exchange (~$7B)
 
   // --- Europe ---
-  GBR: 4_601_000_000_000,  // London Stock Exchange (LSE) (~$4.60T)
+  GBR: 4_020_000_000_000,  // London Stock Exchange (LSE) (~$4.02T)
   FRA: 2_896_000_000_000,  // Euronext Paris (~$2.90T)
   DEU: 2_872_000_000_000,  // Deutsche Börse Frankfurt (~$2.87T)
-  CHE: 3_108_000_000_000,  // SIX Swiss Exchange (~$3.11T)
-  NLD: 1_738_000_000_000,  // Euronext Amsterdam (~$1.74T)
+  CHE: 2_620_000_000_000,  // SIX Swiss Exchange (~$2.62T)
+  NLD: 1_510_000_000_000,  // Euronext Amsterdam (~$1.51T)
   SWE: 1_313_000_000_000,  // Nasdaq Stockholm (~$1.31T)
-  ITA: 1_260_000_000_000,  // Borsa Italiana (~$1.26T)
+  ITA: 1_010_000_000_000,  // Borsa Italiana (~$1.01T)
   ESP: 1_346_000_000_000,  // BME Bolsas y Mercados Españoles (~$1.35T)
   DNK: 618_000_000_000,    // Nasdaq Copenhagen (~$618B)
   BEL: 464_000_000_000,    // Euronext Brussels (~$464B)
@@ -88,7 +88,7 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   FIN: 400_000_000_000,    // Nasdaq Helsinki (~$400B)
   POL: 332_000_000_000,    // Warsaw Stock Exchange (GPW) (~$332B)
   AUT: 248_000_000_000,    // Wiener Börse (~$248B)
-  IRL: 1_171_000_000_000,  // Euronext Dublin (~$1.17T)
+  IRL: 123_500_000_000,    // Euronext Dublin (~$123.5B)
   GRC: 156_000_000_000,    // Athens Stock Exchange (~$156B)
   PRT: 94_000_000_000,     // Euronext Lisbon (~$94B)
   ROU: 80_000_000_000,     // Bucharest Stock Exchange (BVB) (~$80B)

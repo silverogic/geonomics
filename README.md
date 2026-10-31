@@ -20,9 +20,9 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 
 ### 2. Global Stock Market Heatmap (`StockHeatmap`)
 - **~$144T+ Global Equity Universe**: Visualizes domestic equity market capitalization across 125 countries using a responsive squarified treemap.
-- **Hybrid Live Valuation Engine**: Combines official **World Bank (`CM.MKT.LCAP.CD`) / World Federation of Exchanges (WFE)** baseline market caps with **Yahoo Finance live index tracking** ($P_{\text{live}} / P_{\text{base}}$) and intraday percentage fluctuations.
+- **TradingView Representative Mainboard Valuation Engine**: Aggregates primary-listed common stock market capitalizations across 72 national mainboard exchanges via the **TradingView Global Scanner API** (with curated baselines for smaller economies) and scales dynamically with **Yahoo Finance live index quotes**.
 - **Unified & 5-Continent Split Modes**: Toggle between a single global canvas and a 5-continent comparative grid (`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`).
-- **Zen Fullscreen Immersion & Floating Glassmorphic HUD**: Single-line control bar, one-click fullscreen mode, and hover HUD with 30-day index sparklines (`StockSparkline`), live index price, WFE base multiplier breakdown, and **live Top 5 companies by market cap** (company logo, name, market cap, and 24h change %).
+- **Zen Fullscreen Immersion & Floating Glassmorphic HUD**: Single-line control bar, one-click fullscreen mode, and hover HUD with 30-day index sparklines (`StockSparkline`), live index price, live market cap valuation, and **live Top 5 companies by market cap** (company logo, name, market cap, and 24h change %).
 - **Near-Real-Time Quotes (Cloudflare Worker Proxy)**: When `VITE_STOCK_PROXY_URL` is set, intraday quotes are refreshed every 60 seconds with a `LIVE` badge in the heatmap toolbar, and `LIVE` / `CLOSED` market-state badges in the country modal stock chart. Yahoo Finance blocks direct browser calls (CORS), so a small Worker (`workers/stock-proxy`) relays requests with a 60s edge cache and an origin allow-list. If the proxy is unavailable, the app falls back to the prebuilt static data.
 
 ### 3. Interactive Ranking Table (`RankingTable`)
@@ -62,7 +62,7 @@ Geonomics serves static JSON REST API v1 endpoints via GitHub Pages CDN. No API 
 | :-: | :--- | :--- | :--- |
 | **1** | **Macroeconomic Indicators** | `/api/v1/economics.json` | 125 economies: Total GDP, GDP per capita, real growth, gov debt %, inflation % & 10Y history |
 | **2** | **Stock Benchmark Indices** | `/api/v1/stocks.json` | 84 economies: Flagship index ticker, current price, 24h change %, and 30-day sparkline points |
-| **3** | **Stock Market Capitalization** | `/api/v1/stock-market-caps.json` | 125 economies: Official WFE / World Bank baseline cap + live index multiplier 2026 est. (USD) |
+| **3** | **Stock Market Capitalization** | `/api/v1/stock-market-caps.json` | 124 economies: TradingView representative mainboard exchange aggregate market cap in USD |
 | **4** | **Retail Gasoline Prices** | `/api/v1/fuel.json` | 170 economies: National average RON 95 retail gasoline price in USD/L |
 | **5** | **Big Mac Index (PPP)** | `/api/v1/bigmac.json` | 70+ economies: Local price, dollar price, raw PPP valuation %, and GDP-adjusted valuation % |
 
@@ -75,7 +75,7 @@ curl -s https://silverogic.github.io/geonomics/api/v1/economics.json
 # 2. Global stock benchmark indices & 30-day sparklines
 curl -s https://silverogic.github.io/geonomics/api/v1/stocks.json
 
-# 3. National stock market capitalization (WFE baseline + live index tracking)
+# 3. National stock market capitalization (TradingView representative mainboard aggregate)
 curl -s https://silverogic.github.io/geonomics/api/v1/stock-market-caps.json
 
 # 4. Retail gasoline prices (RON 95, USD/L)
@@ -117,7 +117,7 @@ flowchart LR
   subgraph SRC["Data Sources"]
     S1["IMF WEO / World Bank<br/>Excel (.xls)"]
     S2["Yahoo Finance<br/>index history"]
-    S3["CompaniesMarketCap<br/>+ WB / WFE"]
+    S3["TradingView Scanner API<br/>Mainboard Market Caps"]
     S4["Fuel prices / Big Mac Index"]
     S5["Coinbase / open.er-api<br/>FX rates"]
     S6["Macro brief JSON + RSS pool<br/>News"]
@@ -163,7 +163,7 @@ geonomics/
 ├── scripts/
 │   ├── extractFromExcel.js      # Extracts IMF/WB Excel workbooks into src/data/imfEconomic.ts & api/v1/economics.json
 │   ├── fetchStockData.js        # Fetches Yahoo Finance 30D index history into src/data/stockPrices.ts & api/v1/stocks.json
-│   ├── fetchStockMarketCaps.js  # Computes WFE + live index market caps into api/v1/stock-market-caps.json
+│   ├── fetchStockMarketCaps.js  # Aggregates TradingView mainboard exchange market caps into api/v1/stock-market-caps.json
 │   ├── fetchFuelPrices.js       # Updates retail gasoline prices into src/data/fuelPrices.ts & api/v1/fuel.json
 │   ├── fetchBigMacData.js       # Updates Big Mac PPP dataset into src/data/bigMac.ts & api/v1/bigmac.json
 │   └── generatePixelMap.js      # Generates 53x28 pixel world map coordinates
@@ -236,7 +236,7 @@ npm run extract:excel
 # Fetch latest Yahoo Finance benchmark stock indices (74 countries)
 npm run fetch:stocks
 
-# Fetch latest national stock market capitalizations (WFE + Yahoo Finance multiplier)
+# Fetch latest national stock market capitalizations (TradingView mainboard exchange aggregate)
 npm run fetch:caps
 
 # Fetch latest retail gasoline prices (170 countries)
@@ -258,7 +258,7 @@ npm run lint
 
 - **Macroeconomic Indicators**: [IMF World Economic Outlook (WEO)](https://www.imf.org/en/Publications/WEO) & [World Bank Open Data](https://data.worldbank.org/)
 - **Foreign Exchange Rates**: [European Central Bank (ECB)](https://www.ecb.europa.eu/) & [Open Exchange Rates API](https://open.er-api.com/)
-- **Stock Market Capitalization**: [World Federation of Exchanges (WFE)](https://www.world-exchanges.org/) & World Bank (`CM.MKT.LCAP.CD`)
+- **Stock Market Capitalization & Top 5 Companies**: [TradingView Global Scanner API](https://www.tradingview.com/) (representative mainboard exchange aggregation)
 - **Stock Benchmark Indices**: Yahoo Finance & National Stock Exchanges
 - **Central Bank Policy Rates**: [Bank for International Settlements (BIS)](https://www.bis.org/) & National Central Banks
 - **Retail Gasoline Prices**: [Global Petrol Prices](https://www.globalpetrolprices.com/) & National Energy Ministries

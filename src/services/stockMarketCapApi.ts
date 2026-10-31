@@ -1,21 +1,21 @@
 /**
  * Stock Market Capitalization On-Demand API Service
- * 
- * Sourced from World Federation of Exchanges (WFE) Monthly Market Statistics (2026)
- * and supplemented by World Bank Open Data.
- * Dynamically scales market cap using daily stock index performance.
+ *
+ * Sourced from TradingView Global Scanner API (aggregating primary-listed common stocks
+ * across each country's representative mainboard stock exchange) and supplemented by
+ * curated national exchange baselines for smaller economies.
  */
 
-import { STOCK_MARKET_CAPS_USD as FALLBACK_CAPS, WFE_REPORT_DATE, WFE_DATA_SOURCE } from '../data/stockMarketCaps'
+import { STOCK_MARKET_CAPS_USD as FALLBACK_CAPS, MARKET_CAP_REPORT_DATE, MARKET_CAP_DATA_SOURCE } from '../data/stockMarketCaps'
 
 const STORAGE_KEY = 'geonomics_stock_market_caps_v4'
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000 // 12 hours
 
 export interface LiveMarketCapData {
   caps: Record<string, number> // countryId -> live estimated market cap in USD
-  baseCaps: Record<string, number> // countryId -> original World Bank/WFE census
+  baseCaps: Record<string, number> // countryId -> exchange aggregate baseline in USD
   multipliers: Record<string, number> // countryId -> index growth multiplier
-  years: Record<string, string> // countryId -> reporting period (e.g. '2026 Live Est.')
+  years: Record<string, string> // countryId -> reporting period (e.g. '2026 Live')
   sources: Record<string, string> // countryId -> source attribution
   updatedAt: string
 }
@@ -23,7 +23,7 @@ export interface LiveMarketCapData {
 let memoryCache: LiveMarketCapData | null = null
 
 /**
- * Fetch latest domestic stock market caps from WFE monthly dataset and local API
+ * Fetch latest domestic stock market caps from TradingView exchange aggregate JSON and fallback table
  */
 export async function fetchStockMarketCaps(forceRefresh = false): Promise<LiveMarketCapData> {
   // Check memory cache
@@ -56,12 +56,12 @@ export async function fetchStockMarketCaps(forceRefresh = false): Promise<LiveMa
   const sources: Record<string, string> = {}
 
   for (const code of Object.keys(FALLBACK_CAPS)) {
-    years[code] = WFE_REPORT_DATE
-    sources[code] = WFE_DATA_SOURCE
+    years[code] = MARKET_CAP_REPORT_DATE
+    sources[code] = MARKET_CAP_DATA_SOURCE
     multipliers[code] = 1.0
   }
 
-  // 2. Fetch precompiled World Bank + live index estimated JSON from public API
+  // 2. Fetch precompiled TradingView mainboard exchange aggregate JSON from public API
   try {
     const url = `${import.meta.env.BASE_URL}api/v1/stock-market-caps.json`
     const localRes = await fetch(url)
@@ -87,7 +87,7 @@ export async function fetchStockMarketCaps(forceRefresh = false): Promise<LiveMa
       }
     }
   } catch (err) {
-    console.warn('WFE local dataset load fallback:', err)
+    console.warn('Local market cap dataset load fallback:', err)
   }
 
   const result: LiveMarketCapData = {

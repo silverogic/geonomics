@@ -65,7 +65,7 @@ export const translations = {
     heatmapAllSectors: 'All Sectors',
     heatmapCompaniesLoading: 'Loading global Top 5 companies...',
     heatmapLiveIndexed: 'Live Indexed',
-    heatmapDataSource: 'World Federation of Exchanges (WFE) Monthly Statistics & Live Index Fluctuations',
+    heatmapDataSource: 'TradingView Representative Mainboard Exchange Aggregate & Live Index Fluctuations',
 
     // Ticker
     tickerTitle: 'Key Real-time Exchange Rates',
@@ -330,7 +330,7 @@ export const translations = {
     heatmapAllSectors: '전체 섹터',
     heatmapCompaniesLoading: '글로벌 시가총액 상위 종목을 불러오는 중...',
     heatmapLiveIndexed: '실시간 지수 연동',
-    heatmapDataSource: '세계거래소연맹(WFE) 공식 월간 통계 & 실시간 지수 등락 반영',
+    heatmapDataSource: 'TradingView 국가별 대표 거래소 상장 시가총액 합산 & 실시간 지수 등락 반영',
 
     // Ticker
     tickerTitle: '주요 실시간 환율',
@@ -595,7 +595,7 @@ export const translations = {
     heatmapAllSectors: '全セクター',
     heatmapCompaniesLoading: '世界の時価総額上位銘柄を読み込み中...',
     heatmapLiveIndexed: 'リアルタイム指数連動',
-    heatmapDataSource: '世界取引所連盟(WFE) 公式月次統計 & リアルタイム指数連動',
+    heatmapDataSource: 'TradingView 各国代表証券取引所の時価総額集計 & リアルタイム指数連動',
 
     // Ticker
     tickerTitle: '主要リアルタイム為替レート',
@@ -860,7 +860,7 @@ export const translations = {
     heatmapAllSectors: 'Todos los sectores',
     heatmapCompaniesLoading: 'Cargando las principales empresas globales...',
     heatmapLiveIndexed: 'Indexado en tiempo real',
-    heatmapDataSource: 'Estadísticas mensuales oficiales de la WFE y fluctuaciones de índices en vivo',
+    heatmapDataSource: 'Capitalización agregada de bolsas principales de TradingView y fluctuaciones en vivo',
 
     // Ticker
     tickerTitle: 'Principales tipos de cambio en tiempo real',
@@ -1125,7 +1125,7 @@ export const translations = {
     heatmapAllSectors: '全部行业',
     heatmapCompaniesLoading: '正在加载全球市值前五强企业...',
     heatmapLiveIndexed: '实时指数联动',
-    heatmapDataSource: '世界交易所联合会 (WFE) 官方月度统计与实时指数联动',
+    heatmapDataSource: 'TradingView 各国代表性主板交易所市值汇总与实时指数联动',
 
     // Ticker
     tickerTitle: '主要实时汇率行情',

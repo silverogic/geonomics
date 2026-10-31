@@ -20,9 +20,9 @@
 
 ### 2. 글로벌 증시 히트맵 (`StockHeatmap`)
 - **약 $144조+ 규모의 글로벌 주식시장 시각화**: 전 세계 125개국의 국내 상장주식 시가총액을 Squarified Treemap으로 한눈에 비교합니다.
-- **100% 자동화 실시간 시총 추정 파이프라인**: 공식 **세계은행(`CM.MKT.LCAP.CD`) / 세계거래소연맹(WFE)** 기준 시가총액에 **Yahoo Finance 실시간·히스토리컬 주가지수 변동 배율**($P_{\text{live}} / P_{\text{base}}$)과 일간 등락률(%)을 결합하여 최신 시가총액을 동적으로 산출합니다.
+- **TradingView 대표 메인보드 거래소 실측 시총 파이프라인**: 주요 72개국의 대표 정규 거래소(Mainboard: `NASDAQ/NYSE`, `KRX:KOSPI`, `SSE`, `TSE`, `TWSE`, `NSE`, `HKEX`, `LSE` 등) 주상장 보통주 시가총액을 **TradingView Global Scanner API**로 전수 합산하고(소규모 국가는 정적 기준치 폴백), 장중에는 **Yahoo Finance 실시간 지수** 변동을 반영합니다.
 - **통합 뷰 & 5대륙 분할 뷰**: 글로벌 전체 통합 히트맵과 5대륙(`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`) 분할 히트맵을 즉시 전환할 수 있습니다.
-- **전체화면 몰입(Zen) 모드 & 글래스모피즘 HUD**: 단일 행 툴바와 전체화면 토글을 지원하며, 타일 호버 시 30일 주가 추이 스파크라인(`StockSparkline`), 현재 지수, WFE 기준치 대비 변동 배율, 그리고 **실시간 시가총액 상위 5대 기업(로고, 기업명, 시가총액, 당일 등락률 %)**을 플로팅 HUD로 보여줍니다.
+- **전체화면 몰입(Zen) 모드 & 글래스모피즘 HUD**: 단일 행 툴바와 전체화면 토글을 지원하며, 타일 호버 시 30일 주가 추이 스파크라인(`StockSparkline`), 현재 지수, 추정 시가총액, 그리고 **실시간 시가총액 상위 5대 기업(로고, 기업명, 시가총액, 당일 등락률 %)**을 플로팅 HUD로 보여줍니다.
 - **준실시간 시세 (Cloudflare Worker 프록시)**: `VITE_STOCK_PROXY_URL`을 설정하면 장중 시세를 60초마다 갱신하며, 히트맵 툴바에 `LIVE` 뱃지, 국가 모달 주가 차트에 `LIVE` / `CLOSED` 장 상태 뱃지를 표시합니다. Yahoo Finance는 브라우저 직접 호출(CORS)을 막으므로, 작은 Worker(`workers/stock-proxy`)가 60초 엣지 캐시와 허용 도메인 제한을 두고 요청을 중계합니다. 프록시를 쓸 수 없으면 미리 빌드된 정적 데이터로 대체됩니다.
 
 ### 3. 인터랙티브 종합 순위 테이블 (`RankingTable`)
@@ -62,7 +62,7 @@ Geonomics는 GitHub Pages CDN을 통해 별도의 API 키나 호출 제한 없�
 | :-: | :--- | :--- | :--- |
 | **1** | **거시경제 지표** | `/api/v1/economics.json` | 125개국: 총 GDP, 1인당 GDP, 실질 성장률, 정부부채 비율, 물가상승률 및 10개년 히스토리 |
 | **2** | **주요 주가지수** | `/api/v1/stocks.json` | 84개국: 대표 주가지수 티커, 현재가, 일간 등락률(%), 30일 스파크라인 포인트 |
-| **3** | **국가별 주식 시가총액** | `/api/v1/stock-market-caps.json` | 125개국: 세계은행(WFE) 기준 시총 + 주가지수 연동 최신 추정 시가총액(USD) |
+| **3** | **국가별 주식 시가총액** | `/api/v1/stock-market-caps.json` | 124개국: TradingView 국가별 대표 거래소(Mainboard) 상장 시가총액 합산(USD) |
 | **4** | **소매 휘발유 가격** | `/api/v1/fuel.json` | 170개국: 리터당 평균 소매 휘발유(RON 95) 가격(USD/L) |
 | **5** | **빅맥 지수 (PPP)** | `/api/v1/bigmac.json` | 70개국+: 현지 가격, 달러 환산 가격, 통화 저/고평가율(%) 및 GDP 보정 평가율(%) |
 
@@ -75,7 +75,7 @@ curl -s https://silverogic.github.io/geonomics/api/v1/economics.json
 # 2. 글로벌 대표 주가지수 및 30일 스파크라인 데이터
 curl -s https://silverogic.github.io/geonomics/api/v1/stocks.json
 
-# 3. 국가별 주식시장 시가총액 (WFE 기준치 + 실시간 지수 연동)
+# 3. 국가별 주식시장 시가총액 (TradingView 대표 거래소 상장 시총 합산)
 curl -s https://silverogic.github.io/geonomics/api/v1/stock-market-caps.json
 
 # 4. 국가별 리터당 소매 휘발유 가격 (USD/L)
@@ -117,7 +117,7 @@ flowchart LR
   subgraph SRC["데이터 소스"]
     S1["IMF WEO / World Bank<br/>Excel (.xls)"]
     S2["Yahoo Finance<br/>지수 이력"]
-    S3["CompaniesMarketCap<br/>+ WB / WFE"]
+    S3["TradingView Scanner API<br/>대표 거래소 시가총액 합산"]
     S4["유가 / 빅맥지수"]
     S5["Coinbase / open.er-api<br/>환율"]
     S6["매크로 브리핑 JSON + RSS 풀<br/>뉴스"]
@@ -163,7 +163,7 @@ geonomics/
 ├── scripts/
 │   ├── extractFromExcel.js      # 원본 엑셀에서 거시경제 지표를 추출하여 imfEconomic.ts 및 api/v1/economics.json 생성
 │   ├── fetchStockData.js        # Yahoo Finance 30일 주가지수 데이터를 수집하여 stockPrices.ts 및 api/v1/stocks.json 갱신
-│   ├── fetchStockMarketCaps.js  # WFE 시총 + 지수 변동 배율을 결합하여 api/v1/stock-market-caps.json 생성
+│   ├── fetchStockMarketCaps.js  # TradingView 국가별 대표 거래소 시가총액을 합산하여 api/v1/stock-market-caps.json 생성
 │   ├── fetchFuelPrices.js       # 170개국 소매 휘발유 가격을 수집하여 fuelPrices.ts 및 api/v1/fuel.json 갱신
 │   ├── fetchBigMacData.js       # 이코노미스트 빅맥 지수를 계산하여 bigMac.ts 및 api/v1/bigmac.json 갱신
 │   └── generatePixelMap.js      # 53x28 픽셀 세계지도 타일 좌표 생성
@@ -236,7 +236,7 @@ npm run extract:excel
 # Yahoo Finance 글로벌 대표 주가지수 수집 (74개국)
 npm run fetch:stocks
 
-# 국가별 주식 시가총액 산출 및 갱신 (WFE + 실시간 주가지수 배율)
+# 국가별 주식 시가총액 산출 및 갱신 (TradingView 대표 거래소 상장 시총 합산)
 npm run fetch:caps
 
 # 글로벌 소매 휘발유 가격 수집 (170개국)
@@ -258,7 +258,7 @@ npm run lint
 
 - **거시경제 통계 및 전망**: [국제통화기금 (IMF WEO)](https://www.imf.org/en/Publications/WEO) & [세계은행 오픈 데이터 (World Bank Open Data)](https://data.worldbank.org/)
 - **실시간 환율**: [유럽중앙은행 (ECB)](https://www.ecb.europa.eu/) & [Open Exchange Rates API](https://open.er-api.com/)
-- **주식시장 시가총액**: [세계거래소연맹 (WFE)](https://www.world-exchanges.org/) 월간 통계 & 세계은행 (`CM.MKT.LCAP.CD`)
+- **주식시장 시가총액 및 시총 상위 5대 기업**: [TradingView Global Scanner API](https://www.tradingview.com/) (국가별 대표 거래소 주상장 보통주 전수 합산)
 - **주요 주가지수 시세**: Yahoo Finance & 각국 증권거래소
 - **중앙은행 기준금리**: [국제결제은행 (BIS)](https://www.bis.org/) & 각국 중앙은행 공식 발표
 - **소매 휘발유 가격**: [Global Petrol Prices](https://www.globalpetrolprices.com/) & 각국 에너지 당국

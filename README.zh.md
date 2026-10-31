@@ -20,9 +20,9 @@ Geonomics 还提供**免费开放的静态 REST API v1 接口**，通过每日 G
 
 ### 2. 全球股市热力图（`StockHeatmap`）
 - **约 144 万亿美元以上的全球股市规模**：使用响应式 squarified treemap，可视化 125 个国家的本国股市市值。
-- **混合实时估值引擎**：将官方 **世界银行（`CM.MKT.LCAP.CD`）/ 世界交易所联合会（WFE）** 的基准市值，与 **Yahoo Finance 实时指数跟踪**（$P_{\text{live}} / P_{\text{base}}$）及日内涨跌幅相结合。
+- **TradingView 代表性主板交易所实测市值引擎**：通过 **TradingView Global Scanner API** 汇总全球 72 个主要国家代表性主板交易所（`NASDAQ/NYSE`、`SSE`、`TSE`、`NSE`、`TWSE`、`KRX:KOSPI`、`HKEX` 等）上市普通股总市值（小型经济体采用精选基准值），并结合 **Yahoo Finance 实时指数行情**动态更新。
 - **统一视图与五大洲分栏模式**：可在单一全球画布与五大洲对比网格（`Americas`、`Asia`、`Europe`、`Oceania`、`Africa`）之间切换。
-- **Zen 全屏沉浸与悬浮毛玻璃 HUD**：单行控制栏、一键全屏模式，悬停 HUD 显示 30 日指数迷你图（`StockSparkline`）、实时指数价格、WFE 基准倍数明细及**实时市值前五强企业（企业图标、名称、市值、日涨跌幅 %）**。
+- **Zen 全屏沉浸与悬浮毛玻璃 HUD**：单行控制栏、一键全屏模式，悬停 HUD 显示 30 日指数迷你图（`StockSparkline`）、实时指数价格、最新总市值及**实时市值前五强企业（企业图标、名称、市值、日涨跌幅 %）**。
 - **近实时行情（Cloudflare Worker 代理）**：当配置 `VITE_STOCK_PROXY_URL` 时，每 60 秒拉取一次盘中报价，并显示 `LIVE` 标识；代理不可用时自动回退到预构建的静态数据。
 
 ### 3. 交互式排名表（`RankingTable`）
@@ -61,7 +61,7 @@ Geonomics 通过 GitHub Pages CDN 提供静态 JSON REST API v1 接口，无需 
 | :-: | :--- | :--- | :--- |
 | **1** | **宏观经济指标** | `/api/v1/economics.json` | 125 个经济体：GDP 总量、人均 GDP、实际增长、政府债务占比、通胀率及 10 年历史 |
 | **2** | **基准股指** | `/api/v1/stocks.json` | 84 个经济体：旗舰指数代码、当前价格、日涨跌幅及 30 日迷你图数据点 |
-| **3** | **股市市值** | `/api/v1/stock-market-caps.json` | 125 个经济体：官方 WFE / 世界银行基准市值 + 实时指数倍数 2026 年估算（USD） |
+| **3** | **股市市值** | `/api/v1/stock-market-caps.json` | 124 个经济体：TradingView 各国代表性主板交易所汇总市值（USD） |
 | **4** | **零售汽油价格** | `/api/v1/fuel.json` | 170 个经济体：全国平均 RON 95 零售汽油价格（美元/升） |
 | **5** | **巨无霸指数（PPP）** | `/api/v1/bigmac.json` | 70+ 个经济体：本地价格、美元价格、原始 PPP 估值 % 及 GDP 调整后估值 % |
 
@@ -74,7 +74,7 @@ curl -s https://silverogic.github.io/geonomics/api/v1/economics.json
 # 2. 全球基准股指与 30 日迷你图
 curl -s https://silverogic.github.io/geonomics/api/v1/stocks.json
 
-# 3. 各国股市市值（WFE 基准 + 实时指数跟踪）
+# 3. 各国股市市值（TradingView 代表性主板交易所市值汇总）
 curl -s https://silverogic.github.io/geonomics/api/v1/stock-market-caps.json
 
 # 4. 零售汽油价格（RON 95，美元/升）
@@ -116,7 +116,7 @@ flowchart LR
   subgraph SRC["数据源"]
     S1["IMF WEO / World Bank<br/>Excel (.xls)"]
     S2["Yahoo Finance<br/>指数历史"]
-    S3["CompaniesMarketCap<br/>+ WB / WFE"]
+    S3["TradingView Scanner API<br/>主板交易所总市值 & 前五强"]
     S4["燃油价格 / 巨无霸指数"]
     S5["Coinbase / open.er-api<br/>汇率"]
     S6["宏观简报 JSON + RSS 池<br/>新闻"]
@@ -160,7 +160,7 @@ geonomics/
 ├── scripts/
 │   ├── extractFromExcel.js      # 将 IMF/WB Excel 工作簿提取为 src/data/imfEconomic.ts 和 api/v1/economics.json
 │   ├── fetchStockData.js        # 获取 Yahoo Finance 30 日指数历史并写入 src/data/stockPrices.ts 和 api/v1/stocks.json
-│   ├── fetchStockMarketCaps.js  # 计算 WFE + 实时指数市值并写入 api/v1/stock-market-caps.json
+│   ├── fetchStockMarketCaps.js  # 汇总 TradingView 代表性主板交易所市值并写入 api/v1/stock-market-caps.json
 │   ├── fetchFuelPrices.js       # 更新零售汽油价格至 src/data/fuelPrices.ts 和 api/v1/fuel.json
 │   ├── fetchBigMacData.js       # 更新巨无霸 PPP 数据集至 src/data/bigMac.ts 和 api/v1/bigmac.json
 │   └── generatePixelMap.js      # 生成 53x28 像素世界地图坐标
@@ -226,7 +226,7 @@ npm run extract:excel
 # 获取最新 Yahoo Finance 基准股指（74 个国家）
 npm run fetch:stocks
 
-# 获取最新各国股市市值（WFE + Yahoo Finance 倍数）
+# 获取最新各国股市市值（TradingView 代表性主板交易所汇总）
 npm run fetch:caps
 
 # 获取最新零售汽油价格（170 个国家）
@@ -248,7 +248,7 @@ npm run lint
 
 - **宏观经济指标**：[IMF 世界经济展望（WEO）](https://www.imf.org/en/Publications/WEO) 与 [世界银行开放数据](https://data.worldbank.org/)
 - **外汇汇率**：[欧洲央行（ECB）](https://www.ecb.europa.eu/) 与 [Open Exchange Rates API](https://open.er-api.com/)
-- **股市市值**：[世界交易所联合会（WFE）](https://www.world-exchanges.org/) 与世界银行（`CM.MKT.LCAP.CD`）
+- **股市市值与前五强企业**：[TradingView Global Scanner API](https://www.tradingview.com/)（各国代表性主板交易所上市普通股汇总）
 - **基准股指**：Yahoo Finance 与各国证券交易所
 - **央行政策利率**：[国际清算银行（BIS）](https://www.bis.org/) 与各国央行
 - **零售汽油价格**：[Global Petrol Prices](https://www.globalpetrolprices.com/) 与各国能源部门
