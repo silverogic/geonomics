@@ -304,7 +304,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         }
       }
 
-      const marketCapUsd = calculateLiveMarketCap(estimatedCap, changePct)
+      const marketCapUsd = calculateLiveMarketCap(estimatedCap, stock)
       const indexName = stock ? (lang === 'ko' ? stock.nameKo : stock.nameEn) : 'Equity Market'
       const isSupported = stock?.isSupported ?? false
 

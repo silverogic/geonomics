@@ -31,6 +31,7 @@ function toLocalDate(epochSec: number, gmtoffset: number): string {
 }
 
 function mergeQuote(base: StockPriceInfo, q: LiveQuote): StockPriceInfo {
+  const staticPrice = base.staticPrice ?? base.currentPrice
   const points = [...base.points]
   const date = q.time ? toLocalDate(q.time, q.gmtoffset) : points[points.length - 1]?.date
   const close = q.price
@@ -53,6 +54,7 @@ function mergeQuote(base: StockPriceInfo, q: LiveQuote): StockPriceInfo {
   return {
     ...base,
     currentPrice: close,
+    staticPrice,
     changePct: q.changePct ?? base.changePct,
     changePct30d,
     points,

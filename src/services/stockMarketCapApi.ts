@@ -113,13 +113,25 @@ export async function fetchStockMarketCaps(forceRefresh = false): Promise<LiveMa
 }
 
 /**
- * Calculates dynamic real-time market cap scaled by daily index change %
+ * Calculates market cap without double-counting static daily changePct.
+ * - Static data (`stock?.isLive !== true`): returns `estimatedCapUsd` as-is because
+ *   the prebuilt dataset already reflects that day's market movement.
+ * - Live proxy data (`stock?.isLive === true`): scales `estimatedCapUsd` only by
+ *   the post-build price ratio (`currentPrice / staticPrice`).
  */
 export function calculateLiveMarketCap(
-  baseCapUsd: number,
-  changePct: number = 0
+  estimatedCapUsd: number,
+  stock?: { isLive?: boolean; currentPrice?: number; staticPrice?: number }
 ): number {
-  if (!baseCapUsd || baseCapUsd <= 0) return 0
-  // Apply index fluctuation to WFE monthly market capitalization: Cap * (1 + change / 100)
-  return Math.round(baseCapUsd * (1 + changePct / 100))
+  if (!estimatedCapUsd || estimatedCapUsd <= 0) return 0
+  if (
+    stock?.isLive &&
+    typeof stock.currentPrice === 'number' &&
+    stock.currentPrice > 0 &&
+    typeof stock.staticPrice === 'number' &&
+    stock.staticPrice > 0
+  ) {
+    return Math.round(estimatedCapUsd * (stock.currentPrice / stock.staticPrice))
+  }
+  return Math.round(estimatedCapUsd)
 }
