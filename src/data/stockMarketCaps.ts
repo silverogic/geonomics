@@ -1,12 +1,16 @@
 import type { BaseCurrency, Language } from '../types/economics'
+import stockMarketCapsDataJson from '../../public/api/v1/stock-market-caps.json'
+
+const PREBUILT_CAPS = stockMarketCapsDataJson as Record<string, { marketCapUsd?: number }>
 
 /**
- * World Federation of Exchanges (WFE) Monthly Market Statistics (2026).
- * Represents total domestic market capitalization of listed companies by country/exchange.
- * Sourced from WFE Monthly Statistics Portal & Market Highlights, verified against member exchanges.
+ * Domestic Market Capitalization Baseline & Fallback Table.
+ * - Primary 72 markets are dynamically aggregated from TradingView Domestic Exchanges
+ *   into `public/api/v1/stock-market-caps.json`.
+ * - Smaller/developing economies use the curated static baselines below.
  */
-export const WFE_REPORT_DATE = `${new Date().getFullYear()} Monthly`
-export const WFE_DATA_SOURCE = 'World Federation of Exchanges (WFE) Monthly Market Statistics'
+export const WFE_REPORT_DATE = `${new Date().getFullYear()} Live`
+export const WFE_DATA_SOURCE = 'TradingView Domestic Exchange Aggregate'
 
 export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
   // --- Americas ---
@@ -139,7 +143,10 @@ export const STOCK_MARKET_CAPS_USD: Record<string, number> = {
  * If not specifically tracked, estimates based on country's nominal GDP.
  */
 export function getStockMarketCapUsd(countryId: string, gdpUsd?: number): number {
-  const cap = STOCK_MARKET_CAPS_USD[countryId.toUpperCase()]
+  const code = countryId.toUpperCase()
+  const prebuilt = PREBUILT_CAPS[code]?.marketCapUsd
+  if (typeof prebuilt === 'number' && prebuilt > 0) return prebuilt
+  const cap = STOCK_MARKET_CAPS_USD[code]
   if (cap && cap > 0) return cap
   // Reasonable fallback for unlisted: ~30% of Nominal GDP
   if (gdpUsd && gdpUsd > 0) {

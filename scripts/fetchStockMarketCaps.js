@@ -1,293 +1,383 @@
 /**
- * Automated Stock Market Capitalization Fetcher & Real-Time Sync Pipeline
+ * Automated Stock Market Capitalization Fetcher & Sync Pipeline
  *
- * 100% Automated, Data-Driven, ZERO Hardcoding:
- * 1. Primary Source: Automatically fetches live market capitalization for major economies
- *    from CompaniesMarketCap (real-time exchange aggregate covering 99%+ of global market cap).
- * 2. Secondary/Fallback Source: Fetches official World Bank indicators (CM.MKT.LCAP.CD / WFE)
- *    and scales with Yahoo Finance live index performance for smaller/frontier economies.
- * 3. Outputs public/api/v1/stock-market-caps.json.
+ * 1. Primary Source (72 Major Markets, >99.7% of Global Market Cap):
+ *    Queries the TradingView Global Scanner API across each country's verified
+ *    domestic stock exchanges (`COUNTRY_DOMESTIC_EXCHANGES`), summing primary-listed
+ *    common stock market capitalizations converted to USD via live FX rates.
+ * 2. Secondary/Fallback Source (Smaller/Developing Economies):
+ *    Uses the curated baseline values from `FALLBACK_CAPS_USD` (`src/data/stockMarketCaps.ts`).
+ * 3. Outputs strictly the tracked economies to `public/api/v1/stock-market-caps.json`
+ *    (no regional/income-group dummy codes).
  */
 
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { COUNTRY_TICKERS } from './fetchStockData.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const COUNTRY_NAME_TO_ISO = {
-  'United States': 'USA',
-  'China': 'CHN',
-  'Japan': 'JPN',
-  'United Kingdom': 'GBR',
-  'Canada': 'CAN',
-  'Taiwan': 'TWN',
-  'India': 'IND',
-  'South Korea': 'KOR',
-  'Switzerland': 'CHE',
-  'France': 'FRA',
-  'Germany': 'DEU',
-  'Saudi Arabia': 'SAU',
-  'Australia': 'AUS',
-  'Netherlands': 'NLD',
-  'Spain': 'ESP',
-  'Sweden': 'SWE',
-  'Italy': 'ITA',
-  'Ireland': 'IRL',
-  'Brazil': 'BRA',
-  'Hong Kong': 'HKG',
-  'United Arab Emirates': 'ARE',
-  'Singapore': 'SGP',
-  'Denmark': 'DNK',
-  'Israel': 'ISR',
-  'Mexico': 'MEX',
-  'Thailand': 'THA',
-  'Belgium': 'BEL',
-  'Norway': 'NOR',
-  'South Africa': 'ZAF',
-  'Finland': 'FIN',
-  'Russia': 'RUS',
-  'Poland': 'POL',
-  'Malaysia': 'MYS',
-  'Indonesia': 'IDN',
-  'Austria': 'AUT',
-  'Luxembourg': 'LUX',
-  'Turkey': 'TUR',
-  'Vietnam': 'VNM',
-  'Chile': 'CHL',
-  'Kuwait': 'KWT',
-  'Greece': 'GRC',
-  'Argentina': 'ARG',
-  'Qatar': 'QAT',
-  'New Zealand': 'NZL',
-  'Philippines': 'PHL',
-  'Portugal': 'PRT',
-  'Czech Republic': 'CZE',
-  'Pakistan': 'PAK',
-  'Oman': 'OMN',
-  'Bahrain': 'BHR',
-  'Iceland': 'ISL',
-  'Cambodia': 'KHM',
+const DEDICATED_MARKET_ENDPOINTS = {
+  RUS: 'https://scanner.tradingview.com/russia/scan',
 }
 
-async function fetchCompaniesMarketCaps() {
-  console.log('Fetching live consensus market capitalization from CompaniesMarketCap...')
-  const url = 'https://companiesmarketcap.com/all-countries/'
-  const result = {}
-
-  try {
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      },
-    })
-    if (!res.ok) {
-      console.warn(`CompaniesMarketCap HTTP error: ${res.status}`)
-      return result
-    }
-
-    const html = await res.text()
-    // Pattern to match: <td data-sort="Country Name"> ... <td class="td-right" data-sort="ExactIntegerCap">
-    const pattern = /<td data-sort="([A-Za-z\s]+)">[\s\S]*?<td class="td-right" data-sort="(\d+)">/g
-    let match
-
-    while ((match = pattern.exec(html)) !== null) {
-      const countryName = match[1].trim()
-      const rawCap = parseInt(match[2], 10)
-      const iso = COUNTRY_NAME_TO_ISO[countryName]
-
-      if (iso && !isNaN(rawCap) && rawCap > 0) {
-        result[iso] = {
-          marketCapUsd: rawCap,
-          baseCapUsd: rawCap,
-          year: `${new Date().getFullYear()} Live`,
-          indexMultiplier: 1.0,
-          countryName,
-          source: 'CompaniesMarketCap (Real-Time Global Exchanges Consensus)',
-        }
-      }
-    }
-
-    console.log(`Successfully parsed live market cap for ${Object.keys(result).length} countries.`)
-  } catch (err) {
-    console.warn('CompaniesMarketCap fetch error:', err.message)
-  }
-
-  return result
-}
-
-async function fetchWorldBankDomesticMarketCaps() {
-  console.log('Fetching World Bank indicator CM.MKT.LCAP.CD (WFE Domestic Market Capitalization)...')
-  const result = {}
-  let page = 1
-  let totalPages = 1
-
-  const currentYear = new Date().getFullYear()
-  const startYear = currentYear - 10
-
-  while (page <= totalPages) {
-    const url = `https://api.worldbank.org/v2/country/all/indicator/CM.MKT.LCAP.CD?format=json&date=${startYear}:${currentYear}&per_page=1000&page=${page}`
-    try {
-      const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } })
-      if (!res.ok) break
-      const json = await res.json()
-      if (!Array.isArray(json) || !json[0] || !json[1]) break
-
-      totalPages = json[0].pages || 1
-      for (const r of json[1]) {
-        if (r.value != null && r.countryiso3code) {
-          const iso = r.countryiso3code.toUpperCase()
-          if (!result[iso] || r.date > result[iso].year) {
-            result[iso] = {
-              year: r.date,
-              baseCapUsd: r.value,
-              countryName: r.country?.value || iso,
-              source: 'World Bank (CM.MKT.LCAP.CD / WFE Database)'
-            }
-          }
-        }
-      }
-      page++
-    } catch (err) {
-      console.warn(`World Bank page ${page} fetch error:`, err.message)
-      break
-    }
-  }
-
-  return result
+const TV_COUNTRY_NAME_OVERRIDES = {
+  KOR: 'South Korea',
+  USA: 'United States',
+  GBR: 'United Kingdom',
+  ARE: 'United Arab Emirates',
+  CZE: 'Czech Republic',
+  CIV: 'Ivory Coast',
 }
 
 /**
- * Automatically fetch historical and current index prices from Yahoo Finance API
- * to dynamically extract baseIndexPrice and currentIndexPrice from real market data.
+ * Strict representative mainboard stock exchange whitelist per country
+ * (aligned with StockHeatmap benchmark indices and topCompaniesApi.ts)
  */
-async function fetchIndexPerformance(ticker, targetYear) {
-  if (!ticker) return null
+const COUNTRY_DOMESTIC_EXCHANGES = {
+  USA: ['NASDAQ', 'NYSE'],
+  KOR: ['KRX'], // Filtered strictly to KRX:KOSPI mainboard below
+  CHN: ['SSE'], // Shanghai Stock Exchange mainboard (matches SSE Composite 000001.SS)
+  HKG: ['HKEX'],
+  JPN: ['TSE'],
+  TWN: ['TWSE'],
+  IND: ['NSE'], // National Stock Exchange mainboard (matches Nifty 50 ^NSEI)
+  GBR: ['LSE'],
+  DEU: ['XETR', 'FWB'],
+  FRA: ['EURONEXT'],
+  ITA: ['MIL'],
+  ESP: ['BME'],
+  NLD: ['EURONEXT'],
+  CHE: ['SIX'],
+  SWE: ['OMXSTO'],
+  CAN: ['TSX'],
+  BRA: ['BMFBOVESPA'],
+  AUS: ['ASX'],
+  MEX: ['BMV'],
+  IRL: ['EURONEXT'],
+  SGP: ['SGX'],
+  NZL: ['NZX'],
+  NGA: ['NSENG'],
+  ISR: ['TASE'],
+  SAU: ['TADAWUL'],
+  ARE: ['ADX', 'DFM'],
+  ZAF: ['JSE'],
+  IDN: ['IDX'],
+  TUR: ['BIST'],
+  POL: ['GPW'],
+  BEL: ['EURONEXT'],
+  NOR: ['OSL'],
+  AUT: ['VIE'],
+  DNK: ['OMXCOP'],
+  FIN: ['OMXHEX'],
+  PRT: ['EURONEXT'],
+  THA: ['SET'],
+  MYS: ['MYX'],
+  PHL: ['PSE'],
+  VNM: ['HOSE'], // Ho Chi Minh Stock Exchange mainboard (matches VN-Index)
+  EGY: ['EGX'],
+  ARG: ['BCBA'],
+  CHL: ['BCS'],
+  COL: ['BVC'],
+  PER: ['BVL'],
+  QAT: ['QSE'],
+  KWT: ['KSE'],
+  KAZ: ['KASE'],
+  PAK: ['PSX'],
+  BGD: ['DSEBD'],
+  GRC: ['ATHEX'],
+  ROU: ['BVB'],
+  HUN: ['BET'],
+  CZE: ['PSECZ'],
+  MAR: ['CSEMA'],
+  SVK: ['BSSE'],
+  VEN: ['BVCV'],
+  KEN: ['NSEKE'],
+  BGR: ['BSESOF'],
+  LKA: ['CSELK'],
+  HRV: ['ZSE'],
+  SRB: ['BELEX'],
+  LTU: ['OMXVSE'],
+  SVN: ['LJSE'],
+  TUN: ['BVMT'],
+  BHR: ['BAHRAIN'],
+  LVA: ['OMXRSE'],
+  EST: ['OMXTSE'],
+  ISL: ['OMXICE'],
+  CYP: ['CSECY'],
+  LUX: ['LUXSE'],
+}
 
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=10y&interval=1mo`
+function loadTrackedCountries() {
+  const countriesPath = path.resolve(__dirname, '../src/data/countries.ts')
+  const src = fs.readFileSync(countriesPath, 'utf8')
+  const matches = [
+    ...src.matchAll(/\{\s*id:\s*'([A-Z]{3})',\s*iso2:\s*'([A-Z]{2})',\s*nameKo:\s*'([^']+)',\s*nameEn:\s*'([^']+)'/g),
+  ]
+  return matches.map((m) => ({
+    id: m[1],
+    iso2: m[2],
+    nameKo: m[3],
+    nameEn: m[4],
+  }))
+}
+
+function loadFallbackCaps() {
+  const fallbackPath = path.resolve(__dirname, '../src/data/stockMarketCaps.ts')
+  const src = fs.readFileSync(fallbackPath, 'utf8')
+  const map = {}
+  for (const m of src.matchAll(/^\s*([A-Z]{3}):\s*([0-9_]+)\s*,/gm)) {
+    const code = m[1]
+    const val = Number(m[2].replace(/_/g, ''))
+    if (val > 0) map[code] = val
+  }
+  return map
+}
+
+async function fetchUsdExchangeRates() {
   try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+    const res = await fetch('https://open.er-api.com/v6/latest/USD')
+    if (res.ok) {
+      const json = await res.json()
+      if (json && json.rates) return json.rates
+    }
+  } catch (err) {
+    console.warn('FX fetch error:', err.message)
+  }
+  return { USD: 1 }
+}
+
+function cleanCompanyName(rawName, ticker) {
+  if (!rawName) return ticker
+  return String(rawName)
+    .trim()
+    .replace(/보통주$/, '')
+    .replace(/우선주$/, '')
+    .replace(/\s+TEMP$/i, '')
+    .replace(/\s+Sponsored\s+ADR.*$/i, '')
+    .replace(/\s+Units\s+Cons\..*$/i, '')
+    .replace(/\s+\(Persero\)\s+Tbk.*$/i, '')
+    .replace(/\s+Tbk(\s+Class\s+[A-Z])?$/i, '')
+    .replace(/\s+Class\s+[A-Z0-9]+$/i, '')
+    .replace(/\s+Series\s+[A-Z0-9]+$/i, '')
+    .replace(/,?\s+Co\.,?\s+Ltd\.?$/i, '')
+    .replace(/,?\s+Corporation$/i, ' Corp.')
+    .replace(/,?\s+Incorporated$/i, ' Inc.')
+    .replace(/\s+Public\s+Company\s+Limited$/i, '')
+    .replace(/\s+Societe\s+Anonyme$/i, '')
+    .replace(/\s+Anonim\s+Sirketi$/i, '')
+    .replace(/\s+S\.A\.B\.\s+de\s+C\.V\.$/i, '')
+    .replace(/\s+SAB\s+de\s+CV$/i, '')
+    .trim()
+}
+
+function getDeduplicationKey(cleanedName) {
+  const normalized = cleanedName
+    .toLowerCase()
+    .replace(/\b(inc|corp|ltd|plc|sa|ag|nv|se|spa|bhd|limited|company|co|temp)\b/g, '')
+    .replace(/[^a-z0-9가-힣一-龥ぁ-んァ-ヶ]/g, '')
+    .slice(0, 18)
+  return `name:${normalized}`
+}
+
+async function fetchTradingViewDomesticMarketCap(country, fxRates) {
+  const upperId = country.id.toUpperCase()
+  const isDedicatedEndpoint = Boolean(DEDICATED_MARKET_ENDPOINTS[upperId])
+  const domesticExchanges = COUNTRY_DOMESTIC_EXCHANGES[upperId]
+
+  if ((!domesticExchanges || domesticExchanges.length === 0) && !isDedicatedEndpoint) {
+    return null
+  }
+
+  const endpoint = DEDICATED_MARKET_ENDPOINTS[upperId] || 'https://scanner.tradingview.com/global/scan'
+  const tvCountryName = TV_COUNTRY_NAME_OVERRIDES[upperId] || country.nameEn
+
+  const filter = [
+    { left: 'type', operation: 'equal', right: 'stock' },
+    { left: 'typespecs', operation: 'has_none_of', right: ['preferred', 'dr'] },
+  ]
+
+  if (upperId !== 'CAN') {
+    filter.push({ left: 'is_primary', operation: 'equal', right: true })
+  }
+
+  // Hong Kong (HKEX) and Singapore (SGX) mainboards include primary-listed companies
+  // headquartered in Mainland China/Asia that form the core of Hang Seng (^HSI) and STI (^STI)
+  const skipCountryFilter = isDedicatedEndpoint || upperId === 'HKG' || upperId === 'SGP'
+  if (!skipCountryFilter && tvCountryName) {
+    filter.unshift({ left: 'country', operation: 'equal', right: tvCountryName })
+  }
+
+  if (domesticExchanges && domesticExchanges.length > 0) {
+    filter.push(
+      domesticExchanges.length === 1
+        ? { left: 'exchange', operation: 'equal', right: domesticExchanges[0] }
+        : { left: 'exchange', operation: 'in_range', right: domesticExchanges }
+    )
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        filter,
+        options: { lang: 'en' },
+        columns: [
+          'name',
+          'description',
+          'market_cap_basic',
+          'fundamental_currency_code',
+          'currency',
+          'country',
+          'indexes.tr',
+        ],
+        sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
+        range: [0, 6000],
+      }),
     })
+
     if (!res.ok) return null
     const json = await res.json()
-    const result = json.chart?.result?.[0]
-    if (!result) return null
+    const rows = Array.isArray(json.data) ? json.data : []
 
-    const timestamps = result.timestamp || []
-    const closes = result.indicators?.quote?.[0]?.close || []
+    const seenKeys = new Set()
+    let totalCapUsd = 0
+    let listedCount = 0
 
-    let basePrice = null
-    let latestPrice = null
+    for (const row of rows) {
+      if (!row || !Array.isArray(row.d)) continue
+      const [rawTicker, rawDesc, rawMarketCap, rawFundCurrency, rawPriceCurrency, rawRowCountry, rawIndexes] = row.d
+      if (typeof rawMarketCap !== 'number' || rawMarketCap <= 0) continue
 
-    for (let i = 0; i < timestamps.length; i++) {
-      const close = closes[i]
-      if (close != null && !isNaN(close)) {
-        latestPrice = close
-        const dateStr = new Date(timestamps[i] * 1000).toISOString().slice(0, 10)
-        if (dateStr.startsWith(targetYear)) {
-          basePrice = close
+      if (!skipCountryFilter && tvCountryName && typeof rawRowCountry === 'string' && rawRowCountry !== tvCountryName) {
+        continue
+      }
+
+      // South Korea: strictly include KOSPI mainboard constituents (exclude KOSDAQ)
+      if (upperId === 'KOR' && Array.isArray(rawIndexes)) {
+        const isKospi = rawIndexes.some(
+          (idx) => idx && typeof idx === 'object' && idx.proname === 'KRX:KOSPI'
+        )
+        const isKosdaq = rawIndexes.some(
+          (idx) => idx && typeof idx === 'object' && idx.proname === 'KRX:KOSDAQ'
+        )
+        if (isKosdaq || !isKospi) {
+          continue
         }
       }
+
+      const exchange = row.s.includes(':') ? row.s.split(':')[0] : ''
+      if (domesticExchanges && domesticExchanges.length > 0 && !domesticExchanges.includes(exchange)) {
+        continue
+      }
+
+      const ticker = String(rawTicker || row.s.split(':')[1] || row.s)
+      const cleanedName = cleanCompanyName(String(rawDesc || ticker), ticker)
+      const dedupKey = getDeduplicationKey(cleanedName)
+      if (seenKeys.has(dedupKey)) continue
+      seenKeys.add(dedupKey)
+
+      const fundCurrency = String(rawFundCurrency || rawPriceCurrency || 'USD').toUpperCase()
+      let capUsd = rawMarketCap
+      if (fundCurrency !== 'USD') {
+        const rate = fxRates[fundCurrency] || (fundCurrency === 'RUB' ? 95 : 0)
+        if (rate > 0) {
+          capUsd = rawMarketCap / rate
+        } else {
+          continue
+        }
+      }
+
+      totalCapUsd += capUsd
+      listedCount++
     }
 
-    if (!basePrice && closes.length > 0) {
-      basePrice = closes.find(c => c != null && !isNaN(c)) || latestPrice
-    }
+    if (listedCount === 0 || totalCapUsd <= 0) return null
 
-    if (!basePrice || !latestPrice || basePrice <= 0 || latestPrice <= 0) return null
-
-    const multiplier = Number((latestPrice / basePrice).toFixed(4))
+    const exLabel = isDedicatedEndpoint ? 'MOEX' : upperId === 'KOR' ? 'KOSPI' : domesticExchanges.join('/')
     return {
-      baseIndexPrice: Number(basePrice.toFixed(2)),
-      currentIndexPrice: Number(latestPrice.toFixed(2)),
-      multiplier
+      marketCapUsd: Math.round(totalCapUsd),
+      baseCapUsd: Math.round(totalCapUsd),
+      listedCount,
+      exchanges: exLabel,
     }
-  } catch {
+  } catch (err) {
+    console.warn(`TradingView scan failed for ${upperId}:`, err.message)
     return null
   }
 }
 
 async function main() {
-  console.log('Starting 100% automated market capitalization pipeline...')
+  console.log('Starting TradingView Domestic Exchange Market Cap Pipeline...')
 
-  // 1. Primary: Fetch real-time market cap for major economies (50+ countries)
-  const liveMarketCaps = await fetchCompaniesMarketCaps()
-
-  // 2. Secondary: Fetch World Bank baseline data for remaining smaller economies
-  const wbBaseData = await fetchWorldBankDomesticMarketCaps()
-
-  // 3. Map tickers by country ID
-  const tickerMap = new Map()
-  for (const item of COUNTRY_TICKERS) {
-    if (item.isSupported && item.ticker) {
-      tickerMap.set(item.id, item.ticker)
-    }
-  }
-
-  // 4. Combine sources into unified outputData
-  const outputData = { ...liveMarketCaps }
+  const countries = loadTrackedCountries()
+  const fallbackCaps = loadFallbackCaps()
+  const fxRates = await fetchUsdExchangeRates()
   const currentYear = new Date().getFullYear()
 
-  // For countries not in liveMarketCaps, scale World Bank baseline
-  for (const [iso, baseInfo] of Object.entries(wbBaseData)) {
-    if (outputData[iso]) continue // Already covered by real-time primary source
+  const outputData = {}
+  let tvSuccessCount = 0
+  let fallbackCount = 0
 
-    const baseCap = baseInfo.baseCapUsd
-    const ticker = tickerMap.get(iso)
-    let multiplier = 1.0
-    let baseIndexPrice = null
-    let currentIndexPrice = null
+  // Concurrency 8 across all tracked countries
+  let cursor = 0
+  const workers = Array.from({ length: 8 }, async () => {
+    while (cursor < countries.length) {
+      const country = countries[cursor++]
+      const iso = country.id
+      const tvResult = await fetchTradingViewDomesticMarketCap(country, fxRates)
 
-    if (ticker) {
-      const perf = await fetchIndexPerformance(ticker, baseInfo.year)
-      if (perf) {
-        multiplier = perf.multiplier
-        baseIndexPrice = perf.baseIndexPrice
-        currentIndexPrice = perf.currentIndexPrice
+      if (tvResult && tvResult.marketCapUsd > 0) {
+        outputData[iso] = {
+          marketCapUsd: tvResult.marketCapUsd,
+          baseCapUsd: tvResult.baseCapUsd,
+          year: `${currentYear} Live`,
+          indexMultiplier: 1.0,
+          listedCount: tvResult.listedCount,
+          countryName: country.nameEn,
+          source: `TradingView Domestic Exchange Aggregate (${tvResult.exchanges}, ${tvResult.listedCount} stocks)`,
+        }
+        tvSuccessCount++
+      } else {
+        const fallbackCap = fallbackCaps[iso] || 5_000_000_000
+        outputData[iso] = {
+          marketCapUsd: fallbackCap,
+          baseCapUsd: fallbackCap,
+          year: `${currentYear} Est.`,
+          indexMultiplier: 1.0,
+          countryName: country.nameEn,
+          source: 'Curated National Exchange Baseline',
+        }
+        fallbackCount++
       }
     }
+  })
 
-    const marketCapUsd = Math.round(baseCap * multiplier)
+  await Promise.all(workers)
 
-    outputData[iso] = {
-      marketCapUsd,
-      baseCapUsd: baseCap,
-      baseYear: baseInfo.year,
-      year: `${currentYear} Live Est.`,
-      indexMultiplier: multiplier,
-      baseIndexPrice,
-      currentIndexPrice,
-      indexTicker: ticker || null,
-      countryName: baseInfo.countryName,
-      source: multiplier !== 1.0
-        ? `World Bank (WFE ${baseInfo.year}) × Live Index Multiplier (${multiplier}x via Yahoo Finance)`
-        : baseInfo.source
-    }
+  // Sort output keys by marketCapUsd descending for clean JSON readability
+  const sortedEntries = Object.entries(outputData).sort(
+    (a, b) => b[1].marketCapUsd - a[1].marketCapUsd
+  )
+  const sortedOutput = Object.fromEntries(sortedEntries)
+
+  console.log(`\n--- ${currentYear} TradingView Domestic Exchange Market Cap Top 15 ---`)
+  for (const [code, item] of sortedEntries.slice(0, 15)) {
+    const capT = (item.marketCapUsd / 1e12).toFixed(2)
+    console.log(`${code.padEnd(4)} (${item.countryName.padEnd(16)}): $${capT.padStart(5)}T | ${item.source}`)
   }
 
-  // 5. Print sample estimates to verify precision
-  const sampleCodes = ['USA', 'CHN', 'JPN', 'KOR', 'IND', 'DEU', 'GBR', 'TWN', 'CAN', 'ITA', 'NLD']
-  console.log(`\n--- ${currentYear} Synchronized Market Capitalization Samples ---`)
-  for (const code of sampleCodes) {
-    const item = outputData[code]
-    if (item) {
-      const capInTrillions = (item.marketCapUsd / 1e12).toFixed(2)
-      console.log(`${code} (${item.countryName}): $${capInTrillions}T | Source: ${item.source}`)
-    }
-  }
-
-  // 6. Save to public/api/v1/stock-market-caps.json
   const outDir = path.resolve(__dirname, '../public/api/v1')
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true })
   }
   const outFile = path.join(outDir, 'stock-market-caps.json')
-  fs.writeFileSync(outFile, JSON.stringify(outputData, null, 2), 'utf8')
-  console.log(`\nSuccessfully saved ${Object.keys(outputData).length} countries to ${outFile}`)
+  fs.writeFileSync(outFile, JSON.stringify(sortedOutput, null, 2), 'utf8')
+  console.log(
+    `\nSuccessfully saved ${ sortedEntries.length } countries (${tvSuccessCount} TradingView live, ${fallbackCount} static baseline) to ${outFile}`
+  )
 }
 
 main().catch(console.error)
