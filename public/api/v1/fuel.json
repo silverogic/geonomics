@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-31",
+  "updatedAt": "2026-11-01",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -514,7 +514,7 @@
     },
     "KHM": {
       "countryId": "KHM",
-      "priceUsd": 1.583,
+      "priceUsd": 1.497,
       "currencyCode": "KHR"
     },
     "NPL": {
