@@ -15,7 +15,8 @@ import {
   LayoutGrid,
   Sparkles,
   X,
-  ArrowUpDown,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react'
 import type {
   CountryMeta,
@@ -56,7 +57,13 @@ interface EconomicCalendarViewProps {
 type CategoryFilter = 'ALL' | EventCategory
 type ViewMode = 'timeline' | 'grid'
 type TimezoneMode = 'KST' | 'LOCAL'
-type SortOrder = 'desc' | 'asc'
+/**
+ * Timeline Feed Filter:
+ * - 'smart': Today & Upcoming (closest first) + Recent Released (newest first, including late last month at month start)
+ * - 'upcoming': Today & Upcoming scheduled events (chronological: closest to today first)
+ * - 'released': Already released / past events (descending: most recent release first)
+ */
+type TimelineMode = 'smart' | 'upcoming' | 'released'
 
 const CATEGORY_META: Record<
   CategoryFilter,
@@ -228,7 +235,7 @@ const UI_TEXT = {
   },
   statementEvent: {
     en: 'Statement / Speech',
-    ko: '성명 · 연설',
+    ko: '연설 · 의사록 일정',
     ja: '声明・講演',
     es: 'Discurso',
     zh: '声明 / 讲话',
@@ -255,25 +262,46 @@ const UI_TEXT = {
     zh: '搜索指标 (如: FOMC, CPI, 非农, GDP)...',
   },
   noEventsFound: {
-    en: 'No economic events match your filter in this month.',
-    ko: '해당 월에 선택한 조건의 경제 일정이 없습니다.',
+    en: 'No economic events match your filter in this period.',
+    ko: '선택한 조건에 해당하는 경제 일정이 없습니다.',
     ja: '選択した条件に一致する予定はありません。',
     es: 'No hay eventos que coincidan con su filtro.',
-    zh: '该月份暂无符合筛选条件的日程。',
+    zh: '暂无符合筛选条件的日程。',
   },
-  sortDesc: {
-    en: 'Newest',
-    ko: '최신순',
-    ja: '新しい順',
-    es: 'Recientes',
-    zh: '最新',
+  modeSmart: {
+    en: 'Today · Recent',
+    ko: '오늘 · 최신중심',
+    ja: '今日・最新中心',
+    es: 'Hoy · Recientes',
+    zh: '今日 · 最新',
   },
-  sortAsc: {
-    en: 'Oldest',
-    ko: '과거순',
-    ja: '古い順',
-    es: 'Antiguos',
-    zh: '最旧',
+  modeReleased: {
+    en: 'Released ↓',
+    ko: '발표완료 ↓',
+    ja: '発表済み ↓',
+    es: 'Publicados ↓',
+    zh: '已公布 ↓',
+  },
+  modeUpcoming: {
+    en: 'Upcoming ↑',
+    ko: '예정일정 ↑',
+    ja: '予定 ↑',
+    es: 'Próximos ↑',
+    zh: '即将公布 ↑',
+  },
+  sectionReleasedTitle: {
+    en: 'Recently Released (Newest First ↓)',
+    ko: '최근 발표 완료 (최신순 ↓)',
+    ja: '最近の発表結果 (新しい順 ↓)',
+    es: 'Publicados Recientemente (↓)',
+    zh: '最近已公布 (最新优先 ↓)',
+  },
+  sectionUpcomingTitle: {
+    en: 'Today & Upcoming Schedule (Closest First ↑)',
+    ko: '오늘 · 다가오는 예정 일정 (가까운 순 ↑)',
+    ja: '今日・今後の予定 (近い順 ↑)',
+    es: 'Hoy y Próximos Eventos (↑)',
+    zh: '今日与即将公布日程 (由近到远 ↑)',
   },
   todayBadge: {
     en: 'TODAY',
@@ -281,6 +309,13 @@ const UI_TEXT = {
     ja: '今日',
     es: 'HOY',
     zh: '今天',
+  },
+  upcomingBadge: {
+    en: 'Scheduled',
+    ko: '예정',
+    ja: '予定',
+    es: 'Próx.',
+    zh: '待公布',
   },
 }
 
@@ -306,7 +341,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('ALL')
   const [coreOnly, setCoreOnly] = useState<boolean>(true)
   const [tzMode, setTzMode] = useState<TimezoneMode>(() => (lang === 'ko' ? 'KST' : 'LOCAL'))
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+  const [timelineMode, setTimelineMode] = useState<TimelineMode>('smart')
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
@@ -362,6 +397,22 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     return tzMode === 'KST' ? t.kstDateKey : t.etDateKey
   }, [lang, activeMarket.localTimezone, tzMode])
 
+  const currentYearMonthPrefix = useMemo(() => todayDateKey.slice(0, 7), [todayDateKey])
+
+  const selectedYearMonthPrefix = useMemo(() => {
+    return `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`
+  }, [selectedYear, selectedMonth])
+
+  const isViewingCurrentMonth = selectedYearMonthPrefix === currentYearMonthPrefix
+
+  // Calculate 14-day lookback dateKey so at the start of a new month (e.g. Nov 1st~10th),
+  // "Recently Released (Newest First ↓)" smoothly includes late previous month releases (e.g. Oct 28 FOMC, Oct 30 PCE)
+  const lookback14DaysDateKey = useMemo(() => {
+    const d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+    const t = formatEventTimeZones(d.toISOString(), lang, activeMarket.localTimezone)
+    return tzMode === 'KST' ? t.kstDateKey : t.etDateKey
+  }, [lang, activeMarket.localTimezone, tzMode])
+
   const nextFomcDecision = useMemo(() => {
     const nowMs = Date.now()
     return (
@@ -407,12 +458,8 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     )
   }, [enrichedEvents])
 
-  const selectedYearMonthPrefix = useMemo(() => {
-    return `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`
-  }, [selectedYear, selectedMonth])
-
   /**
-   * Item 4: In `★ 핵심만` (`coreOnly`) mode, deduplicate simultaneous YoY/MoM pairs
+   * In `★ 핵심만` (`coreOnly`) mode, deduplicate simultaneous YoY/MoM pairs
    * (keep headline YoY for CPI, Core CPI, and Core PCE; hide simultaneous Press Conference/Statement)
    * so mobile users aren't flooded with 4-5 identical rows at the same release timestamp.
    */
@@ -435,6 +482,37 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     return false
   }
 
+  /**
+   * Events in the active scope:
+   * - In Calendar Grid view or when browsing past/future months: strictly `selectedYearMonthPrefix`.
+   * - In Timeline List view during the current month (`isViewingCurrentMonth`):
+   *   also include the last 14 days of released events (`lookback14DaysDateKey <= activeDateKey <= todayDateKey`)
+   *   so that on the 1st of the month (e.g. Nov 1st), the descending released list isn't empty and seamlessly
+   *   shows Nov 1 -> Oct 31 -> Oct 30 -> Oct 28 in true descending order!
+   */
+  const baseScopedEvents = useMemo(() => {
+    return enrichedEvents.filter((ev) => {
+      const inSelectedMonth = ev.activeDateKey.startsWith(selectedYearMonthPrefix)
+      const inRecentLookback =
+        viewMode === 'timeline' &&
+        isViewingCurrentMonth &&
+        ev.activeDateKey >= lookback14DaysDateKey &&
+        ev.activeDateKey <= todayDateKey
+
+      if (!inSelectedMonth && !inRecentLookback) return false
+      if (coreOnly && !isHeadlineCoreEvent(ev)) return false
+      return true
+    })
+  }, [
+    enrichedEvents,
+    selectedYearMonthPrefix,
+    viewMode,
+    isViewingCurrentMonth,
+    lookback14DaysDateKey,
+    todayDateKey,
+    coreOnly,
+  ])
+
   const monthCategoryCounts = useMemo(() => {
     const counts: Record<CategoryFilter, number> = {
       ALL: 0,
@@ -444,20 +522,16 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
       GROWTH: 0,
       CONSUMER: 0,
     }
-    for (const ev of enrichedEvents) {
-      if (!ev.activeDateKey.startsWith(selectedYearMonthPrefix)) continue
-      if (coreOnly && !isHeadlineCoreEvent(ev)) continue
+    for (const ev of baseScopedEvents) {
       counts.ALL += 1
       counts[ev.category] = (counts[ev.category] || 0) + 1
     }
     return counts
-  }, [enrichedEvents, selectedYearMonthPrefix, coreOnly])
+  }, [baseScopedEvents])
 
-  const filteredMonthEvents = useMemo(() => {
+  const filteredEvents = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
-    return enrichedEvents.filter((ev) => {
-      if (!ev.activeDateKey.startsWith(selectedYearMonthPrefix)) return false
-      if (coreOnly && !isHeadlineCoreEvent(ev)) return false
+    return baseScopedEvents.filter((ev) => {
       if (categoryFilter !== 'ALL' && ev.category !== categoryFilter) return false
       if (q) {
         const matchTitle =
@@ -469,33 +543,83 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
       }
       return true
     })
-  }, [enrichedEvents, selectedYearMonthPrefix, coreOnly, categoryFilter, searchQuery])
+  }, [baseScopedEvents, categoryFilter, searchQuery])
 
-  const groupedByDate = useMemo(() => {
-    const map = new Map<string, typeof filteredMonthEvents>()
-    for (const ev of filteredMonthEvents) {
-      const list = map.get(ev.activeDateKey) || []
-      list.push(ev)
-      map.set(ev.activeDateKey, list)
+  /**
+   * Smart Date Grouping to solve the "Nov 1st descending sort" issue:
+   * - Past / Released dates (`dateKey <= todayDateKey`): ALWAYS sorted DESCENDING (`11/01 -> 10/31 -> 10/30 -> 10/28`),
+   *   so the most recent release is always at the top!
+   * - Future / Upcoming dates (`dateKey > todayDateKey`): ALWAYS sorted ASCENDING from Today (`11/03 -> 11/04 -> 11/05...`),
+   *   so you see tomorrow's/this week's upcoming events first instead of Nov 27 (end of month) at the top!
+   */
+  const { releasedDateGroups, upcomingDateGroups } = useMemo(() => {
+    const releasedMap = new Map<string, typeof filteredEvents>()
+    const upcomingMap = new Map<string, typeof filteredEvents>()
+
+    for (const ev of filteredEvents) {
+      // If viewing a past month (e.g. Oct when today is Nov), all events in that month are past/released.
+      // If viewing a future month (e.g. Dec when today is Nov), all events are upcoming.
+      // In current month, split cleanly around `todayDateKey`:
+      const isPastOrTodayReleased =
+        ev.activeDateKey < todayDateKey ||
+        (ev.activeDateKey === todayDateKey && ev.actual !== null)
+
+      if (isPastOrTodayReleased) {
+        const list = releasedMap.get(ev.activeDateKey) || []
+        list.push(ev)
+        releasedMap.set(ev.activeDateKey, list)
+      } else {
+        const list = upcomingMap.get(ev.activeDateKey) || []
+        list.push(ev)
+        upcomingMap.set(ev.activeDateKey, list)
+      }
     }
-    return [...map.entries()]
-      .sort((a, b) => (sortOrder === 'desc' ? b[0].localeCompare(a[0]) : a[0].localeCompare(b[0])))
-      .map(([dateKey, list]) => [
-        dateKey,
-        [...list].sort((a, b) => {
-          const diff = new Date(a.dateUtc).getTime() - new Date(b.dateUtc).getTime()
-          return sortOrder === 'desc' ? -diff : diff
-        }),
-      ] as const)
-  }, [filteredMonthEvents, sortOrder])
+
+    // Released: Newest date first (DESC: 11월 1일 -> 10월 31일 -> 10월 30일...)
+    const releasedGroups = [...releasedMap.entries()]
+      .sort((a, b) => b[0].localeCompare(a[0]))
+      .map(
+        ([dateKey, list]) =>
+          [
+            dateKey,
+            [...list].sort(
+              (a, b) =>
+                new Date(b.dateUtc).getTime() - new Date(a.dateUtc).getTime() ||
+                b.importance - a.importance
+            ),
+          ] as const
+      )
+
+    // Upcoming: Closest date to Today first (ASC: 오늘/내일 11월 2일 -> 11월 3일 -> 11월 4일...)
+    const upcomingGroups = [...upcomingMap.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(
+        ([dateKey, list]) =>
+          [
+            dateKey,
+            [...list].sort(
+              (a, b) =>
+                new Date(a.dateUtc).getTime() - new Date(b.dateUtc).getTime() ||
+                b.importance - a.importance
+            ),
+          ] as const
+      )
+
+    return { releasedDateGroups: releasedGroups, upcomingDateGroups: upcomingGroups }
+  }, [filteredEvents, todayDateKey])
+
+  // Purely month-scoped events for Calendar Grid view
+  const gridMonthEvents = useMemo(() => {
+    return filteredEvents.filter((ev) => ev.activeDateKey.startsWith(selectedYearMonthPrefix))
+  }, [filteredEvents, selectedYearMonthPrefix])
 
   const calendarGridDays = useMemo(() => {
     const firstDayOfMonth = new Date(selectedYear, selectedMonth - 1, 1)
     const startWeekday = firstDayOfMonth.getDay()
     const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate()
 
-    const byDate = new Map<string, typeof filteredMonthEvents>()
-    for (const ev of filteredMonthEvents) {
+    const byDate = new Map<string, typeof gridMonthEvents>()
+    for (const ev of gridMonthEvents) {
       const arr = byDate.get(ev.activeDateKey) || []
       arr.push(ev)
       byDate.set(ev.activeDateKey, arr)
@@ -504,7 +628,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     const cells: Array<{
       dateKey: string | null
       dayNum: number | null
-      events: typeof filteredMonthEvents
+      events: typeof gridMonthEvents
     }> = []
 
     for (let i = 0; i < startWeekday; i++) {
@@ -519,7 +643,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
       })
     }
     return cells
-  }, [selectedYear, selectedMonth, filteredMonthEvents])
+  }, [selectedYear, selectedMonth, gridMonthEvents])
 
   const handlePrevMonth = () => {
     setSelectedGridDateKey(null)
@@ -582,10 +706,11 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
   }, [lang])
 
   /**
-   * Item 3: Single-line compact event row on both mobile and desktop.
-   * - No repeated `실제 / 예상 / 이전` labels inside every row (shown once in the date group header).
-   * - Secondary time (`ET`), reference period (`Oct`), commentary, and `[관련 뉴스]` button
-   *   are tucked cleanly into the tap-to-expand drawer.
+   * Low-Fatigue, High-Readability Event Row:
+   * - No nested card borders ("box inside box" removed; uses clean flat divider lines).
+   * - On mobile (< sm): 2-line clear layout so the indicator name NEVER gets truncated to 5 chars,
+   *   and Actual / Forecast / Previous values have explicit inline labels (`실제`, `예상`, `이전`).
+   * - On desktop (sm+): spacious single-line table row.
    */
   const renderEventRow = (ev: (typeof enrichedEvents)[number]) => {
     const isExpanded = expandedEventId === ev.id
@@ -594,77 +719,134 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     const hasNumericComparison =
       ev.actual !== null || ev.forecast !== null || ev.previous !== null
 
+    const actualColorClass = !isReleased
+      ? 'text-slate-500'
+      : ev.surprise?.direction === 'beat'
+        ? 'text-emerald-400'
+        : ev.surprise?.direction === 'miss'
+          ? 'text-rose-400'
+          : 'text-white'
+
     return (
       <div
         key={ev.id}
-        className={`rounded-xl border transition-colors ${
-          isExpanded
-            ? 'bg-slate-900 border-indigo-500/40'
-            : 'bg-slate-950/60 hover:bg-slate-950 border-slate-800/70 hover:border-slate-700'
+        className={`transition-colors ${
+          isExpanded ? 'bg-indigo-950/25' : 'hover:bg-slate-800/40 active:bg-slate-800/60'
         }`}
       >
         <div
           onClick={() => setExpandedEventId(isExpanded ? null : ev.id)}
-          className="px-2.5 sm:px-3.5 py-2 flex items-center justify-between gap-2 cursor-pointer select-none"
+          className="px-3 sm:px-4 py-2.5 sm:py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-3 cursor-pointer select-none"
         >
-          {/* Left: Time + Category Dot + Concise Title */}
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className="w-10 sm:w-12 shrink-0 text-[11px] sm:text-xs font-mono font-semibold text-slate-400">
-              {ev.activeTime}
-            </span>
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${catMeta.dotClass}`} />
-            <span
-              className={`text-xs sm:text-sm truncate ${
-                ev.importance === 3 ? 'text-white font-bold' : 'text-slate-200 font-medium'
-              }`}
-            >
-              {ev.titleLocalized}
-            </span>
-            {ev.importance === 3 && (
-              <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />
-            )}
-          </div>
+          {/* Top / Left: Category Pill + Full Indicator Title (Never crushed on iPhone) + Time on Mobile */}
+          <div className="flex items-center justify-between sm:justify-start gap-2 min-w-0 flex-1">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              {/* Desktop Time */}
+              <span className="hidden sm:inline-block w-12 shrink-0 text-xs font-mono font-semibold text-slate-400">
+                {ev.activeTime}
+              </span>
 
-          {/* Right: 3-Column Numbers Only (Actual | Forecast | Previous) */}
-          {hasNumericComparison ? (
-            <div className="w-[150px] sm:w-[228px] shrink-0 grid grid-cols-3 gap-1 text-right font-mono text-xs sm:text-sm items-center">
-              {/* Actual */}
-              <div
-                className={`font-bold truncate ${
-                  !isReleased
-                    ? 'text-slate-600'
-                    : ev.surprise?.direction === 'beat'
-                      ? 'text-emerald-400'
-                      : ev.surprise?.direction === 'miss'
-                        ? 'text-rose-400'
-                        : 'text-white'
+              {/* Category Badge */}
+              <span
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border shrink-0 ${catMeta.badgeClass}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${catMeta.dotClass}`} />
+                <span>{catMeta.label[lang]}</span>
+              </span>
+
+              {/* Full Indicator Name */}
+              <span
+                className={`text-[13px] sm:text-sm leading-snug truncate ${
+                  ev.importance === 3 ? 'text-white font-bold' : 'text-slate-200 font-medium'
                 }`}
               >
-                {isReleased ? formatCalendarValue(ev.actual, ev.unit, ev.scale) : '—'}
-              </div>
+                {ev.titleLocalized}
+              </span>
 
-              {/* Forecast */}
-              <div className="text-amber-300/90 font-medium truncate">
-                {formatCalendarValue(ev.forecast, ev.unit, ev.scale)}
-              </div>
-
-              {/* Previous */}
-              <div className="text-slate-400 truncate">
-                {formatCalendarValue(ev.previous, ev.unit, ev.scale)}
-              </div>
+              {ev.importance === 3 && (
+                <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />
+              )}
             </div>
+
+            {/* Mobile Time (Right-aligned on Line 1) */}
+            <span className="sm:hidden text-[11px] font-mono font-semibold text-slate-400 shrink-0">
+              {ev.activeTime}
+            </span>
+          </div>
+
+          {/* Bottom (Mobile) / Right (Desktop): Metrics Comparison */}
+          {hasNumericComparison ? (
+            <>
+              {/* Mobile Labeled Inline Strip (Easy to read at a glance on iPhone) */}
+              <div className="flex sm:hidden items-center justify-between bg-slate-950/60 rounded-lg px-2.5 py-1.5 text-xs font-mono">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-sans font-medium text-slate-400">
+                    {UI_TEXT.actualLabel[lang]}
+                  </span>
+                  <span className={`font-bold ${actualColorClass}`}>
+                    {isReleased
+                      ? formatCalendarValue(ev.actual, ev.unit, ev.scale)
+                      : UI_TEXT.upcomingBadge[lang]}
+                  </span>
+                  {isReleased && ev.surprise && ev.surprise.direction !== 'inline' && (
+                    <span
+                      className={`text-[10px] px-1 py-0.2 rounded font-bold ${
+                        ev.surprise.direction === 'beat'
+                          ? 'bg-emerald-500/15 text-emerald-300'
+                          : 'bg-rose-500/15 text-rose-300'
+                      }`}
+                    >
+                      {ev.surprise.diffText}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px] font-sans text-slate-500">
+                      {UI_TEXT.forecastLabel[lang]}
+                    </span>
+                    <span className="text-amber-300/90 font-semibold">
+                      {formatCalendarValue(ev.forecast, ev.unit, ev.scale)}
+                    </span>
+                  </div>
+                  <span className="text-slate-700">|</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px] font-sans text-slate-500">
+                      {UI_TEXT.previousLabel[lang]}
+                    </span>
+                    <span className="text-slate-300">
+                      {formatCalendarValue(ev.previous, ev.unit, ev.scale)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop 3-Column Table Alignment */}
+              <div className="hidden sm:grid w-[228px] shrink-0 grid-cols-3 gap-1 text-right font-mono text-sm items-center">
+                <div className={`font-bold truncate ${actualColorClass}`}>
+                  {isReleased ? formatCalendarValue(ev.actual, ev.unit, ev.scale) : '—'}
+                </div>
+                <div className="text-amber-300/90 font-medium truncate">
+                  {formatCalendarValue(ev.forecast, ev.unit, ev.scale)}
+                </div>
+                <div className="text-slate-400 truncate">
+                  {formatCalendarValue(ev.previous, ev.unit, ev.scale)}
+                </div>
+              </div>
+            </>
           ) : (
-            <div className="w-[150px] sm:w-[228px] shrink-0 text-right">
-              <span className="text-[11px] text-slate-400 px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
+            <div className="hidden sm:block w-[228px] shrink-0 text-right">
+              <span className="text-[11px] text-slate-400 px-2 py-0.5 rounded bg-slate-950 border border-slate-800">
                 {UI_TEXT.statementEvent[lang]}
               </span>
             </div>
           )}
         </div>
 
-        {/* Tap-to-Expand Drawer: Secondary Time, Period, Surprise Delta, Description, News & Source */}
+        {/* Tap-to-Expand Drawer: Secondary Time, Period, Commentary, News & Source */}
         {isExpanded && (
-          <div className="px-3 sm:px-4 pb-3 pt-2 border-t border-slate-800/70 bg-slate-950/70 rounded-b-xl space-y-2 text-xs text-slate-300">
+          <div className="px-3 sm:px-4 pb-3 pt-1.5 bg-slate-950/75 border-t border-slate-800/60 space-y-2 text-xs text-slate-300">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-slate-400">
                 {ev.period && (
@@ -675,17 +857,6 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                 <span>KST {ev.tz.kstDateKey} {ev.tz.kstTime}</span>
                 <span>·</span>
                 <span>{ev.tz.etTzAbbr} {ev.tz.etDateKey} {ev.tz.etTime}</span>
-                {ev.surprise && ev.surprise.direction !== 'inline' && (
-                  <span
-                    className={`px-1.5 py-0.5 rounded font-bold ${
-                      ev.surprise.direction === 'beat'
-                        ? 'bg-emerald-500/15 text-emerald-300'
-                        : 'bg-rose-500/15 text-rose-300'
-                    }`}
-                  >
-                    {ev.surprise.diffText}
-                  </span>
-                )}
               </div>
 
               <div className="flex items-center gap-2">
@@ -731,9 +902,62 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     )
   }
 
+  const renderDateGroupCard = ([dateKey, dayEvents]: readonly [
+    string,
+    typeof enrichedEvents,
+  ]) => {
+    const isToday = dateKey === todayDateKey
+    const sample = dayEvents[0]
+    return (
+      <div
+        key={dateKey}
+        className={`rounded-2xl border overflow-hidden ${
+          isToday
+            ? 'bg-slate-900/95 border-indigo-500/60 shadow-lg shadow-indigo-950/30'
+            : 'bg-slate-900/80 border-slate-800/80'
+        }`}
+      >
+        {/* Clean Date Header Bar */}
+        <div
+          className={`flex items-center justify-between gap-2 px-3 sm:px-4 py-2 border-b ${
+            isToday
+              ? 'bg-indigo-950/40 border-indigo-500/40'
+              : 'bg-slate-950/60 border-slate-800/70'
+          }`}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-xs sm:text-sm font-black text-white truncate">
+              {sample.activeDateLabel}
+            </span>
+            {isToday && (
+              <span className="px-1.5 py-0.5 rounded bg-indigo-600 text-white text-[10px] font-bold shrink-0">
+                {UI_TEXT.todayBadge[lang]}
+              </span>
+            )}
+            <span className="text-[11px] font-mono text-slate-500">
+              ({dayEvents.length})
+            </span>
+          </div>
+
+          {/* Desktop-only 3-Column Header (Mobile uses inline labels inside each row) */}
+          <div className="hidden sm:grid w-[228px] shrink-0 grid-cols-3 gap-1 text-right text-[10px] font-semibold text-slate-500">
+            <span>{UI_TEXT.actualLabel[lang]}</span>
+            <span>{UI_TEXT.forecastLabel[lang]}</span>
+            <span>{UI_TEXT.previousLabel[lang]}</span>
+          </div>
+        </div>
+
+        {/* Flat Divider List (No nested boxes!) */}
+        <div className="divide-y divide-slate-800/60">
+          {dayEvents.map((ev) => renderEventRow(ev))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-3">
-      {/* 1. Item 1: Single-Line Slim Header & Status Strip */}
+      {/* 1. Slim Header & Status Strip */}
       <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
           <CountryFlag
@@ -746,7 +970,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
           </h1>
         </div>
 
-        {/* Single-Line Horizontal KPI Pills (No 3-Row Vertical Stacking on Mobile) */}
+        {/* Single-Line Horizontal KPI Pills */}
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden whitespace-nowrap">
           {/* Pill 1: Current US Policy Rate */}
           <button
@@ -796,10 +1020,10 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Item 2: Compact 2-Row Filter Bar (Single-Line Swipe Categories + Collapsible Search Icon) */}
-      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-2.5 sm:p-3.5 space-y-2.5">
-        {/* Row 1: Month Navigator + Compact Control Chips */}
-        <div className="flex items-center justify-between gap-1.5">
+      {/* 2. Filter & Mode Bar */}
+      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-2.5 sm:p-3.5 space-y-2">
+        {/* Row 1: Month Navigator + Compact Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-1.5">
           {/* Month Navigator */}
           <div className="flex items-center gap-1">
             <button
@@ -810,7 +1034,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="min-w-[96px] sm:min-w-[120px] text-center text-xs sm:text-base font-black text-white">
+            <div className="min-w-[88px] sm:min-w-[116px] text-center text-xs sm:text-base font-black text-white">
               {formattedMonthHeader}
             </div>
             <button
@@ -826,6 +1050,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
               onClick={() => {
                 setSelectedYear(now.getFullYear())
                 setSelectedMonth(now.getMonth() + 1)
+                setTimelineMode('smart')
                 setSelectedGridDateKey(null)
               }}
               className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] sm:text-xs font-bold text-slate-200 cursor-pointer"
@@ -834,9 +1059,9 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
             </button>
           </div>
 
-          {/* Right Compact Chips */}
+          {/* Right Compact Controls */}
           <div className="flex items-center gap-1 sm:gap-1.5">
-            {/* Single-Chip Core vs All Toggle */}
+            {/* Core vs All Toggle */}
             <button
               type="button"
               onClick={() => setCoreOnly((prev) => !prev)}
@@ -850,7 +1075,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
               <span>{coreOnly ? UI_TEXT.coreOnly[lang] : UI_TEXT.includeAll[lang]}</span>
             </button>
 
-            {/* Single-Chip Timezone Toggle (KST <-> US ET) */}
+            {/* Timezone Toggle (KST <-> US ET) */}
             <button
               type="button"
               onClick={() => setTzMode((prev) => (prev === 'KST' ? 'LOCAL' : 'KST'))}
@@ -859,22 +1084,6 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
             >
               {tzMode === 'KST' ? 'KST' : activeMarket.localTzShort}
             </button>
-
-            {/* Date Sort Order Toggle (List View: Default Descending / Newest First) */}
-            {viewMode === 'timeline' && (
-              <button
-                type="button"
-                onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
-                className="h-7 sm:h-8 px-2 sm:px-2.5 rounded-lg bg-slate-950 border border-slate-800 hover:border-slate-700 text-[11px] sm:text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1 cursor-pointer"
-                title={sortOrder === 'desc' ? UI_TEXT.sortDesc[lang] : UI_TEXT.sortAsc[lang]}
-              >
-                <ArrowUpDown className="w-3 h-3 text-indigo-400 shrink-0" />
-                <span>
-                  {sortOrder === 'desc' ? UI_TEXT.sortDesc[lang] : UI_TEXT.sortAsc[lang]}
-                  {sortOrder === 'desc' ? ' ↓' : ' ↑'}
-                </span>
-              </button>
-            )}
 
             {/* Search Icon Toggle */}
             <button
@@ -927,7 +1136,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
           </div>
         </div>
 
-        {/* Collapsible Search Input (Only visible when Search icon is toggled) */}
+        {/* Collapsible Search Input */}
         {isSearchOpen && (
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -951,37 +1160,68 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
           </div>
         )}
 
-        {/* Row 2: Single-Line Horizontal Scroll Category Chips (Never wraps onto multiple lines on mobile) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden whitespace-nowrap pt-1">
-          {(Object.keys(CATEGORY_META) as CategoryFilter[]).map((catKey) => {
-            const meta = CATEGORY_META[catKey]
-            const isSelected = categoryFilter === catKey
-            const count = monthCategoryCounts[catKey] || 0
-            return (
-              <button
-                key={catKey}
-                type="button"
-                onClick={() => setCategoryFilter(catKey)}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer shrink-0 ${
-                  isSelected
-                    ? 'bg-indigo-600 text-white border-indigo-500'
-                    : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                {catKey !== 'ALL' && (
-                  <span className={`w-1.5 h-1.5 rounded-full ${meta.dotClass}`} />
-                )}
-                <span>{meta.label[lang]}</span>
-                <span
-                  className={`text-[10px] font-mono ${
-                    isSelected ? 'text-indigo-100' : 'text-slate-500'
+        {/* Row 2: Timeline Ordering Tabs (Solves the Nov 1st descending order mismatch) + Category Chips */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-slate-800/60">
+          {viewMode === 'timeline' && (
+            <div className="inline-flex items-center bg-slate-950 border border-slate-800 p-0.5 rounded-xl shrink-0 self-start">
+              {(
+                [
+                  { id: 'smart', label: UI_TEXT.modeSmart[lang], count: releasedDateGroups.length + upcomingDateGroups.length },
+                  { id: 'released', label: UI_TEXT.modeReleased[lang], count: releasedDateGroups.length },
+                  { id: 'upcoming', label: UI_TEXT.modeUpcoming[lang], count: upcomingDateGroups.length },
+                ] as const
+              ).map((tab) => {
+                const active = timelineMode === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setTimelineMode(tab.id)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                      active
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Category Filter Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden whitespace-nowrap">
+            {(Object.keys(CATEGORY_META) as CategoryFilter[]).map((catKey) => {
+              const meta = CATEGORY_META[catKey]
+              const isSelected = categoryFilter === catKey
+              const count = monthCategoryCounts[catKey] || 0
+              return (
+                <button
+                  key={catKey}
+                  type="button"
+                  onClick={() => setCategoryFilter(catKey)}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer shrink-0 ${
+                    isSelected
+                      ? 'bg-indigo-600 text-white border-indigo-500'
+                      : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  {count}
-                </span>
-              </button>
-            )
-          })}
+                  {catKey !== 'ALL' && (
+                    <span className={`w-1.5 h-1.5 rounded-full ${meta.dotClass}`} />
+                  )}
+                  <span>{meta.label[lang]}</span>
+                  <span
+                    className={`text-[10px] font-mono ${
+                      isSelected ? 'text-indigo-100' : 'text-slate-500'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -1087,78 +1327,67 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
           </div>
 
           {selectedGridDateKey && (
-            <div className="bg-slate-900/90 border border-indigo-500/40 rounded-2xl p-3 sm:p-4 space-y-2">
-              <div className="flex items-center justify-between px-1">
+            <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/90 overflow-hidden">
+              <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-950/70 border-b border-slate-800">
                 <h3 className="text-xs sm:text-sm font-black text-white font-mono">
                   {selectedGridDateKey} ({tzMode === 'KST' ? 'KST' : activeMarket.localTzShort})
                 </h3>
-                <div className="flex items-center gap-3">
-                  <div className="w-[150px] sm:w-[228px] grid grid-cols-3 gap-1 text-right text-[10px] font-semibold text-slate-500">
-                    <span>{UI_TEXT.actualLabel[lang]}</span>
-                    <span>{UI_TEXT.forecastLabel[lang]}</span>
-                    <span>{UI_TEXT.previousLabel[lang]}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedGridDateKey(null)}
-                    className="text-slate-400 hover:text-white cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedGridDateKey(null)}
+                  className="text-slate-400 hover:text-white cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <div className="space-y-1.5">
-                {filteredMonthEvents
+              <div className="divide-y divide-slate-800/60">
+                {gridMonthEvents
                   .filter((e) => e.activeDateKey === selectedGridDateKey)
                   .map((ev) => renderEventRow(ev))}
               </div>
             </div>
           )}
         </div>
-      ) : groupedByDate.length === 0 ? (
+      ) : releasedDateGroups.length === 0 && upcomingDateGroups.length === 0 ? (
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-10 text-center text-slate-400 text-sm">
           {UI_TEXT.noEventsFound[lang]}
         </div>
       ) : (
-        /* Item 3: Date-Grouped Timeline with ONE Column Header (`실제 | 예상 | 이전`) per Date Group */
-        <div className="space-y-2.5">
-          {groupedByDate.map(([dateKey, dayEvents]) => {
-            const isToday = dateKey === todayDateKey
-            const sample = dayEvents[0]
-            return (
-              <div
-                key={dateKey}
-                className={`rounded-2xl border p-2.5 sm:p-3.5 space-y-1.5 ${
-                  isToday
-                    ? 'bg-indigo-950/20 border-indigo-500/50'
-                    : 'bg-slate-900/70 border-slate-800/80'
-                }`}
-              >
-                {/* Date Group Header + Single `실제 | 예상 | 이전` Table Header */}
-                <div className="flex items-center justify-between gap-2 px-1 pb-1 border-b border-slate-800/60">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs sm:text-sm font-black text-white truncate">
-                      {sample.activeDateLabel}
-                    </span>
-                    {isToday && (
-                      <span className="px-1.5 py-0.2 rounded bg-indigo-600 text-white text-[10px] font-bold shrink-0">
-                        {UI_TEXT.todayBadge[lang]}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Single 3-Column Header for the Day */}
-                  <div className="w-[150px] sm:w-[228px] shrink-0 grid grid-cols-3 gap-1 text-right text-[10px] font-semibold text-slate-500">
-                    <span>{UI_TEXT.actualLabel[lang]}</span>
-                    <span>{UI_TEXT.forecastLabel[lang]}</span>
-                    <span>{UI_TEXT.previousLabel[lang]}</span>
-                  </div>
+        <div className="space-y-4">
+          {/* Section A: Recently Released Events (Sorted Newest First ↓: Nov 1 -> Oct 31 -> Oct 30...) */}
+          {(timelineMode === 'smart' || timelineMode === 'released') &&
+            releasedDateGroups.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2 px-1">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <h2 className="text-xs sm:text-sm font-extrabold text-emerald-300 tracking-tight">
+                    {UI_TEXT.sectionReleasedTitle[lang]}
+                  </h2>
                 </div>
-
-                <div className="space-y-1">{dayEvents.map((ev) => renderEventRow(ev))}</div>
+                <div className="space-y-2.5">
+                  {(timelineMode === 'smart' && upcomingDateGroups.length > 0
+                    ? releasedDateGroups.slice(0, 6)
+                    : releasedDateGroups
+                  ).map((group) => renderDateGroupCard(group))}
+                </div>
               </div>
-            )
-          })}
+            )}
+
+          {/* Section B: Today & Upcoming Events (Sorted Closest to Today First ↑: Nov 2 -> Nov 3 -> Nov 4...) */}
+          {(timelineMode === 'smart' || timelineMode === 'upcoming') &&
+            upcomingDateGroups.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2 px-1 pt-1">
+                  <Clock className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <h2 className="text-xs sm:text-sm font-extrabold text-indigo-300 tracking-tight">
+                    {UI_TEXT.sectionUpcomingTitle[lang]}
+                  </h2>
+                </div>
+                <div className="space-y-2.5">
+                  {upcomingDateGroups.map((group) => renderDateGroupCard(group))}
+                </div>
+              </div>
+            )}
         </div>
       )}
     </div>
