@@ -30,7 +30,6 @@ import {
   fetchBatchTopCompanies,
   TIER1_MARKET_IDS,
   ALL_SUPPORTED_MARKET_IDS,
-  getSectorEmoji,
   type TopCompanyItem,
 } from '../services/topCompaniesApi'
 import { CompanyTreemapPanel, type CompanyHeatmapItem } from './CompanyTreemapPanel'
@@ -58,14 +57,6 @@ interface MarketItem {
 }
 
 const REGION_ORDER: Region[] = ['Americas', 'Asia', 'Europe', 'Oceania', 'Africa']
-
-const REGION_EMOJIS: Record<Region, string> = {
-  Americas: '🌎',
-  Asia: '🌏',
-  Europe: '🌍',
-  Oceania: '🦘',
-  Africa: '🌍',
-}
 
 function getPerformanceColor(changePct: number, isHovered = false) {
   if (changePct >= 3.0) {
@@ -427,7 +418,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       {
         sectorKey: string
         label: string
-        emoji: string
         totalCap: number
         items: CompanyHeatmapItem[]
       }
@@ -440,7 +430,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         group = {
           sectorKey: key,
           label: item.company.sector || key,
-          emoji: getSectorEmoji(key),
           totalCap: 0,
           items: [],
         }
@@ -703,8 +692,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                     : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
                 }`}
               >
-                <span>{REGION_EMOJIS[region]}</span>
-                <span className="hidden xl:inline">{regLabel}</span>
+                <span>{regLabel}</span>
               </button>
             )
           })}
@@ -883,7 +871,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                 ? (lang === 'ko' ? '글로벌 전체 통합 증시' : 'Global Stock Markets')
                 : selectedContinent
             }
-            emoji={selectedContinent === 'All' ? '🌐' : REGION_EMOJIS[selectedContinent]}
             items={selectedContinent === 'All' ? filteredBySearch : (regionGroups.get(selectedContinent) || [])}
             height={unifiedCanvasHeight}
             baseCurrency={baseCurrency}
@@ -904,7 +891,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <TreemapPanel
                 title="Americas"
-                emoji={REGION_EMOJIS.Americas}
                 region="Americas"
                 items={regionGroups.get('Americas') || []}
                 height={Math.round(unifiedCanvasHeight * 0.52)}
@@ -920,7 +906,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
               />
               <TreemapPanel
                 title="Asia"
-                emoji={REGION_EMOJIS.Asia}
                 region="Asia"
                 items={regionGroups.get('Asia') || []}
                 height={Math.round(unifiedCanvasHeight * 0.52)}
@@ -938,7 +923,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
 
             <TreemapPanel
               title="Europe"
-              emoji={REGION_EMOJIS.Europe}
               region="Europe"
               items={regionGroups.get('Europe') || []}
               height={Math.round(unifiedCanvasHeight * 0.44)}
@@ -956,7 +940,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <TreemapPanel
                 title="Oceania"
-                emoji={REGION_EMOJIS.Oceania}
                 region="Oceania"
                 items={regionGroups.get('Oceania') || []}
                 height={Math.round(unifiedCanvasHeight * 0.35)}
@@ -972,7 +955,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
               />
               <TreemapPanel
                 title="Africa"
-                emoji={REGION_EMOJIS.Africa}
                 region="Africa"
                 items={regionGroups.get('Africa') || []}
                 height={Math.round(unifiedCanvasHeight * 0.35)}
@@ -992,7 +974,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
           /* SINGLE CONTINENT ZOOMED VIEW */
           <TreemapPanel
             title={selectedContinent}
-            emoji={REGION_EMOJIS[selectedContinent]}
             region={selectedContinent}
             items={regionGroups.get(selectedContinent) || []}
             height={zoomedCanvasHeight}
@@ -1020,7 +1001,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
  */
 interface TreemapPanelProps {
   title: string
-  emoji?: string
   region?: Region
   items: MarketItem[]
   height: number
@@ -1039,7 +1019,6 @@ interface TreemapPanelProps {
 
 const TreemapPanel: React.FC<TreemapPanelProps> = ({
   title,
-  emoji = '🌐',
   items,
   height,
   baseCurrency,
@@ -1136,7 +1115,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
       {!hideHeader && (
         <div className="flex items-center justify-between gap-3 px-3 py-1.5 bg-slate-900/80 border-b border-slate-800/80">
           <div className="flex items-center gap-2">
-            <span className="text-base">{emoji}</span>
+            <Globe className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
             <h3 className="text-xs sm:text-sm font-black text-white tracking-tight flex items-center gap-1.5">
               <span>{title}</span>
               <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-mono">

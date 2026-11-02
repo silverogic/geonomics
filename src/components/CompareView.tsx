@@ -769,7 +769,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           return (
             <div className="p-3.5 sm:p-4 hover:bg-slate-800/30 transition-colors last:rounded-b-2xl">
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <span className="font-bold text-slate-300">🍔 {t.metricBigMac}</span>
+                <span className="font-bold text-slate-300">{t.metricBigMac}</span>
               </div>
               <div className="flex items-baseline justify-between gap-3 font-mono">
                 <div className="flex items-baseline gap-1.5">

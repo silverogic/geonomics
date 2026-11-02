@@ -345,7 +345,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-semibold text-slate-400 truncate">
-                      🍔 {t.metricBigMac}
+                      {t.metricBigMac}
                     </span>
                     <span
                       className="w-2 h-2 rounded-full shrink-0 shadow-sm"

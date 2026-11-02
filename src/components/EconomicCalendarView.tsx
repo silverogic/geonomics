@@ -7,7 +7,7 @@ import {
   Briefcase,
   TrendingUp,
   ShoppingBag,
-  Star,
+  Filter,
   Newspaper,
   ExternalLink,
   Search,
@@ -763,8 +763,10 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                 {ev.titleLocalized}
               </span>
 
-              {ev.importance === 3 && (
-                <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />
+              {ev.importance === 3 && !coreOnly && (
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 shrink-0">
+                  {lang === 'ko' ? '핵심' : 'CORE'}
+                </span>
               )}
             </div>
 
@@ -1071,7 +1073,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                   : 'bg-slate-950 border-slate-800 text-slate-300'
               }`}
             >
-              <Star className={`w-3 h-3 ${coreOnly ? 'text-amber-400 fill-amber-400' : 'text-slate-500'}`} />
+              <Filter className={`w-3 h-3 ${coreOnly ? 'text-indigo-400' : 'text-slate-400'}`} />
               <span>{coreOnly ? UI_TEXT.coreOnly[lang] : UI_TEXT.includeAll[lang]}</span>
             </button>
 

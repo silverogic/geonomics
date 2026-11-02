@@ -400,7 +400,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                         className="w-1.5 h-1.5 rounded-full shrink-0"
                         style={{ backgroundColor: color }}
                       />
-                      <span>🍔 {t.metricBigMac}:</span>
+                      <span>{t.metricBigMac}:</span>
                     </span>
                     <div className="flex items-center gap-1.5">
                       <span className="font-mono font-bold text-white">

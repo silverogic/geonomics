@@ -9,6 +9,7 @@ import {
   Activity,
   Globe,
   LayoutGrid,
+  Lightbulb,
 } from 'lucide-react'
 import { TileWorldMap } from './TileWorldMap'
 import { GdpTreemap } from './GdpTreemap'
@@ -541,7 +542,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
                   {/* 1-second Long-press Discovery Tip */}
                   <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-950/40 border border-indigo-900/30 text-[10px] text-indigo-300/80 flex items-center justify-center gap-1.5">
-                    <span>💡</span>
+                    <Lightbulb className="w-3 h-3 text-indigo-400 shrink-0" />
                     <span>
                       {lang === 'ko'
                         ? '길게 누르면 해당 대륙만 단독 선택'
@@ -1118,7 +1119,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                             className="w-2 h-2 rounded-full shrink-0 shadow-sm"
                             style={{ backgroundColor: color }}
                           />
-                          <span>🍔 {t.metricBigMac}</span>
+                          <span>{t.metricBigMac}</span>
                         </div>
                         <div className="text-base font-bold text-white font-mono mt-0.5">
                           {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
