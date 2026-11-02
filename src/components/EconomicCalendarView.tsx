@@ -88,8 +88,8 @@ const CATEGORY_META: Record<
   },
   CENTRAL_BANK: {
     icon: Landmark,
-    dotClass: 'bg-violet-400',
-    badgeClass: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
+    dotClass: 'bg-indigo-400',
+    badgeClass: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
     label: {
       en: 'FOMC · Rate',
       ko: 'FOMC · 금리',
@@ -100,8 +100,8 @@ const CATEGORY_META: Record<
   },
   INFLATION: {
     icon: Flame,
-    dotClass: 'bg-rose-400',
-    badgeClass: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+    dotClass: 'bg-slate-400',
+    badgeClass: 'bg-slate-800/80 text-slate-300 border-slate-700/70',
     label: {
       en: 'Inflation',
       ko: '물가',
@@ -112,8 +112,8 @@ const CATEGORY_META: Record<
   },
   EMPLOYMENT: {
     icon: Briefcase,
-    dotClass: 'bg-amber-400',
-    badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+    dotClass: 'bg-slate-400',
+    badgeClass: 'bg-slate-800/80 text-slate-300 border-slate-700/70',
     label: {
       en: 'Jobs',
       ko: '고용',
@@ -124,8 +124,8 @@ const CATEGORY_META: Record<
   },
   GROWTH: {
     icon: TrendingUp,
-    dotClass: 'bg-emerald-400',
-    badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+    dotClass: 'bg-slate-400',
+    badgeClass: 'bg-slate-800/80 text-slate-300 border-slate-700/70',
     label: {
       en: 'GDP · PMI',
       ko: '성장',
@@ -136,8 +136,8 @@ const CATEGORY_META: Record<
   },
   CONSUMER: {
     icon: ShoppingBag,
-    dotClass: 'bg-cyan-400',
-    badgeClass: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+    dotClass: 'bg-slate-400',
+    badgeClass: 'bg-slate-800/80 text-slate-300 border-slate-700/70',
     label: {
       en: 'Consumer',
       ko: '소비 · 주택',
@@ -808,7 +808,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                     <span className="text-[11px] font-sans text-slate-500">
                       {UI_TEXT.forecastLabel[lang]}
                     </span>
-                    <span className="text-amber-300/90 font-semibold">
+                    <span className="text-slate-300 font-semibold">
                       {formatCalendarValue(ev.forecast, ev.unit, ev.scale)}
                     </span>
                   </div>
@@ -829,7 +829,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                 <div className={`font-bold truncate ${actualColorClass}`}>
                   {isReleased ? formatCalendarValue(ev.actual, ev.unit, ev.scale) : '—'}
                 </div>
-                <div className="text-amber-300/90 font-medium truncate">
+                <div className="text-slate-300 font-medium truncate">
                   {formatCalendarValue(ev.forecast, ev.unit, ev.scale)}
                 </div>
                 <div className="text-slate-400 truncate">
@@ -981,7 +981,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs cursor-pointer shrink-0"
           >
             <span className="text-slate-400 font-medium">{UI_TEXT.currentRateLabel[lang]}</span>
-            <span className="font-mono font-black text-emerald-400">
+            <span className="font-mono font-black text-indigo-300">
               {latestFomcActualRate.toFixed(2)}%
             </span>
           </button>
@@ -991,13 +991,13 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
             <button
               type="button"
               onClick={() => handleJumpToDateKey(nextFomcDecision.activeDateKey)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-950/35 border border-violet-500/35 text-xs cursor-pointer shrink-0"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-950/35 border border-indigo-500/35 text-xs cursor-pointer shrink-0"
             >
-              <span className="text-violet-300 font-semibold">{UI_TEXT.nextFomcLabel[lang]}</span>
+              <span className="text-indigo-300 font-semibold">{UI_TEXT.nextFomcLabel[lang]}</span>
               <span className="font-mono font-bold text-white">
                 {nextFomcDecision.activeDateKey.slice(5).replace('-', '/')}
               </span>
-              <span className="px-1.5 py-0.2 rounded bg-violet-500/25 text-violet-200 text-[10px] font-mono font-black">
+              <span className="px-1.5 py-0.2 rounded bg-indigo-500/25 text-indigo-200 text-[10px] font-mono font-black">
                 {formatDdayBadge(nextFomcDecision.dateUtc)}
               </span>
             </button>
@@ -1008,13 +1008,13 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
             <button
               type="button"
               onClick={() => handleJumpToDateKey(nextHighImpactEvent.activeDateKey)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/30 border border-amber-500/30 text-xs cursor-pointer shrink-0"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs cursor-pointer shrink-0"
             >
-              <span className="text-amber-300 font-semibold">{UI_TEXT.nextReleaseLabel[lang]}</span>
+              <span className="text-slate-400 font-semibold">{UI_TEXT.nextReleaseLabel[lang]}</span>
               <span className="font-bold text-white max-w-[120px] sm:max-w-[160px] truncate">
                 {nextHighImpactEvent.titleLocalized}
               </span>
-              <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200 text-[10px] font-mono font-black">
+              <span className="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-black">
                 {formatDdayBadge(nextHighImpactEvent.dateUtc)}
               </span>
             </button>
@@ -1281,7 +1281,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
                         : isToday
                           ? 'bg-indigo-950/25 border-indigo-500/60'
                           : hasFomc
-                            ? 'bg-violet-950/25 border-violet-500/40'
+                            ? 'bg-indigo-950/20 border-indigo-500/40'
                             : cell.events.length > 0
                               ? 'bg-slate-950/75 border-slate-800 hover:border-slate-600'
                               : 'bg-slate-950/35 border-slate-800/50'

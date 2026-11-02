@@ -160,16 +160,16 @@ export function getPerCapitaColorClass(gdpPerCapitaUsd: number | null | undefine
 }
 
 /**
- * Returns text color class for inflation rate (Idea 3: Cyan to Amber temperature gradient):
- * <= 2.5%: Cyan (text-cyan-400) - Cool / Stable
- * <= 4.5%: Pale Amber (text-amber-200) - Moderate / Heating up
- * > 4.5%: Vibrant Amber (text-amber-400) - Hot / Overheated
+ * Returns text color class for inflation rate:
+ * <= 2.5%: Emerald (text-emerald-400) - Stable
+ * <= 4.5%: Slate (text-slate-300) - Moderate
+ * > 4.5%: Rose (text-rose-400) - Overheated
  */
 export function getInflationColorClass(inflationRatePct: number | null | undefined): string {
   if (inflationRatePct === null || inflationRatePct === undefined) return 'text-slate-400'
-  if (inflationRatePct <= 2) return 'text-cyan-400'
+  if (inflationRatePct <= 2.5) return 'text-emerald-400'
   if (inflationRatePct <= 4.5) return 'text-slate-300'
-  return 'text-red-400'
+  return 'text-rose-400'
 }
 
 /**
@@ -179,23 +179,23 @@ export function getInflationBadgeClass(inflationRatePct: number | null | undefin
   if (inflationRatePct === null || inflationRatePct === undefined) {
     return 'text-slate-400 bg-slate-900/60 border-slate-800'
   }
-  if (inflationRatePct <= 2) {
-    return 'text-cyan-300 bg-cyan-950/60 border-cyan-500/30'
+  if (inflationRatePct <= 2.5) {
+    return 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
   }
   if (inflationRatePct <= 4.5) {
     return 'text-slate-300 bg-slate-800/60 border-slate-600/30'
   }
-  return 'text-red-400 bg-red-950/60 border-red-500/30'
+  return 'text-rose-400 bg-rose-950/60 border-rose-500/30'
 }
 
 /**
- * Returns hex color code for choropleth map fills (Cyan to Amber gradient).
+ * Returns hex color code for choropleth map fills (Emerald -> Amber -> Rose).
  */
 export function getInflationHexColor(inflationRatePct: number | null | undefined): string {
   if (inflationRatePct === null || inflationRatePct === undefined) return '#334155'
-  if (inflationRatePct <= 2) return '#22d3ee'   // cyan-400
-  if (inflationRatePct <= 4.5) return '#94a3b8'  // slate-400 (neutral)
-  return '#f87171'                               // red-400
+  if (inflationRatePct <= 2.5) return '#10b981' // emerald-500
+  if (inflationRatePct <= 4.5) return '#f59e0b' // amber-500 (caution)
+  return '#f43f5e'                              // rose-500
 }
 
 /**

@@ -2,16 +2,16 @@ import React from 'react'
 import type { TopCompanyItem } from '../services/topCompaniesApi'
 
 const SEGMENT_COLORS = [
-  { bar: 'bg-amber-400', dot: 'bg-amber-400', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
-  { bar: 'bg-indigo-400', dot: 'bg-indigo-400', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' },
-  { bar: 'bg-cyan-400', dot: 'bg-cyan-400', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
-  { bar: 'bg-emerald-400', dot: 'bg-emerald-400', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
-  { bar: 'bg-purple-400', dot: 'bg-purple-400', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
+  { bar: 'bg-indigo-400', dot: 'bg-indigo-400', badge: 'bg-indigo-500/25 text-indigo-200 border-indigo-400/50' },
+  { bar: 'bg-indigo-500', dot: 'bg-indigo-500', badge: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30' },
+  { bar: 'bg-indigo-600', dot: 'bg-indigo-600', badge: 'bg-slate-800/90 text-slate-300 border-slate-700/80' },
+  { bar: 'bg-indigo-700', dot: 'bg-indigo-700', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
+  { bar: 'bg-indigo-800', dot: 'bg-indigo-800', badge: 'bg-slate-800/90 text-slate-400 border-slate-700/80' },
 ]
 
 export function getRankBadgeStyle(rank: number): string {
-  if (rank === 1) return 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-  if (rank === 2) return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
+  if (rank === 1) return 'bg-indigo-500/25 text-indigo-200 border-indigo-400/50'
+  if (rank === 2) return 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30'
   return 'bg-slate-800/90 text-slate-400 border-slate-700/80'
 }
 

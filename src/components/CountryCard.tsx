@@ -96,7 +96,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                 title={`${t.modalInflationTitle}: ${inflationRatePct.toFixed(1)}%`}
               >
                 {inflationRatePct > 4.5 && (
-                  <AlertCircle className="w-2.5 h-2.5 text-amber-400 shrink-0" />
+                  <AlertCircle className="w-2.5 h-2.5 text-rose-400 shrink-0" />
                 )}
                 {t.cardInflationRate} {inflationRatePct.toFixed(1)}%
               </span>

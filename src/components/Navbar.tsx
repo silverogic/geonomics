@@ -122,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   />
                   <span>{label}</span>
                   {isActive && (
-                    <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-400 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
+                    <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-gradient-to-r from-indigo-500 via-indigo-400 to-indigo-300 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
                   )}
                 </button>
               )

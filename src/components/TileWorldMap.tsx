@@ -239,7 +239,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                     !isRegionMatch
                       ? 'opacity-15 grayscale scale-90'
                       : isSearchMatch
-                        ? 'ring-2 ring-cyan-400 shadow-lg shadow-cyan-500/50 scale-125 z-20'
+                        ? 'ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/50 scale-125 z-20'
                         : isHighlighted
                           ? 'ring-2 ring-white shadow-xl shadow-indigo-500/40 scale-125 z-20 brightness-125'
                           : 'hover:brightness-125 hover:scale-115'
@@ -338,11 +338,11 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   <span>{t.metricInflation}:</span>
                   <span
                     className={`font-mono font-semibold ${
-                      activeHoveredItem.inflationRatePct <= 2
-                        ? 'text-cyan-400'
+                      activeHoveredItem.inflationRatePct <= 2.5
+                        ? 'text-emerald-400'
                         : activeHoveredItem.inflationRatePct <= 4.5
                         ? 'text-slate-300'
-                        : 'text-red-400'
+                        : 'text-rose-400'
                     }`}
                   >
                     {activeHoveredItem.inflationRatePct.toFixed(1)}%
@@ -368,7 +368,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
               {activeHoveredItem.fuelPriceUsd !== null && activeHoveredItem.fuelPriceUsd !== undefined && (
                 <div
                   className={`flex items-center justify-between ${
-                    metric === 'fuelPrice' ? 'text-amber-300 font-semibold' : 'text-slate-400'
+                    metric === 'fuelPrice' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
@@ -392,7 +392,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                 return (
                   <div
                     className={`flex items-center justify-between ${
-                      metric === 'bigMac' ? 'text-amber-300 font-semibold' : 'text-slate-400'
+                      metric === 'bigMac' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
                     }`}
                   >
                     <span className="flex items-center gap-1.5">

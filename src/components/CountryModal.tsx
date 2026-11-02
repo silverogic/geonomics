@@ -145,7 +145,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                   {country.id}
                 </span>
                 <span
-                  className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0"
+                  className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 shrink-0"
                   title={`${t.modalRankTitle} (${t.modalRankSub})`}
                 >
                   <Award className="w-3.5 h-3.5" />
@@ -242,7 +242,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 {detail?.inflationRatePct !== null &&
                   detail?.inflationRatePct !== undefined &&
                   detail.inflationRatePct > 4.5 && (
-                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
                   )}
                 {detail?.inflationRatePct !== null && detail?.inflationRatePct !== undefined
                   ? `${detail.inflationRatePct.toFixed(1)}%`

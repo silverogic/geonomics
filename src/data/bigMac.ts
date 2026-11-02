@@ -28,12 +28,12 @@ export interface BigMacDataset {
 
 export const BIG_MAC_DATA = rawData as BigMacDataset
 
-// Color constants for Big Mac Map & Legend
+// Color constants for Big Mac Map & Legend (Emerald -> Amber -> Rose)
 export const BIG_MAC_COLOR_STRONG_UNDER = '#059669' // Emerald-600 (Super Cheap < -35%)
-export const BIG_MAC_COLOR_UNDER = '#06b6d4'        // Cyan-500 (Undervalued -35% ~ -10%)
+export const BIG_MAC_COLOR_UNDER = '#34d399'        // Emerald-400 (Undervalued -35% ~ -10%)
 export const BIG_MAC_COLOR_FAIR = '#f59e0b'         // Amber-500 (Fair Baseline -10% ~ +10%)
-export const BIG_MAC_COLOR_OVER = '#f97316'         // Orange-500 (Overvalued +10% ~ +30%)
-export const BIG_MAC_COLOR_STRONG_OVER = '#f43f5e'  // Rose-500 (Super Expensive > +30%)
+export const BIG_MAC_COLOR_OVER = '#fb7185'         // Rose-400 (Overvalued +10% ~ +30%)
+export const BIG_MAC_COLOR_STRONG_OVER = '#e11d48'  // Rose-600 (Super Expensive > +30%)
 export const BIG_MAC_COLOR_NODATA = '#1e293b'       // Slate-800
 
 /**

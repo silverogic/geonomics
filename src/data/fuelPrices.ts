@@ -20,10 +20,10 @@ export interface FuelPricesDataset {
 
 export const FUEL_DATA = rawData as FuelPricesDataset
 
-// Color thresholds for Option 3 gradient (Teal -> Amber -> Deep Orange)
-export const FUEL_COLOR_LOW = '#0d9488' // Teal-600 (Subsidized / low tax / oil producers)
-export const FUEL_COLOR_MID = '#d97706' // Amber-600 (World average benchmark ~$1.30/L)
-export const FUEL_COLOR_HIGH = '#ea580c' // Orange-600 (High fuel tax / carbon tax $2.20+/L)
+// Color thresholds for Fuel Price gradient (Emerald -> Amber -> Rose)
+export const FUEL_COLOR_LOW = '#10b981' // Emerald-500 (Subsidized / low tax / oil producers)
+export const FUEL_COLOR_MID = '#f59e0b' // Amber-500 (World average benchmark ~$1.30/L)
+export const FUEL_COLOR_HIGH = '#f43f5e' // Rose-500 (High fuel tax / carbon tax $2.20+/L)
 
 export const FUEL_MIN_PRICE = 0.40
 export const FUEL_MID_PRICE = 1.30

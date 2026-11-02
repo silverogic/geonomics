@@ -1022,10 +1022,10 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                                 <span
                                   className={`text-[10px] font-mono font-medium hidden sm:inline ${
                                     item.bigMacValuationPct < -15
-                                      ? 'text-cyan-400'
+                                      ? 'text-emerald-400'
                                       : item.bigMacValuationPct > 15
                                       ? 'text-rose-400'
-                                      : 'text-amber-400'
+                                      : 'text-slate-400'
                                   }`}
                                 >
                                   {item.bigMacValuationPct > 0 ? `+${item.bigMacValuationPct.toFixed(0)}%` : `${item.bigMacValuationPct.toFixed(0)}%`}
@@ -1081,11 +1081,11 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                           {item.inflationRatePct !== null ? (
                             <span
                               className={`font-mono font-semibold text-xs sm:text-sm ${
-                                item.inflationRatePct <= 2
-                                  ? 'text-cyan-400'
+                                item.inflationRatePct <= 2.5
+                                  ? 'text-emerald-400'
                                   : item.inflationRatePct <= 4.5
                                     ? 'text-slate-300'
-                                    : 'text-red-400'
+                                    : 'text-rose-400'
                               }`}
                               title={`${t.modalInflationTitle}: ${item.inflationRatePct.toFixed(1)}%`}
                             >

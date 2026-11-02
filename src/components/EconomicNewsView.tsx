@@ -446,7 +446,7 @@ export const EconomicNewsView: React.FC<EconomicNewsViewProps> = ({
                 onClick={() => setShowOriginal((v) => !v)}
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition-all cursor-pointer shrink-0 ${
                   showOriginal
-                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/40'
+                    ? 'bg-slate-800 text-slate-200 border-slate-600'
                     : 'bg-indigo-600/20 text-indigo-300 border-indigo-500/40 hover:bg-indigo-600/30'
                 }`}
               >

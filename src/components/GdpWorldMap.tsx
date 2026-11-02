@@ -202,18 +202,18 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       if (metric === 'gdp') {
         const gdp = item.totalGdpUsd
-        if (gdp >= 10_000_000_000_000) return '#fbbf24' // $10T+ Vivid Gold (USA, China)
-        if (gdp >= 2_000_000_000_000) return '#34d399' // $2T-$10T Bright Mint/Emerald (Germany, Japan, India, UK, France, Italy, Brazil, Canada)
-        if (gdp >= 500_000_000_000) return '#10b981' // $500B-$2T Medium Emerald (South Korea, Australia, Mexico, Spain, Indonesia, etc.)
-        if (gdp >= 100_000_000_000) return '#047857' // $100B-$500B Deep Forest (Netherlands, Saudi, Switzerland, Poland, etc.)
+        if (gdp >= 10_000_000_000_000) return '#6ee7b7' // $10T+ Vivid Mint Emerald (USA, China)
+        if (gdp >= 2_000_000_000_000) return '#34d399' // $2T-$10T Bright Emerald
+        if (gdp >= 500_000_000_000) return '#10b981' // $500B-$2T Medium Emerald
+        if (gdp >= 100_000_000_000) return '#047857' // $100B-$500B Deep Forest
         return '#064e3b' // < $100B Dark Forest Slate
       }
 
       if (metric === 'perCapita') {
         const pcap = item.gdpPerCapitaUsd
-        if (pcap >= 50_000) return '#facc15' // Champagne Gold ($50K+)
-        if (pcap >= 25_000) return '#06b6d4' // Cyan ($25K ~ $50K)
-        if (pcap >= 12_000) return '#6366f1' // Indigo ($12K ~ $25K)
+        if (pcap >= 50_000) return '#a5b4fc' // Light Indigo ($50K+)
+        if (pcap >= 25_000) return '#6366f1' // Indigo ($25K ~ $50K)
+        if (pcap >= 12_000) return '#4338ca' // Deep Indigo ($12K ~ $25K)
         return '#475569' // Slate (< $12K)
       }
 
@@ -519,7 +519,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                           {/* 0.7s Long-press Progress Bar Indicator */}
                           {pressingRegion === reg && (
                             <div
-                              className="absolute bottom-0 left-0 h-[2.5px] bg-gradient-to-r from-indigo-500 via-sky-400 to-cyan-300 pointer-events-none rounded-full"
+                              className="absolute bottom-0 left-0 h-[2.5px] bg-gradient-to-r from-indigo-600 via-indigo-400 to-indigo-300 pointer-events-none rounded-full"
                               style={{
                                 width: '100%',
                                 animation: 'longPressBar 0.7s linear forwards',
@@ -679,7 +679,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   {metric === 'gdp' && (
                     <>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#fbbf24] shadow-sm"></span>
+                        <span className="w-3.5 h-3.5 rounded bg-[#6ee7b7] shadow-sm"></span>
                         <span className="text-slate-300 font-mono font-medium">$10T+</span>
                       </div>
                       <div className="flex items-center gap-1.5">
@@ -704,15 +704,15 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   {metric === 'perCapita' && (
                     <>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#facc15] shadow-sm"></span>
+                        <span className="w-3.5 h-3.5 rounded bg-[#a5b4fc] shadow-sm"></span>
                         <span className="text-slate-300 font-mono font-medium">&ge; $50K</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                        <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
                         <span className="text-slate-300 font-mono font-medium">$25K ~ $50K</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
+                        <span className="w-3.5 h-3.5 rounded bg-[#4338ca] shadow-sm"></span>
                         <span className="text-slate-300 font-mono font-medium">$12K ~ $25K</span>
                       </div>
                       <div className="flex items-center gap-1.5">
@@ -778,28 +778,28 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   {metric === 'inflation' && (
                     <>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                        <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
                         <span className="text-slate-300 font-mono font-medium">
                           &le; 2.5%
-                          <span className="text-[10px] text-cyan-400 ml-1 font-sans font-semibold">
+                          <span className="text-[10px] text-emerald-400 ml-1 font-sans font-semibold">
                             ({lang === 'ko' ? '안정' : lang === 'ja' ? '安定' : lang === 'es' ? 'Estable' : lang === 'zh' ? '稳定' : 'Stable'})
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#fcd34d] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">
-                          2.5% ~ 4.5%
-                          <span className="text-[10px] text-amber-200 ml-1 font-sans font-semibold">
-                            ({lang === 'ko' ? '상승' : lang === 'ja' ? '上昇' : lang === 'es' ? 'Moderada' : lang === 'zh' ? '温和' : 'Moderate'})
                           </span>
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
                         <span className="text-slate-300 font-mono font-medium">
-                          &gt; 4.5%
+                          2.5% ~ 4.5%
                           <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
+                            ({lang === 'ko' ? '주의' : lang === 'ja' ? '上昇' : lang === 'es' ? 'Moderada' : lang === 'zh' ? '温和' : 'Moderate'})
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#f43f5e] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">
+                          &gt; 4.5%
+                          <span className="text-[10px] text-rose-400 ml-1 font-sans font-semibold">
                             ({lang === 'ko' ? '과열' : lang === 'ja' ? '過熱' : lang === 'es' ? 'Alta' : lang === 'zh' ? '过热' : 'High'})
                           </span>
                         </span>
@@ -809,7 +809,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
                   {metric === 'fuelPrice' && (
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full md:w-auto">
-                      {/* Continuous Spectrum Bar (Option 3: Teal -> Amber -> Deep Orange) */}
+                      {/* Continuous Spectrum Bar (Emerald -> Amber -> Rose) */}
                       <div className="flex flex-col gap-1 w-full sm:w-60">
                         <div
                           className="h-2.5 rounded-full w-full shadow-inner border border-slate-700/60"
@@ -826,15 +826,15 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       {/* Range Labels */}
                       <div className="flex items-center gap-3 text-[11px]">
                         <div className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#0d9488] shadow-sm"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] shadow-sm"></span>
                           <span className="text-slate-300 font-medium">{t.fuelLowPrice}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#d97706] shadow-sm"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b] shadow-sm"></span>
                           <span className="text-slate-300 font-medium">{t.fuelMidPrice}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#ea580c] shadow-sm"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#f43f5e] shadow-sm"></span>
                           <span className="text-slate-300 font-medium">{t.fuelHighPrice}</span>
                         </div>
                         <span className="hidden xl:inline text-[10px] text-slate-500 border-l border-slate-800 pl-2">
@@ -852,7 +852,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                           <span className="text-slate-300 font-medium">{t.bigMacStrongUnder}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-3 h-3 rounded-full bg-[#06b6d4] shadow-sm"></span>
+                          <span className="w-3 h-3 rounded-full bg-[#34d399] shadow-sm"></span>
                           <span className="text-slate-300 font-medium">{t.bigMacUnder}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
@@ -860,11 +860,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                           <span className="text-slate-300 font-medium">{t.bigMacFair}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-3 h-3 rounded-full bg-[#f97316] shadow-sm"></span>
+                          <span className="w-3 h-3 rounded-full bg-[#fb7185] shadow-sm"></span>
                           <span className="text-slate-300 font-medium">{t.bigMacOver}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-3 h-3 rounded-full bg-[#f43f5e] shadow-sm"></span>
+                          <span className="w-3 h-3 rounded-full bg-[#e11d48] shadow-sm"></span>
                           <span className="text-slate-300 font-medium">{t.bigMacStrongOver}</span>
                         </div>
                       </div>
@@ -1162,7 +1162,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               {/* Open Modal CTA Button */}
               <button
                 onClick={() => onSelectCountry(inspectedCountryItem.country)}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>{t.viewDetailsBtn}</span>
                 <ExternalLink className="w-4 h-4" />

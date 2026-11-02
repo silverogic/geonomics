@@ -48,14 +48,14 @@ export const Spinner: React.FC<SpinnerProps> = ({
         {/* Ambient neon backdrop glow */}
         {showGlow && (
           <div
-            className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500/25 via-blue-500/20 to-cyan-400/25 blur-md animate-pulse pointer-events-none"
+            className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/25 via-indigo-500/20 to-indigo-400/25 blur-md animate-pulse pointer-events-none"
             style={{ transform: 'scale(1.2)' }}
           />
         )}
 
         {/* Central glowing micro orb */}
         <div
-          className="absolute rounded-full bg-gradient-to-tr from-indigo-500 via-blue-400 to-cyan-300 opacity-70 animate-ping pointer-events-none"
+          className="absolute rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-400 to-indigo-300 opacity-70 animate-ping pointer-events-none"
           style={{
             width: `${Math.max(4, Math.round(pixelSize * 0.18))}px`,
             height: `${Math.max(4, Math.round(pixelSize * 0.18))}px`,
@@ -73,9 +73,9 @@ export const Spinner: React.FC<SpinnerProps> = ({
         >
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#6366f1" />   {/* indigo-500 */}
-              <stop offset="50%" stopColor="#3b82f6" />  {/* blue-500 */}
-              <stop offset="100%" stopColor="#06b6d4" /> {/* cyan-400 */}
+              <stop offset="0%" stopColor="#4f46e5" />   {/* indigo-600 */}
+              <stop offset="50%" stopColor="#6366f1" />  {/* indigo-500 */}
+              <stop offset="100%" stopColor="#a5b4fc" /> {/* indigo-300 */}
             </linearGradient>
             {showGlow && (
               <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
