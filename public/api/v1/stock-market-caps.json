@@ -1,7 +1,7 @@
 {
   "USA": {
-    "marketCapUsd": 82363552352688,
-    "baseCapUsd": 82363552352688,
+    "marketCapUsd": 82361301933926,
+    "baseCapUsd": 82361301933926,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 4719,
@@ -9,8 +9,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (NASDAQ/NYSE, 4719 stocks)"
   },
   "CHN": {
-    "marketCapUsd": 10621276082359,
-    "baseCapUsd": 10621276082359,
+    "marketCapUsd": 10628169447255,
+    "baseCapUsd": 10628169447255,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 2310,
@@ -18,26 +18,26 @@
     "source": "TradingView Mainboard Exchange Aggregate (SSE, 2310 stocks)"
   },
   "JPN": {
-    "marketCapUsd": 8393285814697,
-    "baseCapUsd": 8393285814697,
+    "marketCapUsd": 8401223837995,
+    "baseCapUsd": 8401223837995,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 3739,
+    "listedCount": 3738,
     "countryName": "Japan",
-    "source": "TradingView Mainboard Exchange Aggregate (TSE, 3739 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (TSE, 3738 stocks)"
   },
   "IND": {
-    "marketCapUsd": 4926071421004,
-    "baseCapUsd": 4926071421004,
+    "marketCapUsd": 4942443354957,
+    "baseCapUsd": 4942443354957,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 3158,
+    "listedCount": 3154,
     "countryName": "India",
-    "source": "TradingView Mainboard Exchange Aggregate (NSE, 3158 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (NSE, 3154 stocks)"
   },
   "TWN": {
-    "marketCapUsd": 4534530754821,
-    "baseCapUsd": 4534530754821,
+    "marketCapUsd": 4526408854553,
+    "baseCapUsd": 4526408854553,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 1094,
@@ -45,8 +45,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (TWSE, 1094 stocks)"
   },
   "CAN": {
-    "marketCapUsd": 4355343935806,
-    "baseCapUsd": 4355343935806,
+    "marketCapUsd": 4360638188155,
+    "baseCapUsd": 4360638188155,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 653,
@@ -54,8 +54,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (TSX, 653 stocks)"
   },
   "GBR": {
-    "marketCapUsd": 4015536906434,
-    "baseCapUsd": 4015536906434,
+    "marketCapUsd": 4019910500875,
+    "baseCapUsd": 4019910500875,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 1034,
@@ -63,8 +63,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (LSE, 1034 stocks)"
   },
   "KOR": {
-    "marketCapUsd": 3440312417053,
-    "baseCapUsd": 3440312417053,
+    "marketCapUsd": 3454203315103,
+    "baseCapUsd": 3454203315103,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 900,
@@ -72,17 +72,17 @@
     "source": "TradingView Mainboard Exchange Aggregate (KOSPI, 900 stocks)"
   },
   "HKG": {
-    "marketCapUsd": 3339643826830,
-    "baseCapUsd": 3339643826830,
+    "marketCapUsd": 3340194544675,
+    "baseCapUsd": 3340194544675,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 2377,
+    "listedCount": 2378,
     "countryName": "Hong Kong",
-    "source": "TradingView Mainboard Exchange Aggregate (HKEX, 2377 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (HKEX, 2378 stocks)"
   },
   "FRA": {
-    "marketCapUsd": 2950628405931,
-    "baseCapUsd": 2950628405931,
+    "marketCapUsd": 2945770578722,
+    "baseCapUsd": 2945770578722,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 545,
@@ -90,8 +90,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (EURONEXT, 545 stocks)"
   },
   "DEU": {
-    "marketCapUsd": 2797553338974,
-    "baseCapUsd": 2797553338974,
+    "marketCapUsd": 2792948368947,
+    "baseCapUsd": 2792948368947,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 414,
@@ -99,8 +99,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (XETR/FWB, 414 stocks)"
   },
   "CHE": {
-    "marketCapUsd": 2617584031340,
-    "baseCapUsd": 2617584031340,
+    "marketCapUsd": 2616289265949,
+    "baseCapUsd": 2616289265949,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 197,
@@ -108,26 +108,26 @@
     "source": "TradingView Mainboard Exchange Aggregate (SIX, 197 stocks)"
   },
   "SAU": {
-    "marketCapUsd": 2430388779592,
-    "baseCapUsd": 2430388779592,
+    "marketCapUsd": 2430412692165,
+    "baseCapUsd": 2430412692165,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 387,
+    "listedCount": 388,
     "countryName": "Saudi Arabia",
-    "source": "TradingView Mainboard Exchange Aggregate (TADAWUL, 387 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (TADAWUL, 388 stocks)"
   },
   "AUS": {
-    "marketCapUsd": 2044977388210,
-    "baseCapUsd": 2044977388210,
+    "marketCapUsd": 2046176122070,
+    "baseCapUsd": 2046176122070,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 1573,
+    "listedCount": 1569,
     "countryName": "Australia",
-    "source": "TradingView Mainboard Exchange Aggregate (ASX, 1573 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (ASX, 1569 stocks)"
   },
   "NLD": {
-    "marketCapUsd": 1507632633790,
-    "baseCapUsd": 1507632633790,
+    "marketCapUsd": 1505152205023,
+    "baseCapUsd": 1505152205023,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 82,
@@ -135,8 +135,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (EURONEXT, 82 stocks)"
   },
   "SWE": {
-    "marketCapUsd": 1301372551986,
-    "baseCapUsd": 1301372551986,
+    "marketCapUsd": 1307713812888,
+    "baseCapUsd": 1307713812888,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 658,
@@ -144,8 +144,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (OMXSTO, 658 stocks)"
   },
   "ESP": {
-    "marketCapUsd": 1298359728633,
-    "baseCapUsd": 1298359728633,
+    "marketCapUsd": 1296222147634,
+    "baseCapUsd": 1296222147634,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 237,
@@ -153,8 +153,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BME, 237 stocks)"
   },
   "ITA": {
-    "marketCapUsd": 1171058610714,
-    "baseCapUsd": 1171058610714,
+    "marketCapUsd": 1169130614504,
+    "baseCapUsd": 1169130614504,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 386,
@@ -162,8 +162,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (MIL, 386 stocks)"
   },
   "ARE": {
-    "marketCapUsd": 915851937323,
-    "baseCapUsd": 915851937323,
+    "marketCapUsd": 916019328046,
+    "baseCapUsd": 916019328046,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 141,
@@ -171,8 +171,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (ADX/DFM, 141 stocks)"
   },
   "BRA": {
-    "marketCapUsd": 860927898550,
-    "baseCapUsd": 860927898550,
+    "marketCapUsd": 852564864457,
+    "baseCapUsd": 852564864457,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 274,
@@ -180,17 +180,17 @@
     "source": "TradingView Mainboard Exchange Aggregate (BMFBOVESPA, 274 stocks)"
   },
   "SGP": {
-    "marketCapUsd": 763543264319,
-    "baseCapUsd": 763543264319,
+    "marketCapUsd": 764204653385,
+    "baseCapUsd": 764204653385,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 490,
+    "listedCount": 486,
     "countryName": "Singapore",
-    "source": "TradingView Mainboard Exchange Aggregate (SGX, 490 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (SGX, 486 stocks)"
   },
   "DNK": {
-    "marketCapUsd": 634076416878,
-    "baseCapUsd": 634076416878,
+    "marketCapUsd": 632804067543,
+    "baseCapUsd": 632804067543,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 134,
@@ -198,8 +198,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (OMXCOP, 134 stocks)"
   },
   "RUS": {
-    "marketCapUsd": 586848310849,
-    "baseCapUsd": 586848310849,
+    "marketCapUsd": 585191918352,
+    "baseCapUsd": 585191918352,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 222,
@@ -207,8 +207,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (MOEX, 222 stocks)"
   },
   "THA": {
-    "marketCapUsd": 567501762496,
-    "baseCapUsd": 567501762496,
+    "marketCapUsd": 567316984594,
+    "baseCapUsd": 567316984594,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 873,
@@ -216,8 +216,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (SET, 873 stocks)"
   },
   "ISR": {
-    "marketCapUsd": 551987757151,
-    "baseCapUsd": 551987757151,
+    "marketCapUsd": 547159251104,
+    "baseCapUsd": 547159251104,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 499,
@@ -225,8 +225,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (TASE, 499 stocks)"
   },
   "MEX": {
-    "marketCapUsd": 544429868233,
-    "baseCapUsd": 544429868233,
+    "marketCapUsd": 546271114934,
+    "baseCapUsd": 546271114934,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 114,
@@ -234,8 +234,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BMV, 114 stocks)"
   },
   "NOR": {
-    "marketCapUsd": 536453719897,
-    "baseCapUsd": 536453719897,
+    "marketCapUsd": 539030365541,
+    "baseCapUsd": 539030365541,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 272,
@@ -243,8 +243,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (OSL, 272 stocks)"
   },
   "MYS": {
-    "marketCapUsd": 498578537852,
-    "baseCapUsd": 498578537852,
+    "marketCapUsd": 498781294476,
+    "baseCapUsd": 498781294476,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 1101,
@@ -252,8 +252,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (MYX, 1101 stocks)"
   },
   "BEL": {
-    "marketCapUsd": 480190092838,
-    "baseCapUsd": 480190092838,
+    "marketCapUsd": 479400220322,
+    "baseCapUsd": 479400220322,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 106,
@@ -261,17 +261,17 @@
     "source": "TradingView Mainboard Exchange Aggregate (EURONEXT, 106 stocks)"
   },
   "IDN": {
-    "marketCapUsd": 476202825704,
-    "baseCapUsd": 476202825704,
+    "marketCapUsd": 475836323889,
+    "baseCapUsd": 475836323889,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 812,
+    "listedCount": 811,
     "countryName": "Indonesia",
-    "source": "TradingView Mainboard Exchange Aggregate (IDX, 812 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (IDX, 811 stocks)"
   },
   "ZAF": {
-    "marketCapUsd": 463794203310,
-    "baseCapUsd": 463794203310,
+    "marketCapUsd": 460693204710,
+    "baseCapUsd": 460693204710,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 197,
@@ -279,8 +279,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (JSE, 197 stocks)"
   },
   "FIN": {
-    "marketCapUsd": 382441502930,
-    "baseCapUsd": 382441502930,
+    "marketCapUsd": 381814539364,
+    "baseCapUsd": 381814539364,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 180,
@@ -288,8 +288,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (OMXHEX, 180 stocks)"
   },
   "POL": {
-    "marketCapUsd": 368924241840,
-    "baseCapUsd": 368924241840,
+    "marketCapUsd": 367331064612,
+    "baseCapUsd": 367331064612,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 701,
@@ -297,17 +297,17 @@
     "source": "TradingView Mainboard Exchange Aggregate (GPW, 701 stocks)"
   },
   "VNM": {
-    "marketCapUsd": 315208687426,
-    "baseCapUsd": 315208687426,
+    "marketCapUsd": 315186690451,
+    "baseCapUsd": 315186690451,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 391,
+    "listedCount": 390,
     "countryName": "Vietnam",
-    "source": "TradingView Mainboard Exchange Aggregate (HOSE, 391 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (HOSE, 390 stocks)"
   },
   "TUR": {
-    "marketCapUsd": 276552543275,
-    "baseCapUsd": 276552543275,
+    "marketCapUsd": 276271064859,
+    "baseCapUsd": 276271064859,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 614,
@@ -315,8 +315,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BIST, 614 stocks)"
   },
   "AUT": {
-    "marketCapUsd": 243840097162,
-    "baseCapUsd": 243840097162,
+    "marketCapUsd": 243438646049,
+    "baseCapUsd": 243438646049,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 57,
@@ -350,8 +350,8 @@
     "source": "World Bank Official Exchange Statistics (2025)"
   },
   "COL": {
-    "marketCapUsd": 172746323858,
-    "baseCapUsd": 172746323858,
+    "marketCapUsd": 168919664785,
+    "baseCapUsd": 168919664785,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 51,
@@ -359,8 +359,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BVC, 51 stocks)"
   },
   "GRC": {
-    "marketCapUsd": 164355279298,
-    "baseCapUsd": 164355279298,
+    "marketCapUsd": 164084689634,
+    "baseCapUsd": 164084689634,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 131,
@@ -368,13 +368,13 @@
     "source": "TradingView Mainboard Exchange Aggregate (ATHEX, 131 stocks)"
   },
   "KWT": {
-    "marketCapUsd": 160800419287,
-    "baseCapUsd": 160800419287,
+    "marketCapUsd": 160149109003,
+    "baseCapUsd": 160149109003,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 131,
+    "listedCount": 130,
     "countryName": "Kuwait",
-    "source": "TradingView Mainboard Exchange Aggregate (KSE, 131 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (KSE, 130 stocks)"
   },
   "KAZ": {
     "marketCapUsd": 158407040000,
@@ -394,8 +394,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (QSE, 55 stocks)"
   },
   "PER": {
-    "marketCapUsd": 122785317834,
-    "baseCapUsd": 122785317834,
+    "marketCapUsd": 122550967151,
+    "baseCapUsd": 122550967151,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 51,
@@ -403,8 +403,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BVL, 51 stocks)"
   },
   "IRL": {
-    "marketCapUsd": 121716985049,
-    "baseCapUsd": 121716985049,
+    "marketCapUsd": 121516593810,
+    "baseCapUsd": 121516593810,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 17,
@@ -412,8 +412,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (EURONEXT, 17 stocks)"
   },
   "NZL": {
-    "marketCapUsd": 100309604526,
-    "baseCapUsd": 100309604526,
+    "marketCapUsd": 100320299654,
+    "baseCapUsd": 100320299654,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 102,
@@ -421,8 +421,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (NZX, 102 stocks)"
   },
   "ROU": {
-    "marketCapUsd": 99741584289,
-    "baseCapUsd": 99741584289,
+    "marketCapUsd": 99565042066,
+    "baseCapUsd": 99565042066,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 106,
@@ -430,8 +430,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BVB, 106 stocks)"
   },
   "MAR": {
-    "marketCapUsd": 94141071451,
-    "baseCapUsd": 94141071451,
+    "marketCapUsd": 94057514287,
+    "baseCapUsd": 94057514287,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 73,
@@ -439,8 +439,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (CSEMA, 73 stocks)"
   },
   "PRT": {
-    "marketCapUsd": 92885143583,
-    "baseCapUsd": 92885143583,
+    "marketCapUsd": 92732220234,
+    "baseCapUsd": 92732220234,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 32,
@@ -457,8 +457,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (NSENG, 129 stocks)"
   },
   "HUN": {
-    "marketCapUsd": 69230450717,
-    "baseCapUsd": 69230450717,
+    "marketCapUsd": 69048694629,
+    "baseCapUsd": 69048694629,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 48,
@@ -466,8 +466,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BET, 48 stocks)"
   },
   "EGY": {
-    "marketCapUsd": 66212152556,
-    "baseCapUsd": 66212152556,
+    "marketCapUsd": 66354461647,
+    "baseCapUsd": 66354461647,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 239,
@@ -475,8 +475,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (EGX, 239 stocks)"
   },
   "ARG": {
-    "marketCapUsd": 66014841821,
-    "baseCapUsd": 66014841821,
+    "marketCapUsd": 66319525707,
+    "baseCapUsd": 66319525707,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 60,
@@ -493,8 +493,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (PSX, 351 stocks)"
   },
   "CZE": {
-    "marketCapUsd": 52428968944,
-    "baseCapUsd": 52428968944,
+    "marketCapUsd": 52369532149,
+    "baseCapUsd": 52369532149,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 23,
@@ -542,8 +542,8 @@
     "source": "IMF WEO Nominal GDP Dynamic Model"
   },
   "HRV": {
-    "marketCapUsd": 39401938210,
-    "baseCapUsd": 39401938210,
+    "marketCapUsd": 39337068026,
+    "baseCapUsd": 39337068026,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 55,
@@ -559,8 +559,8 @@
     "source": "World Bank Official Exchange Statistics (2025)"
   },
   "KEN": {
-    "marketCapUsd": 30320077937,
-    "baseCapUsd": 30320077937,
+    "marketCapUsd": 30324146608,
+    "baseCapUsd": 30324146608,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 55,
@@ -617,8 +617,8 @@
     "source": "World Bank Official Exchange Statistics (2025)"
   },
   "SVN": {
-    "marketCapUsd": 23476243210,
-    "baseCapUsd": 23476243210,
+    "marketCapUsd": 23437592619,
+    "baseCapUsd": 23437592619,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 14,
@@ -674,15 +674,6 @@
     "countryName": "Ghana",
     "source": "World Bank Official Exchange Statistics (2025)"
   },
-  "LUX": {
-    "marketCapUsd": 16414762979,
-    "baseCapUsd": 16414762979,
-    "year": "2026 Live",
-    "indexMultiplier": 1,
-    "listedCount": 8,
-    "countryName": "Luxembourg",
-    "source": "TradingView Mainboard Exchange Aggregate (LUXSE, 8 stocks)"
-  },
   "COD": {
     "marketCapUsd": 16362800000,
     "baseCapUsd": 16362800000,
@@ -691,41 +682,50 @@
     "countryName": "DR Congo",
     "source": "IMF WEO Nominal GDP Dynamic Model"
   },
-  "BHR": {
-    "marketCapUsd": 15504076680,
-    "baseCapUsd": 15504076680,
+  "LUX": {
+    "marketCapUsd": 16362447905,
+    "baseCapUsd": 16362447905,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 15,
+    "listedCount": 8,
+    "countryName": "Luxembourg",
+    "source": "TradingView Mainboard Exchange Aggregate (LUXSE, 8 stocks)"
+  },
+  "BHR": {
+    "marketCapUsd": 15668878769,
+    "baseCapUsd": 15668878769,
+    "year": "2026 Live",
+    "indexMultiplier": 1,
+    "listedCount": 16,
     "countryName": "Bahrain",
-    "source": "TradingView Mainboard Exchange Aggregate (BAHRAIN, 15 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (BAHRAIN, 16 stocks)"
   },
   "ISL": {
-    "marketCapUsd": 14782531506,
-    "baseCapUsd": 14782531506,
+    "marketCapUsd": 14737616182,
+    "baseCapUsd": 14737616182,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 24,
     "countryName": "Iceland",
     "source": "TradingView Mainboard Exchange Aggregate (OMXICE, 24 stocks)"
   },
-  "BGR": {
-    "marketCapUsd": 14227086876,
-    "baseCapUsd": 14227086876,
-    "year": "2026 Live",
-    "indexMultiplier": 1,
-    "listedCount": 110,
-    "countryName": "Bulgaria",
-    "source": "TradingView Mainboard Exchange Aggregate (BSESOF, 110 stocks)"
-  },
   "TUN": {
-    "marketCapUsd": 14216862708,
-    "baseCapUsd": 14216862708,
+    "marketCapUsd": 14277008991,
+    "baseCapUsd": 14277008991,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 57,
     "countryName": "Tunisia",
     "source": "TradingView Mainboard Exchange Aggregate (BVMT, 57 stocks)"
+  },
+  "BGR": {
+    "marketCapUsd": 14203663822,
+    "baseCapUsd": 14203663822,
+    "year": "2026 Live",
+    "indexMultiplier": 1,
+    "listedCount": 110,
+    "countryName": "Bulgaria",
+    "source": "TradingView Mainboard Exchange Aggregate (BSESOF, 110 stocks)"
   },
   "GEO": {
     "marketCapUsd": 14191564414,
@@ -856,8 +856,8 @@
     "source": "IMF WEO Nominal GDP Dynamic Model"
   },
   "CYP": {
-    "marketCapUsd": 7261095286,
-    "baseCapUsd": 7261095286,
+    "marketCapUsd": 7249140834,
+    "baseCapUsd": 7249140834,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 26,
@@ -873,8 +873,8 @@
     "source": "IMF WEO Nominal GDP Dynamic Model"
   },
   "LTU": {
-    "marketCapUsd": 6880065865,
-    "baseCapUsd": 6880065865,
+    "marketCapUsd": 6868738728,
+    "baseCapUsd": 6868738728,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 24,
@@ -890,8 +890,8 @@
     "source": "IMF WEO Nominal GDP Dynamic Model"
   },
   "VEN": {
-    "marketCapUsd": 6561822440,
-    "baseCapUsd": 6561822440,
+    "marketCapUsd": 6556005222,
+    "baseCapUsd": 6556005222,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 20,
@@ -939,8 +939,8 @@
     "source": "World Bank Official Exchange Statistics (2025)"
   },
   "EST": {
-    "marketCapUsd": 5384483229,
-    "baseCapUsd": 5384483229,
+    "marketCapUsd": 5375618376,
+    "baseCapUsd": 5375618376,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 21,
@@ -1037,8 +1037,8 @@
     "source": "World Bank Official Exchange Statistics (2025)"
   },
   "SVK": {
-    "marketCapUsd": 1503438535,
-    "baseCapUsd": 1503438535,
+    "marketCapUsd": 1500963318,
+    "baseCapUsd": 1500963318,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 6,
@@ -1046,8 +1046,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (BSSE, 6 stocks)"
   },
   "LVA": {
-    "marketCapUsd": 744505594,
-    "baseCapUsd": 744505594,
+    "marketCapUsd": 743279862,
+    "baseCapUsd": 743279862,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 12,

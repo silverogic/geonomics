@@ -139,14 +139,10 @@
     "ticker": "000001.SS",
     "isSupported": true,
     "currency": "CNY",
-    "currentPrice": 3599.02,
-    "changePct": -1.44,
-    "changePct30d": -7.44,
+    "currentPrice": 3640.93,
+    "changePct": 1.16,
+    "changePct30d": -6.29,
     "points": [
-      {
-        "date": "2026-09-11",
-        "close": 3888.11
-      },
       {
         "date": "2026-09-14",
         "close": 3885.33
@@ -262,6 +258,10 @@
       {
         "date": "2026-10-30",
         "close": 3599.02
+      },
+      {
+        "date": "2026-11-02",
+        "close": 3640.93
       }
     ]
   },
@@ -405,14 +405,10 @@
     "ticker": "^N225",
     "isSupported": true,
     "currency": "JPY",
-    "currentPrice": 63290.11,
-    "changePct": -2.12,
-    "changePct30d": -0.31,
+    "currentPrice": 63592.02,
+    "changePct": 0.48,
+    "changePct30d": -0.52,
     "points": [
-      {
-        "date": "2026-09-15",
-        "close": 63484.1
-      },
       {
         "date": "2026-09-16",
         "close": 63923
@@ -528,6 +524,10 @@
       {
         "date": "2026-10-30",
         "close": 63290.11
+      },
+      {
+        "date": "2026-11-02",
+        "close": 63592.02
       }
     ]
   },
@@ -538,14 +538,10 @@
     "ticker": "^NSEI",
     "isSupported": true,
     "currency": "INR",
-    "currentPrice": 23053.1,
-    "changePct": 0.51,
-    "changePct30d": -0.93,
+    "currentPrice": 23315.3,
+    "changePct": 1.14,
+    "changePct30d": -0.13,
     "points": [
-      {
-        "date": "2026-09-17",
-        "close": 23270.6
-      },
       {
         "date": "2026-09-18",
         "close": 23346.4
@@ -661,6 +657,10 @@
       {
         "date": "2026-10-30",
         "close": 23053.1
+      },
+      {
+        "date": "2026-11-02",
+        "close": 23315.3
       }
     ]
   },
@@ -1482,9 +1482,9 @@
     "ticker": "^AXJO",
     "isSupported": true,
     "currency": "AUD",
-    "currentPrice": 8908.1,
-    "changePct": 0,
-    "changePct30d": 1.72,
+    "currentPrice": 8858.6,
+    "changePct": -0.56,
+    "changePct30d": 1.15,
     "points": [
       {
         "date": "2026-09-22",
@@ -1603,8 +1603,8 @@
         "close": 8908.1
       },
       {
-        "date": "2026-10-30",
-        "close": 8908.1
+        "date": "2026-11-02",
+        "close": 8858.6
       }
     ]
   },
@@ -1615,14 +1615,10 @@
     "ticker": "^KS11",
     "isSupported": true,
     "currency": "KRW",
-    "currentPrice": 5730.74,
-    "changePct": -3.48,
-    "changePct30d": -13.53,
+    "currentPrice": 5898.83,
+    "changePct": 2.93,
+    "changePct30d": -12.19,
     "points": [
-      {
-        "date": "2026-09-15",
-        "close": 6627.26
-      },
       {
         "date": "2026-09-16",
         "close": 6717.97
@@ -1738,6 +1734,10 @@
       {
         "date": "2026-10-30",
         "close": 5730.74
+      },
+      {
+        "date": "2026-11-02",
+        "close": 5898.83
       }
     ]
   },
@@ -1881,14 +1881,10 @@
     "ticker": "^JKSE",
     "isSupported": true,
     "currency": "IDR",
-    "currentPrice": 5057.05,
-    "changePct": -0.8,
-    "changePct30d": -20.79,
+    "currentPrice": 5117.72,
+    "changePct": 1.2,
+    "changePct30d": -18.47,
     "points": [
-      {
-        "date": "2026-09-21",
-        "close": 6384.73
-      },
       {
         "date": "2026-09-22",
         "close": 6277.04
@@ -2004,6 +2000,10 @@
       {
         "date": "2026-10-30",
         "close": 5057.05
+      },
+      {
+        "date": "2026-11-02",
+        "close": 5117.72
       }
     ]
   },
@@ -3743,14 +3743,10 @@
     "ticker": "^STI",
     "isSupported": true,
     "currency": "SGD",
-    "currentPrice": 5376.74,
-    "changePct": -0.36,
-    "changePct30d": -5.26,
+    "currentPrice": 5303.84,
+    "changePct": -1.36,
+    "changePct30d": -7.34,
     "points": [
-      {
-        "date": "2026-09-21",
-        "close": 5675.23
-      },
       {
         "date": "2026-09-22",
         "close": 5723.76
@@ -3866,6 +3862,10 @@
       {
         "date": "2026-10-30",
         "close": 5376.74
+      },
+      {
+        "date": "2026-11-02",
+        "close": 5303.84
       }
     ]
   },
@@ -3876,14 +3876,10 @@
     "ticker": "^KLSE",
     "isSupported": true,
     "currency": "MYR",
-    "currentPrice": 1615.6,
+    "currentPrice": 1620.15,
     "changePct": 0.28,
-    "changePct30d": -3.08,
+    "changePct30d": -3.76,
     "points": [
-      {
-        "date": "2026-09-21",
-        "close": 1666.94
-      },
       {
         "date": "2026-09-22",
         "close": 1683.5
@@ -3999,6 +3995,10 @@
       {
         "date": "2026-10-30",
         "close": 1615.6
+      },
+      {
+        "date": "2026-11-02",
+        "close": 1620.15
       }
     ]
   },
@@ -5073,14 +5073,10 @@
     "ticker": "^HSI",
     "isSupported": true,
     "currency": "HKD",
-    "currentPrice": 23294.42,
-    "changePct": 1.46,
-    "changePct30d": -5.32,
+    "currentPrice": 23437.41,
+    "changePct": 0.61,
+    "changePct30d": -5.31,
     "points": [
-      {
-        "date": "2026-09-17",
-        "close": 24604.29
-      },
       {
         "date": "2026-09-18",
         "close": 24750.78
@@ -5196,6 +5192,10 @@
       {
         "date": "2026-10-30",
         "close": 23294.42
+      },
+      {
+        "date": "2026-11-02",
+        "close": 23437.41
       }
     ]
   },
@@ -5206,9 +5206,9 @@
     "ticker": "^NZ50",
     "isSupported": true,
     "currency": "NZD",
-    "currentPrice": 13797,
-    "changePct": 0,
-    "changePct30d": -0.18,
+    "currentPrice": 13698.63,
+    "changePct": -0.71,
+    "changePct30d": -0.89,
     "points": [
       {
         "date": "2026-09-20",
@@ -5327,8 +5327,8 @@
         "close": 13797
       },
       {
-        "date": "2026-10-30",
-        "close": 13797
+        "date": "2026-11-02",
+        "close": 13698.63
       }
     ]
   },
@@ -6815,14 +6815,10 @@
     "ticker": "^TWII",
     "isSupported": true,
     "currency": "TWD",
-    "currentPrice": 45211.83,
-    "changePct": -2.49,
-    "changePct30d": -1.42,
+    "currentPrice": 45080.41,
+    "changePct": -0.29,
+    "changePct30d": -0.95,
     "points": [
-      {
-        "date": "2026-09-14",
-        "close": 45862.52
-      },
       {
         "date": "2026-09-15",
         "close": 45511.49
@@ -6938,6 +6934,10 @@
       {
         "date": "2026-10-30",
         "close": 45211.83
+      },
+      {
+        "date": "2026-11-02",
+        "close": 45080.41
       }
     ]
   },
