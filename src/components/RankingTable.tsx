@@ -1,8 +1,15 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ArrowUpDown, Search, ArrowUp, ArrowDown, ArrowLeftRight, TrendingUp, Landmark, Layers, X } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear } from '../types/economics'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate } from '../utils/formatters'
-import { getConversionRate } from '../services/exchangeApi'
+import {
+  formatGdpCompact,
+  formatPerCapita,
+  formatExchangeRate,
+  getFxRateColorClass,
+  getFxBadgeColorClass,
+  formatFxChangeBadgeText,
+} from '../utils/formatters'
+import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { getCountryName, getCountrySecondaryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
@@ -450,7 +457,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             <th
               onClick={() => handleSort('fxRate')}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors min-w-[76px] sm:min-w-[90px]"
+              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[115px] sm:min-w-[140px]"
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
@@ -840,6 +847,8 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 const fxRate = exchangeRates
                   ? getConversionRate(exchangeRates, item.country.currencyCode, baseCurrency)
                   : 0
+                const fxChangePct = getFxChangePct(exchangeRates, item.country.currencyCode, baseCurrency)
+                const prevFxRate = getPreviousConversionRate(exchangeRates, item.country.currencyCode, baseCurrency)
 
                 const displayName = getCountryName(item.country, lang)
                 const secondaryName = getCountrySecondaryName(item.country, lang)
@@ -882,8 +891,28 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                           </span>
                         </td>
 
-                        <td className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right font-mono font-semibold text-slate-200 whitespace-nowrap min-w-[76px] sm:min-w-[90px]">
-                          {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
+                        <td
+                          className="py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800/60 text-right font-mono whitespace-nowrap min-w-[115px] sm:min-w-[140px]"
+                          title={
+                            prevFxRate
+                              ? `1 ${item.country.currencyCode} = ${formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency} (${lang === 'ko' ? '전일 종가' : 'Prev Close'}: ${formatExchangeRate(prevFxRate, item.country.currencyCode === 'KRW' ? 4 : 2)})`
+                              : `1 ${item.country.currencyCode} = ${formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency}`
+                          }
+                        >
+                          <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                            <span className={`font-semibold text-xs sm:text-sm ${getFxRateColorClass(fxChangePct)}`}>
+                              {formatExchangeRate(fxRate, item.country.currencyCode === 'KRW' ? 4 : 2)}
+                            </span>
+                            {fxChangePct !== null && (
+                              <span
+                                className={`text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.5 rounded whitespace-nowrap ${getFxBadgeColorClass(
+                                  fxChangePct
+                                )}`}
+                              >
+                                {formatFxChangeBadgeText(fxChangePct)}
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Central Bank Policy Rate (Placed right next to FX Rate) */}

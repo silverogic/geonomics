@@ -4,9 +4,17 @@ import { COUNTRIES } from '../data/countries'
 import type { CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { ECONOMIC_YEAR_OPTIONS, DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
-import { getConversionRate } from '../services/exchangeApi'
+import { getConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColorClass, getInflationColorClass } from '../utils/formatters'
+import {
+  formatGdpCompact,
+  formatPerCapita,
+  formatExchangeRate,
+  getPerCapitaColorClass,
+  getInflationColorClass,
+  getFxBadgeColorClass,
+  formatFxChangeBadgeText,
+} from '../utils/formatters'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { GdpChart } from './GdpChart'
@@ -179,6 +187,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
   const rateA = exchangeRates ? getConversionRate(exchangeRates, countryA.currencyCode, baseCurrency) : 0
   const rateB = exchangeRates ? getConversionRate(exchangeRates, countryB.currencyCode, baseCurrency) : 0
+  const fxChangeA = getFxChangePct(exchangeRates, countryA.currencyCode, baseCurrency)
+  const fxChangeB = getFxChangePct(exchangeRates, countryB.currencyCode, baseCurrency)
 
   const interestA = getCountryInterestRate(interestRates, countryA)
   const interestB = getCountryInterestRate(interestRates, countryB)
@@ -726,13 +736,27 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <span className="font-bold text-slate-300">{t.cardFxRate}</span>
             <span className="text-[10px] font-mono text-slate-400">vs {baseCurrency}</span>
           </div>
-          <div className="flex items-baseline justify-between gap-3 text-xs sm:text-sm font-mono font-bold">
-            <span className="text-indigo-300">
-              1 {countryA.currencyCode} = {formatExchangeRate(rateA, countryA.currencyCode === 'KRW' ? 4 : 2)}
-            </span>
-            <span className="text-emerald-300 text-right">
-              1 {countryB.currencyCode} = {formatExchangeRate(rateB, countryB.currencyCode === 'KRW' ? 4 : 2)}
-            </span>
+          <div className="flex items-center justify-between gap-3 text-xs sm:text-sm font-mono font-bold">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-indigo-300">
+                1 {countryA.currencyCode} = {formatExchangeRate(rateA, countryA.currencyCode === 'KRW' ? 4 : 2)}
+              </span>
+              {fxChangeA !== null && (
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${getFxBadgeColorClass(fxChangeA)}`}>
+                  {formatFxChangeBadgeText(fxChangeA)}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center justify-end gap-1.5 flex-wrap text-right">
+              {fxChangeB !== null && (
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${getFxBadgeColorClass(fxChangeB)}`}>
+                  {formatFxChangeBadgeText(fxChangeB)}
+                </span>
+              )}
+              <span className="text-emerald-300">
+                1 {countryB.currencyCode} = {formatExchangeRate(rateB, countryB.currencyCode === 'KRW' ? 4 : 2)}
+              </span>
+            </div>
           </div>
         </div>
 

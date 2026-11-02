@@ -49,6 +49,8 @@ export interface ExchangeRates {
   base: string
   timeLastUpdateUtc: string
   rates: Record<string, number>
+  /** Previous daily close rates (1 USD = X currency) for computing 24h change % across any currency pair */
+  prevRates?: Record<string, number>
 }
 
 export interface EconomySummary {
@@ -112,5 +114,3 @@ export interface EconomicNewsData {
   briefings: MacroBriefItem[]
   repositories: string[]
 }
-
-

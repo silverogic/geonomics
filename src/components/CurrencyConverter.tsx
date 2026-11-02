@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { ArrowLeftRight, Coins, ChevronUp, ChevronDown } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, CountryMeta, Language } from '../types/economics'
-import { getConversionRate } from '../services/exchangeApi'
-import { formatExchangeRate } from '../utils/formatters'
+import { getConversionRate, getFxChangePct } from '../services/exchangeApi'
+import {
+  formatExchangeRate,
+  getFxRateColorClass,
+  getFxBadgeColorClass,
+  formatFxChangeBadgeText,
+} from '../utils/formatters'
 import { translations } from '../i18n/translations'
 
 interface CurrencyConverterProps {
@@ -43,6 +48,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
   // Official rate info for the banner row
   const countryToBase = getConversionRate(exchangeRates, country.currencyCode, baseCurrency)
   const baseToCountry = getConversionRate(exchangeRates, baseCurrency, country.currencyCode)
+  const fxChangePct = getFxChangePct(exchangeRates, country.currencyCode, baseCurrency)
 
   const handleSwap = () => {
     setFromCurrency(toCurrency)
@@ -62,24 +68,33 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 
   return (
     <div className="bg-gradient-to-r from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-900/40 rounded-xl p-4 space-y-3">
-      {/* Header: Title + Official Rate Summary */}
+      {/* Header: Title + Official Rate Summary + 24h Change Badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
         <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
           <Coins className="w-4 h-4 text-indigo-400" />
           <span>{t.converterTitle}</span>
         </div>
-        <div className="flex flex-wrap items-baseline gap-2 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
           {country.currencyCode === baseCurrency ? (
             <span className="text-slate-300 font-semibold">
               1 {country.currencyCode} = 1.00 {baseCurrency}
             </span>
           ) : (
             <>
-              <span className="text-white font-bold">
-                1 {baseCurrency} = {formatExchangeRate(baseToCountry, 2)} {country.currencyCode}
+              <span className={`font-bold ${getFxRateColorClass(fxChangePct)}`}>
+                1 {country.currencyCode} = {formatExchangeRate(countryToBase, country.currencyCode === 'KRW' ? 4 : 2)} {baseCurrency}
               </span>
+              {fxChangePct !== null && (
+                <span
+                  className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${getFxBadgeColorClass(
+                    fxChangePct
+                  )}`}
+                >
+                  {formatFxChangeBadgeText(fxChangePct)}
+                </span>
+              )}
               <span className="text-slate-400">
-                (1 {country.currencyCode} = {formatExchangeRate(countryToBase, 4)} {baseCurrency})
+                (1 {baseCurrency} = {formatExchangeRate(baseToCountry, 2)} {country.currencyCode})
               </span>
             </>
           )}

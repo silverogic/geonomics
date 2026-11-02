@@ -198,3 +198,36 @@ export function getInflationHexColor(inflationRatePct: number | null | undefined
   return '#f87171'                               // red-400
 }
 
+/**
+ * Returns text color class for FX rate based on 24h change percentage (matches 777 Slot Machine):
+ * - Rising (> +0.01%): Green (text-emerald-400)
+ * - Falling (< -0.01%): Red (text-rose-400)
+ * - Minimal change (-0.01% ~ +0.01%) or unavailable: White (text-slate-100)
+ */
+export function getFxRateColorClass(changePct?: number | null): string {
+  if (changePct == null || Math.abs(changePct) <= 0.01) {
+    return 'text-slate-100'
+  }
+  return changePct > 0.01 ? 'text-emerald-400' : 'text-rose-400'
+}
+
+/**
+ * Returns pill badge classes for 24h FX change percentage (matches 777 Slot Machine).
+ */
+export function getFxBadgeColorClass(changePct: number): string {
+  if (Math.abs(changePct) <= 0.01) {
+    return 'text-slate-300 bg-slate-800/50 border border-slate-700/50'
+  }
+  return changePct > 0.01
+    ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+    : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+}
+
+/**
+ * Formats 24h FX change percentage with directional triangle (▲ / ▼) matching the 777 Slot Machine.
+ */
+export function formatFxChangeBadgeText(changePct: number): string {
+  if (changePct > 0.01) return `▲ +${changePct.toFixed(2)}%`
+  if (changePct < -0.01) return `▼ ${changePct.toFixed(2)}%`
+  return `${changePct > 0 ? '+' : ''}${changePct.toFixed(2)}%`
+}

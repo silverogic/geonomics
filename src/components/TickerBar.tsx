@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { ChevronDown, Sparkles } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo } from '../types/economics'
-import { getConversionRate } from '../services/exchangeApi'
+import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
+import { getFxRateColorClass, getFxBadgeColorClass, formatFxChangeBadgeText } from '../utils/formatters'
 import { CountryFlag } from './CountryFlag'
 
 interface TickerBarProps {
@@ -105,34 +106,6 @@ function formatLocalizedFxRate(rate: number, baseCurrency: BaseCurrency, lang: L
   return `${formattedNum} ${baseCurrency}`
 }
 
-/**
- * Returns text color class for FX rate based on 24h change percentage.
- * - Rising (> +0.01%): Green (emerald-400)
- * - Falling (< -0.01%): Red (rose-400)
- * - Minimal change (-0.01% ~ +0.01%) or unavailable: White (slate-100)
- */
-function getFxRateColorClass(changePct?: number | null): string {
-  if (changePct == null || Math.abs(changePct) <= 0.01) {
-    return 'text-slate-100'
-  }
-  return changePct > 0.01 ? 'text-emerald-400' : 'text-rose-400'
-}
-
-function getFxBadgeColorClass(changePct: number): string {
-  if (Math.abs(changePct) <= 0.01) {
-    return 'text-slate-100 bg-slate-800/40 border border-slate-700/40'
-  }
-  return changePct > 0.01
-    ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
-    : 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
-}
-
-function formatFxChangeBadgeText(changePct: number): string {
-  if (changePct > 0.01) return `▲ +${changePct.toFixed(2)}%`
-  if (changePct < -0.01) return `▼ ${changePct.toFixed(2)}%`
-  return `${changePct > 0 ? '+' : ''}${changePct.toFixed(2)}%`
-}
-
 const CURRENCY_FLAGS: Record<string, string> = {
   USD: 'US',
   EUR: 'EU',
@@ -208,6 +181,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({
           ? liveQuote.price * multiplier
           : getConversionRate(exchangeRates, curr, baseCurrency) * multiplier
 
+      const fallbackPrevRate = getPreviousConversionRate(exchangeRates, curr, baseCurrency)
+      const fallbackChangePct = getFxChangePct(exchangeRates, curr, baseCurrency)
+
       const cbCode = CURRENCY_CB_CODES[curr] || curr
       const cbInfo = interestRates?.[cbCode]
 
@@ -217,8 +193,12 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         displayName: getLocalizedTargetCurrencyName(curr, lang),
         multiplier,
         rate,
-        changePct: liveQuote?.changePct,
-        prevClose: liveQuote?.prevClose ? liveQuote.prevClose * multiplier : undefined,
+        changePct: liveQuote?.changePct ?? fallbackChangePct,
+        prevClose: liveQuote?.prevClose
+          ? liveQuote.prevClose * multiplier
+          : fallbackPrevRate
+            ? fallbackPrevRate * multiplier
+            : undefined,
         centralBankName: cbInfo?.centralBankName,
         policyRatePct: cbInfo?.ratePct,
         policyRateDate: cbInfo?.date,

@@ -15,8 +15,18 @@ import { GdpTreemap } from './GdpTreemap'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Region, Language, EconomicYear } from '../types/economics'
 import { CountryFlag } from './CountryFlag'
 import { RankingTable, type CountryRowItem } from './RankingTable'
-import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass, getInflationColorClass, getInflationHexColor } from '../utils/formatters'
-import { getConversionRate } from '../services/exchangeApi'
+import {
+  formatGdpCompact,
+  formatPerCapita,
+  formatExchangeRate,
+  getPerCapitaColorClass,
+  getInflationColorClass,
+  getInflationHexColor,
+  getFxRateColorClass,
+  getFxBadgeColorClass,
+  formatFxChangeBadgeText,
+} from '../utils/formatters'
+import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
 import { getCountryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
@@ -628,242 +638,242 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
           {activeVisualMode === 'map' ? (
             <>
               <TileWorldMap
-            items={items}
-            metric={metric}
-            baseCurrency={baseCurrency}
-            usdToBase={usdToBase}
-            lang={lang}
-            selectedRegions={selectedRegions}
-            selectedRegion={selectedRegions.length === 1 ? selectedRegions[0] : 'All'}
-            searchQuery={searchQuery}
-            hoveredCountryId={hoveredCountryId}
-            pinnedCountryId={pinnedCountryId}
-            getCountryFill={getCountryFill}
-            onHoverCountry={(id) => setHoveredCountryId(id)}
-            onSelectCountry={handleCountrySelect}
-          />
+                items={items}
+                metric={metric}
+                baseCurrency={baseCurrency}
+                usdToBase={usdToBase}
+                lang={lang}
+                selectedRegions={selectedRegions}
+                selectedRegion={selectedRegions.length === 1 ? selectedRegions[0] : 'All'}
+                searchQuery={searchQuery}
+                hoveredCountryId={hoveredCountryId}
+                pinnedCountryId={pinnedCountryId}
+                getCountryFill={getCountryFill}
+                onHoverCountry={(id) => setHoveredCountryId(id)}
+                onSelectCountry={handleCountrySelect}
+              />
 
-          {/* CHOROPLETH COLOR SCALE LEGEND */}
-          <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-indigo-400 font-bold">
-              <span>
-                {metric === 'gdp'
-                  ? t.metricTotalGdp
-                  : metric === 'perCapita'
-                    ? t.metricPerCapita
-                    : metric === 'growth'
-                      ? t.metricGrowth
-                      : metric === 'debt'
-                        ? t.metricDebt
-                        : metric === 'inflation'
-                          ? t.metricInflation
-                          : metric === 'fuelPrice'
-                            ? t.metricFuelPrice
-                            : t.metricBigMac}
-              </span>
-            </div>
-
-            {/* Legend scale swatches */}
-            <div className="flex flex-wrap items-center gap-3">
-              {metric === 'gdp' && (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#fbbf24] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">$10T+</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">$2T ~ $10T</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">$500B ~ $2T</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">$100B ~ $500B</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#064e3b] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">&lt; $100B</span>
-                  </div>
-                </>
-              )}
-
-              {metric === 'perCapita' && (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#facc15] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">&ge; $50K</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">$25K ~ $50K</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">$12K ~ $25K</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#475569] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">&lt; $12K</span>
-                  </div>
-                </>
-              )}
-
-              {metric === 'growth' && (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">&gt; 5.0%</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">2.5% ~ 5.0%</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
-                  </div>
-                </>
-              )}
-
-              {metric === 'debt' && (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">
-                      &lt; 60%
-                      <span className="text-[10px] text-emerald-400 ml-1 font-sans font-semibold">
-                        ({lang === 'ko' ? '좋음' : lang === 'ja' ? '良好' : lang === 'es' ? 'Bueno' : lang === 'zh' ? '良好' : 'Good'})
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">
-                      60% ~ 90%
-                      <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
-                        ({lang === 'ko' ? '주의' : lang === 'ja' ? '注意' : lang === 'es' ? 'Precaución' : lang === 'zh' ? '注意' : 'Caution'})
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f43f5e] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">
-                      &ge; 90%
-                      <span className="text-[10px] text-rose-400 ml-1 font-sans font-semibold">
-                        ({lang === 'ko' ? '위험' : lang === 'ja' ? '危険' : lang === 'es' ? 'Peligro' : lang === 'zh' ? '危险' : 'Danger'})
-                      </span>
-                    </span>
-                  </div>
-                </>
-              )}
-
-              {metric === 'inflation' && (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">
-                      &le; 2.5%
-                      <span className="text-[10px] text-cyan-400 ml-1 font-sans font-semibold">
-                        ({lang === 'ko' ? '안정' : lang === 'ja' ? '安定' : lang === 'es' ? 'Estable' : lang === 'zh' ? '稳定' : 'Stable'})
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#fcd34d] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">
-                      2.5% ~ 4.5%
-                      <span className="text-[10px] text-amber-200 ml-1 font-sans font-semibold">
-                        ({lang === 'ko' ? '상승' : lang === 'ja' ? '上昇' : lang === 'es' ? 'Moderada' : lang === 'zh' ? '温和' : 'Moderate'})
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
-                    <span className="text-slate-300 font-mono font-medium">
-                      &gt; 4.5%
-                      <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
-                        ({lang === 'ko' ? '과열' : lang === 'ja' ? '過열' : lang === 'es' ? 'Alta' : lang === 'zh' ? '过热' : 'High'})
-                      </span>
-                    </span>
-                  </div>
-                </>
-              )}
-
-              {metric === 'fuelPrice' && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full md:w-auto">
-                  {/* Continuous Spectrum Bar (Option 3: Teal -> Amber -> Deep Orange) */}
-                  <div className="flex flex-col gap-1 w-full sm:w-60">
-                    <div
-                      className="h-2.5 rounded-full w-full shadow-inner border border-slate-700/60"
-                      style={{
-                        background: `linear-gradient(to right, ${FUEL_COLOR_LOW} 0%, ${FUEL_COLOR_MID} 50%, ${FUEL_COLOR_HIGH} 100%)`,
-                      }}
-                    />
-                    <div className="flex justify-between text-[10px] font-mono text-slate-400 font-semibold px-0.5">
-                      <span>$0.40</span>
-                      <span>$1.30</span>
-                      <span>$2.40+</span>
-                    </div>
-                  </div>
-                  {/* Range Labels */}
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#0d9488] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.fuelLowPrice}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#d97706] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.fuelMidPrice}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#ea580c] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.fuelHighPrice}</span>
-                    </div>
-                    <span className="hidden xl:inline text-[10px] text-slate-500 border-l border-slate-800 pl-2">
-                      {t.fuelPriceNote}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {metric === 'bigMac' && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full md:w-auto">
-                  <div className="flex flex-wrap items-center gap-2.5 text-[11px]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-[#059669] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.bigMacStrongUnder}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-[#06b6d4] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.bigMacUnder}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-[#f59e0b] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.bigMacFair}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-[#f97316] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.bigMacOver}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-[#f43f5e] shadow-sm"></span>
-                      <span className="text-slate-300 font-medium">{t.bigMacStrongOver}</span>
-                    </div>
-                  </div>
-                  <span className="hidden xl:inline text-[10px] text-slate-500 border-l border-slate-800 pl-2">
-                    {t.bigMacNote}
+              {/* CHOROPLETH COLOR SCALE LEGEND */}
+              <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 text-indigo-400 font-bold">
+                  <span>
+                    {metric === 'gdp'
+                      ? t.metricTotalGdp
+                      : metric === 'perCapita'
+                        ? t.metricPerCapita
+                        : metric === 'growth'
+                          ? t.metricGrowth
+                          : metric === 'debt'
+                            ? t.metricDebt
+                            : metric === 'inflation'
+                              ? t.metricInflation
+                              : metric === 'fuelPrice'
+                                ? t.metricFuelPrice
+                                : t.metricBigMac}
                   </span>
                 </div>
-              )}
-            </div>
-          </div>
+
+                {/* Legend scale swatches */}
+                <div className="flex flex-wrap items-center gap-3">
+                  {metric === 'gdp' && (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#fbbf24] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">$10T+</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">$2T ~ $10T</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">$500B ~ $2T</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">$100B ~ $500B</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#064e3b] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">&lt; $100B</span>
+                      </div>
+                    </>
+                  )}
+
+                  {metric === 'perCapita' && (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#facc15] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">&ge; $50K</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">$25K ~ $50K</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#6366f1] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">$12K ~ $25K</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#475569] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">&lt; $12K</span>
+                      </div>
+                    </>
+                  )}
+
+                  {metric === 'growth' && (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">&gt; 5.0%</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">2.5% ~ 5.0%</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">0% ~ 2.5%</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#f43f5e] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">&lt; 0%</span>
+                      </div>
+                    </>
+                  )}
+
+                  {metric === 'debt' && (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">
+                          &lt; 60%
+                          <span className="text-[10px] text-emerald-400 ml-1 font-sans font-semibold">
+                            ({lang === 'ko' ? '좋음' : lang === 'ja' ? '良好' : lang === 'es' ? 'Bueno' : lang === 'zh' ? '良好' : 'Good'})
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">
+                          60% ~ 90%
+                          <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
+                            ({lang === 'ko' ? '주의' : lang === 'ja' ? '注意' : lang === 'es' ? 'Precaución' : lang === 'zh' ? '注意' : 'Caution'})
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#f43f5e] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">
+                          &ge; 90%
+                          <span className="text-[10px] text-rose-400 ml-1 font-sans font-semibold">
+                            ({lang === 'ko' ? '위험' : lang === 'ja' ? '危険' : lang === 'es' ? 'Peligro' : lang === 'zh' ? '危险' : 'Danger'})
+                          </span>
+                        </span>
+                      </div>
+                    </>
+                  )}
+
+                  {metric === 'inflation' && (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#06b6d4] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">
+                          &le; 2.5%
+                          <span className="text-[10px] text-cyan-400 ml-1 font-sans font-semibold">
+                            ({lang === 'ko' ? '안정' : lang === 'ja' ? '安定' : lang === 'es' ? 'Estable' : lang === 'zh' ? '稳定' : 'Stable'})
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#fcd34d] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">
+                          2.5% ~ 4.5%
+                          <span className="text-[10px] text-amber-200 ml-1 font-sans font-semibold">
+                            ({lang === 'ko' ? '상승' : lang === 'ja' ? '上昇' : lang === 'es' ? 'Moderada' : lang === 'zh' ? '温和' : 'Moderate'})
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#f59e0b] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">
+                          &gt; 4.5%
+                          <span className="text-[10px] text-amber-400 ml-1 font-sans font-semibold">
+                            ({lang === 'ko' ? '과열' : lang === 'ja' ? '過熱' : lang === 'es' ? 'Alta' : lang === 'zh' ? '过热' : 'High'})
+                          </span>
+                        </span>
+                      </div>
+                    </>
+                  )}
+
+                  {metric === 'fuelPrice' && (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full md:w-auto">
+                      {/* Continuous Spectrum Bar (Option 3: Teal -> Amber -> Deep Orange) */}
+                      <div className="flex flex-col gap-1 w-full sm:w-60">
+                        <div
+                          className="h-2.5 rounded-full w-full shadow-inner border border-slate-700/60"
+                          style={{
+                            background: `linear-gradient(to right, ${FUEL_COLOR_LOW} 0%, ${FUEL_COLOR_MID} 50%, ${FUEL_COLOR_HIGH} 100%)`,
+                          }}
+                        />
+                        <div className="flex justify-between text-[10px] font-mono text-slate-400 font-semibold px-0.5">
+                          <span>$0.40</span>
+                          <span>$1.30</span>
+                          <span>$2.40+</span>
+                        </div>
+                      </div>
+                      {/* Range Labels */}
+                      <div className="flex items-center gap-3 text-[11px]">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#0d9488] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.fuelLowPrice}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#d97706] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.fuelMidPrice}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#ea580c] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.fuelHighPrice}</span>
+                        </div>
+                        <span className="hidden xl:inline text-[10px] text-slate-500 border-l border-slate-800 pl-2">
+                          {t.fuelPriceNote}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {metric === 'bigMac' && (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full md:w-auto">
+                      <div className="flex flex-wrap items-center gap-2.5 text-[11px]">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-3 h-3 rounded-full bg-[#059669] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.bigMacStrongUnder}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-3 h-3 rounded-full bg-[#06b6d4] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.bigMacUnder}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-3 h-3 rounded-full bg-[#f59e0b] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.bigMacFair}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-3 h-3 rounded-full bg-[#f97316] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.bigMacOver}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-3 h-3 rounded-full bg-[#f43f5e] shadow-sm"></span>
+                          <span className="text-slate-300 font-medium">{t.bigMacStrongOver}</span>
+                        </div>
+                      </div>
+                      <span className="hidden xl:inline text-[10px] text-slate-500 border-l border-slate-800 pl-2">
+                        {t.bigMacNote}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </>
           ) : (
             <GdpTreemap
@@ -1013,6 +1023,51 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Live Exchange Rate & 24h Change Card in HUD */}
+                {exchangeRates && (() => {
+                  const curr = inspectedCountryItem.country.currencyCode
+                  const fxRate = getConversionRate(exchangeRates, curr, baseCurrency)
+                  const fxChangePct = getFxChangePct(exchangeRates, curr, baseCurrency)
+                  const prevFxRate = getPreviousConversionRate(exchangeRates, curr, baseCurrency)
+                  const digits = curr === 'KRW' ? 4 : 2
+
+                  return (
+                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                          <span>{t.cardFxRate}</span>
+                        </div>
+                        <div className={`text-sm font-bold font-mono mt-0.5 truncate ${getFxRateColorClass(fxChangePct)}`}>
+                          1 {curr} = {formatExchangeRate(fxRate, digits)} {baseCurrency}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        {fxChangePct !== null ? (
+                          <>
+                            <span
+                              className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded inline-block ${getFxBadgeColorClass(
+                                fxChangePct
+                              )}`}
+                            >
+                              {formatFxChangeBadgeText(fxChangePct)}
+                            </span>
+                            {prevFxRate && (
+                              <span className="text-[9px] text-slate-500 font-mono block mt-0.5">
+                                {lang === 'ko' ? '전일' : 'Prev'}: {formatExchangeRate(prevFxRate, digits)}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-[10px] font-mono text-slate-500">
+                            {curr === baseCurrency ? 'Base' : '-'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })()}
 
                 {/* Fuel Price Card in HUD */}
                 {inspectedCountryItem.fuelPriceUsd !== null && inspectedCountryItem.fuelPriceUsd !== undefined && (

@@ -123,6 +123,19 @@ export function App() {
     loadData(false)
   }, [loadData])
 
+  // Background auto-refresh of live exchange rates & 24h FX change % every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!document.hidden) {
+        fetchExchangeRates(true)
+          .then((freshFx) => setExchangeRates(freshFx))
+          .catch(() => {})
+      }
+    }, 60 * 1000)
+
+    return () => clearInterval(interval)
+  }, [])
+
   // Build ranked country metrics list
   const allRankedItems: CountryRowItem[] = useMemo(() => {
     const list = COUNTRIES.map((country) => {
@@ -163,8 +176,6 @@ export function App() {
     const found = allRankedItems.find((i) => i.country.id === selectedCountry.id)
     return found ? found.rank : 1
   }, [allRankedItems, selectedCountry])
-
-
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans pb-16 md:pb-0">

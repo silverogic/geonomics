@@ -2,9 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Award, LineChart, AlertCircle, Building2 } from 'lucide-react'
 import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
-import { getConversionRate } from '../services/exchangeApi'
+import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
-import { formatGdpCompact, formatPerCapita, getPerCapitaColorClass, getInflationColorClass } from '../utils/formatters'
+import {
+  formatGdpCompact,
+  formatPerCapita,
+  formatExchangeRate,
+  getPerCapitaColorClass,
+  getInflationColorClass,
+  getFxRateColorClass,
+  getFxBadgeColorClass,
+  formatFxChangeBadgeText,
+} from '../utils/formatters'
 import { DEFAULT_ECONOMIC_YEAR } from '../utils/economicYears'
 import { GdpChart } from './GdpChart'
 import { CurrencyConverter } from './CurrencyConverter'
@@ -106,6 +115,9 @@ export const CountryModal: React.FC<CountryModalProps> = ({
 
   // Conversion rates
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
+  const fxRate = exchangeRates ? getConversionRate(exchangeRates, country.currencyCode, baseCurrency) : 0
+  const fxChangePct = getFxChangePct(exchangeRates, country.currencyCode, baseCurrency)
+  const prevFxRate = getPreviousConversionRate(exchangeRates, country.currencyCode, baseCurrency)
 
   const displayName = getCountryName(country, lang)
   const secondaryName = getCountrySecondaryName(country, lang)
@@ -284,6 +296,39 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                   </>
                 ) : (
                   <span className="text-slate-500 font-mono text-sm">-</span>
+                )}
+              </div>
+            </div>
+
+            {/* Live Exchange Rate & 24h Change Card */}
+            <div
+              className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
+              title={
+                prevFxRate
+                  ? `1 ${country.currencyCode} = ${formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency} (${lang === 'ko' ? '전일 종가' : 'Prev Close'}: ${formatExchangeRate(prevFxRate, country.currencyCode === 'KRW' ? 4 : 2)})`
+                  : `1 ${country.currencyCode} = ${formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency}`
+              }
+            >
+              <div className="flex items-center justify-between gap-1 mb-1">
+                <span className="text-xs font-semibold text-slate-400 truncate flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  <span>{t.cardFxRate} ({country.currencyCode})</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 truncate font-mono">
+                <span className={`text-sm lg:text-base font-bold tracking-tight truncate ${getFxRateColorClass(fxChangePct)}`}>
+                  {exchangeRates
+                    ? `${formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency}`
+                    : t.loadingData}
+                </span>
+                {fxChangePct !== null && (
+                  <span
+                    className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ${getFxBadgeColorClass(
+                      fxChangePct
+                    )}`}
+                  >
+                    {formatFxChangeBadgeText(fxChangePct)}
+                  </span>
                 )}
               </div>
             </div>

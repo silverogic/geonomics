@@ -1,8 +1,17 @@
 import React from 'react'
 import { TrendingUp, TrendingDown, ArrowRight, LineChart, AlertCircle } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
-import { formatGdpCompact, formatPerCapita, formatExchangeRate, getPerCapitaColorClass, getInflationBadgeClass } from '../utils/formatters'
-import { getConversionRate } from '../services/exchangeApi'
+import {
+  formatGdpCompact,
+  formatPerCapita,
+  formatExchangeRate,
+  getPerCapitaColorClass,
+  getInflationBadgeClass,
+  getFxRateColorClass,
+  getFxBadgeColorClass,
+  formatFxChangeBadgeText,
+} from '../utils/formatters'
+import { getConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { CountryFlag } from './CountryFlag'
 import { StockSparkline } from './StockSparkline'
@@ -47,6 +56,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
     fxRate = getConversionRate(exchangeRates, country.currencyCode, baseCurrency)
     isRateLoaded = true
   }
+  const fxChangePct = getFxChangePct(exchangeRates, country.currencyCode, baseCurrency)
 
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
 
@@ -203,9 +213,20 @@ export const CountryCard: React.FC<CountryCardProps> = ({
           <div>
             <span className="text-[11px] text-slate-400 block">{t.cardFxRate}</span>
             {isRateLoaded ? (
-              <span className="font-mono font-semibold text-slate-200">
-                1 {country.currencyCode} = {formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} {baseCurrency}
-              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className={`font-mono font-semibold ${getFxRateColorClass(fxChangePct)}`}>
+                  1 {country.currencyCode} = {formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} {baseCurrency}
+                </span>
+                {fxChangePct !== null && (
+                  <span
+                    className={`text-[10px] font-mono font-bold px-1 py-0.2 rounded ${getFxBadgeColorClass(
+                      fxChangePct
+                    )}`}
+                  >
+                    {formatFxChangeBadgeText(fxChangePct)}
+                  </span>
+                )}
+              </div>
             ) : (
               <span className="text-slate-400 animate-pulse">{t.loadingData}</span>
             )}
