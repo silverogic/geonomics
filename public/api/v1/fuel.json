@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-04",
+  "updatedAt": "2026-11-05",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -304,7 +304,7 @@
     },
     "MAR": {
       "countryId": "MAR",
-      "priceUsd": 1.588,
+      "priceUsd": 1.563,
       "currencyCode": "MAD"
     },
     "ETH": {
@@ -454,7 +454,7 @@
     },
     "UGA": {
       "countryId": "UGA",
-      "priceUsd": 1.628,
+      "priceUsd": 1.604,
       "currencyCode": "UGX"
     },
     "BOL": {
