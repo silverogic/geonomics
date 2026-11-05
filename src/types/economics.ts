@@ -76,7 +76,6 @@ export interface InterestRateInfo {
   source?: string // 'BIS' or fallback
 }
 
-export type NewsCategory = 'ALL' | 'MACRO' | 'CENTRAL_BANKS' | 'COMMODITIES' | 'MARKETS' | 'WORLD'
 
 export type CountryTopicCategory =
   | 'ALL'
@@ -86,15 +85,6 @@ export type CountryTopicCategory =
   | 'TRADE'
   | 'FINANCE'
 
-export interface MacroBriefItem {
-  id: string
-  category: Exclude<NewsCategory, 'ALL'>
-  rawCategory: string
-  headline: string
-  body: string
-  explain: string
-  relatedCountryIds: string[]
-}
 
 export interface CountryNewsArticle {
   id: string
@@ -109,8 +99,3 @@ export interface CountryNewsArticle {
   relatedCountryIds?: string[]
 }
 
-export interface EconomicNewsData {
-  lastUpdated: string
-  briefings: MacroBriefItem[]
-  repositories: string[]
-}

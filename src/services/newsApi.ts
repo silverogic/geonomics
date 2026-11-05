@@ -2,40 +2,12 @@ import type {
   CountryMeta,
   CountryNewsArticle,
   CountryTopicCategory,
-  EconomicNewsData,
   Language,
-  MacroBriefItem,
-  NewsCategory,
 } from '../types/economics'
 import { COUNTRIES } from '../data/countries'
 
-const BRIEF_JSON_URL = 'https://raw.githubusercontent.com/givanchris/News/main/data/brief.json'
 const RSS_POOL_XML_URL =
   'https://raw.githubusercontent.com/laapy/reuters-bloomberg-news-rss-pool/main/data/deduplicated.xml'
-
-const ALLOWED_BRIEF_CATEGORIES = new Set([
-  'MACRO',
-  'CENTRAL BANKS',
-  'COMMODITIES',
-  'MARKETS',
-  'ECONOMY',
-  'POLITICS',
-  'GEOPOLITICS',
-  'FISCAL',
-  'EARNINGS',
-  'TRADE',
-])
-
-const EXCLUDED_SPORTS_CATEGORIES = new Set([
-  'NBA',
-  'NFL',
-  'MCBB',
-  'NCAA CFB',
-  'MLB',
-  'NHL',
-  'SOCCER',
-  'SPORTS',
-])
 
 const COUNTRY_KEYWORD_RULES: Array<{ id: string; regex: RegExp }> = [
   {
@@ -197,82 +169,8 @@ export function detectRelatedCountries(text: string, limit = 3): string[] {
   return result
 }
 
-function normalizeCategory(rawCat: string, text = ''): Exclude<NewsCategory, 'ALL'> {
-  const upper = (rawCat || '').toUpperCase().trim()
-  if (upper.includes('CENTRAL') || upper.includes('FED') || upper.includes('RATE')) {
-    return 'CENTRAL_BANKS'
-  }
-  if (upper.includes('COMMODIT') || /\b(WTI|Crude|Oil|Gold|Silver|Copper|Gas)\b/i.test(text)) {
-    return 'COMMODITIES'
-  }
-  if (upper === 'MACRO' || upper === 'ECONOMY' || upper === 'POLITICS' || upper === 'FISCAL') {
-    return 'MACRO'
-  }
-  if (upper === 'WORLD' || upper === 'GEOPOLITICS') {
-    return 'WORLD'
-  }
-  if (/\b(Fed|CPI|Inflation|GDP|Yield|Treasury|Tariff|Recession|Central Bank)\b/i.test(text)) {
-    return 'MACRO'
-  }
-  return 'MARKETS'
-}
 
-// In-memory cache for raw news feed
-let cachedRawNews: EconomicNewsData | null = null
-let lastFetchTimestamp = 0
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
-
-/**
- * Fetches live global macro economic briefings directly from open GitHub repository:
- * givanchris/News (data/brief.json)
- */
-export async function fetchGlobalEconomicNews(forceRefresh = false): Promise<EconomicNewsData> {
-  const now = Date.now()
-  if (!forceRefresh && cachedRawNews && now - lastFetchTimestamp < CACHE_TTL_MS) {
-    return cachedRawNews
-  }
-
-  const cacheBuster = forceRefresh ? `?t=${now}` : ''
-  const briefJson = await fetch(`${BRIEF_JSON_URL}${cacheBuster}`)
-    .then((r) => (r.ok ? r.json() : null))
-    .catch(() => null)
-
-  const briefings: MacroBriefItem[] = []
-
-  if (briefJson && Array.isArray(briefJson.stories)) {
-    briefJson.stories.forEach((st: any, idx: number) => {
-      const rawCat = String(st.cat || '').toUpperCase().trim()
-      if (EXCLUDED_SPORTS_CATEGORIES.has(rawCat)) return
-      if (!ALLOWED_BRIEF_CATEGORIES.has(rawCat) && rawCat.length > 0) return
-
-      const headline = String(st.headline || '').trim()
-      const body = String(st.body || '').trim()
-      const explain = String(st.explain || '').trim()
-      if (!headline || !body) return
-
-      const combinedText = `${headline} ${body} ${explain}`
-      briefings.push({
-        id: `brief-${idx}`,
-        category: normalizeCategory(rawCat, combinedText),
-        rawCategory: rawCat || 'MACRO',
-        headline,
-        body,
-        explain,
-        relatedCountryIds: detectRelatedCountries(combinedText),
-      })
-    })
-  }
-
-  const result: EconomicNewsData = {
-    lastUpdated: briefJson?.lastUpdated || new Date().toISOString(),
-    briefings,
-    repositories: ['givanchris/News'],
-  }
-
-  cachedRawNews = result
-  lastFetchTimestamp = now
-  return result
-}
 
 // ============================================================================
 // ON-THE-FLY REAL-TIME TRANSLATION ENGINE (In-Memory Session Cache)

@@ -38,7 +38,7 @@
 - **양국 시가총액 상위 5대 기업 맞대결 비교**: 기준 국가(A)와 비교 국가(B)의 실시간 시가총액 Top 5 대장주(공식 로고, 티커, 현지화된 산업 섹터, 선택 기준 통화 환산 시가총액, 당일 등락률 %, 100% 증시 점유율 통합 누적 가로 바)를 나란히 비교합니다.
 
 ### 5. 국가별 · 산업별 맞춤 경제 뉴스 탐색기 (`EconomicNewsView`)
-- **2중 소스 글로벌 뉴스 집계 (`newsApi.ts`)**: 실시간 **매크로 브리핑 피드**(`givanchris/News`의 `brief.json`: 거시경제·중앙은행·원자재·시장·무역 등)와 **로이터·블룸버그·CNBC·FT 통신 RSS 풀**(`laapy/reuters-bloomberg-news-rss-pool`, 요약이 포함된 중복 제거된 800여 건의 통신 기사)을 비차단 타임아웃 가드와 함께 결합해 국가별·산업별 최신 기사를 제공합니다.
+- **실시간 글로벌 뉴스 집계 (`newsApi.ts`)**: **로이터·블룸버그·CNBC·FT 통신 RSS 풀**(`laapy/reuters-bloomberg-news-rss-pool`, 요약이 포함된 중복 제거된 800여 건의 전문 통신 기사)을 비차단 타임아웃 가드와 함께 수집하여 국가별·산업별 최신 기사를 제공합니다.
 - **국가 × 6대 산업 테마 & 다국어 키워드 검색**: 기본값(**미국 · 금리·환율·물가**)을 비롯해 원하는 국가와 6대 테마(**경제·산업 전체**, **반도체·AI·테크**, **금리·환율·물가**, **에너지·전기차·배터리**, **무역·관세·공급망**, **증시·금융·기업**)를 조합하거나 한글·일본어·중국어·스페인어 세부 키워드(예: `반도체`, `원전`, `관세`)를 직접 입력해 글로벌 외신을 검색할 수 있습니다.
 - **금융 도메인 특화 실시간 자동 번역 파이프라인**: 영문 대문자 헤드라인 정규화, 60개 이상의 월가 금융 관용구 사전(`FINANCIAL_PRE_GLOSSARY`), 금융 저널리즘 후처리 사전을 결합해 외신 제목과 요약문을 실시간 번역하며, **영문 원문 보기 / 자동 번역 보기** 즉시 전환 및 원문(EN) 호버 툴팁을 지원합니다.
 
@@ -265,7 +265,7 @@ npm run lint
 - **중앙은행 기준금리**: [국제결제은행 (BIS)](https://www.bis.org/) & 각국 중앙은행 공식 발표
 - **소매 휘발유 가격**: [Global Petrol Prices](https://www.globalpetrolprices.com/) & 각국 에너지 당국
 - **빅맥 지수 (PPP)**: [The Economist Big Mac Index](https://github.com/TheEconomist/big-mac-data)
-- **글로벌 경제·산업 뉴스**: [Reuters & Bloomberg RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)](https://github.com/laapy/reuters-bloomberg-news-rss-pool) 및 매크로 브리핑 피드([`givanchris/News`](https://github.com/givanchris/News)); 헤드라인 번역은 Google Translate 웹 엔드포인트(MyMemory 폴백) 사용
+- **글로벌 경제·산업 뉴스**: [Reuters & Bloomberg RSS Pool (`laapy/reuters-bloomberg-news-rss-pool`)](https://github.com/laapy/reuters-bloomberg-news-rss-pool); 헤드라인 번역은 Google Translate 웹 엔드포인트(MyMemory 폴백) 사용
 
 ---
 
