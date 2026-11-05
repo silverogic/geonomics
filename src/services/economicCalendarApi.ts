@@ -1021,13 +1021,17 @@ const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
  * and optionally merges live intra-day actual values from the Cloudflare Worker if configured.
  */
 export async function fetchEconomicCalendar(
-  marketId: CalendarMarketId = 'USA',
+  marketId: CalendarMarketId = 'ALL',
   forceRefresh = false
 ): Promise<{ events: EconomicCalendarEvent[]; updatedAt: string }> {
   const now = Date.now()
   if (!forceRefresh && cachedEvents && now - lastFetchTs < CACHE_TTL_MS) {
+    const filtered =
+      marketId === 'ALL'
+        ? cachedEvents
+        : cachedEvents.filter((e) => e.marketId === marketId)
     return {
-      events: cachedEvents.filter((e) => e.marketId === marketId),
+      events: filtered,
       updatedAt: cachedUpdatedAt || new Date().toISOString(),
     }
   }
@@ -1048,8 +1052,13 @@ export async function fetchEconomicCalendar(
   }
 
   const allEvents = cachedEvents || []
+  const filtered =
+    marketId === 'ALL'
+      ? allEvents
+      : allEvents.filter((e) => e.marketId === marketId)
+
   return {
-    events: allEvents.filter((e) => e.marketId === marketId),
+    events: filtered,
     updatedAt: cachedUpdatedAt || new Date().toISOString(),
   }
 }

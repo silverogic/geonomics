@@ -534,7 +534,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     }
     if (ev.importance === 3) return true
     if (
-      /Fed Beige Book|PPI MoM|Michigan Consumer Sentiment Prel|Atlanta Fed GDPNow|ADP Employment Change|Initial Jobless Claims/i.test(
+      /Fed Beige Book|PPI MoM|Michigan Consumer Sentiment Prel|Atlanta Fed GDPNow|ADP Employment Change|Initial Jobless Claims|Foreign Exchange Reserves|M2 Money Supply|Social Financing|New Yuan Loans|Fixed Asset Investment|Industrial Profits|Caixin/i.test(
         ev.titleEn
       )
     ) {
