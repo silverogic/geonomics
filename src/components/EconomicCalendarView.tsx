@@ -17,6 +17,7 @@ import {
   X,
   Clock,
   CheckCircle2,
+  Globe,
 } from 'lucide-react'
 import type {
   CountryMeta,
@@ -149,6 +150,27 @@ const CATEGORY_META: Record<
 }
 
 const UI_TEXT = {
+  allMarketsTab: {
+    en: 'G2 All (US & CN)',
+    ko: 'G2 종합 (미국·중국)',
+    ja: 'G2 総合 (米・中)',
+    es: 'G2 Todo (EE.UU. y China)',
+    zh: 'G2 综合 (中美)',
+  },
+  usaMarketTab: {
+    en: 'USA (FED)',
+    ko: '미국 (FED)',
+    ja: '米国 (FRB)',
+    es: 'EE.UU. (FED)',
+    zh: '美国 (FED)',
+  },
+  chnMarketTab: {
+    en: 'China (PBOC)',
+    ko: '중국 (PBOC)',
+    ja: '中国 (人民銀行)',
+    es: 'China (PBOC)',
+    zh: '中国 (央行)',
+  },
   headerTitle: {
     en: 'U.S. Fed & Macro Calendar',
     ko: '미국 연준(FED) · 경제지표 달력',
@@ -327,7 +349,7 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
   refreshKey = 0,
 }) => {
   const enabledMarkets = useMemo(() => CALENDAR_MARKETS.filter((m) => m.enabled), [])
-  const [selectedMarketId] = useState<CalendarMarketId>('USA')
+  const [selectedMarketId, setSelectedMarketId] = useState<CalendarMarketId>('ALL')
   const activeMarket = useMemo(
     () => enabledMarkets.find((m) => m.id === selectedMarketId) || CALENDAR_MARKETS[0],
     [enabledMarkets, selectedMarketId]
@@ -412,6 +434,45 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
     const t = formatEventTimeZones(d.toISOString(), lang, activeMarket.localTimezone)
     return tzMode === 'KST' ? t.kstDateKey : t.etDateKey
   }, [lang, activeMarket.localTimezone, tzMode])
+
+  const dynamicHeaderTitle = useMemo(() => {
+    if (selectedMarketId === 'ALL') {
+      return {
+        en: 'G2 Macro & Central Bank Calendar (USA & China)',
+        ko: 'G2 글로벌 경제 · 중앙은행 달력 (미국 & 중국)',
+        ja: 'G2 マクロ・中央銀行カレンダー (米国 & 中国)',
+        es: 'Calendario Macroeconómico G2 (EE.UU. y China)',
+        zh: 'G2 宏观经济与央行日历 (中美双核)',
+      }[lang]
+    }
+    if (selectedMarketId === 'CHN') {
+      return {
+        en: "China PBOC & Macroeconomic Calendar",
+        ko: '중국 인민은행(PBOC) · 경제지표 달력',
+        ja: '中国人民銀行・経済指標カレンダー',
+        es: 'Calendario PBOC e Indicadores de China',
+        zh: '中国人民银行与宏观经济日历',
+      }[lang]
+    }
+    return UI_TEXT.headerTitle[lang]
+  }, [selectedMarketId, lang])
+
+  const nextChinaDecision = useMemo(() => {
+    const nowMs = Date.now()
+    return (
+      enrichedEvents.find(
+        (e) =>
+          e.titleEn === 'Loan Prime Rate 1Y' &&
+          new Date(e.dateUtc).getTime() >= nowMs - 6 * 3600 * 1000
+      ) ||
+      enrichedEvents
+        .filter((e) => e.titleEn === 'Loan Prime Rate 1Y')
+        .slice(-1)[0] ||
+      null
+    )
+  }, [enrichedEvents])
+
+  const chnCountryMeta = useMemo(() => COUNTRIES.find((c) => c.id === 'CHN') || null, [])
 
   const nextFomcDecision = useMemo(() => {
     const nowMs = Date.now()
@@ -960,56 +1021,135 @@ export const EconomicCalendarView: React.FC<EconomicCalendarViewProps> = ({
   return (
     <div className="space-y-3">
       {/* 1. Slim Header & Status Strip */}
-      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <CountryFlag
-            iso2={activeMarket.iso2}
-            className="w-5 h-3.5 rounded-[2px] shrink-0"
-            alt={activeMarket.centralBankCode}
-          />
-          <h1 className="text-sm sm:text-lg font-black text-white truncate">
-            {UI_TEXT.headerTitle[lang]}
-          </h1>
+      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 flex-1 min-w-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            {selectedMarketId === 'ALL' ? (
+              <div className="w-6 h-5 rounded bg-indigo-950/90 border border-indigo-500/50 flex items-center justify-center text-indigo-300 shrink-0">
+                <Globe className="w-3.5 h-3.5" />
+              </div>
+            ) : (
+              <CountryFlag
+                iso2={activeMarket.iso2}
+                className="w-5 h-3.5 rounded-[2px] shrink-0"
+                alt={activeMarket.centralBankCode}
+              />
+            )}
+            <h1 className="text-sm sm:text-base font-black text-white truncate">
+              {dynamicHeaderTitle}
+            </h1>
+          </div>
+
+          {/* G2 Market Switcher Tabs */}
+          <div className="flex items-center gap-1 p-0.5 rounded-xl bg-slate-950 border border-slate-800 shrink-0">
+            {enabledMarkets.map((m) => {
+              const isSelected = selectedMarketId === m.id
+              const label =
+                m.id === 'ALL'
+                  ? UI_TEXT.allMarketsTab[lang]
+                  : m.id === 'CHN'
+                    ? UI_TEXT.chnMarketTab[lang]
+                    : UI_TEXT.usaMarketTab[lang]
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setSelectedMarketId(m.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isSelected
+                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-900/50'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  {m.id === 'ALL' ? (
+                    <Globe className="w-3.5 h-3.5" />
+                  ) : (
+                    <CountryFlag iso2={m.iso2} className="w-3.5 h-2.5 rounded-[1px]" />
+                  )}
+                  <span>{label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Single-Line Horizontal KPI Pills */}
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden whitespace-nowrap">
-          {/* Pill 1: Current US Policy Rate */}
-          <button
-            type="button"
-            onClick={() => usCountryMeta && onSelectCountry?.(usCountryMeta)}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs cursor-pointer shrink-0"
-          >
-            <span className="text-slate-400 font-medium">{UI_TEXT.currentRateLabel[lang]}</span>
-            <span className="font-mono font-black text-indigo-300">
-              {latestFomcActualRate.toFixed(2)}%
-            </span>
-          </button>
-
-          {/* Pill 2: Next FOMC Rate Decision */}
-          {nextFomcDecision && (
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden whitespace-nowrap shrink-0">
+          {/* US Rate Pill (Shown in ALL or USA) */}
+          {(selectedMarketId === 'ALL' || selectedMarketId === 'USA') && (
             <button
               type="button"
-              onClick={() => handleJumpToDateKey(nextFomcDecision.activeDateKey)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-950/35 border border-indigo-500/35 text-xs cursor-pointer shrink-0"
+              onClick={() => usCountryMeta && onSelectCountry?.(usCountryMeta)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs cursor-pointer shrink-0"
             >
-              <span className="text-indigo-300 font-semibold">{UI_TEXT.nextFomcLabel[lang]}</span>
-              <span className="font-mono font-bold text-white">
-                {nextFomcDecision.activeDateKey.slice(5).replace('-', '/')}
-              </span>
-              <span className="px-1.5 py-0.2 rounded bg-indigo-500/25 text-indigo-200 text-[10px] font-mono font-black">
-                {formatDdayBadge(nextFomcDecision.dateUtc)}
+              <CountryFlag iso2="US" className="w-3.5 h-2.5 rounded-[1px]" />
+              <span className="text-slate-400 font-medium">{selectedMarketId === 'ALL' ? 'FED' : UI_TEXT.currentRateLabel[lang]}</span>
+              <span className="font-mono font-black text-indigo-300">
+                {latestFomcActualRate.toFixed(2)}%
               </span>
             </button>
           )}
 
-          {/* Pill 3: Next Upcoming High-Impact Indicator */}
+          {/* China LPR Rate Pill (Shown in ALL or CHN) */}
+          {(selectedMarketId === 'ALL' || selectedMarketId === 'CHN') && (
+            <button
+              type="button"
+              onClick={() => chnCountryMeta && onSelectCountry?.(chnCountryMeta)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs cursor-pointer shrink-0"
+            >
+              <CountryFlag iso2="CN" className="w-3.5 h-2.5 rounded-[1px]" />
+              <span className="text-slate-400 font-medium">LPR 1Y</span>
+              <span className="font-mono font-black text-amber-300">
+                3.10%
+              </span>
+            </button>
+          )}
+
+          {/* Next FOMC or PBOC Rate Decision Pill */}
+          {selectedMarketId === 'CHN' ? (
+            nextChinaDecision && (
+              <button
+                type="button"
+                onClick={() => handleJumpToDateKey(nextChinaDecision.activeDateKey)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/35 border border-amber-500/35 text-xs cursor-pointer shrink-0"
+              >
+                <CountryFlag iso2="CN" className="w-3.5 h-2.5 rounded-[1px]" />
+                <span className="text-amber-300 font-semibold">LPR</span>
+                <span className="font-mono font-bold text-white">
+                  {nextChinaDecision.activeDateKey.slice(5).replace('-', '/')}
+                </span>
+                <span className="px-1.5 py-0.2 rounded bg-amber-500/25 text-amber-200 text-[10px] font-mono font-black">
+                  {formatDdayBadge(nextChinaDecision.dateUtc)}
+                </span>
+              </button>
+            )
+          ) : (
+            nextFomcDecision && (
+              <button
+                type="button"
+                onClick={() => handleJumpToDateKey(nextFomcDecision.activeDateKey)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-950/35 border border-indigo-500/35 text-xs cursor-pointer shrink-0"
+              >
+                <CountryFlag iso2="US" className="w-3.5 h-2.5 rounded-[1px]" />
+                <span className="text-indigo-300 font-semibold">{UI_TEXT.nextFomcLabel[lang]}</span>
+                <span className="font-mono font-bold text-white">
+                  {nextFomcDecision.activeDateKey.slice(5).replace('-', '/')}
+                </span>
+                <span className="px-1.5 py-0.2 rounded bg-indigo-500/25 text-indigo-200 text-[10px] font-mono font-black">
+                  {formatDdayBadge(nextFomcDecision.dateUtc)}
+                </span>
+              </button>
+            )
+          )}
+
+          {/* Next Upcoming High-Impact Indicator */}
           {nextHighImpactEvent && (
             <button
               type="button"
               onClick={() => handleJumpToDateKey(nextHighImpactEvent.activeDateKey)}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs cursor-pointer shrink-0"
             >
+              <CountryFlag iso2={nextHighImpactEvent.countryIso2} className="w-3.5 h-2.5 rounded-[1px]" />
               <span className="text-slate-400 font-semibold">{UI_TEXT.nextReleaseLabel[lang]}</span>
               <span className="font-bold text-white max-w-[120px] sm:max-w-[160px] truncate">
                 {nextHighImpactEvent.titleLocalized}

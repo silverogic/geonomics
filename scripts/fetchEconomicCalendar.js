@@ -31,7 +31,7 @@ const MARKETS = [
   { id: 'JPN', iso2: 'JP', centralBank: 'BOJ', enabled: false },
   { id: 'EUR', iso2: 'EU', centralBank: 'ECB', enabled: false },
   { id: 'GBR', iso2: 'GB', centralBank: 'BOE', enabled: false },
-  { id: 'CHN', iso2: 'CN', centralBank: 'PBOC', enabled: false },
+  { id: 'CHN', iso2: 'CN', centralBank: 'PBOC', enabled: true },
 ]
 
 /**
@@ -244,6 +244,183 @@ function classifyUsEvent(rawEvent) {
  * - FOMC Press Conference: 2:30 PM ET -> 18:30 UTC (EDT) / 19:30 UTC (EST)
  * - FOMC Minutes & Beige Book: 2:00 PM ET -> 18:00 UTC (EDT) / 19:00 UTC (EST)
  */
+
+/**
+ * Classifies a China (CHN / PBOC / NBS) macroeconomic event into 5 categories
+ * with 1-to-3 star importance ratings.
+ */
+function classifyChnEvent(rawEvent) {
+  const title = (rawEvent.title || '').trim()
+  if (!title) return null
+
+  // Exclude noisy private micro-surveys or duplicate CNY denomination of trade
+  if (/RatingDog|Overall Comprehensive Risk|LSEG\/Ipsos|\(CNY\)|Balance of Trade Yuan/i.test(title)) {
+    return null
+  }
+
+  // 1. CENTRAL_BANK (PBOC LPR, M2, Loans, Social Financing, Reserves)
+  if (/^Loan Prime Rate (1Y|5Y)$/i.test(title)) {
+    return {
+      category: 'CENTRAL_BANK',
+      importance: 3,
+      newsTopic: 'CENTRAL_BANK',
+      newsKeyword: 'PBOC Loan Prime Rate LPR China monetary policy',
+    }
+  }
+  if (/^(M2 Money Supply YoY|Total Social Financing|New Yuan Loans|Loan Growth YoY)$/i.test(title)) {
+    return {
+      category: 'CENTRAL_BANK',
+      importance: 2,
+      newsTopic: 'CENTRAL_BANK',
+      newsKeyword: 'China PBOC credit money supply total social financing',
+    }
+  }
+  if (/^Foreign Exchange Reserves$/i.test(title)) {
+    return {
+      category: 'CENTRAL_BANK',
+      importance: 2,
+      newsTopic: 'CENTRAL_BANK',
+      newsKeyword: 'China foreign exchange reserves PBOC',
+    }
+  }
+
+  // 2. INFLATION (CPI, PPI)
+  if (/^Inflation Rate YoY$/i.test(title)) {
+    return {
+      category: 'INFLATION',
+      importance: 3,
+      newsTopic: 'ALL',
+      newsKeyword: 'China inflation rate CPI National Bureau of Statistics',
+    }
+  }
+  if (/^Inflation Rate MoM$/i.test(title)) {
+    return {
+      category: 'INFLATION',
+      importance: 2,
+      newsTopic: 'ALL',
+      newsKeyword: 'China CPI inflation monthly',
+    }
+  }
+  if (/^PPI YoY$/i.test(title)) {
+    return {
+      category: 'INFLATION',
+      importance: 3,
+      newsTopic: 'ALL',
+      newsKeyword: 'China PPI producer price deflation inflation',
+    }
+  }
+
+  // 3. EMPLOYMENT
+  if (/^Unemployment Rate$/i.test(title)) {
+    return {
+      category: 'EMPLOYMENT',
+      importance: 3,
+      newsTopic: 'ALL',
+      newsKeyword: 'China urban surveyed unemployment rate jobs',
+    }
+  }
+
+  // 4. GROWTH (GDP, PMI, Industrial Production, Fixed Asset Investment)
+  if (/^GDP Growth Rate (YoY|QoQ)$/i.test(title)) {
+    return {
+      category: 'GROWTH',
+      importance: 3,
+      newsTopic: 'ALL',
+      newsKeyword: 'China GDP economic growth National Bureau of Statistics',
+    }
+  }
+  if (/^GDP Growth Rate YTD YoY$/i.test(title)) {
+    return {
+      category: 'GROWTH',
+      importance: 2,
+      newsTopic: 'ALL',
+      newsKeyword: 'China GDP cumulative growth',
+    }
+  }
+  if (/^NBS Manufacturing PMI$/i.test(title) || /^Caixin Manufacturing PMI$/i.test(title)) {
+    return {
+      category: 'GROWTH',
+      importance: 3,
+      newsTopic: 'ALL',
+      newsKeyword: 'China manufacturing PMI factory activity',
+    }
+  }
+  if (/^NBS (Non Manufacturing|General) PMI$/i.test(title) || /^Caixin (Services|General) PMI$/i.test(title)) {
+    return {
+      category: 'GROWTH',
+      importance: 2,
+      newsTopic: 'ALL',
+      newsKeyword: 'China services PMI business activity',
+    }
+  }
+  if (/^Industrial Production YoY$/i.test(title)) {
+    return {
+      category: 'GROWTH',
+      importance: 3,
+      newsTopic: 'ALL',
+      newsKeyword: 'China industrial production factory output',
+    }
+  }
+  if (
+    /^Industrial Production YTD YoY$/i.test(title) ||
+    /^Fixed Asset Investment \(YTD\) YoY$/i.test(title) ||
+    /^Industrial Profits \(YTD\) YoY$/i.test(title) ||
+    /^Industrial Capacity Utilization$/i.test(title) ||
+    /^Foreign Direct Investment \(YTD\) YoY$/i.test(title)
+  ) {
+    return {
+      category: 'GROWTH',
+      importance: 2,
+      newsTopic: 'ALL',
+      newsKeyword: 'China investment industrial profits economy',
+    }
+  }
+
+  // 5. CONSUMER (Retail Sales, Trade, Housing)
+  if (/^Retail Sales YoY$/i.test(title)) {
+    return {
+      category: 'CONSUMER',
+      importance: 3,
+      newsTopic: 'ALL',
+      newsKeyword: 'China retail sales consumer spending',
+    }
+  }
+  if (/^Retail Sales YTD YoY$/i.test(title)) {
+    return {
+      category: 'CONSUMER',
+      importance: 2,
+      newsTopic: 'ALL',
+      newsKeyword: 'China retail sales cumulative',
+    }
+  }
+  if (/^Balance of Trade$/i.test(title)) {
+    return {
+      category: 'CONSUMER',
+      importance: 3,
+      newsTopic: 'TRADE',
+      newsKeyword: 'China trade balance trade surplus customs',
+    }
+  }
+  if (/^(Exports|Imports) YoY$/i.test(title)) {
+    return {
+      category: 'CONSUMER',
+      importance: 3,
+      newsTopic: 'TRADE',
+      newsKeyword: 'China exports imports trade growth',
+    }
+  }
+  if (/^House Price Index (YoY|MoM)$/i.test(title)) {
+    return {
+      category: 'CONSUMER',
+      importance: 2,
+      newsTopic: 'ALL',
+      newsKeyword: 'China 70 cities house price index property real estate',
+    }
+  }
+
+  return null
+}
+
 const OFFICIAL_FOMC_SCHEDULE_2026_2027 = [
   // 2026 FOMC Meetings (Rate Decisions on Day 2)
   { date: '2026-01-28T19:00:00.000Z', title: 'Fed Interest Rate Decision', period: 'Jan', hasProjections: false, actual: 4.5, forecast: 4.5, previous: 4.5, unit: '%' },
@@ -324,12 +501,28 @@ async function main() {
       try {
         const rawList = await fetchTradingViewRange(market.iso2, fromIso, toIso)
         for (const raw of rawList) {
-          const classified = classifyUsEvent(raw)
+          const classified = market.id === 'USA' ? classifyUsEvent(raw) : (market.id === 'CHN' ? classifyChnEvent(raw) : null)
           if (!classified) continue
 
           const dateUtc = raw.date
           const titleEn = (raw.title || '').trim()
           const dedupKey = `${market.id}:${dateUtc.slice(0, 10)}:${titleEn.toLowerCase()}`
+
+          let resolvedSource = raw.source || ''
+          let resolvedSourceUrl = raw.source_url || ''
+          if (market.id === 'CHN') {
+            if (/Prime Rate|Money Supply|Social Financing|Loans|Foreign Exchange Reserves/i.test(titleEn)) {
+              resolvedSource = resolvedSource || "People's Bank of China (PBOC)"
+              resolvedSourceUrl = resolvedSourceUrl || 'http://www.pbc.gov.cn/'
+            } else if (/Balance of Trade|Exports|Imports/i.test(titleEn)) {
+              resolvedSource = resolvedSource || 'General Administration of Customs (GACC)'
+              resolvedSourceUrl = resolvedSourceUrl || 'http://www.customs.gov.cn/'
+            } else if (/PMI|GDP|Inflation|PPI|Industrial|Retail|Fixed Asset|Unemployment|House Price/i.test(titleEn)) {
+              resolvedSource = resolvedSource || 'National Bureau of Statistics (NBS)'
+              resolvedSourceUrl = resolvedSourceUrl || 'http://www.stats.gov.cn/'
+            }
+          }
+
 
           allNormalizedEvents.set(dedupKey, {
             id: String(raw.id || dedupKey),
@@ -346,8 +539,8 @@ async function main() {
             unit: raw.unit || '',
             scale: raw.scale || '',
             comment: raw.comment || '',
-            source: raw.source || '',
-            sourceUrl: raw.source_url || '',
+            source: resolvedSource,
+            sourceUrl: resolvedSourceUrl,
             newsTopic: classified.newsTopic,
             newsKeyword: classified.newsKeyword,
           })

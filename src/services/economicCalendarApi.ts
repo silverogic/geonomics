@@ -1,6 +1,6 @@
 import type { CountryTopicCategory, Language } from '../types/economics'
 
-export type CalendarMarketId = 'USA' | 'KOR' | 'JPN' | 'EUR' | 'GBR' | 'CHN'
+export type CalendarMarketId = 'ALL' | 'USA' | 'CHN' | 'KOR' | 'JPN' | 'EUR' | 'GBR'
 
 export type EventCategory =
   | 'CENTRAL_BANK' // 중앙은행 통화정책 (FOMC, 금통위, BOJ, ECB 등 금리결정/의사록/점도표/연설)
@@ -48,6 +48,30 @@ export interface EconomicCalendarEvent {
  * for seamless future activation.
  */
 export const CALENDAR_MARKETS: CalendarMarketConfig[] = [
+  {
+    id: 'ALL',
+    iso2: 'GLOBAL',
+    countryId: 'ALL',
+    centralBankCode: 'G2',
+    centralBankName: {
+      en: 'G2 Macro & Central Banks (USA & China)',
+      ko: 'G2 경제 및 중앙은행 종합 (미국·중국)',
+      ja: 'G2 経済・中央銀行総合 (米・中)',
+      es: 'Macroeconomía G2 (EE.UU. y China)',
+      zh: 'G2 宏观经济与央行综合 (中美)',
+    },
+    policyMeetingName: {
+      en: 'G2 Key Economic Decisions',
+      ko: 'G2 주요 정책 및 지표 발표',
+      ja: 'G2 主要政策・指標発表',
+      es: 'Decisiones Económicas Clave G2',
+      zh: 'G2 关键政策与经济指标公布',
+    },
+    localTimezone: 'Asia/Seoul',
+    localTzShort: 'KST',
+    enabled: true,
+  },
+
   {
     id: 'USA',
     iso2: 'US',
@@ -184,7 +208,7 @@ export const CALENDAR_MARKETS: CalendarMarketConfig[] = [
     },
     localTimezone: 'Asia/Shanghai',
     localTzShort: 'CST',
-    enabled: false,
+    enabled: true,
   },
 ]
 
@@ -192,6 +216,184 @@ export const CALENDAR_MARKETS: CalendarMarketConfig[] = [
  *Exact multilingual dictionary for core FED and macroeconomic indicator titles
  */
 const INDICATOR_TRANSLATIONS: Record<string, Record<Language, string>> = {
+  // CHINA MACRO & PBOC INDICATORS
+  'Loan Prime Rate 1Y': {
+    en: '1-Year Loan Prime Rate (LPR)',
+    ko: '1년물 대출우대금리 (LPR)',
+    ja: '1年物ローンプライムレート (LPR)',
+    es: 'Tasa LPR a 1 Año (PBOC)',
+    zh: '1年期贷款市场报价利率 (LPR)',
+  },
+  'Loan Prime Rate 5Y': {
+    en: '5-Year Loan Prime Rate (LPR)',
+    ko: '5년물 대출우대금리 (LPR)',
+    ja: '5年物ローンプライムレート (LPR)',
+    es: 'Tasa LPR a 5 Años (PBOC)',
+    zh: '5年期贷款市场报价利率 (LPR)',
+  },
+  'Total Social Financing': {
+    en: 'Total Social Financing (TSF)',
+    ko: '사회융자총량 (TSF)',
+    ja: '社会融資総量 (TSF)',
+    es: 'Financiamiento Social Total (TSF)',
+    zh: '社会融资规模增量',
+  },
+  'M2 Money Supply YoY': {
+    en: 'M2 Money Supply (YoY)',
+    ko: 'M2 통화공급량 (YoY)',
+    ja: 'M2 マネーサプライ (前年比)',
+    es: 'Masa Monetaria M2 (Interanual)',
+    zh: '广义货币供应量 M2 (同比)',
+  },
+  'New Yuan Loans': {
+    en: 'New Yuan Loans',
+    ko: '신규 위안화 대출',
+    ja: '新規人民元建て融資',
+    es: 'Nuevos Préstamos en Yuanes',
+    zh: '新增人民币贷款',
+  },
+  'Loan Growth YoY': {
+    en: 'Bank Loan Growth (YoY)',
+    ko: '위안화 대출 증가율 (YoY)',
+    ja: '銀行融資残高伸び率 (前年比)',
+    es: 'Crecimiento Préstamos Bancarios',
+    zh: '各项贷款余额增速 (同比)',
+  },
+  'Foreign Exchange Reserves': {
+    en: 'Foreign Exchange Reserves',
+    ko: '외환보유액',
+    ja: '外貨準備高',
+    es: 'Reservas de Divisas',
+    zh: '国家外汇储备规模',
+  },
+  'NBS Manufacturing PMI': {
+    en: 'NBS Manufacturing PMI',
+    ko: '국가통계국 제조업 PMI',
+    ja: '国家統計局 製造業PMI',
+    es: 'PMI Manufacturero Oficial (NBS)',
+    zh: '官方制造业采购经理指数 (PMI)',
+  },
+  'NBS Non Manufacturing PMI': {
+    en: 'NBS Non-Manufacturing PMI',
+    ko: '국가통계국 비제조업 PMI',
+    ja: '国家統計局 非製造業PMI',
+    es: 'PMI No Manufacturero (NBS)',
+    zh: '官方非制造业商务活动指数 (PMI)',
+  },
+  'NBS General PMI': {
+    en: 'NBS Composite PMI',
+    ko: '국가통계국 종합 PMI',
+    ja: '国家統計局 総合PMI',
+    es: 'PMI Compuesto Oficial (NBS)',
+    zh: '官方综合PMI产出指数',
+  },
+  'GDP Growth Rate YoY': {
+    en: 'GDP Growth Rate (YoY)',
+    ko: '실질 GDP 성장률 (YoY)',
+    ja: '実質GDP成長率 (前年比)',
+    es: 'PIB Crecimiento (Interanual)',
+    zh: '国内生产总值 GDP (同比)',
+  },
+  'GDP Growth Rate QoQ': {
+    en: 'GDP Growth Rate (QoQ)',
+    ko: '실질 GDP 성장률 (QoQ)',
+    ja: '実質GDP成長率 (前期比)',
+    es: 'PIB Crecimiento (Trimestral)',
+    zh: '国内生产总值 GDP (环比)',
+  },
+  'GDP Growth Rate YTD YoY': {
+    en: 'GDP Growth Rate (YTD YoY)',
+    ko: '누적 GDP 성장률 (YoY)',
+    ja: '累積GDP成長率 (前年同期比)',
+    es: 'PIB Acumulado Año (Interanual)',
+    zh: 'GDP累计同比增速',
+  },
+  'Industrial Production YoY': {
+    en: 'Industrial Production (YoY)',
+    ko: '산업생산 (YoY)',
+    ja: '鉱工業生産 (前年比)',
+    es: 'Producción Industrial (Interanual)',
+    zh: '规模以上工业增加值 (同比)',
+  },
+  'Industrial Production YTD YoY': {
+    en: 'Industrial Production (YTD YoY)',
+    ko: '누적 산업생산 (YoY)',
+    ja: '累積鉱工業生産 (前年同期比)',
+    es: 'Producción Industrial Acumulada',
+    zh: '工业增加值累计同比',
+  },
+  'Retail Sales YoY': {
+    en: 'Retail Sales (YoY)',
+    ko: '소매판매액 (YoY)',
+    ja: '小売売上高 (前年比)',
+    es: 'Ventas Minoristas (Interanual)',
+    zh: '社会消费品零售总额 (同比)',
+  },
+  'Retail Sales YTD YoY': {
+    en: 'Retail Sales (YTD YoY)',
+    ko: '누적 소매판매액 (YoY)',
+    ja: '累積小売売上高 (前年同期比)',
+    es: 'Ventas Minoristas Acumuladas',
+    zh: '社会消费品零售总额累计同比',
+  },
+  'Fixed Asset Investment (YTD) YoY': {
+    en: 'Fixed Asset Investment (YTD YoY)',
+    ko: '고정자산투자 (누적 YoY)',
+    ja: '固定資産投資 (累積前年比)',
+    es: 'Inversión Activos Fijos (Acumulada)',
+    zh: '全国固定资产投资 (累计同比)',
+  },
+
+  'Exports YoY': {
+    en: 'Exports (YoY)',
+    ko: '수출 증가율 (YoY)',
+    ja: '輸出伸び率 (前年比)',
+    es: 'Exportaciones (Interanual)',
+    zh: '出口金额同比增速',
+  },
+  'Imports YoY': {
+    en: 'Imports (YoY)',
+    ko: '수입 증가율 (YoY)',
+    ja: '輸入伸び率 (前年比)',
+    es: 'Importaciones (Interanual)',
+    zh: '进口金额同比增速',
+  },
+  'House Price Index YoY': {
+    en: '70-City House Price Index (YoY)',
+    ko: '70대 도시 신규 주택가격 (YoY)',
+    ja: '70大都市新築住宅価格 (前年比)',
+    es: 'Precios de Vivienda 70 Ciudades (YoY)',
+    zh: '70城新建商品住宅价格 (同比)',
+  },
+  'House Price Index MoM': {
+    en: '70-City House Price Index (MoM)',
+    ko: '70대 도시 신규 주택가격 (MoM)',
+    ja: '70大都市新築住宅価格 (前月比)',
+    es: 'Precios de Vivienda 70 Ciudades (MoM)',
+    zh: '70城新建商品住宅价格 (环比)',
+  },
+  'Industrial Profits (YTD) YoY': {
+    en: 'Industrial Profits (YTD YoY)',
+    ko: '공업기업 이익 (누적 YoY)',
+    ja: '工業企業利益 (累積前年比)',
+    es: 'Beneficios Industriales (Acumulada)',
+    zh: '规模以上工业企业利润 (累计同比)',
+  },
+  'Industrial Capacity Utilization': {
+    en: 'Industrial Capacity Utilization',
+    ko: '산업설비 가동률',
+    ja: '鉱工業設備稼働率',
+    es: 'Capacidad Industrial Utilizada',
+    zh: '全国工业产能利用率',
+  },
+  'Foreign Direct Investment (YTD) YoY': {
+    en: 'FDI Inflows (YTD YoY)',
+    ko: '외국인직접투자(FDI) (누적 YoY)',
+    ja: '対外直接投資 FDI (累積前年比)',
+    es: 'Inversión Extranjera Directa IED',
+    zh: '实际使用外资金额 FDI (累计同比)',
+  },
+
   // CENTRAL_BANK (FED / FOMC)
   'Fed Interest Rate Decision': {
     en: 'FOMC Rate Decision',
