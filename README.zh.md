@@ -121,7 +121,7 @@ flowchart LR
     S3["TradingView Scanner API<br/>主板交易所总市值 & 前五强"]
     S4["燃油价格 / 巨无霸指数"]
     S5["Coinbase / open.er-api<br/>汇率"]
-    S6["宏观简报 JSON + RSS 池<br/>新闻"]
+    S6["全球电讯社 RSS 池<br/>新闻"]
   end
 
   subgraph CI["GitHub Actions (每日构建)"]

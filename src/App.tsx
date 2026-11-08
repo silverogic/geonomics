@@ -15,7 +15,6 @@ import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
 import { StockHeatmap } from './components/StockHeatmap'
 import { EconomicNewsView } from './components/EconomicNewsView'
-import { EconomicCalendarView, type NewsJumpRequest } from './components/EconomicCalendarView'
 import { Spinner } from './components/Spinner'
 import { AppTooltip } from './components/AppTooltip'
 import { getFuelPriceUsd } from './data/fuelPrices'
@@ -49,8 +48,7 @@ export function App() {
   }, [lang])
 
   const t = translations[lang]
-  const [activeTab, setActiveTab] = useState<'cards' | 'heatmap' | 'compare' | 'news' | 'calendar'>('heatmap')
-  const [newsJumpFilter, setNewsJumpFilter] = useState<(NewsJumpRequest & { seq: number }) | null>(null)
+  const [activeTab, setActiveTab] = useState<'cards' | 'heatmap' | 'compare' | 'news'>('heatmap')
 
   // Selected economic year: Default current year (e.g. 2026)
   const [selectedYear, setSelectedYear] = useState<EconomicYear>(DEFAULT_ECONOMIC_YEAR)
@@ -260,21 +258,6 @@ export function App() {
           <EconomicNewsView
             lang={lang}
             onSelectCountry={(c) => setSelectedCountry(c)}
-            refreshKey={refreshCount}
-            initialSearch={newsJumpFilter}
-          />
-        )}
-
-        {/* TAB 5: GLOBAL CENTRAL BANK & ECONOMIC CALENDAR */}
-        {activeTab === 'calendar' && (
-          <EconomicCalendarView
-            lang={lang}
-            interestRates={interestRates}
-            onSelectCountry={(c) => setSelectedCountry(c)}
-            onJumpToNews={(req) => {
-              setNewsJumpFilter({ ...req, seq: Date.now() })
-              setActiveTab('news')
-            }}
             refreshKey={refreshCount}
           />
         )}

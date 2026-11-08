@@ -122,7 +122,7 @@ flowchart LR
     S3["TradingView Scanner API<br/>Mainboard Market Caps"]
     S4["Fuel prices / Big Mac Index"]
     S5["Coinbase / open.er-api<br/>FX rates"]
-    S6["Macro brief JSON + RSS pool<br/>News"]
+    S6["Global Wire RSS Pool<br/>News"]
     S7["TradingView Scanner API<br/>Live Top 5 Market Cap"]
   end
 

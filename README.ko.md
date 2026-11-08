@@ -122,7 +122,7 @@ flowchart LR
     S3["TradingView Scanner API<br/>대표 거래소 시가총액 합산"]
     S4["유가 / 빅맥지수"]
     S5["Coinbase / open.er-api<br/>환율"]
-    S6["매크로 브리핑 JSON + RSS 풀<br/>뉴스"]
+    S6["글로벌 통신사 RSS 풀<br/>뉴스"]
     S7["TradingView Scanner API<br/>실시간 Top 5 시가총액"]
   end
 
