@@ -538,14 +538,10 @@
     "ticker": "^NSEI",
     "isSupported": true,
     "currency": "INR",
-    "currentPrice": 25030.35,
-    "changePct": 2.01,
-    "changePct30d": 8.53,
+    "currentPrice": 24986.4,
+    "changePct": -0.18,
+    "changePct30d": 7.98,
     "points": [
-      {
-        "date": "2026-09-24",
-        "close": 23063.1
-      },
       {
         "date": "2026-09-25",
         "close": 23140.5
@@ -661,6 +657,10 @@
       {
         "date": "2026-11-06",
         "close": 25030.35
+      },
+      {
+        "date": "2026-11-08",
+        "close": 24986.4
       }
     ]
   },

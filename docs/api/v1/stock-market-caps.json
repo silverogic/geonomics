@@ -108,8 +108,8 @@
     "source": "TradingView Mainboard Exchange Aggregate (SIX, 198 stocks)"
   },
   "SAU": {
-    "marketCapUsd": 2459169452445,
-    "baseCapUsd": 2459169452445,
+    "marketCapUsd": 2459168218067,
+    "baseCapUsd": 2459168218067,
     "year": "2026 Live",
     "indexMultiplier": 1,
     "listedCount": 386,
@@ -466,13 +466,13 @@
     "source": "TradingView Mainboard Exchange Aggregate (BET, 49 stocks)"
   },
   "EGY": {
-    "marketCapUsd": 69936506458,
-    "baseCapUsd": 69936506458,
+    "marketCapUsd": 70748213391,
+    "baseCapUsd": 70748213391,
     "year": "2026 Live",
     "indexMultiplier": 1,
-    "listedCount": 234,
+    "listedCount": 240,
     "countryName": "Egypt",
-    "source": "TradingView Mainboard Exchange Aggregate (EGX, 234 stocks)"
+    "source": "TradingView Mainboard Exchange Aggregate (EGX, 240 stocks)"
   },
   "PAK": {
     "marketCapUsd": 65364636579,
@@ -683,15 +683,6 @@
     "countryName": "Ghana",
     "source": "World Bank Official Exchange Statistics (2025)"
   },
-  "BHR": {
-    "marketCapUsd": 16368581750,
-    "baseCapUsd": 16368581750,
-    "year": "2026 Live",
-    "indexMultiplier": 1,
-    "listedCount": 17,
-    "countryName": "Bahrain",
-    "source": "TradingView Mainboard Exchange Aggregate (BAHRAIN, 17 stocks)"
-  },
   "COD": {
     "marketCapUsd": 16362800000,
     "baseCapUsd": 16362800000,
@@ -699,6 +690,15 @@
     "indexMultiplier": 1,
     "countryName": "DR Congo",
     "source": "IMF WEO Nominal GDP Dynamic Model"
+  },
+  "BHR": {
+    "marketCapUsd": 16183998385,
+    "baseCapUsd": 16183998385,
+    "year": "2026 Live",
+    "indexMultiplier": 1,
+    "listedCount": 16,
+    "countryName": "Bahrain",
+    "source": "TradingView Mainboard Exchange Aggregate (BAHRAIN, 16 stocks)"
   },
   "ISL": {
     "marketCapUsd": 14851463669,
