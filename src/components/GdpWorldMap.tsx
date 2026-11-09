@@ -381,7 +381,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 onClick={() => setIsMetricMenuOpen((prev) => !prev)}
                 aria-haspopup="listbox"
                 aria-expanded={isMetricMenuOpen}
-                className={`flex items-center gap-1.5 sm:gap-2 bg-slate-950/90 border rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isMetricMenuOpen
+                className={`flex items-center gap-1.5 sm:gap-2 bg-slate-950/90 border rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold shrink-0 transition-all cursor-pointer ${isMetricMenuOpen
                   ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                   : 'border-slate-800 hover:border-slate-700'
                   }`}
@@ -411,7 +411,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                             setMetric(opt.id)
                             setIsMetricMenuOpen(false)
                           }}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none ${isSelected
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none cursor-pointer ${isSelected
                             ? 'bg-indigo-600/20 text-white border border-indigo-500/30'
                             : 'text-slate-300 hover:bg-slate-800/60 hover:text-white border border-transparent'
                             }`}
@@ -434,7 +434,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 onClick={() => setIsRegionMenuOpen((prev) => !prev)}
                 aria-haspopup="listbox"
                 aria-expanded={isRegionMenuOpen}
-                className={`flex items-center gap-1.5 sm:gap-2 bg-slate-950/90 border rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${isRegionMenuOpen
+                className={`flex items-center gap-1.5 sm:gap-2 bg-slate-950/90 border rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold shrink-0 transition-all cursor-pointer ${isRegionMenuOpen
                   ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10'
                   : 'border-slate-800 hover:border-slate-700'
                   }`}
@@ -461,7 +461,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <button
                     type="button"
                     onClick={handleSelectAllRegions}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${isAllRegions
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${isAllRegions
                       ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 font-bold'
                       : 'text-slate-300 hover:bg-slate-800/60'
                       }`}
@@ -510,7 +510,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                               ? '클릭: 다중 선택 토글 | 0.7초 이상 길게 누름: 이 대륙만 단독 선택'
                               : 'Click: Toggle | Hold for 0.7s: Select only this region'
                           }
-                          className={`relative overflow-hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none ${pressingRegion === reg ? 'scale-[0.98] bg-indigo-950/70 border-indigo-500/50' : ''
+                          className={`relative overflow-hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all select-none cursor-pointer ${pressingRegion === reg ? 'scale-[0.98] bg-indigo-950/70 border-indigo-500/50' : ''
                             } ${isIsolated
                               ? 'bg-indigo-600/20 text-white border border-indigo-500/30'
                               : 'text-slate-300 hover:bg-slate-800/60'
@@ -555,7 +555,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                     <button
                       type="button"
                       onClick={handleSelectAllRegions}
-                      className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors py-1 px-1.5 rounded hover:bg-indigo-950/40"
+                      className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors py-1 px-1.5 rounded hover:bg-indigo-950/40 cursor-pointer"
                     >
                       {lang === 'ko' ? '전체 선택' : lang === 'ja' ? '全選択' : lang === 'es' ? 'Seleccionar todo' : lang === 'zh' ? '全选' : 'Select All'}
                     </button>
@@ -564,7 +564,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       onClick={() => {
                         setSelectedRegions(['Asia'])
                       }}
-                      className="text-slate-400 hover:text-slate-200 transition-colors py-1 px-1.5 rounded hover:bg-slate-800/40"
+                      className="text-slate-400 hover:text-slate-200 transition-colors py-1 px-1.5 rounded hover:bg-slate-800/40 cursor-pointer"
                     >
                       {lang === 'ko' ? '초기화' : lang === 'ja' ? 'リセット' : lang === 'es' ? 'Restablecer' : lang === 'zh' ? '重置' : 'Reset'}
                     </button>
@@ -578,7 +578,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleVisualModeChange('map')}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   activeVisualMode === 'map'
                     ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -598,8 +598,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   !isHeatmapSupported
                     ? 'opacity-35 cursor-not-allowed text-slate-500'
                     : activeVisualMode === 'treemap'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold cursor-pointer'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 cursor-pointer'
                 }`}
                 title={isHeatmapSupported ? t.mapViewModeTreemap : t.heatmapDisabledTooltip}
               >
@@ -618,7 +618,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   <button
                     key={opt.year}
                     onClick={() => onYearChange(opt.year)}
-                    className={`px-2 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${selectedYear === opt.year
+                    className={`px-2 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${selectedYear === opt.year
                       ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 font-bold'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                       }`}

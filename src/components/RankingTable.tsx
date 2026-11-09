@@ -744,7 +744,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
               <button
                 type="button"
                 onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors cursor-pointer"
                 title={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
               >
                 <X className="w-3.5 h-3.5" />
@@ -761,7 +761,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           <button
             type="button"
             onClick={() => handleCategoryChange('market')}
-            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 ${
+            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 cursor-pointer ${
               activeCategory === 'market'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -775,7 +775,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           <button
             type="button"
             onClick={() => handleCategoryChange('macro')}
-            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 ${
+            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 cursor-pointer ${
               activeCategory === 'macro'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -789,7 +789,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
           <button
             type="button"
             onClick={() => handleCategoryChange('all')}
-            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 ${
+            className={`flex-1 sm:flex-initial justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap min-w-0 cursor-pointer ${
               activeCategory === 'all'
                 ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -848,7 +848,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                     setSearchTerm('')
                     dockSearchInputRef.current?.focus()
                   }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800 transition-colors cursor-pointer"
                   data-tooltip={lang === 'ko' ? '검색어 지우기' : 'Clear search'}
                 >
                   <X className="w-3 h-3" />
@@ -863,7 +863,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCategoryChange('market')}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     activeCategory === 'market'
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -876,7 +876,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCategoryChange('macro')}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     activeCategory === 'macro'
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -889,7 +889,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCategoryChange('all')}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     activeCategory === 'all'
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -916,7 +916,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                 type="button"
                 onClick={scrollToTableTop}
                 data-tooltip={lang === 'ko' ? '테이블 상단으로 이동' : 'Scroll to top'}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors shrink-0 whitespace-nowrap"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors shrink-0 whitespace-nowrap cursor-pointer"
               >
                 <ArrowUp className="w-3 h-3 text-indigo-400 shrink-0" />
                 <span className="hidden xl:inline">{lang === 'ko' ? '맨 위로' : 'Top'}</span>

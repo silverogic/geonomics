@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Layers, GitCompare, Coins, ChevronDown, LayoutGrid, Newspaper, Check } from 'lucide-react'
+import { Layers, GitCompare, Coins, ChevronDown, LayoutGrid, Newspaper, Check, Globe } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language, ExchangeRates, InterestRateInfo } from '../types/economics'
 import { translations } from '../i18n/translations'
@@ -15,8 +15,8 @@ const LANGUAGE_CONFIG: Record<Language, { label: string; short: string; flagIso2
 }
 
 interface NavbarProps {
-  activeTab: 'cards' | 'heatmap' | 'compare' | 'news'
-  setActiveTab: (tab: 'cards' | 'heatmap' | 'compare' | 'news') => void
+  activeTab: 'globe' | 'cards' | 'heatmap' | 'compare' | 'news'
+  setActiveTab: (tab: 'globe' | 'cards' | 'heatmap' | 'compare' | 'news') => void
   baseCurrency: BaseCurrency
   setBaseCurrency: (c: BaseCurrency) => void
   lang: Language
@@ -81,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* Brand Logo (Icon removed for compact header) */}
-          <div className="flex items-center cursor-pointer min-w-0 shrink-0" onClick={() => setActiveTab('heatmap')}>
+          <div className="flex items-center cursor-pointer min-w-0 shrink-0" onClick={() => setActiveTab('globe')}>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-lg sm:text-xl font-black tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent truncate">
@@ -97,6 +97,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Navigation Tabs (Desktop Open Menu with Underline Indicator) */}
           <nav className="hidden md:flex items-center gap-1 sm:gap-2 shrink-0">
             {[
+              {
+                id: 'globe',
+                label:
+                  lang === 'ko'
+                    ? '경제 글로브'
+                    : lang === 'ja'
+                      ? '経済グローブ'
+                      : lang === 'zh'
+                        ? '经济地球仪'
+                        : 'Economic Globe',
+                icon: Globe,
+              },
               { id: 'heatmap', label: t.navStockHeatmap, icon: LayoutGrid },
               { id: 'news', label: t.navNews, icon: Newspaper },
               { id: 'cards', label: t.navExplorer, icon: Layers },
@@ -422,7 +434,20 @@ export const Navbar: React.FC<NavbarProps> = ({
         aria-label="Mobile Bottom Navigation"
         className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_25px_rgba(0,0,0,0.6)]"
       >
-        <div className="max-w-lg mx-auto grid grid-cols-4 gap-1">
+        <div className="max-w-lg mx-auto grid grid-cols-5 gap-1">
+          <button
+            onClick={() => setActiveTab('globe')}
+            className={`flex items-center justify-center gap-1 py-2 px-1 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
+              activeTab === 'globe'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <Globe className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">
+              {lang === 'ko' ? '경제 글로브' : 'Globe'}
+            </span>
+          </button>
           <button
             onClick={() => setActiveTab('heatmap')}
             className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${

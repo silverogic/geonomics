@@ -14,6 +14,7 @@ import type { CountryRowItem } from './components/RankingTable'
 import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
 import { StockHeatmap } from './components/StockHeatmap'
+import { FinancialGlobeView } from './components/FinancialGlobeView'
 import { EconomicNewsView } from './components/EconomicNewsView'
 import { Spinner } from './components/Spinner'
 import { AppTooltip } from './components/AppTooltip'
@@ -48,7 +49,7 @@ export function App() {
   }, [lang])
 
   const t = translations[lang]
-  const [activeTab, setActiveTab] = useState<'cards' | 'heatmap' | 'compare' | 'news'>('heatmap')
+  const [activeTab, setActiveTab] = useState<'globe' | 'cards' | 'heatmap' | 'compare' | 'news'>('globe')
 
   // Selected economic year: Default current year (e.g. 2026)
   const [selectedYear, setSelectedYear] = useState<EconomicYear>(DEFAULT_ECONOMIC_YEAR)
@@ -192,7 +193,7 @@ export function App() {
       {/* Main Content Area */}
       <main
         className={
-          activeTab === 'heatmap'
+          activeTab === 'heatmap' || activeTab === 'globe'
             ? 'flex-grow w-full max-w-none px-1.5 sm:px-3 py-1 sm:py-1.5'
             : 'flex-grow w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-6 py-4 sm:py-6 space-y-5'
         }
@@ -209,6 +210,18 @@ export function App() {
               {lang === 'ko' ? '다시 시도' : lang === 'ja' ? '再試行' : 'Retry'}
             </button>
           </div>
+        )}
+
+        {/* TAB 0 (HOME): 3D GLOBAL FINANCIAL GLOBE */}
+        {activeTab === 'globe' && (
+          <FinancialGlobeView
+            baseCurrency={baseCurrency}
+            exchangeRates={exchangeRates}
+            interestRates={interestRates}
+            lang={lang}
+            onSelectCountry={(c) => setSelectedCountry(c)}
+            refreshKey={refreshCount}
+          />
         )}
 
         {/* TAB 1: GDP WORLD MAP & EXPLORER */}
@@ -278,7 +291,7 @@ export function App() {
       )}
 
       {/* Global Footer (hidden in heatmap mode for clean full-height viewing) */}
-      {activeTab !== 'heatmap' && <Footer lang={lang} />}
+      {activeTab !== 'heatmap' && activeTab !== 'globe' && <Footer lang={lang} />}
 
       {/* Global App-Themed Custom Tooltip */}
       <AppTooltip />
