@@ -21,6 +21,10 @@ export interface LiveFxQuote {
  * Querying the inverse pair `USDJPY=X` (157.66) and inverting `1 / price` preserves full precision.
  */
 const CURRENCY_UNIT_RANK: Record<string, number> = {
+  KWD: 10,
+  BHD: 9.5,
+  OMR: 9,
+  JOD: 8.5,
   GBP: 8,
   CHF: 7,
   EUR: 6,
@@ -29,11 +33,29 @@ const CURRENCY_UNIT_RANK: Record<string, number> = {
   CNY: 3,
   JPY: 2,
   KRW: 1,
+  VND: 0.5,
+  IDR: 0.5,
+  UZS: 0.5,
+  IRR: 0.5,
+  PYG: 0.5,
+  KHR: 0.5,
+  COP: 0.5,
+  CLP: 0.5,
+  ARS: 0.5,
+  NGN: 0.5,
+  KZT: 0.5,
+  HUF: 0.5,
+  ISK: 0.5,
+  LBP: 0.5,
+  MMK: 0.5,
+  TZS: 0.5,
+  UGX: 0.5,
+  CDF: 0.5,
 }
 
 function shouldUseInversePair(target: string, base: string): boolean {
-  const targetRank = CURRENCY_UNIT_RANK[target] ?? 0
-  const baseRank = CURRENCY_UNIT_RANK[base] ?? 0
+  const targetRank = CURRENCY_UNIT_RANK[target] ?? 2.5
+  const baseRank = CURRENCY_UNIT_RANK[base] ?? 2.5
   return targetRank < baseRank
 }
 

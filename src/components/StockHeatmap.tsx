@@ -141,13 +141,10 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
   const [hoveredCountryId, setHoveredCountryId] = useState<string | null>(null)
   const [liveCapData, setLiveCapData] = useState<LiveMarketCapData | null>(null)
   const [liveVersion, setLiveVersion] = useState(0)
-  const [liveUpdatedAt, setLiveUpdatedAt] = useState<number | null>(null)
   const [flashingCountries, setFlashingCountries] = useState<Record<string, 'up' | 'down'>>({})
-  const [isToolbarFlashing, setIsToolbarFlashing] = useState(false)
   const prevPricesRef = useRef<Map<string, number>>(new Map())
   const isFirstLoadRef = useRef(true)
   const flashTimerRef = useRef<number | null>(null)
-  const toolbarFlashTimerRef = useRef<number | null>(null)
 
   const isCompanyMode = viewMode === 'companiesUnified' || viewMode === 'companiesBySector'
 
@@ -237,14 +234,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             }, 1200)
           }
 
-          setIsToolbarFlashing(true)
-          if (toolbarFlashTimerRef.current !== null) window.clearTimeout(toolbarFlashTimerRef.current)
-          toolbarFlashTimerRef.current = window.setTimeout(() => {
-            if (mounted) setIsToolbarFlashing(false)
-          }, 1200)
-
           setLiveVersion((v) => v + 1)
-          setLiveUpdatedAt(Date.now())
         }
       })
     }
@@ -256,7 +246,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       mounted = false
       window.clearInterval(timer)
       if (flashTimerRef.current !== null) window.clearTimeout(flashTimerRef.current)
-      if (toolbarFlashTimerRef.current !== null) window.clearTimeout(toolbarFlashTimerRef.current)
     }
   }, [refreshKey])
 
@@ -567,19 +556,6 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             </span>
           </div>
 
-          {liveUpdatedAt && (
-            <div
-              className={`px-2 py-0.5 rounded-lg border flex items-center gap-1 text-[10px] font-mono font-bold shadow-sm transition-all duration-300 ${
-                isToolbarFlashing
-                  ? 'bg-emerald-500/25 border-emerald-400 text-white shadow-emerald-500/30 ring-2 ring-emerald-400/40'
-                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-              }`}
-              title={`Live quotes updated ${new Date(liveUpdatedAt).toLocaleTimeString()}`}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${isToolbarFlashing ? 'bg-white scale-125' : 'bg-emerald-400'} animate-pulse`} />
-              LIVE {new Date(liveUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </div>
-          )}
 
           {/* Gainers / Losers Count */}
           <div className="hidden md:flex items-center gap-1.5 text-xs font-mono px-2 py-0.5 rounded-lg bg-slate-950/60 border border-slate-800/80">

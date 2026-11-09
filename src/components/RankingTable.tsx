@@ -114,6 +114,21 @@ export const RankingTable: React.FC<RankingTableProps> = ({
   const [isTableOverflowing, setIsTableOverflowing] = useState(false)
   const isFrozen = isTableOverflowing
 
+  // Header grab-to-scroll state (active when isTableOverflowing is true)
+  const [isHeaderDragging, setIsHeaderDragging] = useState(false)
+  const headerDragRef = useRef<{
+    isDown: boolean
+    startX: number
+    startScrollLeft: number
+    hasDragged: boolean
+  }>({
+    isDown: false,
+    startX: 0,
+    startScrollLeft: 0,
+    hasDragged: false,
+  })
+  const suppressSortClickRef = useRef(false)
+
   // Floating dock state (both mobile & desktop)
   const [isDockActive, setIsDockActive] = useState(false)
   const [dockTop, setDockTop] = useState(80)
@@ -302,6 +317,104 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
   const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
 
+  const handleHeaderMouseDown = (e: React.MouseEvent<HTMLElement>) => {
+    if (!isTableOverflowing || e.button !== 0 || !tableContainerRef.current) return
+    headerDragRef.current = {
+      isDown: true,
+      startX: e.clientX,
+      startScrollLeft: tableContainerRef.current.scrollLeft,
+      hasDragged: false,
+    }
+  }
+
+  useEffect(() => {
+    if (!isTableOverflowing) {
+      setIsHeaderDragging(false)
+      return
+    }
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!headerDragRef.current.isDown || !tableContainerRef.current) return
+      const deltaX = e.clientX - headerDragRef.current.startX
+      if (!headerDragRef.current.hasDragged && Math.abs(deltaX) >= 5) {
+        headerDragRef.current.hasDragged = true
+        suppressSortClickRef.current = true
+        setIsHeaderDragging(true)
+      }
+      if (headerDragRef.current.hasDragged) {
+        e.preventDefault()
+        const nextScrollLeft = headerDragRef.current.startScrollLeft - deltaX
+        tableContainerRef.current.scrollLeft = nextScrollLeft
+        if (mobileDockRef.current) {
+          mobileDockRef.current.scrollLeft = tableContainerRef.current.scrollLeft
+        }
+      }
+    }
+
+    const onMouseUp = () => {
+      if (!headerDragRef.current.isDown) return
+      const didDrag = headerDragRef.current.hasDragged
+      headerDragRef.current.isDown = false
+      headerDragRef.current.hasDragged = false
+      if (didDrag) {
+        setIsHeaderDragging(false)
+        if (tableContainerRef.current && dockGeometry.colWidths.length > 2) {
+          const container = tableContainerRef.current
+          const maxScroll = container.scrollWidth - container.clientWidth
+          const curScroll = container.scrollLeft
+          if (curScroll > 4 && curScroll < maxScroll - 4) {
+            let offset = 0
+            let bestSnap = curScroll
+            let minDiff = Infinity
+            for (let i = 2; i < dockGeometry.colWidths.length; i++) {
+              const diff = Math.abs(curScroll - offset)
+              if (diff < minDiff) {
+                minDiff = diff
+                bestSnap = offset
+              }
+              offset += dockGeometry.colWidths[i]
+            }
+            if (Math.abs(curScroll - maxScroll) < minDiff) {
+              bestSnap = maxScroll
+            }
+            if (Math.abs(bestSnap - curScroll) <= 36) {
+              container.scrollTo({ left: bestSnap, behavior: 'smooth' })
+            }
+          }
+        }
+        window.setTimeout(() => {
+          suppressSortClickRef.current = false
+        }, 50)
+      }
+    }
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+    }
+  }, [isTableOverflowing, dockGeometry.colWidths])
+
+  const scrollHeaderCellIntoView = (thEl: HTMLTableCellElement | null, isStickyCol = false) => {
+    if (!isTableOverflowing || isStickyCol || !thEl || !tableContainerRef.current) return
+    const container = tableContainerRef.current
+    const cRect = container.getBoundingClientRect()
+    const thRect = thEl.getBoundingClientRect()
+    const stickyWidth =
+      (dockGeometry.colWidths[0] || 48) + (dockGeometry.colWidths[1] || 130)
+    const visibleLeft = cRect.left + stickyWidth
+    const visibleRight = cRect.right
+
+    if (thRect.right > visibleRight + 2) {
+      const delta = thRect.right - visibleRight + 12
+      container.scrollBy({ left: delta, behavior: 'smooth' })
+    } else if (thRect.left < visibleLeft - 2) {
+      const delta = thRect.left - visibleLeft - 12
+      container.scrollBy({ left: delta, behavior: 'smooth' })
+    }
+  }
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
@@ -312,6 +425,22 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       } else {
         setSortDirection('asc')
       }
+    }
+  }
+
+  const handleHeaderCellClick = (
+    field: SortField | null,
+    e: React.MouseEvent<HTMLTableCellElement>,
+    isStickyCol = false
+  ) => {
+    if (suppressSortClickRef.current) {
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
+    scrollHeaderCellIntoView(e.currentTarget, isStickyCol)
+    if (field) {
+      handleSort(field)
     }
   }
 
@@ -400,6 +529,12 @@ export const RankingTable: React.FC<RankingTableProps> = ({
     )
   }
 
+  const headerCursorClass = isTableOverflowing
+    ? isHeaderDragging
+      ? 'cursor-grabbing select-none'
+      : 'cursor-grab select-none'
+    : 'cursor-pointer'
+
   const renderHeaderCells = (isDock: boolean) => {
     let colIdx = 0
     const getColStyle = () => {
@@ -416,9 +551,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       <>
         {/* 1. Rank */}
         <th
-          onClick={() => handleSort('rank')}
+          onClick={(e) => handleHeaderCellClick('rank', e, true)}
           style={getColStyle()}
-          className={`${isDock || isFrozen ? 'sticky left-0 z-30' : 'static'} bg-slate-950 py-2.5 sm:py-3 px-0.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-none sm:first:rounded-tl-xl transition-colors whitespace-nowrap w-9 min-w-[36px] max-w-[36px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center`}
+          className={`${isDock || isFrozen ? 'sticky left-0 z-30' : 'static'} bg-slate-950 py-2.5 sm:py-3 px-0.5 sm:px-3 ${headerCursorClass} hover:text-slate-200 border-b border-slate-800 shadow-sm first:rounded-none sm:first:rounded-tl-xl transition-colors whitespace-nowrap w-9 min-w-[36px] max-w-[36px] sm:w-12 sm:min-w-[48px] sm:max-w-[48px] text-center`}
         >
           <div className="flex items-center justify-center gap-0.5 sm:gap-1">
             <span className="text-xs font-mono font-bold sm:font-sans sm:font-semibold">
@@ -431,12 +566,12 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
         {/* 2. Country */}
         <th
-          onClick={() => handleSort('countryName')}
+          onClick={(e) => handleHeaderCellClick('countryName', e, true)}
           style={getColStyle()}
           className={`${isDock || isFrozen
             ? 'sticky left-9 sm:left-12 z-30 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.5)] border-r border-slate-800/80'
             : 'static shadow-none border-r-0'
-            } bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 border-b border-slate-800 transition-colors whitespace-nowrap min-w-[88px] sm:min-w-[130px] md:min-w-[170px]`}
+            } bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-3 ${headerCursorClass} hover:text-slate-200 border-b border-slate-800 transition-colors whitespace-nowrap min-w-[88px] sm:min-w-[130px] md:min-w-[170px]`}
         >
           <div className="flex items-center gap-1 sm:gap-1.5">
             <span>{t.colCountry}</span>
@@ -448,16 +583,17 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         {showMarket && (
           <>
             <th
+              onClick={(e) => handleHeaderCellClick(null, e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[56px] sm:min-w-[75px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${isTableOverflowing ? headerCursorClass : ''} border-b border-slate-800 shadow-sm text-slate-400 whitespace-nowrap min-w-[56px] sm:min-w-[75px]`}
             >
               {t.colCurrency}
             </th>
 
             <th
-              onClick={() => handleSort('fxRate')}
+              onClick={(e) => handleHeaderCellClick('fxRate', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[115px] sm:min-w-[140px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[115px] sm:min-w-[140px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colFxRate.replace('{base}', baseCurrency)}</span>
@@ -467,9 +603,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
             {/* Policy Rate (Placed right next to FX Rate) */}
             <th
-              onClick={() => handleSort('interestRatePct')}
+              onClick={(e) => handleHeaderCellClick('interestRatePct', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[68px] sm:min-w-[85px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[68px] sm:min-w-[85px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colInterestRate}</span>
@@ -478,9 +614,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             </th>
 
             <th
-              onClick={() => handleSort('stockChangePct')}
+              onClick={(e) => handleHeaderCellClick('stockChangePct', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[128px] sm:min-w-[160px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[128px] sm:min-w-[160px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colStockIndex}</span>
@@ -490,9 +626,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
             {/* Fuel Price */}
             <th
-              onClick={() => handleSort('fuelPriceUsd')}
+              onClick={(e) => handleHeaderCellClick('fuelPriceUsd', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[96px] sm:min-w-[125px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[96px] sm:min-w-[125px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colFuelPrice}</span>
@@ -502,9 +638,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
             {/* Big Mac Index */}
             <th
-              onClick={() => handleSort('bigMacPriceUsd')}
+              onClick={(e) => handleHeaderCellClick('bigMacPriceUsd', e, false)}
               style={getColStyle()}
-              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[96px] sm:min-w-[125px] ${
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[96px] sm:min-w-[125px] ${
                 activeCategory === 'market' ? 'rounded-none sm:rounded-tr-xl last:rounded-none sm:last:rounded-tr-xl' : ''
               }`}
             >
@@ -520,9 +656,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
         {showMacro && (
           <>
             <th
-              onClick={() => handleSort('totalGdpUsd')}
+              onClick={(e) => handleHeaderCellClick('totalGdpUsd', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-3 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[92px] sm:min-w-[120px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-3 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[92px] sm:min-w-[120px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colTotalGdp}</span>
@@ -531,9 +667,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             </th>
 
             <th
-              onClick={() => handleSort('gdpPerCapitaUsd')}
+              onClick={(e) => handleHeaderCellClick('gdpPerCapitaUsd', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[92px] sm:min-w-[120px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[92px] sm:min-w-[120px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colPerCapita}</span>
@@ -542,9 +678,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             </th>
 
             <th
-              onClick={() => handleSort('growthRatePct')}
+              onClick={(e) => handleHeaderCellClick('growthRatePct', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[70px] sm:min-w-[95px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[70px] sm:min-w-[95px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colGrowth}</span>
@@ -553,9 +689,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             </th>
 
             <th
-              onClick={() => handleSort('inflationRatePct')}
+              onClick={(e) => handleHeaderCellClick('inflationRatePct', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[72px] sm:min-w-[100px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm transition-colors whitespace-nowrap min-w-[72px] sm:min-w-[100px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colInflation}</span>
@@ -564,9 +700,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
             </th>
 
             <th
-              onClick={() => handleSort('debtRatioPct')}
+              onClick={(e) => handleHeaderCellClick('debtRatioPct', e, false)}
               style={getColStyle()}
-              className="bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 cursor-pointer hover:text-slate-200 text-right border-b border-slate-800 shadow-sm rounded-none sm:rounded-tr-xl last:rounded-none sm:last:rounded-tr-xl transition-colors whitespace-nowrap min-w-[72px] sm:min-w-[100px]"
+              className={`bg-slate-950 py-2.5 sm:py-3 px-1.5 sm:px-2.5 ${headerCursorClass} hover:text-slate-200 text-right border-b border-slate-800 shadow-sm rounded-none sm:rounded-tr-xl last:rounded-none sm:last:rounded-tr-xl transition-colors whitespace-nowrap min-w-[72px] sm:min-w-[100px]`}
             >
               <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                 <span>{t.colDebt}</span>
@@ -803,7 +939,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
                   <col key={idx} style={{ width: `${w}px` }} />
                 ))}
               </colgroup>
-              <thead>
+              <thead onMouseDown={handleHeaderMouseDown}>
                 <tr className="bg-slate-950 text-xs font-semibold text-slate-400">
                   {renderHeaderCells(true)}
                 </tr>
@@ -824,6 +960,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({
       >
         <table ref={tableRef} className="w-full text-left border-separate border-spacing-0 text-sm">
           <thead
+            onMouseDown={handleHeaderMouseDown}
             className={`sticky z-30 bg-slate-950 transition-opacity duration-150 ${
               isDockActive
                 ? 'opacity-0 pointer-events-none top-0'

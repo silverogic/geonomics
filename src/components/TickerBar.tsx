@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { ChevronDown, Sparkles } from 'lucide-react'
-import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo } from '../types/economics'
+import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo, CountryMeta } from '../types/economics'
 import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
 import { getFxRateColorClass, getFxBadgeColorClass, formatFxChangeBadgeText } from '../utils/formatters'
+import { detectVisitorCountry } from '../utils/locale'
 import { CountryFlag } from './CountryFlag'
 
 interface TickerBarProps {
@@ -37,10 +38,28 @@ const TARGET_CURRENCY_I18N: Record<string, Partial<Record<Language, string>>> = 
   AUD: { ko: '1호주달러', ja: '1豪ドル', zh: '1澳元', es: '1 AUD', en: '1 AUD' },
 }
 
-function getLocalizedTargetCurrencyName(currency: string, lang: Language): string {
+const BASE_SLOT_CURRENCIES = ['USD', 'EUR', 'JPY', 'CNY', 'GBP', 'KRW', 'CHF', 'AUD'] as const
+
+const EXCLUDED_VISITOR_COUNTRY_IDS = new Set([
+  'JPN', // Japan
+  'CHN', // China
+  'GBR', // United Kingdom
+  'KOR', // South Korea
+  'CHE', // Switzerland
+  'AUS', // Australia
+  'USA', // United States
+])
+
+function getLocalizedTargetCurrencyName(currency: string, lang: Language, multiplier = 1): string {
   const i18n = TARGET_CURRENCY_I18N[currency]
   if (i18n && i18n[lang]) return i18n[lang]!
-  return currency === 'JPY' ? '100 JPY' : currency === 'KRW' ? '1,000 KRW' : `1 ${currency}`
+  const formattedUnit =
+    multiplier === 1000
+      ? lang === 'es'
+        ? '1.000'
+        : '1,000'
+      : String(multiplier)
+  return `${formattedUnit} ${currency}`
 }
 
 function formatLocalizedFxRate(rate: number, baseCurrency: BaseCurrency, lang: Language): string {
@@ -140,11 +159,27 @@ export const TickerBar: React.FC<TickerBarProps> = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const popoverRef = useRef<HTMLDivElement>(null)
 
+  // Detect visitor's physical country and append its currency at the end of the slot if not already included
+  const extraVisitorCountry: CountryMeta | null = useMemo(() => {
+    const detected = detectVisitorCountry()
+    if (!detected) return null
+    if (EXCLUDED_VISITOR_COUNTRY_IDS.has(detected.id)) return null
+    if ((BASE_SLOT_CURRENCIES as readonly string[]).includes(detected.currencyCode)) return null
+    return detected
+  }, [])
+
   // Key currency codes to display in slot carousel
-  const keyCurrencies = useMemo(
-    () => ['USD', 'EUR', 'JPY', 'CNY', 'GBP', 'KRW', 'CHF', 'AUD'].filter((c) => c !== baseCurrency),
-    [baseCurrency]
-  )
+  const keyCurrencies = useMemo(() => {
+    const list: string[] = BASE_SLOT_CURRENCIES.filter((c) => c !== baseCurrency)
+    if (
+      extraVisitorCountry &&
+      extraVisitorCountry.currencyCode !== baseCurrency &&
+      !list.includes(extraVisitorCountry.currencyCode)
+    ) {
+      list.push(extraVisitorCountry.currencyCode)
+    }
+    return list
+  }, [baseCurrency, extraVisitorCountry])
 
   // Fetch near-real-time quotes via Cloudflare Worker proxy
   useEffect(() => {
@@ -174,7 +209,16 @@ export const TickerBar: React.FC<TickerBarProps> = ({
     return keyCurrencies.map((curr) => {
       const isJpy = curr === 'JPY'
       const isKrw = curr === 'KRW'
-      const multiplier = isJpy ? 100 : isKrw ? 1000 : 1
+      const usdPerUnit = exchangeRates.rates[curr] || 1
+      const multiplier = isJpy
+        ? 100
+        : isKrw
+          ? 1000
+          : usdPerUnit >= 500
+            ? 1000
+            : usdPerUnit >= 80
+              ? 100
+              : 1
       const liveQuote = liveFxQuotes[curr]
       const rate =
         liveQuote?.price && typeof liveQuote.price === 'number'
@@ -184,13 +228,14 @@ export const TickerBar: React.FC<TickerBarProps> = ({
       const fallbackPrevRate = getPreviousConversionRate(exchangeRates, curr, baseCurrency)
       const fallbackChangePct = getFxChangePct(exchangeRates, curr, baseCurrency)
 
-      const cbCode = CURRENCY_CB_CODES[curr] || curr
+      const isExtraVisitorCurr = extraVisitorCountry?.currencyCode === curr
+      const cbCode = CURRENCY_CB_CODES[curr] || (isExtraVisitorCurr ? extraVisitorCountry.iso2 : curr)
       const cbInfo = interestRates?.[cbCode]
 
       return {
         currency: curr,
-        flagIso2: CURRENCY_FLAGS[curr] || curr.slice(0, 2),
-        displayName: getLocalizedTargetCurrencyName(curr, lang),
+        flagIso2: CURRENCY_FLAGS[curr] || (isExtraVisitorCurr ? extraVisitorCountry.iso2 : curr.slice(0, 2)),
+        displayName: getLocalizedTargetCurrencyName(curr, lang, multiplier),
         multiplier,
         rate,
         changePct: liveQuote?.changePct ?? fallbackChangePct,
@@ -204,7 +249,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         policyRateDate: cbInfo?.date,
       }
     })
-  }, [exchangeRates, interestRates, baseCurrency, keyCurrencies, liveFxQuotes, lang])
+  }, [exchangeRates, interestRates, baseCurrency, keyCurrencies, liveFxQuotes, lang, extraVisitorCountry])
 
   // Reset index when items change
   useEffect(() => {
