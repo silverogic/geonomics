@@ -527,11 +527,11 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       {/* 1. SINGLE-LINE ULTRA-STREAMLINED TOOLBAR */}
       <div
         ref={toolbarRef}
-        className="rounded-xl bg-slate-900/90 border border-slate-800/80 px-2.5 sm:px-3 py-1.5 shadow-md flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap"
+        className="rounded-xl bg-slate-900/90 border border-slate-800/80 px-2 sm:px-3 py-1.5 shadow-md flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap"
       >
         {/* Left: Global Market Cap & Trend Summary */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="px-2 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1.5 font-mono text-xs shadow-sm">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="px-1.5 sm:px-2 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1 sm:gap-1.5 font-mono text-xs shadow-sm">
             <Globe className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
             <span className="text-slate-400 text-[11px] font-sans font-medium hidden sm:inline">{t.heatmapTotalCap}:</span>
             <span className="text-indigo-300 font-black">
@@ -540,7 +540,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
           </div>
 
           <div
-            className={`px-2 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1 font-mono text-xs font-black shadow-sm ${
+            className={`px-1.5 sm:px-2 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center gap-1 font-mono text-xs font-black shadow-sm ${
               globalStats.avgChange >= 0 ? 'text-emerald-400' : 'text-rose-400'
             }`}
           >
@@ -577,7 +577,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         </div>
 
         {/* Center: View Switcher & Continent Filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 max-w-full">
+        <div className="order-3 sm:order-none w-full sm:w-auto flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 max-w-full">
           {/* Mode Switcher */}
           <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0 shadow-inner">
             <button
@@ -675,16 +675,16 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         </div>
 
         {/* Right: Search + Legend + Fullscreen Zen Button */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Quick Search */}
-          <div className="relative w-36 sm:w-44 shrink-0">
-            <Search className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="relative w-28 sm:w-44 shrink-0">
+            <Search className="w-3 h-3 text-slate-400 absolute left-2 sm:left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.heatmapSearchPlaceholder}
-              className="w-full bg-slate-950/90 border border-slate-800 rounded-lg pl-7 pr-2 py-1 text-[11px] text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-slate-950/90 border border-slate-800 rounded-lg pl-6 sm:pl-7 pr-2 py-0.5 sm:py-1 text-[11px] text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
             />
           </div>
 
@@ -701,7 +701,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
           <button
             type="button"
             onClick={toggleZenMode}
-            className={`p-1.5 rounded-lg border transition-all ${
+            className={`p-1 sm:p-1.5 rounded-lg border transition-all ${
               isZenMode
                 ? 'bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/30'
                 : 'bg-slate-950/80 border-slate-800 text-slate-400 hover:text-slate-100 hover:bg-slate-800'
