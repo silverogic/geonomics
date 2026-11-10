@@ -287,7 +287,7 @@ export const StockChart: React.FC<StockChartProps> = ({
       </div>
 
       {/* Chart.js Line Canvas */}
-      <div className="w-full h-64 sm:h-72">
+      <div className="w-full h-48 sm:h-72">
         <Line data={{ labels, datasets }} options={options} />
       </div>
     </div>
