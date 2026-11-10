@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  Globe,
   Play,
   Pause,
   TrendingUp,
   TrendingDown,
   Coins,
-  Layers,
   RotateCcw,
   Sparkles,
 } from 'lucide-react'
@@ -48,7 +46,7 @@ interface FinancialGlobeViewProps {
   refreshKey?: number
 }
 
-type GlobeDisplayMode = 'combined' | 'stocks' | 'fx'
+type GlobeDisplayMode = 'stocks' | 'fx'
 type RegionPreset = 'auto' | 'asia' | 'europe' | 'americas' | 'oceania'
 
 interface HubDefinition {
@@ -260,7 +258,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   onSelectCountry,
   refreshKey,
 }) => {
-  const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('combined')
+  const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('stocks')
   const [activePreset, setActivePreset] = useState<RegionPreset>('auto')
   const [isSpinning, setIsSpinning] = useState(true)
   const [hoveredHubId, setHoveredHubId] = useState<string | null>(null)
@@ -522,8 +520,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             targetRotationRef.current = null
           }
         } else if (isSpinningRef.current && !hoveredHubIdRef.current) {
-          // Smooth continuous West-to-East orbit
-          rot.lon -= 0.18
+          // Smooth continuous West-to-East orbit (90% of 0.18 deg/frame)
+          rot.lon -= 0.162
           rot.velLon *= 0.9
           rot.velLat *= 0.9
         } else {
@@ -900,22 +898,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         data-globe-ui="true"
         className="absolute top-2.5 left-2.5 right-2.5 z-30 flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg cursor-default"
       >
-        {/* Left: Title & Market Breadth Pill */}
+        {/* Left: Market Breadth Pill */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 text-xs font-bold text-white">
-            <Globe className="w-3.5 h-3.5 text-indigo-400 animate-spin [animation-duration:14s]" />
-            <span>
-              {lang === 'ko'
-                ? '경제 글로브'
-                : lang === 'ja'
-                  ? '経済グローブ'
-                  : lang === 'zh'
-                    ? '经济地球仪'
-                    : 'Economic Globe'}
-            </span>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs font-mono">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs font-mono">
             <span className="text-emerald-400 font-bold flex items-center gap-0.5">
               <TrendingUp className="w-3 h-3" />
               {hubSummary.up}
@@ -930,43 +915,51 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
         {/* Center: Display Mode Switcher + Region Presets */}
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
-          {/* Display Mode Tabs */}
+          {/* Display Mode Tabs (Stocks Only vs FX Only) */}
           <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
             <button
               type="button"
-              onClick={() => setDisplayMode('combined')}
-              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                displayMode === 'combined'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Layers className="w-3 h-3" />
-              <span>{lang === 'ko' ? '증시 + 환율' : lang === 'ja' ? '株価＋為替' : 'Stocks + FX'}</span>
-            </button>
-            <button
-              type="button"
               onClick={() => setDisplayMode('stocks')}
-              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
+              className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
                 displayMode === 'stocks'
                   ? 'bg-indigo-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <TrendingUp className="w-3 h-3" />
-              <span>{lang === 'ko' ? '증시 집중' : lang === 'ja' ? '株価指数' : 'Stocks'}</span>
+              <span>
+                {lang === 'ko'
+                  ? '증시'
+                  : lang === 'ja'
+                    ? '株価'
+                    : lang === 'zh'
+                      ? '股市'
+                      : lang === 'es'
+                        ? 'Bolsa'
+                        : 'Stocks'}
+              </span>
             </button>
             <button
               type="button"
               onClick={() => setDisplayMode('fx')}
-              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
+              className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
                 displayMode === 'fx'
                   ? 'bg-indigo-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Coins className="w-3 h-3" />
-              <span>{lang === 'ko' ? '환율 · 금리' : lang === 'ja' ? '為替・金利' : 'FX & Rates'}</span>
+              <span>
+                {lang === 'ko'
+                  ? '환율'
+                  : lang === 'ja'
+                    ? '為替'
+                    : lang === 'zh'
+                      ? '汇率'
+                      : lang === 'es'
+                        ? 'Divisas'
+                        : 'FX'}
+              </span>
             </button>
           </div>
 
@@ -1083,7 +1076,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                   </span>
                 </div>
 
-                {displayMode !== 'fx' ? (
+                {displayMode === 'stocks' ? (
                   <span
                     className={`text-[10px] font-mono font-black px-1 py-0.2 rounded shrink-0 ${
                       isUp
@@ -1097,26 +1090,23 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                       ? `+${cap.stockChangePct.toFixed(2)}%`
                       : `${cap.stockChangePct.toFixed(2)}%`}
                   </span>
-                ) : cap.policyRatePct != null ? (
-                  <span className="text-[10px] font-mono font-bold px-1 py-0.2 rounded bg-indigo-500/20 text-indigo-300 shrink-0">
-                    {cap.policyRatePct.toFixed(2)}%
+                ) : cap.currency === baseCurrency ? (
+                  <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-indigo-500/20 text-indigo-300 shrink-0">
+                    BASE
+                  </span>
+                ) : cap.fxChangePct != null ? (
+                  <span
+                    className={`text-[9px] font-mono px-1 py-0.2 rounded font-bold shrink-0 ${getFxBadgeColorClass(
+                      cap.fxChangePct
+                    )}`}
+                  >
+                    {formatFxChangeBadgeText(cap.fxChangePct)}
                   </span>
                 ) : null}
               </div>
 
               {/* Row 2: Contextual Secondary Metric based on Display Mode */}
               <div className="mt-0.5 flex items-center justify-between gap-1 text-[10px] font-mono">
-                {displayMode === 'combined' && (
-                  <>
-                    <span className="text-slate-400 truncate max-w-[54px]">{cap.indexName}</span>
-                    <span className="text-indigo-200 font-bold whitespace-nowrap">
-                      {cap.currency === baseCurrency
-                        ? baseCurrency
-                        : formatCompactFxValue(cap.fxRate, baseCurrency, lang)}
-                    </span>
-                  </>
-                )}
-
                 {displayMode === 'stocks' && (
                   <>
                     <span className="text-slate-400 truncate max-w-[66px]">{cap.indexName}</span>
@@ -1129,22 +1119,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 {displayMode === 'fx' && (
                   <>
                     <span className="text-slate-400 whitespace-nowrap">{unitLabel}</span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-indigo-200 font-bold whitespace-nowrap">
-                        {cap.currency === baseCurrency
-                          ? '1.00'
-                          : formatCompactFxValue(cap.fxRate, baseCurrency, lang)}
-                      </span>
-                      {cap.fxChangePct != null && cap.currency !== baseCurrency && (
-                        <span
-                          className={`text-[9px] px-1 rounded font-bold ${getFxBadgeColorClass(
-                            cap.fxChangePct
-                          )}`}
-                        >
-                          {formatFxChangeBadgeText(cap.fxChangePct)}
-                        </span>
-                      )}
-                    </div>
+                    <span className="text-indigo-200 font-bold whitespace-nowrap">
+                      {cap.currency === baseCurrency
+                        ? '1.00'
+                        : formatCompactFxValue(cap.fxRate, baseCurrency, lang)}
+                    </span>
                   </>
                 )}
               </div>
@@ -1173,6 +1152,13 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           {spotlightHubs.map((hub) => {
             const isUp = hub.stockChangePct > 0.15
             const isDown = hub.stockChangePct < -0.15
+            const unitLabel =
+              hub.multiplier === 1000
+                ? `1,000 ${hub.currency}`
+                : hub.multiplier === 100
+                  ? `100 ${hub.currency}`
+                  : `1 ${hub.currency}`
+
             return (
               <button
                 key={`spot-${hub.id}`}
@@ -1189,31 +1175,46 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                       {getCountryName(hub.country, lang)}
                     </div>
                     <div className="text-[10px] font-mono text-slate-400 truncate">
-                      {hub.currency === baseCurrency
-                        ? `${hub.indexName}`
-                        : `${formatCompactFxValue(hub.fxRate, baseCurrency, lang)}`}
+                      {displayMode === 'stocks' ? hub.indexName : unitLabel}
                     </div>
                   </div>
                 </div>
 
-                <div className="text-right shrink-0 font-mono">
-                  <div
-                    className={`text-xs font-black ${
-                      isUp
-                        ? 'text-emerald-400'
-                        : isDown
-                          ? 'text-rose-400'
-                          : 'text-slate-300'
-                    }`}
-                  >
-                    {hub.stockChangePct > 0
-                      ? `+${hub.stockChangePct.toFixed(2)}%`
-                      : `${hub.stockChangePct.toFixed(2)}%`}
+                {displayMode === 'stocks' ? (
+                  <div className="text-right shrink-0 font-mono">
+                    <div
+                      className={`text-xs font-black ${
+                        isUp
+                          ? 'text-emerald-400'
+                          : isDown
+                            ? 'text-rose-400'
+                            : 'text-slate-300'
+                      }`}
+                    >
+                      {hub.stockChangePct > 0
+                        ? `+${hub.stockChangePct.toFixed(2)}%`
+                        : `${hub.stockChangePct.toFixed(2)}%`}
+                    </div>
+                    <div className="text-[9px] text-slate-500 truncate max-w-[68px]">
+                      {hub.stock?.currentPrice ? hub.stock.currentPrice.toLocaleString() : '-'}
+                    </div>
                   </div>
-                  <div className="text-[9px] text-slate-500 truncate max-w-[68px]">
-                    {hub.indexName}
+                ) : (
+                  <div className="text-right shrink-0 font-mono">
+                    <div className="text-xs font-black text-indigo-200">
+                      {hub.currency === baseCurrency
+                        ? '1.00'
+                        : formatCompactFxValue(hub.fxRate, baseCurrency, lang)}
+                    </div>
+                    <div className="text-[9px] text-slate-400 truncate max-w-[68px]">
+                      {hub.currency === baseCurrency
+                        ? 'BASE'
+                        : hub.fxChangePct != null
+                          ? formatFxChangeBadgeText(hub.fxChangePct)
+                          : '-'}
+                    </div>
                   </div>
-                </div>
+                )}
               </button>
             )
           })}
