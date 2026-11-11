@@ -108,13 +108,13 @@ export function syncLiveImfEconomicData(forceRefresh = false): Promise<boolean> 
           const rawDebt = debtByYr[y]
           const rawInf = infByYr[y]
 
-          const growthRatePct =
+          const growthRatePct: number | null =
             typeof rawGrowth === 'number' && !isNaN(rawGrowth)
               ? Math.round(rawGrowth * 10) / 10
               : fallbackYr?.growthRatePct ?? lastGrowth
           if (growthRatePct !== null) lastGrowth = growthRatePct
 
-          let totalGdpUsd =
+          let totalGdpUsd: number =
             typeof rawGdpB === 'number' && rawGdpB > 0
               ? Math.round(rawGdpB * 1e9)
               : fallbackYr?.totalGdpUsd ?? 0
@@ -124,7 +124,7 @@ export function syncLiveImfEconomicData(forceRefresh = false): Promise<boolean> 
           }
           if (totalGdpUsd > 0) lastTotalGdp = totalGdpUsd
 
-          let gdpPerCapitaUsd =
+          let gdpPerCapitaUsd: number =
             typeof rawPcap === 'number' && rawPcap > 0
               ? Math.round(rawPcap * 100) / 100
               : fallbackYr?.gdpPerCapitaUsd ?? 0
@@ -134,13 +134,13 @@ export function syncLiveImfEconomicData(forceRefresh = false): Promise<boolean> 
           }
           if (gdpPerCapitaUsd > 0) lastPerCapita = gdpPerCapitaUsd
 
-          const debtRatioPct =
+          const debtRatioPct: number | null =
             typeof rawDebt === 'number' && !isNaN(rawDebt)
               ? Math.round(rawDebt * 10) / 10
               : fallbackYr?.debtRatioPct ?? lastDebt
           if (debtRatioPct !== null) lastDebt = debtRatioPct
 
-          const inflationRatePct =
+          const inflationRatePct: number | null =
             typeof rawInf === 'number' && !isNaN(rawInf)
               ? Math.round(rawInf * 10) / 10
               : fallbackYr?.inflationRatePct ?? lastInflation
