@@ -1,5 +1,5 @@
 import type { CountryGdpDetail, GdpYearPoint, EconomicYear } from '../types/economics'
-import { getImfCountryData, getImfYearMap } from '../data/imfEconomic'
+import { getImfCountryData, getImfYearMap, syncLiveImfEconomicData } from '../data/imfEconomic'
 import { CURRENT_YEAR_STR } from '../utils/economicYears'
 
 interface WbItem {
@@ -42,6 +42,10 @@ export async function loadGlobalGdpOverview(
   targetYear: EconomicYear = CURRENT_YEAR_STR
 ): Promise<GlobalEconomicOverview> {
   const yrNum = parseInt(targetYear, 10)
+  const synced = await syncLiveImfEconomicData(forceRefresh)
+  if (synced && forceRefresh) {
+    detailCache.clear()
+  }
 
   // Retrieve from authoritative IMF WEO dataset for the selected target year
   const imfMap = getImfYearMap(targetYear)
@@ -187,6 +191,7 @@ export async function fetchCountryGdpDetail(
 ): Promise<CountryGdpDetail> {
   const code = countryId.toUpperCase()
   const cacheKey = `${code}_${targetYear}`
+  await syncLiveImfEconomicData(false)
 
   if (detailCache.has(cacheKey)) {
     return detailCache.get(cacheKey)!

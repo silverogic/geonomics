@@ -88,6 +88,47 @@ export default {
 
     const url = new URL(request.url)
 
+    // IMF World Economic Outlook (WEO) DataMapper proxy endpoint: ?imf=weo or /imf-weo
+    if (url.searchParams.get('imf') === 'weo' || url.pathname.endsWith('/imf-weo')) {
+      const imfCacheKey = new Request(`${url.origin}/?imf=weo`)
+      const cache = caches.default
+      const cachedImf = await cache.match(imfCacheKey)
+      if (cachedImf) {
+        const hit = new Response(cachedImf.body, cachedImf)
+        Object.entries(corsHeaders(origin)).forEach(([k, v]) => hit.headers.set(k, v))
+        return hit
+      }
+
+      const imfUrl =
+        'https://www.imf.org/external/datamapper/api/v1/NGDPD/NGDPDPC/NGDP_RPCH/GGXWDG_NGDP/PCPIPCH'
+      try {
+        const imfRes = await fetch(imfUrl, {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'Mozilla/5.0 (compatible; GeonomicsProxy/1.0)',
+          },
+        })
+        if (imfRes.ok) {
+          const imfText = await imfRes.text()
+          const cacheable = new Response(imfText, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=86400',
+            },
+          })
+          ctx.waitUntil(cache.put(imfCacheKey, cacheable.clone()))
+          Object.entries(corsHeaders(origin)).forEach(([k, v]) => cacheable.headers.set(k, v))
+          return cacheable
+        }
+      } catch {
+        // Fall through on error
+      }
+      return new Response(JSON.stringify({ error: 'IMF WEO upstream unavailable' }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+      })
+    }
+
     // Optional live Economic Calendar proxy endpoint: ?calendar=US&from=...&to=...
     const calendarCountries = url.searchParams.get('calendar')
     if (calendarCountries && /^[A-Z,]{2,30}$/.test(calendarCountries)) {
