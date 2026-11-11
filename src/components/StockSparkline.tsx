@@ -59,7 +59,7 @@ export const StockSparkline: React.FC<StockSparklineProps> = ({
         width={width}
         height={height}
         viewBox={`0 0 ${width} ${height}`}
-        className="overflow-visible"
+        className="overflow-visible w-full block"
         aria-hidden="true"
       >
         <defs>

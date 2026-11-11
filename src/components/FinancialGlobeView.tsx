@@ -24,7 +24,7 @@ import {
   COUNTRY_LABEL_ANCHORS,
 } from '../data/pixelMapData'
 import { GLOBE_TERRAIN_DOTS } from '../data/globeTerrainDots'
-import { getAllStockPrices, type StockPriceInfo } from '../data/stockPrices'
+import { getAllStockPrices, type StockPoint, type StockPriceInfo } from '../data/stockPrices'
 import { fetchLiveStocks, isLiveStockEnabled } from '../services/liveStockApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
 import {
@@ -41,6 +41,7 @@ import {
   getFxBadgeColorClass,
 } from '../utils/formatters'
 import { CountryFlag } from './CountryFlag'
+import { StockSparkline } from './StockSparkline'
 
 interface FinancialGlobeViewProps {
   items?: CountryRowItem[]
@@ -426,6 +427,33 @@ function formatCompactFxValue(
   }
 }
 
+function getCapsuleSparkline(cap: ProjectedCapsule): {
+  points: StockPoint[]
+  change30d: number
+} {
+  if (cap.stock?.points && cap.stock.points.length >= 2) {
+    const pts = cap.stock.points
+    const first = pts[0].close
+    const last = pts[pts.length - 1].close
+    const change30d =
+      cap.stock.changePct30d ??
+      (first > 0 ? Number((((last - first) / first) * 100).toFixed(2)) : cap.stockChangePct)
+    return { points: pts, change30d }
+  }
+
+  // Deterministic 30-day fallback curve when stock points are unavailable
+  const seed = cap.id.charCodeAt(0) * 13 + cap.id.charCodeAt(1) * 7 + cap.id.charCodeAt(2) * 3
+  const trendPct = cap.fxChangePct ?? cap.growthRatePct ?? 0.5
+  const pts: StockPoint[] = []
+  for (let i = 0; i < 20; i++) {
+    const t = i / 19
+    const wave = Math.sin(t * Math.PI * 2.5 + seed) * 0.4 + Math.cos(t * Math.PI * 4 + seed) * 0.2
+    const close = 100 + trendPct * t + wave
+    pts.push({ date: `D-${20 - i}`, close: Number(close.toFixed(2)) })
+  }
+  return { points: pts, change30d: Number(trendPct.toFixed(2)) }
+}
+
 export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   items,
   baseCurrency,
@@ -439,6 +467,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   const [activePreset, setActivePreset] = useState<RegionPreset>('auto')
   const [isSpinning, setIsSpinning] = useState(true)
   const [hoveredHubId, setHoveredHubId] = useState<string | null>(null)
+  const [expandedHubId, setExpandedHubId] = useState<string | null>(null)
   const [liveStockTick, setLiveStockTick] = useState(0)
   const [liveFxQuotes, setLiveFxQuotes] = useState<Record<string, LiveFxQuote>>({})
   const [projectedCapsules, setProjectedCapsules] = useState<ProjectedCapsule[]>([])
@@ -477,7 +506,15 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
   useEffect(() => {
     hoveredHubIdRef.current = hoveredHubId
-  }, [hoveredHubId])
+    if (!hoveredHubId || displayMode !== 'stocks') {
+      setExpandedHubId(null)
+      return
+    }
+    const timer = window.setTimeout(() => {
+      setExpandedHubId(hoveredHubId)
+    }, 260)
+    return () => window.clearTimeout(timer)
+  }, [hoveredHubId, displayMode])
 
   useEffect(() => {
     displayModeRef.current = displayMode
@@ -766,11 +803,13 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     if (preset === 'asia') {
       targetRotationRef.current = { lon: -120, lat: 18 }
     } else if (preset === 'europe') {
-      targetRotationRef.current = { lon: -12, lat: 34 }
+      // Center directly on Poland (POL: c=26, r=5 -> lon≈+5.4°, lat≈+44.4°)
+      targetRotationRef.current = { lon: -5.5, lat: -44 }
     } else if (preset === 'americas') {
       targetRotationRef.current = { lon: 82, lat: 14 }
     } else if (preset === 'oceania') {
-      targetRotationRef.current = { lon: -138, lat: -18 }
+      // Center directly on Australia (AUS: c=46, r=21 -> lon≈+141.3°, lat≈-25.2°)
+      targetRotationRef.current = { lon: -140, lat: 25 }
     }
   }
 
@@ -1052,14 +1091,16 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         }
       }
 
-      // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub
+      // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub (Hidden in 'stocks' mode)
       const currentHubs = enrichedHubsRef.current
       const baseHubId = BASE_CURRENCY_HUB_ID[baseCurrency] || 'USA'
       const baseHub = currentHubs.find((h) => h.id === baseHubId)
+      const isDesktopRatio = width >= 768 && width >= height * 0.95
 
-      if (baseHub) {
+      if (baseHub && activeMode !== 'stocks') {
         for (const target of currentHubs) {
           if (target.id === baseHub.id) continue
+          if (!isDesktopRatio && target.desktopOnly) continue
           const rpTarget = rotatePoint(target.unitVec, rotLonRad, rotLatRad)
           const rpBase = rotatePoint(baseHub.unitVec, rotLonRad, rotLatRad)
           if (rpTarget.z < 0.05 && rpBase.z < 0.05) continue
@@ -1097,9 +1138,26 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               ctx.lineTo(sx, sy)
             }
           }
-          ctx.strokeStyle = isHighlighted
-            ? 'rgba(52, 211, 153, 0.7)'
-            : 'rgba(99, 102, 241, 0.20)'
+          if (activeMode === 'fx') {
+            const fxChg = target.fxChangePct ?? 0
+            if (fxChg > 0.01) {
+              ctx.strokeStyle = isHighlighted
+                ? 'rgba(52, 211, 153, 0.85)'
+                : 'rgba(16, 185, 129, 0.38)'
+            } else if (fxChg < -0.01) {
+              ctx.strokeStyle = isHighlighted
+                ? 'rgba(251, 113, 133, 0.85)'
+                : 'rgba(244, 63, 94, 0.38)'
+            } else {
+              ctx.strokeStyle = isHighlighted
+                ? 'rgba(148, 163, 184, 0.75)'
+                : 'rgba(100, 116, 139, 0.25)'
+            }
+          } else {
+            ctx.strokeStyle = isHighlighted
+              ? 'rgba(52, 211, 153, 0.7)'
+              : 'rgba(99, 102, 241, 0.20)'
+          }
           ctx.lineWidth = isHighlighted ? 1.8 : 1.0
           ctx.stroke()
         }
@@ -1108,7 +1166,6 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       // 6. Compute Visible Front-Hemisphere Capsules anchored flush on top of each country's 3D Voxel Block
       const rawCapsules: ProjectedCapsule[] = []
       const pulseScale = (Math.sin(pulsePhase) + 1) * 0.5
-      const isDesktopRatio = width >= 768 && width >= height * 0.95
 
       for (const h of currentHubs) {
         if (!isDesktopRatio && h.desktopOnly) continue
@@ -1476,6 +1533,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 ? cap.stockChangePct < -0.15
                 : (cap.fxChangePct ?? 0) < -0.01
           const isHovered = hoveredHubId === cap.id
+          const isExpanded = displayMode === 'stocks' && expandedHubId === cap.id
+          const sparklineData =
+            displayMode === 'stocks' && isHovered ? getCapsuleSparkline(cap) : null
 
           const borderClass = isHovered
             ? 'border-white ring-2 ring-emerald-400/50 bg-slate-900/95'
@@ -1503,11 +1563,12 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               onMouseLeave={() => setHoveredHubId(null)}
               onClick={() => onSelectCountry(cap.country)}
               style={{
-                transform: `translate3d(${Math.round(cap.x)}px, ${Math.round(cap.y)}px, 0) translate(-50%, -50%) scale(${isHovered ? 1.08 : cap.scale.toFixed(3)})`,
+                transform: `translate3d(${Math.round(cap.x)}px, ${Math.round(cap.y - 22)}px, 0) translate(-50%, 0) scale(${cap.scale.toFixed(3)})`,
+                transformOrigin: 'top center',
                 opacity: isHovered ? 1 : cap.opacity,
                 zIndex: isHovered ? 50 : Math.round(cap.z * 30),
               }}
-              className={`pointer-events-auto absolute top-0 left-0 rounded-xl backdrop-blur-md border px-2 sm:px-2.5 py-1 sm:py-1.5 text-left shadow-xl transition-[border-color,background-color] duration-150 cursor-pointer min-w-[114px] sm:min-w-[136px] ${borderClass}`}
+              className={`pointer-events-auto absolute top-0 left-0 rounded-xl backdrop-blur-md border px-2 sm:px-2.5 py-1 sm:py-1.5 text-left shadow-xl transition-[border-color,background-color] duration-150 cursor-pointer w-[118px] sm:w-[140px] ${borderClass}`}
             >
               {/* Row 1: Flag, Country Name & Primary Mode Badge */}
               <div className="flex items-center justify-between gap-1.5">
@@ -1594,6 +1655,35 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                     </span>
                   </>
                 )}
+              </div>
+
+              {/* Row 3: Delayed Hover Height Expansion for 30-Day Trend Sparkline inside the Same Box */}
+              <div
+                className={`grid transition-[grid-template-rows,opacity,margin,padding] duration-200 ease-out ${
+                  isExpanded
+                    ? 'grid-rows-[1fr] opacity-100 mt-1.5 pt-1.5 border-t border-slate-700/80'
+                    : 'grid-rows-[0fr] opacity-0 mt-0 pt-0 border-t border-transparent'
+                }`}
+              >
+                <div className="overflow-hidden min-h-0">
+                  {sparklineData && (
+                    <>
+                      <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 mb-0.5">
+                        <span className="truncate max-w-[72px]">
+                          {cap.stock?.currency || cap.currency}
+                        </span>
+                        <span className="shrink-0">30D Trend</span>
+                      </div>
+                      <StockSparkline
+                        points={sparklineData.points}
+                        isPositive={cap.stockChangePct >= 0}
+                        width={118}
+                        height={28}
+                        className="w-full block"
+                      />
+                    </>
+                  )}
+                </div>
               </div>
             </button>
           )

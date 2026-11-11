@@ -349,7 +349,7 @@ export const translations = {
     filterAll: '전체',
     filterAsia: '아시아',
     filterEurope: '유럽',
-    filterAmericas: '아메리카',
+    filterAmericas: '미주',
     filterAfrica: '아프리카',
     filterOceania: '오세아니아',
     viewCards: '카드 뷰',
