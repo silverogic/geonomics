@@ -10,6 +10,7 @@ import {
   Globe,
   LayoutGrid,
   Lightbulb,
+  GitCompare,
 } from 'lucide-react'
 import { TileWorldMap } from './TileWorldMap'
 import { GdpTreemap } from './GdpTreemap'
@@ -44,6 +45,8 @@ interface GdpWorldMapProps {
   selectedYear: EconomicYear
   onYearChange: (year: EconomicYear) => void
   onSelectCountry: (country: CountryMeta) => void
+  onToggleCompareTray?: () => void
+  isCompareTrayActive?: boolean
 }
 
 const ALL_REGIONS: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania']
@@ -71,6 +74,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
   selectedYear,
   onYearChange,
   onSelectCountry,
+  onToggleCompareTray,
+  isCompareTrayActive = false,
 }) => {
   const t = translations[lang]
   const [visualMode, setVisualMode] = useState<'map' | 'treemap'>(() => {
@@ -606,6 +611,21 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                 <LayoutGrid className="w-3.5 h-3.5" />
                 <span>{t.mapViewModeTreemap}</span>
               </button>
+              {onToggleCompareTray && (
+                <button
+                  type="button"
+                  onClick={onToggleCompareTray}
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    isCompareTrayActive
+                      ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30 font-bold'
+                      : 'text-indigo-300 hover:text-white hover:bg-indigo-950/60'
+                  }`}
+                  title={t.navCompare}
+                >
+                  <GitCompare className="w-3.5 h-3.5" />
+                  <span>{t.navCompare}</span>
+                </button>
+              )}
             </div>
 
             {/* Year Switcher (3 options - toggle switch permitted under 4 options) */}

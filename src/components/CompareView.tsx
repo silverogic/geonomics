@@ -33,6 +33,9 @@ interface CompareViewProps {
   lang: Language
   selectedYear?: EconomicYear
   onYearChange?: (year: EconomicYear) => void
+  initialCountryAId?: string
+  initialCountryBId?: string
+  onClose?: () => void
 }
 
 export const CompareView: React.FC<CompareViewProps> = ({
@@ -42,10 +45,21 @@ export const CompareView: React.FC<CompareViewProps> = ({
   lang,
   selectedYear = DEFAULT_ECONOMIC_YEAR,
   onYearChange,
+  initialCountryAId,
+  initialCountryBId,
+  onClose,
 }) => {
   const t = translations[lang]
-  const [countryAId, setCountryAId] = useState<string>('USA')
-  const [countryBId, setCountryBId] = useState<string>('CHN')
+  const [countryAId, setCountryAId] = useState<string>(initialCountryAId || 'USA')
+  const [countryBId, setCountryBId] = useState<string>(initialCountryBId || 'CHN')
+
+  useEffect(() => {
+    if (initialCountryAId) setCountryAId(initialCountryAId)
+  }, [initialCountryAId])
+
+  useEffect(() => {
+    if (initialCountryBId) setCountryBId(initialCountryBId)
+  }, [initialCountryBId])
 
   // Custom App-Themed Combobox States & Refs
   const [isCountryAOpen, setIsCountryAOpen] = useState<boolean>(false)
@@ -207,14 +221,27 @@ export const CompareView: React.FC<CompareViewProps> = ({
     .replace('{perCapitaRatio}', perCapitaRatio.toFixed(2))
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${onClose ? 'pt-3 sm:pt-6' : ''}`}>
       {/* Top Header & Presets */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-            <GitCompare className="w-6 h-6 text-indigo-400" />
-            {t.compareTitle}
-          </h2>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+              <GitCompare className="w-6 h-6 text-indigo-400" />
+              {t.compareTitle}
+            </h2>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="lg:hidden p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                title={t.modalClose}
+                aria-label={t.modalClose}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {onYearChange && (
@@ -264,15 +291,31 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <CountryFlag iso2="KR" className="w-4 h-3" /> KOR vs <CountryFlag iso2="TW" className="w-4 h-3" /> TWN
               </button>
             </div>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="hidden lg:inline-flex p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                title={t.modalClose}
+                aria-label={t.modalClose}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* 1:1 Head-to-Head Symmetric Matrix View */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl divide-y divide-slate-800/80">
-        {/* Header Country VS Banner (with seamless app-themed country selectors) */}
-        <div className="sticky top-16 z-30 bg-slate-950 -mx-[1px] -mt-[1px]">
-          <div className="bg-slate-900 bg-gradient-to-r from-indigo-950 via-slate-900 to-emerald-950 rounded-t-2xl border border-slate-800 shadow-md p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
+      {/* Sticky Header Country VS Banner (docks flush at top of modal across entire scroll height) */}
+      <div
+        style={{ marginBottom: 0, marginBlockEnd: 0 }}
+        className={`${
+          onClose
+            ? 'sticky top-0 -mx-3 px-3 pt-2.5 sm:-mx-6 sm:px-6 sm:pt-3'
+            : 'sticky top-16 -mx-[1px]'
+        } z-30 bg-slate-950`}
+      >
+        <div className="bg-slate-900 bg-gradient-to-r from-indigo-950 via-slate-900 to-emerald-950 rounded-t-2xl border border-slate-800 shadow-lg p-3 sm:p-4 md:p-5 flex items-center justify-between gap-2 sm:gap-3 transition-shadow">
             {/* Country A App-Themed Combobox */}
             <div className="relative flex-1 min-w-0" ref={countryARef}>
               <button
@@ -518,6 +561,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
         </div>
 
+      {/* 1:1 Head-to-Head Symmetric Matrix View */}
+      <div
+        style={{ marginTop: 0, marginBlockStart: 0 }}
+        className="bg-slate-900/90 border-x border-b border-slate-800 rounded-b-2xl shadow-xl divide-y divide-slate-800/80"
+      >
         {/* Metric 1: Total GDP with Dual Ratio Visualizer Bar */}
         {(() => {
           const gdpA = detailA?.totalGdpUsd || 0

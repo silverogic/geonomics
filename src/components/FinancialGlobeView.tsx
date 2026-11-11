@@ -274,9 +274,15 @@ function getFxColorBucket(changePct: number): number {
   return 7
 }
 
-// Module-level cached 3D unit vectors for Dot-Matrix continents & graticule rings
+// Module-level cached 3D unit vectors for Dot-Matrix continents, graticule rings & Arctic Easter Egg
 let cachedLandDots: LandDot[] | null = null
 let cachedGraticuleLines: Vec3[][] | null = null
+let cachedArcticShelfRing: Vec3[] | null = null
+let cachedMiniIceFloes: Vec3[][] | null = null
+let cachedArcticIceDots: Vec3[] | null = null
+let cachedAntarcticShelfRing: Vec3[] | null = null
+let cachedAntarcticMiniFloes: Vec3[][] | null = null
+let cachedAntarcticIceDots: Vec3[] | null = null
 
 function latLonToVec3(latDeg: number, lonDeg: number): Vec3 {
   const lat = (latDeg * Math.PI) / 180
@@ -287,6 +293,134 @@ function latLonToVec3(latDeg: number, lonDeg: number): Vec3 {
     y: -Math.sin(lat),
     z: cosLat * Math.cos(lon),
   }
+}
+
+function getArcticEasterEggGeometry(): {
+  shelfRing: Vec3[]
+  miniFloes: Vec3[][]
+  iceDots: Vec3[]
+} {
+  if (cachedArcticShelfRing && cachedMiniIceFloes && cachedArcticIceDots) {
+    return {
+      shelfRing: cachedArcticShelfRing,
+      miniFloes: cachedMiniIceFloes,
+      iceDots: cachedArcticIceDots,
+    }
+  }
+
+  // 1. Main polar ice floe perimeter with organic scalloped coastline around 84.5°N ~ 86.2°N
+  const shelfRing: Vec3[] = []
+  for (let deg = 0; deg < 360; deg += 8) {
+    const rad = (deg * Math.PI) / 180
+    const latEdge =
+      85.1 +
+      0.65 * Math.sin(rad * 3 + 0.4) +
+      0.45 * Math.cos(rad * 5 - 1.1) +
+      0.25 * Math.sin(rad * 7 + 2.0)
+    shelfRing.push(latLonToVec3(latEdge, deg))
+  }
+
+  // 2. Two smaller drifting satellite ice floes (유빙) nearby
+  const miniCenters = [
+    { lat: 82.8, lon: 38, rLat: 1.05, rLon: 9.5 },
+    { lat: 83.2, lon: -125, rLat: 0.9, rLon: 8.5 },
+    { lat: 82.5, lon: 145, rLat: 0.85, rLon: 7.5 },
+  ]
+  const miniFloes: Vec3[][] = miniCenters.map((mc) => {
+    const pts: Vec3[] = []
+    for (let a = 0; a < 360; a += 30) {
+      const ar = (a * Math.PI) / 180
+      const wobble = 1 + 0.16 * Math.sin(ar * 3 + mc.lon)
+      const pLat = mc.lat + Math.cos(ar) * mc.rLat * wobble
+      const pLon = mc.lon + Math.sin(ar) * mc.rLon * wobble
+      pts.push(latLonToVec3(pLat, pLon))
+    }
+    return pts
+  })
+
+  // 3. Surrounding dot-matrix sea-ice crystals blending into the globe's dot aesthetic
+  const iceDots: Vec3[] = []
+  const ringSpecs = [
+    { lat: 83.4, step: 18 },
+    { lat: 84.6, step: 22 },
+    { lat: 86.0, step: 30 },
+    { lat: 87.5, step: 45 },
+  ]
+  for (const rs of ringSpecs) {
+    for (let lon = -180; lon < 180; lon += rs.step) {
+      const jitterLat = rs.lat + 0.25 * Math.sin(lon * 0.17)
+      iceDots.push(latLonToVec3(jitterLat, lon))
+    }
+  }
+
+  cachedArcticShelfRing = shelfRing
+  cachedMiniIceFloes = miniFloes
+  cachedArcticIceDots = iceDots
+  return { shelfRing, miniFloes, iceDots }
+}
+
+function getAntarcticEasterEggGeometry(): {
+  shelfRing: Vec3[]
+  miniFloes: Vec3[][]
+  iceDots: Vec3[]
+} {
+  if (cachedAntarcticShelfRing && cachedAntarcticMiniFloes && cachedAntarcticIceDots) {
+    return {
+      shelfRing: cachedAntarcticShelfRing,
+      miniFloes: cachedAntarcticMiniFloes,
+      iceDots: cachedAntarcticIceDots,
+    }
+  }
+
+  // 1. Main Antarctic polar ice shelf perimeter with organic scalloped coastline around -84.6°S ~ -86.2°S
+  const shelfRing: Vec3[] = []
+  for (let deg = 0; deg < 360; deg += 8) {
+    const rad = (deg * Math.PI) / 180
+    const latEdge =
+      -85.0 -
+      0.65 * Math.cos(rad * 3 - 0.5) -
+      0.45 * Math.sin(rad * 5 + 0.9) -
+      0.25 * Math.cos(rad * 7 - 1.4)
+    shelfRing.push(latLonToVec3(latEdge, deg))
+  }
+
+  // 2. Three drifting Southern Ocean mini ice floes (유빙) nearby
+  const miniCenters = [
+    { lat: -82.6, lon: -48, rLat: 1.0, rLon: 9.2 },
+    { lat: -83.1, lon: 92, rLat: 0.95, rLon: 8.8 },
+    { lat: -82.4, lon: -162, rLat: 0.88, rLon: 8.0 },
+  ]
+  const miniFloes: Vec3[][] = miniCenters.map((mc) => {
+    const pts: Vec3[] = []
+    for (let a = 0; a < 360; a += 30) {
+      const ar = (a * Math.PI) / 180
+      const wobble = 1 + 0.16 * Math.cos(ar * 3 - mc.lon)
+      const pLat = mc.lat + Math.cos(ar) * mc.rLat * wobble
+      const pLon = mc.lon + Math.sin(ar) * mc.rLon * wobble
+      pts.push(latLonToVec3(pLat, pLon))
+    }
+    return pts
+  })
+
+  // 3. Surrounding dot-matrix sea-ice crystals blending into the globe's dot aesthetic
+  const iceDots: Vec3[] = []
+  const ringSpecs = [
+    { lat: -83.2, step: 18 },
+    { lat: -84.5, step: 22 },
+    { lat: -85.9, step: 30 },
+    { lat: -87.4, step: 45 },
+  ]
+  for (const rs of ringSpecs) {
+    for (let lon = -180; lon < 180; lon += rs.step) {
+      const jitterLat = rs.lat - 0.25 * Math.cos(lon * 0.17)
+      iceDots.push(latLonToVec3(jitterLat, lon))
+    }
+  }
+
+  cachedAntarcticShelfRing = shelfRing
+  cachedAntarcticMiniFloes = miniFloes
+  cachedAntarcticIceDots = iceDots
+  return { shelfRing, miniFloes, iceDots }
 }
 
 function gridColRowToLatLon(col: number, row: number): { lat: number; lon: number } {
@@ -348,6 +482,1356 @@ function rotatePoint(p: Vec3, rotLonRad: number, rotLatRad: number): Vec3 {
   const z2 = y1 * sinLat + z1 * cosLat
 
   return { x: x1, y: y2, z: z2 }
+}
+
+interface MeshQuad3D {
+  v: [Vec3, Vec3, Vec3, Vec3]
+  normal: Vec3
+  rgb: [number, number, number]
+  stroke?: string
+  unlit?: boolean
+  alpha?: number
+}
+
+function vAdd(a: Vec3, b: Vec3): Vec3 {
+  return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z }
+}
+
+function vScale(a: Vec3, s: number): Vec3 {
+  return { x: a.x * s, y: a.y * s, z: a.z * s }
+}
+
+function vDot(a: Vec3, b: Vec3): number {
+  return a.x * b.x + a.y * b.y + a.z * b.z
+}
+
+function vCross(a: Vec3, b: Vec3): Vec3 {
+  return {
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
+  }
+}
+
+function vNorm(a: Vec3): Vec3 {
+  const len = Math.hypot(a.x, a.y, a.z) || 1
+  return { x: a.x / len, y: a.y / len, z: a.z / len }
+}
+
+function addLocalBoxQuads(
+  quads: MeshQuad3D[],
+  toWorld: (f: number, r: number, u: number) => Vec3,
+  toWorldDir: (df: number, dr: number, du: number) => Vec3,
+  f0: number,
+  f1: number,
+  r0: number,
+  r1: number,
+  u0: number,
+  u1: number,
+  rgb: [number, number, number],
+  stroke?: string,
+  topTaper = 1.0,
+  frontTaper = 1.0
+): void {
+  const rMid = (r0 + r1) * 0.5
+  const rHalf = (r1 - r0) * 0.5
+  const uMid = (u0 + u1) * 0.5
+  const uHalf = (u1 - u0) * 0.5
+
+  const getPt = (f: number, rSign: number, uSign: number): Vec3 => {
+    const isTop = uSign > 0
+    const isFront = f > (f0 + f1) * 0.5
+    const tScale = (isTop ? topTaper : 1.0) * (isFront ? frontTaper : 1.0)
+    const r = rMid + rSign * rHalf * tScale
+    const u = isFront && frontTaper < 1.0 ? uMid + uSign * uHalf * frontTaper : uSign > 0 ? u1 : u0
+    return toWorld(f, r, u)
+  }
+
+  const p000 = getPt(f0, -1, -1)
+  const p010 = getPt(f0, 1, -1)
+  const p011 = getPt(f0, 1, 1)
+  const p001 = getPt(f0, -1, 1)
+
+  const p100 = getPt(f1, -1, -1)
+  const p110 = getPt(f1, 1, -1)
+  const p111 = getPt(f1, 1, 1)
+  const p101 = getPt(f1, -1, 1)
+
+  // Top (+U)
+  quads.push({
+    v: [p001, p011, p111, p101],
+    normal: toWorldDir(0, 0, 1),
+    rgb,
+    stroke,
+  })
+  // Bottom (-U)
+  quads.push({
+    v: [p000, p100, p110, p010],
+    normal: toWorldDir(0, 0, -1),
+    rgb,
+    stroke,
+  })
+  // Front (+F)
+  quads.push({
+    v: [p100, p110, p111, p101],
+    normal: toWorldDir(1, 0, 0),
+    rgb,
+    stroke,
+  })
+  // Back (-F)
+  quads.push({
+    v: [p010, p000, p001, p011],
+    normal: toWorldDir(-1, 0, 0),
+    rgb,
+    stroke,
+  })
+  // Right (+R)
+  quads.push({
+    v: [p010, p110, p111, p011],
+    normal: toWorldDir(0, 1, 0),
+    rgb,
+    stroke,
+  })
+  // Left (-R)
+  quads.push({
+    v: [p100, p000, p001, p101],
+    normal: toWorldDir(0, -1, 0),
+    rgb,
+    stroke,
+  })
+}
+
+function drawArcticEasterEgg(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  radius: number,
+  rotLonRad: number,
+  rotLatRad: number,
+  pulsePhase: number
+): void {
+  // Check North Pole visibility first
+  const northPoleRp = rotatePoint({ x: 0, y: -1, z: 0 }, rotLonRad, rotLatRad)
+  if (northPoleRp.z < -0.12) return
+
+  const { shelfRing, miniFloes, iceDots } = getArcticEasterEggGeometry()
+  const polarVisibility = Math.min(1, Math.max(0, (northPoleRp.z + 0.08) / 0.35))
+  if (polarVisibility <= 0.01) return
+
+  ctx.save()
+
+  // 1. Surrounding Sparkling Sea-Ice Dots (blends polar cap with dot-matrix globe)
+  const iceDotR = Math.max(1.2, radius * 0.0068)
+  ctx.fillStyle = `rgba(186, 230, 253, ${(0.52 * polarVisibility).toFixed(3)})`
+  ctx.beginPath()
+  for (let i = 0; i < iceDots.length; i++) {
+    const rp = rotatePoint(iceDots[i], rotLonRad, rotLatRad)
+    if (rp.z <= 0.04) continue
+    const sx = cx + rp.x * radius * 1.003
+    const sy = cy + rp.y * radius * 1.003
+    ctx.moveTo(sx + iceDotR, sy)
+    ctx.arc(sx, sy, iceDotR, 0, Math.PI * 2)
+  }
+  ctx.fill()
+
+  // 2. Drifting Mini Satellite Ice Floes (유빙)
+  for (const floe of miniFloes) {
+    const projectedBase: Array<{ x: number; y: number; z: number }> = []
+    const projectedTop: Array<{ x: number; y: number; z: number }> = []
+    let visibleCount = 0
+    for (let i = 0; i < floe.length; i++) {
+      const rp = rotatePoint(floe[i], rotLonRad, rotLatRad)
+      if (rp.z > 0.04) visibleCount++
+      projectedBase.push({
+        x: cx + rp.x * radius * 1.002,
+        y: cy + rp.y * radius * 1.002,
+        z: rp.z,
+      })
+      projectedTop.push({
+        x: cx + rp.x * radius * 1.008,
+        y: cy + rp.y * radius * 1.008,
+        z: rp.z,
+      })
+    }
+    if (visibleCount < floe.length * 0.6) continue
+
+    // Cyan 3D ice wall base
+    ctx.beginPath()
+    for (let i = 0; i < projectedBase.length; i++) {
+      if (i === 0) ctx.moveTo(projectedBase[i].x, projectedBase[i].y)
+      else ctx.lineTo(projectedBase[i].x, projectedBase[i].y)
+    }
+    ctx.closePath()
+    ctx.fillStyle = `rgba(56, 189, 248, ${(0.42 * polarVisibility).toFixed(3)})`
+    ctx.fill()
+
+    // Crisp white snow cap top
+    ctx.beginPath()
+    for (let i = 0; i < projectedTop.length; i++) {
+      if (i === 0) ctx.moveTo(projectedTop[i].x, projectedTop[i].y)
+      else ctx.lineTo(projectedTop[i].x, projectedTop[i].y)
+    }
+    ctx.closePath()
+    ctx.fillStyle = `rgba(240, 249, 255, ${(0.86 * polarVisibility).toFixed(3)})`
+    ctx.fill()
+  }
+
+  // 3. Main 3D Polar Ice Floe Shelf (북극 빙하)
+  const shelfBasePts: Array<{ x: number; y: number }> = []
+  const shelfTopPts: Array<{ x: number; y: number }> = []
+  let shelfVisible = 0
+  for (let i = 0; i < shelfRing.length; i++) {
+    const rp = rotatePoint(shelfRing[i], rotLonRad, rotLatRad)
+    const clampedZ = Math.max(0.01, rp.z)
+    if (rp.z > 0.02) shelfVisible++
+    shelfBasePts.push({
+      x: cx + rp.x * radius * 1.002,
+      y: cy + rp.y * radius * 1.002 + (1 - clampedZ) * 1.5,
+    })
+    shelfTopPts.push({
+      x: cx + rp.x * radius * 1.012,
+      y: cy + rp.y * radius * 1.012,
+    })
+  }
+
+  if (shelfVisible < shelfRing.length * 0.45) {
+    ctx.restore()
+    return
+  }
+
+  // 3a. Submerged / Side Glacial Cliff Rim
+  ctx.beginPath()
+  for (let i = 0; i < shelfBasePts.length; i++) {
+    if (i === 0) ctx.moveTo(shelfBasePts[i].x, shelfBasePts[i].y)
+    else ctx.lineTo(shelfBasePts[i].x, shelfBasePts[i].y)
+  }
+  ctx.closePath()
+  ctx.fillStyle = `rgba(14, 165, 233, ${(0.46 * polarVisibility).toFixed(3)})`
+  ctx.fill()
+  ctx.strokeStyle = `rgba(56, 189, 248, ${(0.72 * polarVisibility).toFixed(3)})`
+  ctx.lineWidth = 1.4
+  ctx.stroke()
+
+  // 3b. Snow-White Polar Ice Floe Top Surface
+  const poleScreenX = cx + northPoleRp.x * radius * 1.012
+  const poleScreenY = cy + northPoleRp.y * radius * 1.012
+  const floeGradRadius = Math.max(16, radius * 0.11)
+  const floeGrad = ctx.createRadialGradient(
+    poleScreenX - floeGradRadius * 0.2,
+    poleScreenY - floeGradRadius * 0.2,
+    floeGradRadius * 0.08,
+    poleScreenX,
+    poleScreenY,
+    floeGradRadius
+  )
+  floeGrad.addColorStop(0, `rgba(255, 255, 255, ${(0.96 * polarVisibility).toFixed(3)})`)
+  floeGrad.addColorStop(0.7, `rgba(224, 242, 254, ${(0.92 * polarVisibility).toFixed(3)})`)
+  floeGrad.addColorStop(1, `rgba(186, 230, 253, ${(0.88 * polarVisibility).toFixed(3)})`)
+
+  ctx.beginPath()
+  for (let i = 0; i < shelfTopPts.length; i++) {
+    if (i === 0) ctx.moveTo(shelfTopPts[i].x, shelfTopPts[i].y)
+    else ctx.lineTo(shelfTopPts[i].x, shelfTopPts[i].y)
+  }
+  ctx.closePath()
+  ctx.fillStyle = floeGrad
+  ctx.fill()
+  ctx.strokeStyle = `rgba(255, 255, 255, ${(0.85 * polarVisibility).toFixed(3)})`
+  ctx.lineWidth = 1.1
+  ctx.stroke()
+
+  // 4. Fox Orbit Path & Fading 3D Pawprints on the Snow
+  const surfaceElev = 1.0125
+  const rawCycle = pulsePhase * 0.55
+  const cycleMod = rawCycle % (Math.PI * 2)
+  const isHopping = cycleMod > 5.1 && cycleMod < 5.95
+  const hopProgress = isHopping ? (cycleMod - 5.1) / 0.85 : 0
+
+  const foxLonDeg = ((pulsePhase * 26) % 360) - 180
+  const foxLatDeg = 86.15 + 0.3 * Math.sin((foxLonDeg * Math.PI) / 90)
+
+  const pawStepDeg = 11
+  for (let p = 1; p <= 6; p++) {
+    const trailLon = foxLonDeg - p * pawStepDeg
+    const trailLat = 86.15 + 0.3 * Math.sin((trailLon * Math.PI) / 90)
+    const pawVec = latLonToVec3(trailLat, trailLon)
+    const pawRp = rotatePoint(pawVec, rotLonRad, rotLatRad)
+    if (pawRp.z <= 0.08) continue
+    const px = cx + pawRp.x * radius * surfaceElev
+    const py = cy + pawRp.y * radius * surfaceElev
+    const pawAlpha = (1 - p / 7) * 0.42 * polarVisibility
+    ctx.fillStyle = `rgba(100, 116, 139, ${pawAlpha.toFixed(3)})`
+    ctx.beginPath()
+    ctx.arc(px - 1.2, py - 0.6, Math.max(0.8, radius * 0.003), 0, Math.PI * 2)
+    ctx.arc(px + 1.2, py + 0.6, Math.max(0.8, radius * 0.003), 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 5. Build True 3D Volumetric Mesh Quads for the Igloo & Articulated 3D Arctic Fox
+  const quads: MeshQuad3D[] = []
+
+  // --- 5A. 3D Faceted Ice-Block Igloo (centered at 88.5°N, 20°E, tunnel facing 25°E) ---
+  const iglooCenterUnit = latLonToVec3(88.5, 20)
+  const iglooOrigin = vScale(iglooCenterUnit, surfaceElev)
+  const iglooN = vNorm(iglooCenterUnit)
+  const iglooAimVec = latLonToVec3(80, 25)
+  const iglooRawF = {
+    x: iglooAimVec.x - iglooCenterUnit.x,
+    y: iglooAimVec.y - iglooCenterUnit.y,
+    z: iglooAimVec.z - iglooCenterUnit.z,
+  }
+  const iglooF = vNorm(
+    vAdd(iglooRawF, vScale(iglooN, -vDot(iglooRawF, iglooN)))
+  )
+  const iglooR = vNorm(vCross(iglooF, iglooN))
+  const iglooScale = 0.044
+
+  const iglooToWorld = (f: number, r: number, u: number): Vec3 =>
+    vAdd(
+      iglooOrigin,
+      vScale(
+        vAdd(vAdd(vScale(iglooF, f), vScale(iglooR, r)), vScale(iglooN, u)),
+        iglooScale
+      )
+    )
+
+  const iglooToWorldDir = (df: number, dr: number, du: number): Vec3 =>
+    vNorm(vAdd(vAdd(vScale(iglooF, df), vScale(iglooR, dr)), vScale(iglooN, du)))
+
+  // Warm golden hearth light patch on the snow right outside the 3D tunnel entrance
+  const glowPulse = 0.85 + 0.15 * Math.sin(pulsePhase * 2.4)
+  const hearthSnowCenter = rotatePoint(iglooToWorld(1.52, 0, 0.02), rotLonRad, rotLatRad)
+  if (hearthSnowCenter.z > 0.06) {
+    const hsx = cx + hearthSnowCenter.x * radius
+    const hsy = cy + hearthSnowCenter.y * radius
+    const hsr = Math.max(6, radius * 0.036)
+    const hearthGrad = ctx.createRadialGradient(hsx, hsy, 0.5, hsx, hsy, hsr)
+    hearthGrad.addColorStop(0, `rgba(251, 191, 36, ${(0.55 * glowPulse * polarVisibility).toFixed(3)})`)
+    hearthGrad.addColorStop(0.55, `rgba(245, 158, 11, ${(0.22 * glowPulse * polarVisibility).toFixed(3)})`)
+    hearthGrad.addColorStop(1, 'rgba(251, 191, 36, 0)')
+    ctx.fillStyle = hearthGrad
+    ctx.beginPath()
+    ctx.arc(hsx, hsy, hsr, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 3D Igloo Dome Courses (4 latitude bands x 12 azimuth ice blocks)
+  const domeRings = 4
+  const domeSegs = 12
+  const domeRadius = 1.0
+  const domeHeight = 0.92
+  for (let ring = 0; ring < domeRings; ring++) {
+    const phi0 = (ring / domeRings) * (Math.PI * 0.5)
+    const phi1 = ((ring + 1) / domeRings) * (Math.PI * 0.5)
+    const cosP0 = Math.cos(phi0)
+    const sinP0 = Math.sin(phi0)
+    const cosP1 = Math.cos(phi1)
+    const sinP1 = Math.sin(phi1)
+    // Stagger alternate courses slightly for authentic ice-brick look
+    const twist = (ring % 2) * (Math.PI / domeSegs) * 0.35
+
+    for (let seg = 0; seg < domeSegs; seg++) {
+      const th0 = (seg / domeSegs) * Math.PI * 2 + twist
+      const th1 = ((seg + 1) / domeSegs) * Math.PI * 2 + twist
+      const thMid = (th0 + th1) * 0.5
+      const phiMid = (phi0 + phi1) * 0.5
+
+      const v00 = iglooToWorld(
+        cosP0 * Math.cos(th0) * domeRadius,
+        cosP0 * Math.sin(th0) * domeRadius,
+        sinP0 * domeHeight
+      )
+      const v10 = iglooToWorld(
+        cosP0 * Math.cos(th1) * domeRadius,
+        cosP0 * Math.sin(th1) * domeRadius,
+        sinP0 * domeHeight
+      )
+      const v11 = iglooToWorld(
+        cosP1 * Math.cos(th1) * domeRadius,
+        cosP1 * Math.sin(th1) * domeRadius,
+        sinP1 * domeHeight
+      )
+      const v01 = iglooToWorld(
+        cosP1 * Math.cos(th0) * domeRadius,
+        cosP1 * Math.sin(th0) * domeRadius,
+        sinP1 * domeHeight
+      )
+
+      const nDir = iglooToWorldDir(
+        Math.cos(phiMid) * Math.cos(thMid),
+        Math.cos(phiMid) * Math.sin(thMid),
+        Math.sin(phiMid)
+      )
+
+      quads.push({
+        v: [v00, v10, v11, v01],
+        normal: nDir,
+        rgb: [238, 248, 255],
+        stroke: `rgba(56, 189, 248, ${(0.46 * polarVisibility).toFixed(3)})`,
+      })
+    }
+  }
+
+  // 3D Protruding Arched Entrance Tunnel along +F
+  const tunSteps = 2
+  const tunArchSegs = 6
+  const tunW = 0.44
+  const tunH = 0.52
+  const tunStartF = 0.58
+  const tunEndF = 1.46
+  for (let ts = 0; ts < tunSteps; ts++) {
+    const f0 = tunStartF + (ts / tunSteps) * (tunEndF - tunStartF)
+    const f1 = tunStartF + ((ts + 1) / tunSteps) * (tunEndF - tunStartF)
+    for (let a = 0; a < tunArchSegs; a++) {
+      const a0 = -Math.PI * 0.5 + (a / tunArchSegs) * Math.PI
+      const a1 = -Math.PI * 0.5 + ((a + 1) / tunArchSegs) * Math.PI
+      const aMid = (a0 + a1) * 0.5
+
+      const r0 = Math.sin(a0) * tunW
+      const u0 = Math.cos(a0) * tunH
+      const r1 = Math.sin(a1) * tunW
+      const u1 = Math.cos(a1) * tunH
+
+      quads.push({
+        v: [
+          iglooToWorld(f0, r0, u0),
+          iglooToWorld(f1, r0, u0),
+          iglooToWorld(f1, r1, u1),
+          iglooToWorld(f0, r1, u1),
+        ],
+        normal: iglooToWorldDir(0.1, Math.sin(aMid), Math.cos(aMid)),
+        rgb: [232, 245, 255],
+        stroke: `rgba(56, 189, 248, ${(0.55 * polarVisibility).toFixed(3)})`,
+      })
+    }
+  }
+
+  // Warm Glowing 3D Entrance Portal Cap at the front of the tunnel (f = tunEndF)
+  quads.push({
+    v: [
+      iglooToWorld(tunEndF, -tunW * 0.82, 0.02),
+      iglooToWorld(tunEndF, tunW * 0.82, 0.02),
+      iglooToWorld(tunEndF, tunW * 0.62, tunH * 0.82),
+      iglooToWorld(tunEndF, -tunW * 0.62, tunH * 0.82),
+    ],
+    normal: iglooToWorldDir(1, 0, 0),
+    rgb: [251, 191, 36],
+    stroke: `rgba(254, 240, 138, ${(0.85 * polarVisibility).toFixed(3)})`,
+    unlit: true,
+  })
+
+  // --- 5B. 3D Articulated Voxel/Low-Poly Arctic Fox ---
+  const foxCenterUnit = latLonToVec3(foxLatDeg, foxLonDeg)
+  const foxNextUnit = latLonToVec3(
+    86.15 + 0.3 * Math.sin(((foxLonDeg + 3.5) * Math.PI) / 90),
+    foxLonDeg + 3.5
+  )
+  const foxOrigin = vScale(foxCenterUnit, surfaceElev)
+  const foxN = vNorm(foxCenterUnit)
+  const foxRawF = {
+    x: foxNextUnit.x - foxCenterUnit.x,
+    y: foxNextUnit.y - foxCenterUnit.y,
+    z: foxNextUnit.z - foxCenterUnit.z,
+  }
+  const foxF = vNorm(vAdd(foxRawF, vScale(foxN, -vDot(foxRawF, foxN))))
+  const foxR = vNorm(vCross(foxF, foxN))
+  const foxScale = 0.0235
+
+  const trotPhase = pulsePhase * 8.2
+  const trotBob = isHopping ? 0 : Math.abs(Math.sin(trotPhase)) * 0.16
+  const hopLift = isHopping ? Math.sin(hopProgress * Math.PI) * 0.55 : 0
+  const liftU = trotBob + hopLift
+  const pitchAngle = isHopping
+    ? -Math.cos(hopProgress * Math.PI) * 0.22
+    : Math.sin(trotPhase) * 0.06
+  const cosPitch = Math.cos(pitchAngle)
+  const sinPitch = Math.sin(pitchAngle)
+
+  // Ground shadow directly beneath the 3D fox on the snow
+  const foxShadowRp = rotatePoint(foxOrigin, rotLonRad, rotLatRad)
+  if (foxShadowRp.z > 0.06) {
+    const fsx = cx + foxShadowRp.x * radius
+    const fsy = cy + foxShadowRp.y * radius
+    const shadowScale = isHopping ? 1 - Math.sin(hopProgress * Math.PI) * 0.35 : 1
+    ctx.fillStyle = `rgba(14, 116, 144, ${(0.28 * polarVisibility).toFixed(3)})`
+    ctx.beginPath()
+    ctx.ellipse(
+      fsx,
+      fsy + 1.5,
+      Math.max(3.5, radius * 0.021 * shadowScale),
+      Math.max(1.8, radius * 0.011 * shadowScale),
+      0,
+      0,
+      Math.PI * 2
+    )
+    ctx.fill()
+  }
+
+  const foxToWorld = (f: number, r: number, u: number): Vec3 => {
+    const pf = f * cosPitch - (u - 0.5) * sinPitch
+    const pu = f * sinPitch + (u - 0.5) * cosPitch + 0.5 + liftU
+    return vAdd(
+      foxOrigin,
+      vScale(
+        vAdd(vAdd(vScale(foxF, pf), vScale(foxR, r)), vScale(foxN, pu)),
+        foxScale
+      )
+    )
+  }
+
+  const foxToWorldDir = (df: number, dr: number, du: number): Vec3 => {
+    const pf = df * cosPitch - du * sinPitch
+    const pu = df * sinPitch + du * cosPitch
+    return vNorm(vAdd(vAdd(vScale(foxF, pf), vScale(foxR, dr)), vScale(foxN, pu)))
+  }
+
+  const foxStroke = `rgba(148, 163, 184, ${(0.45 * polarVisibility).toFixed(3)})`
+  const legSwing = isHopping ? 0.32 : Math.sin(trotPhase) * 0.28
+
+  // 1) 4 Articulated 3D Legs (Front-Left, Front-Right, Back-Left, Back-Right) with dark slate paws
+  const addFoxLeg = (hipF: number, hipR: number, swingF: number) => {
+    // Upper White Leg
+    addLocalBoxQuads(
+      quads,
+      foxToWorld,
+      foxToWorldDir,
+      hipF + swingF * 0.5 - 0.13,
+      hipF + swingF * 0.5 + 0.13,
+      hipR - 0.12,
+      hipR + 0.12,
+      0.14,
+      0.46,
+      [245, 250, 255],
+      foxStroke
+    )
+    // Dark Slate Paw Tip
+    addLocalBoxQuads(
+      quads,
+      foxToWorld,
+      foxToWorldDir,
+      hipF + swingF - 0.13,
+      hipF + swingF + 0.15,
+      hipR - 0.12,
+      hipR + 0.12,
+      0.0,
+      0.15,
+      [51, 65, 85]
+    )
+  }
+
+  addFoxLeg(0.42, -0.22, legSwing)
+  addFoxLeg(0.42, 0.22, -legSwing)
+  addFoxLeg(-0.42, -0.22, -legSwing)
+  addFoxLeg(-0.42, 0.22, legSwing)
+
+  // 2) 3D Plump Torso & Fluffy Chest Ruff
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    -0.62,
+    0.56,
+    -0.36,
+    0.36,
+    0.38,
+    0.92,
+    [252, 254, 255],
+    foxStroke,
+    0.9,
+    0.95
+  )
+  // Chest / Neck ruff
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    0.26,
+    0.72,
+    -0.4,
+    0.4,
+    0.42,
+    1.02,
+    [255, 255, 255],
+    foxStroke,
+    0.88,
+    0.9
+  )
+
+  // 3) 3D Head, Tapered Snout & Black Nose Cube
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    0.48,
+    1.08,
+    -0.38,
+    0.38,
+    0.82,
+    1.38,
+    [255, 255, 255],
+    foxStroke,
+    0.88,
+    0.92
+  )
+  // Tapered 3D Muzzle / Snout
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    1.06,
+    1.46,
+    -0.2,
+    0.2,
+    0.84,
+    1.1,
+    [248, 252, 255],
+    foxStroke,
+    0.82,
+    0.7
+  )
+  // Black 3D Button Nose at tip of snout
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    1.42,
+    1.54,
+    -0.09,
+    0.09,
+    0.96,
+    1.11,
+    [15, 23, 42]
+  )
+  // Left & Right 3D Dark Eyes on front-side of head
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    1.04,
+    1.12,
+    -0.32,
+    -0.18,
+    1.08,
+    1.21,
+    [15, 23, 42]
+  )
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    1.04,
+    1.12,
+    0.18,
+    0.32,
+    1.08,
+    1.21,
+    [15, 23, 42]
+  )
+
+  // 4) 2 Pointed 3D Ears (Left & Right) with soft pink inner ear panels
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    0.62,
+    0.88,
+    -0.38,
+    -0.12,
+    1.35,
+    1.76,
+    [248, 252, 255],
+    foxStroke,
+    0.32,
+    1.0
+  )
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    0.62,
+    0.88,
+    0.12,
+    0.38,
+    1.35,
+    1.76,
+    [248, 252, 255],
+    foxStroke,
+    0.32,
+    1.0
+  )
+  // Pink inner ear front quads
+  quads.push({
+    v: [
+      foxToWorld(0.89, -0.33, 1.38),
+      foxToWorld(0.89, -0.17, 1.38),
+      foxToWorld(0.89, -0.22, 1.66),
+      foxToWorld(0.89, -0.28, 1.66),
+    ],
+    normal: foxToWorldDir(1, 0, 0.1),
+    rgb: [253, 164, 175],
+  })
+  quads.push({
+    v: [
+      foxToWorld(0.89, 0.17, 1.38),
+      foxToWorld(0.89, 0.33, 1.38),
+      foxToWorld(0.89, 0.28, 1.66),
+      foxToWorld(0.89, 0.22, 1.66),
+    ],
+    normal: foxToWorldDir(1, 0, 0.1),
+    rgb: [253, 164, 175],
+  })
+
+  // 5) 2-Segment Bushy 3D Wagging Tail
+  const tailWagR1 = Math.sin(pulsePhase * 6.5) * 0.18
+  const tailWagR2 = Math.sin(pulsePhase * 6.5 - 0.6) * 0.34
+  // Mid Bushy Tail Segment
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    -1.15,
+    -0.56,
+    -0.28 + tailWagR1,
+    0.28 + tailWagR1,
+    0.52,
+    0.98,
+    [248, 252, 255],
+    foxStroke,
+    0.92,
+    0.92
+  )
+  // Snow-White Fluffy Tail Tip Segment (curving slightly up)
+  addLocalBoxQuads(
+    quads,
+    foxToWorld,
+    foxToWorldDir,
+    -1.56,
+    -1.08,
+    -0.22 + tailWagR2,
+    0.22 + tailWagR2,
+    0.66,
+    1.1,
+    [255, 255, 255],
+    foxStroke,
+    0.65,
+    0.85
+  )
+
+  // 6. Project, Cull, Light & Depth-Sort All 3D Quads (Painter's Algorithm)
+  const lightDir = vNorm({ x: -0.42, y: -0.64, z: 0.64 })
+  const projectedQuads: Array<{
+    pts: Array<{ x: number; y: number }>
+    zAvg: number
+    fill: string
+    stroke?: string
+  }> = []
+
+  for (let i = 0; i < quads.length; i++) {
+    const q = quads[i]
+    const rv0 = rotatePoint(q.v[0], rotLonRad, rotLatRad)
+    const rv1 = rotatePoint(q.v[1], rotLonRad, rotLatRad)
+    const rv2 = rotatePoint(q.v[2], rotLonRad, rotLatRad)
+    const rv3 = rotatePoint(q.v[3], rotLonRad, rotLatRad)
+
+    const zAvg = (rv0.z + rv1.z + rv2.z + rv3.z) * 0.25
+    if (zAvg <= 0.05) continue
+
+    const rn = rotatePoint(q.normal, rotLonRad, rotLatRad)
+    // Backface cull faces pointing away from camera
+    if (rn.z < -0.18) continue
+
+    let r = q.rgb[0]
+    let g = q.rgb[1]
+    let b = q.rgb[2]
+
+    if (!q.unlit) {
+      const ndotl = Math.max(0, rn.x * lightDir.x + rn.y * lightDir.y + rn.z * lightDir.z)
+      // Blend between cool glacial shadow tint and bright sunlit snow highlight
+      const shade = 0.62 + 0.42 * ndotl
+      r = Math.min(255, Math.round(r * shade - (1 - ndotl) * 28))
+      g = Math.min(255, Math.round(g * shade - (1 - ndotl) * 10))
+      b = Math.min(255, Math.round(b * Math.min(1.04, shade + 0.08)))
+    }
+
+    const alpha = (q.alpha ?? 1) * polarVisibility
+    projectedQuads.push({
+      pts: [
+        { x: cx + rv0.x * radius, y: cy + rv0.y * radius },
+        { x: cx + rv1.x * radius, y: cy + rv1.y * radius },
+        { x: cx + rv2.x * radius, y: cy + rv2.y * radius },
+        { x: cx + rv3.x * radius, y: cy + rv3.y * radius },
+      ],
+      zAvg,
+      fill: `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`,
+      stroke: q.stroke,
+    })
+  }
+
+  projectedQuads.sort((a, b) => a.zAvg - b.zAvg)
+
+  ctx.lineJoin = 'round'
+  ctx.lineWidth = Math.max(0.65, radius * 0.0028)
+  for (let i = 0; i < projectedQuads.length; i++) {
+    const pq = projectedQuads[i]
+    ctx.beginPath()
+    ctx.moveTo(pq.pts[0].x, pq.pts[0].y)
+    ctx.lineTo(pq.pts[1].x, pq.pts[1].y)
+    ctx.lineTo(pq.pts[2].x, pq.pts[2].y)
+    ctx.lineTo(pq.pts[3].x, pq.pts[3].y)
+    ctx.closePath()
+    ctx.fillStyle = pq.fill
+    ctx.fill()
+    if (pq.stroke) {
+      ctx.strokeStyle = pq.stroke
+      ctx.stroke()
+    }
+  }
+
+  ctx.restore()
+}
+
+function drawAntarcticEasterEgg(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  radius: number,
+  rotLonRad: number,
+  rotLatRad: number,
+  pulsePhase: number
+): void {
+  // Check South Pole visibility first (South Pole unit vector is { x: 0, y: 1, z: 0 })
+  const southPoleRp = rotatePoint({ x: 0, y: 1, z: 0 }, rotLonRad, rotLatRad)
+  if (southPoleRp.z < -0.12) return
+
+  const { shelfRing, miniFloes, iceDots } = getAntarcticEasterEggGeometry()
+  const polarVisibility = Math.min(1, Math.max(0, (southPoleRp.z + 0.08) / 0.35))
+  if (polarVisibility <= 0.01) return
+
+  ctx.save()
+
+  // 1. Surrounding Sparkling Sea-Ice Dots
+  const iceDotR = Math.max(1.2, radius * 0.0068)
+  ctx.fillStyle = `rgba(186, 230, 253, ${(0.52 * polarVisibility).toFixed(3)})`
+  ctx.beginPath()
+  for (let i = 0; i < iceDots.length; i++) {
+    const rp = rotatePoint(iceDots[i], rotLonRad, rotLatRad)
+    if (rp.z <= 0.04) continue
+    const sx = cx + rp.x * radius * 1.003
+    const sy = cy + rp.y * radius * 1.003
+    ctx.moveTo(sx + iceDotR, sy)
+    ctx.arc(sx, sy, iceDotR, 0, Math.PI * 2)
+  }
+  ctx.fill()
+
+  // 2. Drifting Southern Ocean Mini Ice Floes (유빙)
+  for (const floe of miniFloes) {
+    const projectedBase: Array<{ x: number; y: number; z: number }> = []
+    const projectedTop: Array<{ x: number; y: number; z: number }> = []
+    let visibleCount = 0
+    for (let i = 0; i < floe.length; i++) {
+      const rp = rotatePoint(floe[i], rotLonRad, rotLatRad)
+      if (rp.z > 0.04) visibleCount++
+      projectedBase.push({
+        x: cx + rp.x * radius * 1.002,
+        y: cy + rp.y * radius * 1.002,
+        z: rp.z,
+      })
+      projectedTop.push({
+        x: cx + rp.x * radius * 1.008,
+        y: cy + rp.y * radius * 1.008,
+        z: rp.z,
+      })
+    }
+    if (visibleCount < floe.length * 0.6) continue
+
+    ctx.beginPath()
+    for (let i = 0; i < projectedBase.length; i++) {
+      if (i === 0) ctx.moveTo(projectedBase[i].x, projectedBase[i].y)
+      else ctx.lineTo(projectedBase[i].x, projectedBase[i].y)
+    }
+    ctx.closePath()
+    ctx.fillStyle = `rgba(56, 189, 248, ${(0.42 * polarVisibility).toFixed(3)})`
+    ctx.fill()
+
+    ctx.beginPath()
+    for (let i = 0; i < projectedTop.length; i++) {
+      if (i === 0) ctx.moveTo(projectedTop[i].x, projectedTop[i].y)
+      else ctx.lineTo(projectedTop[i].x, projectedTop[i].y)
+    }
+    ctx.closePath()
+    ctx.fillStyle = `rgba(240, 249, 255, ${(0.86 * polarVisibility).toFixed(3)})`
+    ctx.fill()
+  }
+
+  // 3. Main 3D Antarctic Polar Ice Shelf (남극 빙하)
+  const shelfBasePts: Array<{ x: number; y: number }> = []
+  const shelfTopPts: Array<{ x: number; y: number }> = []
+  let shelfVisible = 0
+  for (let i = 0; i < shelfRing.length; i++) {
+    const rp = rotatePoint(shelfRing[i], rotLonRad, rotLatRad)
+    const clampedZ = Math.max(0.01, rp.z)
+    if (rp.z > 0.02) shelfVisible++
+    shelfBasePts.push({
+      x: cx + rp.x * radius * 1.002,
+      y: cy + rp.y * radius * 1.002 - (1 - clampedZ) * 1.5,
+    })
+    shelfTopPts.push({
+      x: cx + rp.x * radius * 1.012,
+      y: cy + rp.y * radius * 1.012,
+    })
+  }
+
+  if (shelfVisible < shelfRing.length * 0.45) {
+    ctx.restore()
+    return
+  }
+
+  // 3a. Submerged Glacial Cliff Rim
+  ctx.beginPath()
+  for (let i = 0; i < shelfBasePts.length; i++) {
+    if (i === 0) ctx.moveTo(shelfBasePts[i].x, shelfBasePts[i].y)
+    else ctx.lineTo(shelfBasePts[i].x, shelfBasePts[i].y)
+  }
+  ctx.closePath()
+  ctx.fillStyle = `rgba(14, 165, 233, ${(0.46 * polarVisibility).toFixed(3)})`
+  ctx.fill()
+  ctx.strokeStyle = `rgba(56, 189, 248, ${(0.72 * polarVisibility).toFixed(3)})`
+  ctx.lineWidth = 1.4
+  ctx.stroke()
+
+  // 3b. Snow-White Polar Ice Shelf Top Surface
+  const poleScreenX = cx + southPoleRp.x * radius * 1.012
+  const poleScreenY = cy + southPoleRp.y * radius * 1.012
+  const floeGradRadius = Math.max(16, radius * 0.11)
+  const floeGrad = ctx.createRadialGradient(
+    poleScreenX - floeGradRadius * 0.2,
+    poleScreenY - floeGradRadius * 0.2,
+    floeGradRadius * 0.08,
+    poleScreenX,
+    poleScreenY,
+    floeGradRadius
+  )
+  floeGrad.addColorStop(0, `rgba(255, 255, 255, ${(0.96 * polarVisibility).toFixed(3)})`)
+  floeGrad.addColorStop(0.7, `rgba(224, 242, 254, ${(0.92 * polarVisibility).toFixed(3)})`)
+  floeGrad.addColorStop(1, `rgba(186, 230, 253, ${(0.88 * polarVisibility).toFixed(3)})`)
+
+  ctx.beginPath()
+  for (let i = 0; i < shelfTopPts.length; i++) {
+    if (i === 0) ctx.moveTo(shelfTopPts[i].x, shelfTopPts[i].y)
+    else ctx.lineTo(shelfTopPts[i].x, shelfTopPts[i].y)
+  }
+  ctx.closePath()
+  ctx.fillStyle = floeGrad
+  ctx.fill()
+  ctx.strokeStyle = `rgba(255, 255, 255, ${(0.85 * polarVisibility).toFixed(3)})`
+  ctx.lineWidth = 1.1
+  ctx.stroke()
+
+  const surfaceElev = 1.0125
+  const quads: MeshQuad3D[] = []
+
+  // 4. 3D Sculpted Antarctic Glacial Iceberg Peak near the South Pole (-88.6°S, -30°W)
+  const glacierUnit = latLonToVec3(-88.6, -30)
+  const glacierOrigin = vScale(glacierUnit, surfaceElev)
+  const glacierN = vNorm(glacierUnit)
+  const glacierAim = latLonToVec3(-80, 15)
+  const glacierRawF = {
+    x: glacierAim.x - glacierUnit.x,
+    y: glacierAim.y - glacierUnit.y,
+    z: glacierAim.z - glacierUnit.z,
+  }
+  const glacierF = vNorm(vAdd(glacierRawF, vScale(glacierN, -vDot(glacierRawF, glacierN))))
+  const glacierR = vNorm(vCross(glacierF, glacierN))
+  const glacierScale = 0.036
+
+  const glacierToWorld = (f: number, r: number, u: number): Vec3 =>
+    vAdd(
+      glacierOrigin,
+      vScale(
+        vAdd(vAdd(vScale(glacierF, f), vScale(glacierR, r)), vScale(glacierN, u)),
+        glacierScale
+      )
+    )
+  const glacierToWorldDir = (df: number, dr: number, du: number): Vec3 =>
+    vNorm(vAdd(vAdd(vScale(glacierF, df), vScale(glacierR, dr)), vScale(glacierN, du)))
+
+  const glacierStroke = `rgba(56, 189, 248, ${(0.52 * polarVisibility).toFixed(3)})`
+  // Main tall crystalline glacier spire
+  addLocalBoxQuads(
+    quads,
+    glacierToWorld,
+    glacierToWorldDir,
+    -0.55,
+    0.55,
+    -0.52,
+    0.52,
+    0.0,
+    1.28,
+    [224, 242, 254],
+    glacierStroke,
+    0.46,
+    0.88
+  )
+  // Secondary side tabular ice crystal block
+  addLocalBoxQuads(
+    quads,
+    glacierToWorld,
+    glacierToWorldDir,
+    -0.25,
+    0.68,
+    0.35,
+    1.05,
+    0.0,
+    0.78,
+    [186, 230, 253],
+    glacierStroke,
+    0.62,
+    0.92
+  )
+
+  // 5. Two Strolling 3D Penguins ("뒤뚱뒤뚱" waddling side-by-side / companion trail)
+  const baseLonDeg = ((pulsePhase * 17) % 360) - 180
+  const penguinSpecs = [
+    // Penguin 1: Lead Adult Emperor Penguin
+    {
+      latDeg: -85.95 + 0.25 * Math.sin((baseLonDeg * Math.PI) / 90),
+      lonDeg: baseLonDeg,
+      scale: 0.025,
+      waddlePhase: pulsePhase * 6.8,
+      hasGoldenCollar: true,
+    },
+    // Penguin 2: Slightly Smaller Companion Penguin strolling alongside & slightly behind
+    {
+      latDeg: -86.65 + 0.25 * Math.cos(((baseLonDeg - 22) * Math.PI) / 90),
+      lonDeg: baseLonDeg - 22,
+      scale: 0.021,
+      waddlePhase: pulsePhase * 7.6 + 1.9,
+      hasGoldenCollar: true,
+    },
+  ]
+
+  // Fading footprints on the snow behind both penguins
+  for (const pSpec of penguinSpecs) {
+    for (let step = 1; step <= 5; step++) {
+      const trailLon = pSpec.lonDeg - step * 10
+      const trailLat = pSpec.latDeg
+      const pawVec = latLonToVec3(trailLat, trailLon)
+      const pawRp = rotatePoint(pawVec, rotLonRad, rotLatRad)
+      if (pawRp.z <= 0.08) continue
+      const px = cx + pawRp.x * radius * surfaceElev
+      const py = cy + pawRp.y * radius * surfaceElev
+      const pawAlpha = (1 - step / 6) * 0.38 * polarVisibility
+      ctx.fillStyle = `rgba(100, 116, 139, ${pawAlpha.toFixed(3)})`
+      ctx.beginPath()
+      ctx.arc(px - 1.1, py - 0.5, Math.max(0.8, radius * 0.0028), 0, Math.PI * 2)
+      ctx.arc(px + 1.1, py + 0.5, Math.max(0.8, radius * 0.0028), 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+
+  for (const pSpec of penguinSpecs) {
+    const pCenterUnit = latLonToVec3(pSpec.latDeg, pSpec.lonDeg)
+    const pNextUnit = latLonToVec3(pSpec.latDeg, pSpec.lonDeg + 3.5)
+    const pOrigin = vScale(pCenterUnit, surfaceElev)
+    const pN = vNorm(pCenterUnit)
+    const pRawF = {
+      x: pNextUnit.x - pCenterUnit.x,
+      y: pNextUnit.y - pCenterUnit.y,
+      z: pNextUnit.z - pCenterUnit.z,
+    }
+    const pF = vNorm(vAdd(pRawF, vScale(pN, -vDot(pRawF, pN))))
+    const pR = vNorm(vCross(pF, pN))
+
+    // Soft ground shadow beneath each penguin
+    const shadowRp = rotatePoint(pOrigin, rotLonRad, rotLatRad)
+    if (shadowRp.z > 0.06) {
+      const sx = cx + shadowRp.x * radius
+      const sy = cy + shadowRp.y * radius
+      ctx.fillStyle = `rgba(14, 116, 144, ${(0.28 * polarVisibility).toFixed(3)})`
+      ctx.beginPath()
+      ctx.ellipse(
+        sx,
+        sy + 1.2,
+        Math.max(3.0, radius * (pSpec.scale * 0.72)),
+        Math.max(1.6, radius * (pSpec.scale * 0.42)),
+        0,
+        0,
+        Math.PI * 2
+      )
+      ctx.fill()
+    }
+
+    // Authentic Penguin Waddle: 3D side-to-side roll around F axis + vertical bounce
+    const rollAngle = Math.sin(pSpec.waddlePhase) * 0.17
+    const cosRoll = Math.cos(rollAngle)
+    const sinRoll = Math.sin(rollAngle)
+    const waddleBob = Math.abs(Math.sin(pSpec.waddlePhase)) * 0.09
+    const footSwing = Math.sin(pSpec.waddlePhase) * 0.22
+    const wingFlare = 0.08 + Math.abs(Math.sin(pSpec.waddlePhase)) * 0.08
+
+    const pToWorld = (f: number, r: number, u: number): Vec3 => {
+      const pr = r * cosRoll - (u - 0.15) * sinRoll
+      const pu = r * sinRoll + (u - 0.15) * cosRoll + 0.15 + waddleBob
+      return vAdd(
+        pOrigin,
+        vScale(
+          vAdd(vAdd(vScale(pF, f), vScale(pR, pr)), vScale(pN, pu)),
+          pSpec.scale
+        )
+      )
+    }
+
+    const pToWorldDir = (df: number, dr: number, du: number): Vec3 => {
+      const pr = dr * cosRoll - du * sinRoll
+      const pu = dr * sinRoll + du * cosRoll
+      return vNorm(vAdd(vAdd(vScale(pF, df), vScale(pR, pr)), vScale(pN, pu)))
+    }
+
+    const darkSuitStroke = `rgba(51, 65, 85, ${(0.55 * polarVisibility).toFixed(3)})`
+    const whiteBellyStroke = `rgba(203, 213, 225, ${(0.5 * polarVisibility).toFixed(3)})`
+
+    // 1) Left & Right Bright Orange 3D Webbed Feet (alternating steps)
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.06 + footSwing,
+      0.38 + footSwing,
+      -0.31,
+      -0.06,
+      0.0,
+      0.14,
+      [249, 115, 22]
+    )
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.06 - footSwing,
+      0.38 - footSwing,
+      0.06,
+      0.31,
+      0.0,
+      0.14,
+      [249, 115, 22]
+    )
+
+    // 2) Plump 3D Tuxedo Body (Dark Navy-Slate Back & Sides)
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.34,
+      0.26,
+      -0.38,
+      0.38,
+      0.14,
+      1.06,
+      [30, 41, 59],
+      darkSuitStroke,
+      0.84,
+      0.94
+    )
+
+    // Short 3D Tail Wedge at the lower back
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.48,
+      -0.3,
+      -0.16,
+      0.16,
+      0.14,
+      0.3,
+      [30, 41, 59],
+      darkSuitStroke,
+      0.6,
+      1.0
+    )
+
+    // 3) Crisp Snow-White 3D Belly Panel + Golden-Yellow Emperor Chest Collar
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      0.16,
+      0.35,
+      -0.27,
+      0.27,
+      0.16,
+      0.88,
+      [248, 250, 252],
+      whiteBellyStroke,
+      0.88,
+      0.94
+    )
+    if (pSpec.hasGoldenCollar) {
+      addLocalBoxQuads(
+        quads,
+        pToWorld,
+        pToWorldDir,
+        0.15,
+        0.34,
+        -0.24,
+        0.24,
+        0.86,
+        1.03,
+        [253, 224, 71],
+        undefined,
+        0.88,
+        0.92
+      )
+    }
+
+    // 4) Left & Right 3D Side Flippers / Wings (flaring out slightly for waddle balance)
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.18,
+      0.16,
+      -0.48 - wingFlare,
+      -0.35,
+      0.34,
+      0.94,
+      [30, 41, 59],
+      darkSuitStroke,
+      0.75,
+      0.9
+    )
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.18,
+      0.16,
+      0.35,
+      0.48 + wingFlare,
+      0.34,
+      0.94,
+      [30, 41, 59],
+      darkSuitStroke,
+      0.75,
+      0.9
+    )
+
+    // 5) 3D Round Head, White/Golden Cheek Patches, Eyes & Pointed Orange Beak
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.25,
+      0.3,
+      -0.31,
+      0.31,
+      1.03,
+      1.48,
+      [15, 23, 42],
+      darkSuitStroke,
+      0.86,
+      0.92
+    )
+    // Cheek / Auricular patches on left & right sides of head
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      -0.02,
+      0.24,
+      -0.33,
+      0.33,
+      1.06,
+      1.26,
+      [254, 240, 138]
+    )
+    // Bright Pointed 3D Orange-Amber Beak protruding forward
+    addLocalBoxQuads(
+      quads,
+      pToWorld,
+      pToWorldDir,
+      0.28,
+      0.64,
+      -0.11,
+      0.11,
+      1.15,
+      1.31,
+      [245, 158, 11],
+      undefined,
+      0.75,
+      0.42
+    )
+  }
+
+  // 6. Project, Cull, Light & Depth-Sort All 3D Quads (Painter's Algorithm)
+  const lightDir = vNorm({ x: -0.42, y: -0.64, z: 0.64 })
+  const projectedQuads: Array<{
+    pts: Array<{ x: number; y: number }>
+    zAvg: number
+    fill: string
+    stroke?: string
+  }> = []
+
+  for (let i = 0; i < quads.length; i++) {
+    const q = quads[i]
+    const rv0 = rotatePoint(q.v[0], rotLonRad, rotLatRad)
+    const rv1 = rotatePoint(q.v[1], rotLonRad, rotLatRad)
+    const rv2 = rotatePoint(q.v[2], rotLonRad, rotLatRad)
+    const rv3 = rotatePoint(q.v[3], rotLonRad, rotLatRad)
+
+    const zAvg = (rv0.z + rv1.z + rv2.z + rv3.z) * 0.25
+    if (zAvg <= 0.05) continue
+
+    const rn = rotatePoint(q.normal, rotLonRad, rotLatRad)
+    if (rn.z < -0.18) continue
+
+    let r = q.rgb[0]
+    let g = q.rgb[1]
+    let b = q.rgb[2]
+
+    if (!q.unlit) {
+      const ndotl = Math.max(0, rn.x * lightDir.x + rn.y * lightDir.y + rn.z * lightDir.z)
+      const shade = 0.65 + 0.4 * ndotl
+      r = Math.min(255, Math.round(r * shade))
+      g = Math.min(255, Math.round(g * shade))
+      b = Math.min(255, Math.round(b * Math.min(1.05, shade + 0.05)))
+    }
+
+    const alpha = (q.alpha ?? 1) * polarVisibility
+    projectedQuads.push({
+      pts: [
+        { x: cx + rv0.x * radius, y: cy + rv0.y * radius },
+        { x: cx + rv1.x * radius, y: cy + rv1.y * radius },
+        { x: cx + rv2.x * radius, y: cy + rv2.y * radius },
+        { x: cx + rv3.x * radius, y: cy + rv3.y * radius },
+      ],
+      zAvg,
+      fill: `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`,
+      stroke: q.stroke,
+    })
+  }
+
+  projectedQuads.sort((a, b) => a.zAvg - b.zAvg)
+
+  ctx.lineJoin = 'round'
+  ctx.lineWidth = Math.max(0.65, radius * 0.0028)
+  for (let i = 0; i < projectedQuads.length; i++) {
+    const pq = projectedQuads[i]
+    ctx.beginPath()
+    ctx.moveTo(pq.pts[0].x, pq.pts[0].y)
+    ctx.lineTo(pq.pts[1].x, pq.pts[1].y)
+    ctx.lineTo(pq.pts[2].x, pq.pts[2].y)
+    ctx.lineTo(pq.pts[3].x, pq.pts[3].y)
+    ctx.closePath()
+    ctx.fillStyle = pq.fill
+    ctx.fill()
+    if (pq.stroke) {
+      ctx.strokeStyle = pq.stroke
+      ctx.stroke()
+    }
+  }
+
+  ctx.restore()
 }
 
 function computeGdpElevation(totalGdpUsd: number): {
@@ -861,7 +2345,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         } else {
           // Apply drag momentum decay
           rot.lon += rot.velLon
-          rot.lat = Math.max(-48, Math.min(52, rot.lat + rot.velLat))
+          rot.lat = Math.max(-68, Math.min(68, rot.lat + rot.velLat))
           rot.velLon *= 0.92
           rot.velLat *= 0.92
         }
@@ -1090,6 +2574,12 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           ctx.fill()
         }
       }
+
+      // 4c. North Pole Easter Egg: 3D Polar Ice Floe, Cozy Igloo & Trotting Arctic Fox ("총총총")
+      drawArcticEasterEgg(ctx, cx, cy, radius, rotLonRad, rotLatRad, pulsePhase)
+
+      // 4d. South Pole Easter Egg: 3D Antarctic Ice Shelf, Glacier Peak & Two Strolling Penguins ("뒤뚱뒤뚱")
+      drawAntarcticEasterEgg(ctx, cx, cy, radius, rotLonRad, rotLatRad, pulsePhase)
 
       // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub (Hidden in 'stocks' mode)
       const currentHubs = enrichedHubsRef.current
@@ -1334,8 +2824,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
     rotationRef.current.lon += dx * 0.35
     rotationRef.current.lat = Math.max(
-      -48,
-      Math.min(52, rotationRef.current.lat + dy * 0.35)
+      -68,
+      Math.min(68, rotationRef.current.lat + dy * 0.35)
     )
     rotationRef.current.velLon = dx * 0.18
     rotationRef.current.velLat = dy * 0.18

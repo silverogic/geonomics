@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Award, LineChart, AlertCircle, Building2 } from 'lucide-react'
+import { X, ExternalLink, ShieldCheck, TrendingUp, TrendingDown, Award, LineChart, AlertCircle, Building2, GitCompare } from 'lucide-react'
 import type { CountryMeta, CountryGdpDetail, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from '../types/economics'
 import { fetchCountryGdpDetail } from '../services/worldBankApi'
 import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
@@ -38,6 +38,7 @@ interface CountryModalProps {
   lang: Language
   selectedYear?: EconomicYear
   onClose: () => void
+  onStartCompare?: (country: CountryMeta) => void
 }
 
 export const CountryModal: React.FC<CountryModalProps> = ({
@@ -49,6 +50,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
   lang,
   selectedYear = DEFAULT_ECONOMIC_YEAR,
   onClose,
+  onStartCompare,
 }) => {
   const t = translations[lang]
   const interestRateInfo = getCountryInterestRate(interestRates, country)
@@ -158,14 +160,35 @@ export const CountryModal: React.FC<CountryModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors shrink-0 ml-2"
-            title={t.modalClose}
-            aria-label={t.modalClose}
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2 shrink-0 ml-2">
+            {onStartCompare && (
+              <button
+                type="button"
+                onClick={() => onStartCompare(country)}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-500/40 text-indigo-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                title={lang === 'ko' ? '이 국가와 다른 국가 1:1 비교' : 'Compare 1:1 with another country'}
+              >
+                <GitCompare className="w-3.5 h-3.5 shrink-0" />
+                <span>
+                  {lang === 'ko'
+                    ? '1:1 비교'
+                    : lang === 'ja'
+                      ? '1:1 比較'
+                      : lang === 'zh'
+                        ? '1:1 对比'
+                        : 'Compare'}
+                </span>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors shrink-0 cursor-pointer"
+              title={t.modalClose}
+              aria-label={t.modalClose}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Body */}

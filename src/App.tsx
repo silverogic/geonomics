@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, GitCompare, X } from 'lucide-react'
 import { COUNTRIES } from './data/countries'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from './types/economics'
 import { DEFAULT_ECONOMIC_YEAR } from './utils/economicYears'
@@ -10,6 +10,8 @@ import { translations } from './i18n/translations'
 import { Navbar } from './components/Navbar'
 import { CountryModal } from './components/CountryModal'
 import { CompareView } from './components/CompareView'
+import { CountryFlag } from './components/CountryFlag'
+import { getCountryName } from './utils/countryNames'
 import type { CountryRowItem } from './components/RankingTable'
 import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
@@ -49,13 +51,45 @@ export function App() {
   }, [lang])
 
   const t = translations[lang]
-  const [activeTab, setActiveTab] = useState<'globe' | 'cards' | 'heatmap' | 'compare' | 'news'>('globe')
+  const [activeTab, setActiveTab] = useState<'globe' | 'cards' | 'heatmap' | 'news'>('globe')
 
   // Selected economic year: Default current year (e.g. 2026)
   const [selectedYear, setSelectedYear] = useState<EconomicYear>(DEFAULT_ECONOMIC_YEAR)
 
   // Selected country for deep-dive modal
   const [selectedCountry, setSelectedCountry] = useState<CountryMeta | null>(null)
+
+  // Floating 1:1 Compare Tray & Compare Modal states
+  const [compareTrayActive, setCompareTrayActive] = useState<boolean>(false)
+  const [compareCountryA, setCompareCountryA] = useState<CountryMeta | null>(null)
+  const [compareCountryB, setCompareCountryB] = useState<CountryMeta | null>(null)
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false)
+
+  const handleSelectCountry = useCallback(
+    (country: CountryMeta) => {
+      if (compareTrayActive) {
+        if (!compareCountryA) {
+          setCompareCountryA(country)
+        } else if (compareCountryA.id === country.id) {
+          setCompareCountryA(null)
+        } else {
+          setCompareCountryB(country)
+          setCompareTrayActive(false)
+          setIsCompareModalOpen(true)
+        }
+        return
+      }
+      setSelectedCountry(country)
+    },
+    [compareTrayActive, compareCountryA]
+  )
+
+  const handleStartCompareFromModal = useCallback((country: CountryMeta) => {
+    setSelectedCountry(null)
+    setCompareCountryA(country)
+    setCompareCountryB(null)
+    setCompareTrayActive(true)
+  }, [])
 
   // Remote data state
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null)
@@ -220,7 +254,7 @@ export function App() {
             exchangeRates={exchangeRates}
             interestRates={interestRates}
             lang={lang}
-            onSelectCountry={(c) => setSelectedCountry(c)}
+            onSelectCountry={handleSelectCountry}
             refreshKey={refreshCount}
           />
         )}
@@ -239,7 +273,9 @@ export function App() {
               lang={lang}
               selectedYear={selectedYear}
               onYearChange={handleYearChange}
-              onSelectCountry={(c) => setSelectedCountry(c)}
+              onSelectCountry={handleSelectCountry}
+              onToggleCompareTray={() => setCompareTrayActive((prev) => !prev)}
+              isCompareTrayActive={compareTrayActive}
             />
           )
         )}
@@ -250,32 +286,114 @@ export function App() {
             baseCurrency={baseCurrency}
             exchangeRates={exchangeRates}
             lang={lang}
-            onSelectCountry={(c) => setSelectedCountry(c)}
+            onSelectCountry={handleSelectCountry}
             refreshKey={refreshCount}
           />
         )}
 
-        {/* TAB 3: 1:1 COMPARE */}
-        {activeTab === 'compare' && (
-          <CompareView
-            baseCurrency={baseCurrency}
-            exchangeRates={exchangeRates}
-            interestRates={interestRates}
-            lang={lang}
-            selectedYear={selectedYear}
-            onYearChange={handleYearChange}
-          />
-        )}
-
-        {/* TAB 4: GLOBAL ECONOMIC NEWS */}
+        {/* TAB 3: GLOBAL ECONOMIC NEWS */}
         {activeTab === 'news' && (
           <EconomicNewsView
             lang={lang}
-            onSelectCountry={(c) => setSelectedCountry(c)}
+            onSelectCountry={handleSelectCountry}
             refreshKey={refreshCount}
           />
         )}
       </main>
+
+      {/* Slim 1-Line Floating Compare Tray (Only visible while picking countries to compare) */}
+      {compareTrayActive && (
+        <div className="fixed bottom-[64px] md:bottom-5 left-1/2 -translate-x-1/2 z-40 w-[calc(100vw-20px)] max-w-xl pointer-events-auto animate-fadeIn">
+          <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-indigo-500/50 shadow-2xl shadow-black/90">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="w-6 h-6 rounded-lg bg-indigo-600/25 border border-indigo-500/40 flex items-center justify-center text-indigo-300 shrink-0">
+                <GitCompare className="w-3.5 h-3.5" />
+              </div>
+
+              {/* Slot A */}
+              {compareCountryA ? (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-950/80 border border-indigo-500/40 text-xs font-bold text-white min-w-0">
+                  <CountryFlag iso2={compareCountryA.iso2} className="w-4 h-3 rounded-[2px] shrink-0" />
+                  <span className="truncate max-w-[84px] sm:max-w-[120px]">
+                    {getCountryName(compareCountryA, lang)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setCompareCountryA(null)}
+                    className="text-slate-400 hover:text-white ml-0.5 cursor-pointer"
+                    title="Clear"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="px-2.5 py-1 rounded-xl bg-slate-950/80 border border-dashed border-indigo-400/50 text-[11px] font-semibold text-indigo-300 truncate animate-pulse">
+                  {lang === 'ko' ? '1. 첫 번째 국가 클릭' : '1. Tap 1st country'}
+                </div>
+              )}
+
+              <span className="text-[10px] font-black font-mono text-slate-400 shrink-0">VS</span>
+
+              {/* Slot B */}
+              <div className="px-2.5 py-1 rounded-xl bg-slate-950/80 border border-dashed border-emerald-400/50 text-[11px] font-semibold text-emerald-300 truncate animate-pulse">
+                {lang === 'ko'
+                  ? compareCountryA
+                    ? '2. 상대 국가 클릭'
+                    : '2. 두 번째 국가'
+                  : '2. Tap 2nd country'}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setCompareTrayActive(false)
+                  setIsCompareModalOpen(true)
+                }}
+                className="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer whitespace-nowrap"
+              >
+                {lang === 'ko' ? '바로 비교' : 'Compare'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setCompareTrayActive(false)}
+                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                title={t.modalClose}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1:1 Compare Modal Sheet */}
+      {isCompareModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6 animate-fadeIn"
+          onClick={() => setIsCompareModalOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-6xl bg-slate-950 border border-slate-800 rounded-3xl shadow-2xl px-3 pb-3 pt-0 sm:px-6 sm:pb-6 sm:pt-0 max-h-[92dvh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CompareView
+              baseCurrency={baseCurrency}
+              exchangeRates={exchangeRates}
+              interestRates={interestRates}
+              lang={lang}
+              selectedYear={selectedYear}
+              onYearChange={handleYearChange}
+              initialCountryAId={compareCountryA?.id || 'USA'}
+              initialCountryBId={
+                compareCountryB?.id || (compareCountryA?.id === 'USA' ? 'CHN' : 'USA')
+              }
+              onClose={() => setIsCompareModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Country Detail Modal */}
       {selectedCountry && (
@@ -288,6 +406,7 @@ export function App() {
           lang={lang}
           selectedYear={selectedYear}
           onClose={() => setSelectedCountry(null)}
+          onStartCompare={handleStartCompareFromModal}
         />
       )}
 
