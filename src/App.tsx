@@ -215,6 +215,7 @@ export function App() {
         {/* TAB 0 (HOME): 3D GLOBAL FINANCIAL GLOBE */}
         {activeTab === 'globe' && (
           <FinancialGlobeView
+            items={allRankedItems}
             baseCurrency={baseCurrency}
             exchangeRates={exchangeRates}
             interestRates={interestRates}

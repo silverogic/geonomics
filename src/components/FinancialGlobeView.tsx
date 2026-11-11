@@ -5,6 +5,7 @@ import {
   TrendingUp,
   TrendingDown,
   Coins,
+  BarChart3,
   RotateCcw,
   Sparkles,
 } from 'lucide-react'
@@ -15,12 +16,14 @@ import type {
   InterestRateInfo,
   Language,
 } from '../types/economics'
+import type { CountryRowItem } from './RankingTable'
 import { COUNTRIES } from '../data/countries'
+import { getImfYearMap } from '../data/imfEconomic'
 import {
-  PIXEL_MAP_TILES,
   PIXEL_MAP_COLS,
   COUNTRY_LABEL_ANCHORS,
 } from '../data/pixelMapData'
+import { GLOBE_TERRAIN_DOTS } from '../data/globeTerrainDots'
 import { getAllStockPrices, type StockPriceInfo } from '../data/stockPrices'
 import { fetchLiveStocks, isLiveStockEnabled } from '../services/liveStockApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
@@ -32,12 +35,15 @@ import { getCountryInterestRate } from '../services/interestRateApi'
 import { getCountryName } from '../utils/countryNames'
 import { detectVisitorCountry } from '../utils/locale'
 import {
+  formatGdpCompact,
+  formatPerCapita,
   formatFxChangeBadgeText,
   getFxBadgeColorClass,
 } from '../utils/formatters'
 import { CountryFlag } from './CountryFlag'
 
 interface FinancialGlobeViewProps {
+  items?: CountryRowItem[]
   baseCurrency: BaseCurrency
   exchangeRates: ExchangeRates | null
   interestRates?: Record<string, InterestRateInfo> | null
@@ -46,17 +52,18 @@ interface FinancialGlobeViewProps {
   refreshKey?: number
 }
 
-type GlobeDisplayMode = 'stocks' | 'fx'
+type GlobeDisplayMode = 'gdp' | 'stocks' | 'fx'
 type RegionPreset = 'auto' | 'asia' | 'europe' | 'americas' | 'oceania'
 
 interface HubDefinition {
   id: string
   offsetX: number
   offsetY: number
+  desktopOnly?: boolean
 }
 
 const FLAGSHIP_HUBS: HubDefinition[] = [
-  // Asia & Middle East
+  // Asia & Middle East (15)
   { id: 'KOR', offsetX: -18, offsetY: -26 },
   { id: 'JPN', offsetX: 34, offsetY: -16 },
   { id: 'CHN', offsetX: -36, offsetY: 6 },
@@ -66,8 +73,14 @@ const FLAGSHIP_HUBS: HubDefinition[] = [
   { id: 'IDN', offsetX: 26, offsetY: 28 },
   { id: 'IND', offsetX: -22, offsetY: 18 },
   { id: 'SAU', offsetX: -18, offsetY: 16 },
+  { id: 'THA', offsetX: -30, offsetY: 14, desktopOnly: true },
+  { id: 'VNM', offsetX: 30, offsetY: 8, desktopOnly: true },
+  { id: 'MYS', offsetX: -28, offsetY: 28, desktopOnly: true },
+  { id: 'PHL', offsetX: 36, offsetY: 22, desktopOnly: true },
+  { id: 'ARE', offsetX: 28, offsetY: 20, desktopOnly: true },
+  { id: 'ISR', offsetX: -26, offsetY: -14, desktopOnly: true },
 
-  // Europe
+  // Europe (13)
   { id: 'GBR', offsetX: -38, offsetY: -22 },
   { id: 'FRA', offsetX: -36, offsetY: 16 },
   { id: 'DEU', offsetX: 30, offsetY: -18 },
@@ -75,18 +88,28 @@ const FLAGSHIP_HUBS: HubDefinition[] = [
   { id: 'ESP', offsetX: -32, offsetY: 28 },
   { id: 'SWE', offsetX: 18, offsetY: -28 },
   { id: 'TUR', offsetX: 28, offsetY: 16 },
+  { id: 'ITA', offsetX: 22, offsetY: 28, desktopOnly: true },
+  { id: 'NLD', offsetX: -28, offsetY: -28, desktopOnly: true },
+  { id: 'POL', offsetX: 34, offsetY: -10, desktopOnly: true },
+  { id: 'NOR', offsetX: -20, offsetY: -32, desktopOnly: true },
+  { id: 'BEL', offsetX: -34, offsetY: -6, desktopOnly: true },
+  { id: 'AUT', offsetX: 32, offsetY: 8, desktopOnly: true },
 
-  // Americas
+  // Americas (7)
   { id: 'USA', offsetX: 24, offsetY: 14 },
   { id: 'CAN', offsetX: -24, offsetY: -26 },
   { id: 'MEX', offsetX: -26, offsetY: 20 },
   { id: 'BRA', offsetX: 26, offsetY: -12 },
   { id: 'ARG', offsetX: -22, offsetY: 24 },
+  { id: 'CHL', offsetX: -30, offsetY: 16, desktopOnly: true },
+  { id: 'COL', offsetX: -28, offsetY: -12, desktopOnly: true },
 
-  // Oceania & Africa
+  // Oceania & Africa (5)
   { id: 'AUS', offsetX: -24, offsetY: -16 },
   { id: 'NZL', offsetX: 28, offsetY: 20 },
   { id: 'ZAF', offsetX: 20, offsetY: 20 },
+  { id: 'EGY', offsetX: -22, offsetY: 22, desktopOnly: true },
+  { id: 'NGA', offsetX: -26, offsetY: 18, desktopOnly: true },
 ]
 
 const BASE_CURRENCY_HUB_ID: Record<BaseCurrency, string> = {
@@ -106,6 +129,21 @@ interface Vec3 {
   z: number
 }
 
+interface LandDot extends Vec3 {
+  countryId: string
+  isEdge: boolean
+}
+
+interface CountryGdpElevationInfo {
+  totalGdpUsd: number
+  gdpPerCapitaUsd: number
+  growthRatePct: number | null
+  rank: number
+  terrainElev: number
+  layerCount: number
+  tierIndex: 0 | 1 | 2 | 3 | 4
+}
+
 interface ProjectedCapsule {
   id: string
   country: CountryMeta
@@ -116,6 +154,10 @@ interface ProjectedCapsule {
   z: number
   scale: number
   opacity: number
+  totalGdpUsd: number
+  gdpPerCapitaUsd: number
+  growthRatePct: number | null
+  gdpRank: number
   stock?: StockPriceInfo
   stockChangePct: number
   indexName: string
@@ -126,8 +168,113 @@ interface ProjectedCapsule {
   policyRatePct: number | null
 }
 
+// 5 GDP Choropleth Tiers for 3D Stacked Voxel Continents (side wall shading + top cap highlight)
+const GDP_VOXEL_STYLES: Array<{
+  sideWall: string
+  topCapMid: string
+  topCapFront: string
+}> = [
+  // Tier 0: Untracked / < $100B (flat lowland)
+  {
+    sideWall: 'rgba(6, 78, 59, 0.32)',
+    topCapMid: 'rgba(16, 185, 129, 0.34)',
+    topCapFront: 'rgba(52, 211, 153, 0.52)',
+  },
+  // Tier 1: $100B ~ $500B (low plateau)
+  {
+    sideWall: 'rgba(6, 95, 70, 0.55)',
+    topCapMid: 'rgba(16, 185, 129, 0.52)',
+    topCapFront: 'rgba(52, 211, 153, 0.72)',
+  },
+  // Tier 2: $500B ~ $2T (mid block: South Korea, Australia, Canada, Brazil, etc.)
+  {
+    sideWall: 'rgba(4, 120, 87, 0.68)',
+    topCapMid: 'rgba(52, 211, 153, 0.68)',
+    topCapFront: 'rgba(110, 231, 183, 0.88)',
+  },
+  // Tier 3: $2T ~ $10T (high block: Germany, Japan, India, UK, France, etc.)
+  {
+    sideWall: 'rgba(5, 150, 105, 0.78)',
+    topCapMid: 'rgba(110, 231, 183, 0.80)',
+    topCapFront: 'rgba(167, 243, 208, 0.95)',
+  },
+  // Tier 4: $10T+ Superpowers (tallest block: USA, China)
+  {
+    sideWall: 'rgba(16, 185, 129, 0.85)',
+    topCapMid: 'rgba(167, 243, 208, 0.90)',
+    topCapFront: 'rgba(209, 250, 229, 1.0)',
+  },
+]
+
+// 8 Stock Change % Color Buckets for 'stocks' Display Mode (0 = untracked, 1..3 = down, 4 = flat, 5..7 = up)
+const STOCK_DOT_STYLES: Array<{
+  mid: string
+  front: string
+}> = [
+  // 0: Untracked / No stock index
+  {
+    mid: 'rgba(71, 85, 105, 0.26)',
+    front: 'rgba(100, 116, 139, 0.40)',
+  },
+  // 1: Strong Bear (<= -1.5%)
+  {
+    mid: 'rgba(225, 29, 72, 0.78)',
+    front: 'rgba(251, 113, 133, 0.96)',
+  },
+  // 2: Moderate Bear (-1.5% < pct <= -0.5%)
+  {
+    mid: 'rgba(244, 63, 94, 0.62)',
+    front: 'rgba(251, 113, 133, 0.82)',
+  },
+  // 3: Slight Bear (-0.5% < pct < -0.15%)
+  {
+    mid: 'rgba(244, 63, 94, 0.46)',
+    front: 'rgba(253, 164, 175, 0.68)',
+  },
+  // 4: Flat / Neutral (-0.15% <= pct <= +0.15%)
+  {
+    mid: 'rgba(100, 116, 139, 0.46)',
+    front: 'rgba(148, 163, 184, 0.68)',
+  },
+  // 5: Slight Bull (+0.15% < pct < +0.5%)
+  {
+    mid: 'rgba(16, 185, 129, 0.48)',
+    front: 'rgba(110, 231, 183, 0.70)',
+  },
+  // 6: Moderate Bull (+0.5% <= pct < +1.5%)
+  {
+    mid: 'rgba(16, 185, 129, 0.65)',
+    front: 'rgba(52, 211, 153, 0.86)',
+  },
+  // 7: Strong Bull (>= +1.5%)
+  {
+    mid: 'rgba(5, 150, 105, 0.82)',
+    front: 'rgba(110, 231, 183, 0.98)',
+  },
+]
+
+function getStockColorBucket(changePct: number): number {
+  if (changePct <= -1.5) return 1
+  if (changePct <= -0.5) return 2
+  if (changePct < -0.15) return 3
+  if (changePct <= 0.15) return 4
+  if (changePct < 0.5) return 5
+  if (changePct < 1.5) return 6
+  return 7
+}
+
+function getFxColorBucket(changePct: number): number {
+  if (changePct <= -0.6) return 1
+  if (changePct <= -0.2) return 2
+  if (changePct < -0.01) return 3
+  if (changePct <= 0.01) return 4
+  if (changePct < 0.2) return 5
+  if (changePct < 0.6) return 6
+  return 7
+}
+
 // Module-level cached 3D unit vectors for Dot-Matrix continents & graticule rings
-let cachedLandDots: Vec3[] | null = null
+let cachedLandDots: LandDot[] | null = null
 let cachedGraticuleLines: Vec3[][] | null = null
 
 function latLonToVec3(latDeg: number, lonDeg: number): Vec3 {
@@ -147,22 +294,18 @@ function gridColRowToLatLon(col: number, row: number): { lat: number; lon: numbe
   return { lat, lon }
 }
 
-function getGlobeGeometry(): { landDots: Vec3[]; graticuleLines: Vec3[][] } {
+function getGlobeGeometry(): { landDots: LandDot[]; graticuleLines: Vec3[][] } {
   if (cachedLandDots && cachedGraticuleLines) {
     return { landDots: cachedLandDots, graticuleLines: cachedGraticuleLines }
   }
 
-  // 1. Convert PIXEL_MAP_TILES into a refined 2x2 sub-dot spherical matrix (no country borders)
-  const landDots: Vec3[] = []
-  const subOffsets = [-0.24, 0.24]
+  // 1. Convert GLOBE_TERRAIN_DOTS (Natural Earth 50m coastline-sculpted 3x3 sub-grid) into spherical unit vectors
+  const landDots: LandDot[] = []
 
-  for (const tile of PIXEL_MAP_TILES) {
-    for (const dc of subOffsets) {
-      for (const dr of subOffsets) {
-        const { lat, lon } = gridColRowToLatLon(tile.c + dc, tile.r + dr)
-        landDots.push(latLonToVec3(lat, lon))
-      }
-    }
+  for (const dot of GLOBE_TERRAIN_DOTS) {
+    const { lat, lon } = gridColRowToLatLon(dot.c, dot.r)
+    const v = latLonToVec3(lat, lon)
+    landDots.push({ ...v, countryId: dot.id, isEdge: dot.e === 1 })
   }
 
   // 2. Precompute subtle latitude & longitude graticule curves
@@ -204,6 +347,39 @@ function rotatePoint(p: Vec3, rotLonRad: number, rotLatRad: number): Vec3 {
   const z2 = y1 * sinLat + z1 * cosLat
 
   return { x: x1, y: y2, z: z2 }
+}
+
+function computeGdpElevation(totalGdpUsd: number): {
+  terrainElev: number
+  layerCount: number
+  tierIndex: 0 | 1 | 2 | 3 | 4
+} {
+  if (!totalGdpUsd || totalGdpUsd <= 0) {
+    return { terrainElev: 1.004, layerCount: 1, tierIndex: 0 }
+  }
+
+  const gdpTrillions = totalGdpUsd / 1e12
+  // Smooth root-power scaling so superpowers ($20T-$30T) and mid-powers ($500B-$4T) form distinct 3D block heights
+  const norm = Math.pow(gdpTrillions, 0.38)
+  const terrainElev = 1 + Math.min(0.115, Math.max(0.008, norm * 0.032))
+
+  let tierIndex: 0 | 1 | 2 | 3 | 4 = 0
+  let layerCount = 1
+  if (totalGdpUsd >= 10_000_000_000_000) {
+    tierIndex = 4
+    layerCount = 7
+  } else if (totalGdpUsd >= 2_000_000_000_000) {
+    tierIndex = 3
+    layerCount = 5
+  } else if (totalGdpUsd >= 500_000_000_000) {
+    tierIndex = 2
+    layerCount = 4
+  } else if (totalGdpUsd >= 100_000_000_000) {
+    tierIndex = 1
+    layerCount = 2
+  }
+
+  return { terrainElev, layerCount, tierIndex }
 }
 
 function formatCompactFxValue(
@@ -251,6 +427,7 @@ function formatCompactFxValue(
 }
 
 export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
+  items,
   baseCurrency,
   exchangeRates,
   interestRates,
@@ -258,7 +435,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   onSelectCountry,
   refreshKey,
 }) => {
-  const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('stocks')
+  const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('gdp')
   const [activePreset, setActivePreset] = useState<RegionPreset>('auto')
   const [isSpinning, setIsSpinning] = useState(true)
   const [hoveredHubId, setHoveredHubId] = useState<string | null>(null)
@@ -292,6 +469,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   })
   const isSpinningRef = useRef(isSpinning)
   const hoveredHubIdRef = useRef<string | null>(null)
+  const displayModeRef = useRef<GlobeDisplayMode>(displayMode)
 
   useEffect(() => {
     isSpinningRef.current = isSpinning
@@ -301,10 +479,111 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     hoveredHubIdRef.current = hoveredHubId
   }, [hoveredHubId])
 
+  useEffect(() => {
+    displayModeRef.current = displayMode
+  }, [displayMode])
+
+  const usdToBase = exchangeRates ? getConversionRate(exchangeRates, 'USD', baseCurrency) : 1
+
+  // Build per-country GDP elevation & rank lookup (uses items from App or immediate IMF 2026 fallback)
+  const gdpLookup = useMemo(() => {
+    const map = new Map<string, CountryGdpElevationInfo>()
+
+    if (items && items.length > 0 && items[0].totalGdpUsd > 0) {
+      for (const item of items) {
+        const elev = computeGdpElevation(item.totalGdpUsd)
+        map.set(item.country.id, {
+          totalGdpUsd: item.totalGdpUsd,
+          gdpPerCapitaUsd: item.gdpPerCapitaUsd,
+          growthRatePct: item.growthRatePct,
+          rank: item.rank,
+          ...elev,
+        })
+      }
+      return map
+    }
+
+    const imfFallback = getImfYearMap('2026')
+    const sorted = Array.from(imfFallback.entries()).sort(
+      (a, b) => b[1].totalGdpUsd - a[1].totalGdpUsd
+    )
+    sorted.forEach(([id, m], idx) => {
+      const elev = computeGdpElevation(m.totalGdpUsd)
+      map.set(id, {
+        totalGdpUsd: m.totalGdpUsd,
+        gdpPerCapitaUsd: m.gdpPerCapitaUsd,
+        growthRatePct: m.growthRatePct,
+        rank: idx + 1,
+        ...elev,
+      })
+    })
+    return map
+  }, [items])
+
+  const gdpLookupRef = useRef(gdpLookup)
+  useEffect(() => {
+    gdpLookupRef.current = gdpLookup
+  }, [gdpLookup])
+
+  // Build per-country Stock Change % color bucket lookup for all countries when in 'stocks' mode
+  const stockBucketLookup = useMemo(() => {
+    const allStocks = getAllStockPrices()
+    const map = new Map<string, number>()
+
+    for (const [countryId, stock] of Object.entries(allStocks)) {
+      if (!stock || stock.isSupported === false || !(stock.currentPrice > 0)) continue
+      let changePct = stock.changePct ?? 0
+      if (stock.points && stock.points.length >= 2) {
+        const prevClose = stock.points[stock.points.length - 2].close
+        if (prevClose > 0) {
+          changePct = Number((((stock.currentPrice - prevClose) / prevClose) * 100).toFixed(2))
+        }
+      }
+      map.set(countryId, getStockColorBucket(changePct))
+    }
+    return map
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveStockTick])
+
+  const stockBucketLookupRef = useRef(stockBucketLookup)
+  useEffect(() => {
+    stockBucketLookupRef.current = stockBucketLookup
+  }, [stockBucketLookup])
+
+  // Build per-country FX Change % color bucket lookup for all countries when in 'fx' mode
+  const fxBucketLookup = useMemo(() => {
+    const map = new Map<string, number>()
+
+    for (const country of COUNTRIES) {
+      const curr = country.currencyCode
+      if (!curr) continue
+      if (curr === baseCurrency) {
+        map.set(country.id, 4) // Flat / Base currency
+        continue
+      }
+      const liveQuote = liveFxQuotes[curr]
+      const fxChangePct =
+        liveQuote?.changePct ??
+        (exchangeRates ? getFxChangePct(exchangeRates, curr, baseCurrency) : null)
+
+      if (fxChangePct != null && !isNaN(fxChangePct)) {
+        map.set(country.id, getFxColorBucket(fxChangePct))
+      }
+    }
+    return map
+  }, [baseCurrency, exchangeRates, liveFxQuotes])
+
+  const fxBucketLookupRef = useRef(fxBucketLookup)
+  useEffect(() => {
+    fxBucketLookupRef.current = fxBucketLookup
+  }, [fxBucketLookup])
+
   // Build hubs list calibrated directly to COUNTRY_LABEL_ANCHORS so every pin sits on its landmass dot
   const hubItems = useMemo(() => {
     const countryMap = new Map(COUNTRIES.map((c) => [c.id, c]))
-    const list: Array<HubDefinition & { lat: number; lon: number; country: CountryMeta; unitVec: Vec3 }> = []
+    const list: Array<
+      HubDefinition & { lat: number; lon: number; country: CountryMeta; unitVec: Vec3 }
+    > = []
 
     for (const h of FLAGSHIP_HUBS) {
       const c = countryMap.get(h.id)
@@ -376,11 +655,12 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     }
   }, [baseCurrency, hubItems, refreshKey])
 
-  // Enrich hub data with stock & FX metrics
+  // Enrich hub data with GDP, stock & FX metrics
   const enrichedHubs = useMemo(() => {
     const allStocks = getAllStockPrices()
 
     return hubItems.map((h) => {
+      const gdpInfo = gdpLookup.get(h.id)
       const stock = allStocks[h.id]
       let stockChangePct = stock?.changePct ?? 0
       if (stock?.points && stock.points.length >= 2) {
@@ -431,6 +711,12 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
       return {
         ...h,
+        totalGdpUsd: gdpInfo?.totalGdpUsd ?? 0,
+        gdpPerCapitaUsd: gdpInfo?.gdpPerCapitaUsd ?? 0,
+        growthRatePct: gdpInfo?.growthRatePct ?? null,
+        gdpRank: gdpInfo?.rank ?? 99,
+        terrainElev: gdpInfo?.terrainElev ?? 1.01,
+        tierIndex: gdpInfo?.tierIndex ?? 0,
         stock,
         stockChangePct,
         indexName,
@@ -442,7 +728,16 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hubItems, exchangeRates, interestRates, baseCurrency, lang, liveStockTick, liveFxQuotes])
+  }, [
+    hubItems,
+    gdpLookup,
+    exchangeRates,
+    interestRates,
+    baseCurrency,
+    lang,
+    liveStockTick,
+    liveFxQuotes,
+  ])
 
   const enrichedHubsRef = useRef(enrichedHubs)
   useEffect(() => {
@@ -541,7 +836,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       const usableH = Math.max(300, height - topSafe - bottomSafe)
       const cx = width / 2
       const cy = topSafe + usableH / 2
-      const radius = Math.min(width * (width < 640 ? 0.39 : 0.41), usableH * 0.46)
+      const radius = Math.min(width * (width < 640 ? 0.38 : 0.40), usableH * 0.45)
 
       // 1. Outer Atmospheric Halo Glow
       const outerHalo = ctx.createRadialGradient(
@@ -550,14 +845,14 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         radius * 0.72,
         cx,
         cy,
-        radius * 1.32
+        radius * 1.34
       )
-      outerHalo.addColorStop(0, 'rgba(79, 70, 229, 0.22)')
-      outerHalo.addColorStop(0.55, 'rgba(56, 189, 248, 0.08)')
+      outerHalo.addColorStop(0, 'rgba(16, 185, 129, 0.16)')
+      outerHalo.addColorStop(0.45, 'rgba(79, 70, 229, 0.16)')
       outerHalo.addColorStop(1, 'rgba(2, 6, 23, 0)')
       ctx.fillStyle = outerHalo
       ctx.beginPath()
-      ctx.arc(cx, cy, radius * 1.32, 0, Math.PI * 2)
+      ctx.arc(cx, cy, radius * 1.34, 0, Math.PI * 2)
       ctx.fill()
 
       // 2. 3D Sphere Ocean Body with Specular Highlight
@@ -601,11 +896,25 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         ctx.stroke()
       }
 
-      // 4. Dot-Matrix Continents (Back hemisphere dim hologram + Front hemisphere bright dots)
-      const dotSizeBack = Math.max(1.1, radius * 0.007)
-      const dotSizeFront = Math.max(1.5, radius * 0.0095)
+      // Crisp Atmospheric Rim Ring on Base Sphere
+      ctx.beginPath()
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+      ctx.strokeStyle = 'rgba(52, 211, 153, 0.30)'
+      ctx.lineWidth = 1.2
+      ctx.stroke()
 
-      ctx.fillStyle = 'rgba(71, 85, 105, 0.16)'
+      // 4. Mode-Specific Continent Rendering
+      const dotSizeBack = Math.max(0.88, radius * 0.0052)
+      const dotSizeFront = Math.max(1.38, radius * 0.0082)
+      const currentGdpMap = gdpLookupRef.current
+      const currentStockBucketMap = stockBucketLookupRef.current
+      const currentFxBucketMap = fxBucketLookupRef.current
+      const activeMode = displayModeRef.current
+      const isGdpMode = activeMode === 'gdp'
+      const elevMultiplier = 1.25
+
+      // 4a. Back hemisphere dim hologram dots
+      ctx.fillStyle = 'rgba(71, 85, 105, 0.14)'
       ctx.beginPath()
       for (let i = 0; i < landDots.length; i++) {
         const rp = rotatePoint(landDots[i], rotLonRad, rotLatRad)
@@ -618,39 +927,130 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       }
       ctx.fill()
 
-      // Front hemisphere dots grouped in 2 depth bands for fast batched rendering
-      ctx.fillStyle = 'rgba(129, 140, 248, 0.45)'
-      ctx.beginPath()
-      for (let i = 0; i < landDots.length; i++) {
-        const rp = rotatePoint(landDots[i], rotLonRad, rotLatRad)
-        if (rp.z >= 0 && rp.z < 0.55) {
-          const sx = cx + rp.x * radius
-          const sy = cy + rp.y * radius
-          ctx.moveTo(sx + dotSizeFront, sy)
-          ctx.arc(sx, sy, dotSizeFront, 0, Math.PI * 2)
+      // 4b. Front hemisphere continents based on active display mode:
+      // - 'gdp': 3D Stacked Voxel Continent Blocks with GDP elevation
+      // - 'stocks': Flat sphere surface (no elevation) with country dots colored by stock index change %
+      // - 'fx': Flat sphere surface (no elevation) with country dots colored by FX 24h change %
+      if (isGdpMode) {
+        for (let tier = 0; tier <= 4; tier++) {
+          const style = GDP_VOXEL_STYLES[tier]
+          const maxLayers = tier === 4 ? 7 : tier === 3 ? 5 : tier === 2 ? 4 : tier === 1 ? 2 : 1
+
+          // 1) Draw stacked intermediate 3D voxel slices (side wall body along coastlines, borders & oblique angles)
+          if (maxLayers > 1) {
+            ctx.fillStyle = style.sideWall
+            ctx.beginPath()
+            const rWall = dotSizeFront * 0.96
+            for (let layer = 0; layer < maxLayers - 1; layer++) {
+              const layerFrac = layer / (maxLayers - 1)
+              for (let i = 0; i < landDots.length; i++) {
+                const dot = landDots[i]
+                const info = currentGdpMap.get(dot.countryId)
+                const dotTier = info?.tierIndex ?? 0
+                if (dotTier !== tier) continue
+
+                const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+                if (rp.z < 0) continue
+                if (!dot.isEdge && rp.z > 0.72) continue
+
+                const rawDelta = (info?.terrainElev ?? 1.006) - 1.0
+                const elev = 1.0 + rawDelta * elevMultiplier * layerFrac
+                const vx = cx + rp.x * radius * elev
+                const vy = cy + rp.y * radius * elev
+                ctx.moveTo(vx + rWall, vy)
+                ctx.arc(vx, vy, rWall, 0, Math.PI * 2)
+              }
+            }
+            ctx.fill()
+          }
+
+          // 2) Draw Top Cap Voxel Plateau (Mid-depth band: 0 <= z < 0.5)
+          ctx.fillStyle = style.topCapMid
+          ctx.beginPath()
+          for (let i = 0; i < landDots.length; i++) {
+            const dot = landDots[i]
+            const info = currentGdpMap.get(dot.countryId)
+            const dotTier = info?.tierIndex ?? 0
+            if (dotTier !== tier) continue
+
+            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+            if (rp.z >= 0 && rp.z < 0.5) {
+              const rawDelta = (info?.terrainElev ?? 1.004) - 1.0
+              const elev = 1.0 + rawDelta * elevMultiplier
+              const ex = cx + rp.x * radius * elev
+              const ey = cy + rp.y * radius * elev
+              const rTop = dotSizeFront * (0.88 + tier * 0.025)
+              ctx.moveTo(ex + rTop, ey)
+              ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
+            }
+          }
+          ctx.fill()
+
+          // 3) Draw Top Cap Voxel Plateau (Front-most band: z >= 0.5)
+          ctx.fillStyle = style.topCapFront
+          ctx.beginPath()
+          for (let i = 0; i < landDots.length; i++) {
+            const dot = landDots[i]
+            const info = currentGdpMap.get(dot.countryId)
+            const dotTier = info?.tierIndex ?? 0
+            if (dotTier !== tier) continue
+
+            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+            if (rp.z >= 0.5) {
+              const rawDelta = (info?.terrainElev ?? 1.004) - 1.0
+              const elev = 1.0 + rawDelta * elevMultiplier
+              const ex = cx + rp.x * radius * elev
+              const ey = cy + rp.y * radius * elev
+              const rTop = dotSizeFront * (0.94 + tier * 0.03)
+              ctx.moveTo(ex + rTop, ey)
+              ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
+            }
+          }
+          ctx.fill()
+        }
+      } else {
+        // 'stocks' or 'fx': Flat sphere surface (elev = 1.0) colored by each country's daily change %
+        const activeBucketMap = activeMode === 'stocks' ? currentStockBucketMap : currentFxBucketMap
+        const rMid = dotSizeFront * 0.90
+        const rFront = dotSizeFront * 0.98
+        for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
+          const style = STOCK_DOT_STYLES[bucket]
+
+          // Mid-depth band (0 <= z < 0.5)
+          ctx.fillStyle = style.mid
+          ctx.beginPath()
+          for (let i = 0; i < landDots.length; i++) {
+            const dot = landDots[i]
+            const dotBucket = activeBucketMap.get(dot.countryId) ?? 0
+            if (dotBucket !== bucket) continue
+            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+            if (rp.z >= 0 && rp.z < 0.5) {
+              const sx = cx + rp.x * radius
+              const sy = cy + rp.y * radius
+              ctx.moveTo(sx + rMid, sy)
+              ctx.arc(sx, sy, rMid, 0, Math.PI * 2)
+            }
+          }
+          ctx.fill()
+
+          // Front-most band (z >= 0.5)
+          ctx.fillStyle = style.front
+          ctx.beginPath()
+          for (let i = 0; i < landDots.length; i++) {
+            const dot = landDots[i]
+            const dotBucket = activeBucketMap.get(dot.countryId) ?? 0
+            if (dotBucket !== bucket) continue
+            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+            if (rp.z >= 0.5) {
+              const sx = cx + rp.x * radius
+              const sy = cy + rp.y * radius
+              ctx.moveTo(sx + rFront, sy)
+              ctx.arc(sx, sy, rFront, 0, Math.PI * 2)
+            }
+          }
+          ctx.fill()
         }
       }
-      ctx.fill()
-
-      ctx.fillStyle = 'rgba(165, 180, 252, 0.82)'
-      ctx.beginPath()
-      for (let i = 0; i < landDots.length; i++) {
-        const rp = rotatePoint(landDots[i], rotLonRad, rotLatRad)
-        if (rp.z >= 0.55) {
-          const sx = cx + rp.x * radius
-          const sy = cy + rp.y * radius
-          ctx.moveTo(sx + dotSizeFront * 1.12, sy)
-          ctx.arc(sx, sy, dotSizeFront * 1.12, 0, Math.PI * 2)
-        }
-      }
-      ctx.fill()
-
-      // Crisp Atmospheric Rim Ring
-      ctx.beginPath()
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-      ctx.strokeStyle = 'rgba(129, 140, 248, 0.42)'
-      ctx.lineWidth = 1.5
-      ctx.stroke()
 
       // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub
       const currentHubs = enrichedHubsRef.current
@@ -677,7 +1077,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             const iy = baseHub.unitVec.y * (1 - t) + target.unitVec.y * t
             const iz = baseHub.unitVec.z * (1 - t) + target.unitVec.z * t
             const len = Math.hypot(ix, iy, iz) || 1
-            const elev = 1 + Math.sin(Math.PI * t) * 0.14
+            const elev = 1.04 + Math.sin(Math.PI * t) * 0.14
             const p3d: Vec3 = {
               x: (ix / len) * elev,
               y: (iy / len) * elev,
@@ -698,29 +1098,33 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             }
           }
           ctx.strokeStyle = isHighlighted
-            ? 'rgba(56, 189, 248, 0.65)'
-            : 'rgba(99, 102, 241, 0.22)'
+            ? 'rgba(52, 211, 153, 0.7)'
+            : 'rgba(99, 102, 241, 0.20)'
           ctx.lineWidth = isHighlighted ? 1.8 : 1.0
           ctx.stroke()
         }
       }
 
-      // 6. Compute Visible Front-Hemisphere Capsules & Apply 2D Screen-Space Repulsion
+      // 6. Compute Visible Front-Hemisphere Capsules anchored flush on top of each country's 3D Voxel Block
       const rawCapsules: ProjectedCapsule[] = []
       const pulseScale = (Math.sin(pulsePhase) + 1) * 0.5
+      const isDesktopRatio = width >= 768 && width >= height * 0.95
 
       for (const h of currentHubs) {
+        if (!isDesktopRatio && h.desktopOnly) continue
         const rp = rotatePoint(h.unitVec, rotLonRad, rotLatRad)
         // Only show hubs on the front hemisphere (z > 0.08)
         if (rp.z <= 0.08) continue
 
-        const surfaceX = cx + rp.x * radius
-        const surfaceY = cy + rp.y * radius
+        // Anchor point sits on the 3D voxel block top face ONLY in GDP mode; flat (1.0) in Stocks and FX modes
+        const topSurfaceElev = isGdpMode ? 1.0 + (h.terrainElev - 1.0) * elevMultiplier : 1.0
+        const surfaceX = cx + rp.x * radius * topSurfaceElev
+        const surfaceY = cy + rp.y * radius * topSurfaceElev
 
         // Radial push outward from globe center + custom hub offset scaled to globe radius
         const radialScale = Math.max(0.65, radius / 250)
-        const initX = surfaceX + h.offsetX * radialScale + rp.x * (radius * 0.075)
-        const initY = surfaceY + h.offsetY * radialScale + rp.y * (radius * 0.075)
+        const initX = surfaceX + h.offsetX * radialScale + rp.x * (radius * 0.065)
+        const initY = surfaceY + h.offsetY * radialScale + rp.y * (radius * 0.065)
 
         const depthFactor = Math.min(1, Math.max(0, (rp.z - 0.08) / 0.65))
         const scale = 0.82 + depthFactor * 0.2
@@ -736,6 +1140,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           z: rp.z,
           scale,
           opacity,
+          totalGdpUsd: h.totalGdpUsd,
+          gdpPerCapitaUsd: h.gdpPerCapitaUsd,
+          growthRatePct: h.growthRatePct,
+          gdpRank: h.gdpRank,
           stock: h.stock,
           stockChangePct: h.stockChangePct,
           indexName: h.indexName,
@@ -750,14 +1158,15 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       // Sort by depth descending so front-most capsules win position priority
       rawCapsules.sort((a, b) => b.z - a.z)
 
-      // On compact screens, limit to top 9 front-most capsules for visual clarity
-      const maxVisible = width < 640 ? 9 : 14
+      // On desktop aspect ratio screens, allow all 40 active countries; on compact screens limit to 9
+      const maxVisible = isDesktopRatio ? 40 : width < 640 ? 9 : 14
       const activeCapsules = rawCapsules.slice(0, maxVisible)
 
       // 2D Collision Relaxation so capsules never overlap each other
-      const boxW = width < 640 ? 116 : 138
-      const boxH = width < 640 ? 44 : 50
-      for (let iter = 0; iter < 10; iter++) {
+      const boxW = width < 640 ? 116 : 132
+      const boxH = width < 640 ? 44 : 46
+      const relaxIters = isDesktopRatio ? 16 : 10
+      for (let iter = 0; iter < relaxIters; iter++) {
         for (let i = 0; i < activeCapsules.length; i++) {
           for (let j = i + 1; j < activeCapsules.length; j++) {
             const a = activeCapsules[i]
@@ -789,10 +1198,22 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         cap.y = Math.max(topSafe + padY, Math.min(height - bottomSafe - padY, cap.y))
       }
 
-      // 7. Draw Surface Pulse Beacons & Leader Lines to Capsules
+      // 7. Draw Surface Pulse Beacons on top of the 3D Voxel Block & Leader Lines to Capsules
       for (const cap of activeCapsules) {
-        const isUp = cap.stockChangePct > 0.15
-        const isDown = cap.stockChangePct < -0.15
+        const isHovered = hoveredHubIdRef.current === cap.id
+        const isUp =
+          displayModeRef.current === 'gdp'
+            ? (cap.growthRatePct ?? 0) >= 0
+            : displayModeRef.current === 'stocks'
+              ? cap.stockChangePct > 0.15
+              : (cap.fxChangePct ?? 0) > 0.01
+        const isDown =
+          displayModeRef.current === 'gdp'
+            ? (cap.growthRatePct ?? 0) < 0
+            : displayModeRef.current === 'stocks'
+              ? cap.stockChangePct < -0.15
+              : (cap.fxChangePct ?? 0) < -0.01
+
         const colorHex = isUp ? '#10b981' : isDown ? '#f43f5e' : '#818cf8'
         const colorRgba = isUp
           ? 'rgba(16, 185, 129,'
@@ -800,15 +1221,15 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             ? 'rgba(244, 63, 94,'
             : 'rgba(129, 140, 248,'
 
-        // Leader line from globe surface point to floating capsule
+        // Leader line from voxel block top surface to floating capsule
         ctx.beginPath()
         ctx.moveTo(cap.surfaceX, cap.surfaceY)
         ctx.lineTo(cap.x, cap.y)
         ctx.strokeStyle = `${colorRgba} ${0.45 * cap.opacity})`
-        ctx.lineWidth = hoveredHubIdRef.current === cap.id ? 1.8 : 1.1
+        ctx.lineWidth = isHovered ? 1.8 : 1.1
         ctx.stroke()
 
-        // Expanding pulse ring on surface
+        // Expanding pulse ring on voxel block top surface
         const ringR = 3.5 + pulseScale * 6.5
         ctx.beginPath()
         ctx.arc(cap.surfaceX, cap.surfaceY, ringR, 0, Math.PI * 2)
@@ -816,10 +1237,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         ctx.lineWidth = 1.2
         ctx.stroke()
 
-        // Solid glowing beacon core on surface
+        // Solid glowing beacon core on voxel block top surface
         ctx.beginPath()
         ctx.arc(cap.surfaceX, cap.surfaceY, 3.2, 0, Math.PI * 2)
-        ctx.fillStyle = colorHex
+        ctx.fillStyle = isHovered ? '#ffffff' : colorHex
         ctx.fill()
       }
 
@@ -886,7 +1307,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 50% 46%, rgba(30, 27, 75, 0.45) 0%, rgba(2, 6, 23, 0.95) 75%)',
+            'radial-gradient(circle at 50% 46%, rgba(16, 185, 129, 0.12) 0%, rgba(30, 27, 75, 0.35) 38%, rgba(2, 6, 23, 0.96) 78%)',
         }}
       />
 
@@ -913,10 +1334,22 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           </div>
         </div>
 
-        {/* Center: Display Mode Switcher + Region Presets */}
+        {/* Center: Display Mode Switcher (GDP / Stocks / FX) + Region Presets */}
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
-          {/* Display Mode Tabs (Stocks Only vs FX Only) */}
+          {/* Display Mode Tabs */}
           <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setDisplayMode('gdp')}
+              className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                displayMode === 'gdp'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <BarChart3 className="w-3 h-3" />
+              <span>GDP</span>
+            </button>
             <button
               type="button"
               onClick={() => setDisplayMode('stocks')}
@@ -1030,17 +1463,29 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       {/* Floating 3D HUD Capsules Layer */}
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
         {projectedCapsules.map((cap) => {
-          const isUp = cap.stockChangePct > 0.15
-          const isDown = cap.stockChangePct < -0.15
+          const isUp =
+            displayMode === 'gdp'
+              ? (cap.growthRatePct ?? 0) >= 0
+              : displayMode === 'stocks'
+                ? cap.stockChangePct > 0.15
+                : (cap.fxChangePct ?? 0) > 0.01
+          const isDown =
+            displayMode === 'gdp'
+              ? (cap.growthRatePct ?? 0) < 0
+              : displayMode === 'stocks'
+                ? cap.stockChangePct < -0.15
+                : (cap.fxChangePct ?? 0) < -0.01
           const isHovered = hoveredHubId === cap.id
 
           const borderClass = isHovered
-            ? 'border-white ring-2 ring-indigo-400/50 bg-slate-900/95'
-            : isUp
+            ? 'border-white ring-2 ring-emerald-400/50 bg-slate-900/95'
+            : displayMode === 'gdp'
               ? 'border-emerald-500/45 bg-slate-900/85 hover:border-emerald-400'
-              : isDown
-                ? 'border-rose-500/45 bg-slate-900/85 hover:border-rose-400'
-                : 'border-indigo-500/35 bg-slate-900/85 hover:border-indigo-400'
+              : isUp
+                ? 'border-emerald-500/45 bg-slate-900/85 hover:border-emerald-400'
+                : isDown
+                  ? 'border-rose-500/45 bg-slate-900/85 hover:border-rose-400'
+                  : 'border-indigo-500/35 bg-slate-900/85 hover:border-indigo-400'
 
           const unitLabel =
             cap.multiplier === 1000
@@ -1062,9 +1507,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 opacity: isHovered ? 1 : cap.opacity,
                 zIndex: isHovered ? 50 : Math.round(cap.z * 30),
               }}
-              className={`pointer-events-auto absolute top-0 left-0 rounded-xl backdrop-blur-md border px-2 sm:px-2.5 py-1 sm:py-1.5 text-left shadow-xl transition-[border-color,background-color] duration-150 cursor-pointer min-w-[112px] sm:min-w-[134px] ${borderClass}`}
+              className={`pointer-events-auto absolute top-0 left-0 rounded-xl backdrop-blur-md border px-2 sm:px-2.5 py-1 sm:py-1.5 text-left shadow-xl transition-[border-color,background-color] duration-150 cursor-pointer min-w-[114px] sm:min-w-[136px] ${borderClass}`}
             >
-              {/* Row 1: Flag, Country Name & Primary Badge */}
+              {/* Row 1: Flag, Country Name & Primary Mode Badge */}
               <div className="flex items-center justify-between gap-1.5">
                 <div className="flex items-center gap-1 min-w-0">
                   <CountryFlag
@@ -1076,7 +1521,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                   </span>
                 </div>
 
-                {displayMode === 'stocks' ? (
+                {displayMode === 'gdp' ? (
+                  <span className="text-[10px] font-mono font-black px-1 py-0.2 rounded shrink-0 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    #{cap.gdpRank}
+                  </span>
+                ) : displayMode === 'stocks' ? (
                   <span
                     className={`text-[10px] font-mono font-black px-1 py-0.2 rounded shrink-0 ${
                       isUp
@@ -1107,6 +1556,25 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
               {/* Row 2: Contextual Secondary Metric based on Display Mode */}
               <div className="mt-0.5 flex items-center justify-between gap-1 text-[10px] font-mono">
+                {displayMode === 'gdp' && (
+                  <>
+                    <span className="text-emerald-200 font-bold whitespace-nowrap">
+                      {formatGdpCompact(cap.totalGdpUsd, baseCurrency, usdToBase, lang)}
+                    </span>
+                    {cap.growthRatePct !== null && (
+                      <span
+                        className={`font-bold whitespace-nowrap ${
+                          cap.growthRatePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                        }`}
+                      >
+                        {cap.growthRatePct > 0
+                          ? `+${cap.growthRatePct.toFixed(1)}%`
+                          : `${cap.growthRatePct.toFixed(1)}%`}
+                      </span>
+                    )}
+                  </>
+                )}
+
                 {displayMode === 'stocks' && (
                   <>
                     <span className="text-slate-400 truncate max-w-[66px]">{cap.indexName}</span>
@@ -1138,7 +1606,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         className="absolute bottom-2.5 left-2.5 right-2.5 z-30 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg cursor-default"
       >
         <div className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-300 shrink-0 pr-2 border-r border-slate-800">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+          <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
           <span>
             {lang === 'ko'
               ? '현재 정면 포커스 마켓'
@@ -1166,7 +1634,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 onMouseEnter={() => setHoveredHubId(hub.id)}
                 onMouseLeave={() => setHoveredHubId(null)}
                 onClick={() => onSelectCountry(hub.country)}
-                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-indigo-500/40 transition-all cursor-pointer min-w-0"
+                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0"
               >
                 <div className="flex items-center gap-1.5 min-w-0">
                   <CountryFlag iso2={hub.country.iso2} className="w-4 h-3 rounded-[2px] shrink-0" />
@@ -1175,12 +1643,36 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                       {getCountryName(hub.country, lang)}
                     </div>
                     <div className="text-[10px] font-mono text-slate-400 truncate">
-                      {displayMode === 'stocks' ? hub.indexName : unitLabel}
+                      {displayMode === 'gdp'
+                        ? `#${hub.gdpRank} · ${formatPerCapita(
+                            hub.gdpPerCapitaUsd,
+                            baseCurrency,
+                            usdToBase,
+                            lang
+                          )}`
+                        : displayMode === 'stocks'
+                          ? hub.indexName
+                          : unitLabel}
                     </div>
                   </div>
                 </div>
 
-                {displayMode === 'stocks' ? (
+                {displayMode === 'gdp' ? (
+                  <div className="text-right shrink-0 font-mono">
+                    <div className="text-xs font-black text-emerald-300">
+                      {formatGdpCompact(hub.totalGdpUsd, baseCurrency, usdToBase, lang)}
+                    </div>
+                    <div
+                      className={`text-[9px] font-bold truncate max-w-[68px] ${
+                        (hub.growthRatePct ?? 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                      }`}
+                    >
+                      {hub.growthRatePct !== null
+                        ? `${hub.growthRatePct > 0 ? '+' : ''}${hub.growthRatePct.toFixed(1)}%`
+                        : '-'}
+                    </div>
+                  </div>
+                ) : displayMode === 'stocks' ? (
                   <div className="text-right shrink-0 font-mono">
                     <div
                       className={`text-xs font-black ${
