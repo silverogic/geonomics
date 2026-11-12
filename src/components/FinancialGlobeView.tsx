@@ -139,6 +139,7 @@ interface CountryGdpElevationInfo {
   totalGdpUsd: number
   gdpPerCapitaUsd: number
   growthRatePct: number | null
+  debtRatioPct: number | null
   rank: number
   terrainElev: number
   layerCount: number
@@ -174,6 +175,7 @@ interface ProjectedCapsule {
   totalGdpUsd: number
   gdpPerCapitaUsd: number
   growthRatePct: number | null
+  debtRatioPct?: number | null
   gdpRank: number
   colorTier?: number
   stock?: StockPriceInfo
@@ -2118,7 +2120,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
   useEffect(() => {
     hoveredHubIdRef.current = hoveredHubId
-    if (!hoveredHubId || displayMode !== 'stocks') {
+    if (!hoveredHubId || (displayMode !== 'stocks' && displayMode !== 'gdp')) {
       setExpandedHubId(null)
       return
     }
@@ -2150,6 +2152,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           totalGdpUsd: item.totalGdpUsd,
           gdpPerCapitaUsd: item.gdpPerCapitaUsd,
           growthRatePct: item.growthRatePct,
+          debtRatioPct: item.debtRatioPct,
           rank: item.rank,
           ...elev,
           colorTier: getGdpColorTier(gdpRank, elev.tierIndex),
@@ -2168,6 +2171,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         totalGdpUsd: m.totalGdpUsd,
         gdpPerCapitaUsd: m.gdpPerCapitaUsd,
         growthRatePct: m.growthRatePct,
+        debtRatioPct: m.debtRatioPct,
         rank: idx + 1,
         ...elev,
         colorTier: getGdpColorTier(idx + 1, elev.tierIndex),
@@ -2370,6 +2374,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         totalGdpUsd: gdpInfo?.totalGdpUsd ?? 0,
         gdpPerCapitaUsd: gdpInfo?.gdpPerCapitaUsd ?? 0,
         growthRatePct: gdpInfo?.growthRatePct ?? null,
+        debtRatioPct: gdpInfo?.debtRatioPct ?? null,
         gdpRank: gdpInfo?.rank ?? 99,
         colorTier: gdpInfo?.colorTier ?? 0,
         terrainElev: gdpInfo?.terrainElev ?? 1.01,
@@ -2828,6 +2833,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           totalGdpUsd: h.totalGdpUsd,
           gdpPerCapitaUsd: h.gdpPerCapitaUsd,
           growthRatePct: h.growthRatePct,
+          debtRatioPct: h.debtRatioPct,
           gdpRank: h.gdpRank,
           colorTier: h.colorTier,
           stock: h.stock,
@@ -3180,7 +3186,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 ? cap.stockChangePct < -0.15
                 : (cap.fxChangePct ?? 0) < -0.01
           const isHovered = hoveredHubId === cap.id
-          const isExpanded = displayMode === 'stocks' && expandedHubId === cap.id
+          const isExpanded =
+            (displayMode === 'stocks' || displayMode === 'gdp') && expandedHubId === cap.id
           const sparklineData =
             displayMode === 'stocks' && isHovered ? getCapsuleSparkline(cap) : null
 
@@ -3331,7 +3338,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 )}
               </div>
 
-              {/* Row 3: Delayed Hover Height Expansion for 30-Day Trend Sparkline inside the Same Box */}
+              {/* Row 3: Delayed Hover Height Expansion (Stocks 30-Day Trend Sparkline or GDP Debt Ratio) inside the Same Box */}
               <div
                 className={`grid transition-[grid-template-rows,opacity,margin,padding] duration-200 ease-out ${
                   isExpanded
@@ -3340,7 +3347,47 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 }`}
               >
                 <div className="overflow-hidden min-h-0">
-                  {sparklineData && (
+                  {displayMode === 'gdp' && isExpanded && (
+                    <div className="space-y-1.5 py-0.5">
+                      <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono leading-tight">
+                        <span className="font-semibold text-slate-200">
+                          {lang === 'ko' ? '부채 비율' : 'Debt Ratio'}
+                        </span>
+                        <span
+                          className={`font-black text-[11px] sm:text-xs ${
+                            cap.debtRatioPct == null
+                              ? 'text-slate-400'
+                              : cap.debtRatioPct < 60
+                                ? 'text-emerald-300'
+                                : cap.debtRatioPct < 90
+                                  ? 'text-amber-300'
+                                  : 'text-rose-400'
+                          }`}
+                        >
+                          {cap.debtRatioPct != null ? `${cap.debtRatioPct.toFixed(1)}%` : 'N/A'}
+                        </span>
+                      </div>
+                      {/* Mini visual debt meter bar */}
+                      {cap.debtRatioPct != null && (
+                        <div className="w-full h-1.5 rounded-full bg-slate-800/90 overflow-hidden flex shadow-inner border border-slate-700/40">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              cap.debtRatioPct < 60
+                                ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.4)]'
+                                : cap.debtRatioPct < 90
+                                  ? 'bg-amber-300 shadow-[0_0_6px_rgba(252,211,77,0.4)]'
+                                  : 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.4)]'
+                            }`}
+                            style={{
+                              width: `${Math.min(100, Math.max(8, (cap.debtRatioPct / 150) * 100))}%`,
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {displayMode === 'stocks' && sparklineData && (
                     <>
                       <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 mb-0.5">
                         <span className="truncate max-w-[72px]">
