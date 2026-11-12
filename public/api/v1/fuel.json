@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-11",
+  "updatedAt": "2026-11-12",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -49,7 +49,7 @@
     },
     "BRA": {
       "countryId": "BRA",
-      "priceUsd": 1.249,
+      "priceUsd": 1.247,
       "currencyCode": "BRL"
     },
     "CAN": {
@@ -79,7 +79,7 @@
     },
     "ESP": {
       "countryId": "ESP",
-      "priceUsd": 1.912,
+      "priceUsd": 1.847,
       "currencyCode": "EUR"
     },
     "IDN": {
@@ -194,7 +194,7 @@
     },
     "NGA": {
       "countryId": "NGA",
-      "priceUsd": 0.963,
+      "priceUsd": 0.932,
       "currencyCode": "NGN"
     },
     "THA": {
