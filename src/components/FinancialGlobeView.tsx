@@ -143,6 +143,22 @@ interface CountryGdpElevationInfo {
   terrainElev: number
   layerCount: number
   tierIndex: 0 | 1 | 2 | 3 | 4
+  // Color tier: 0..4 = emerald GDP tiers, 5 = Top 3~5 deep amber, 6 = Top 1~2 bright gold amber
+  colorTier: number
+}
+
+// Rank-based Top 5 amber color tier on top of GDP-value emerald tiers
+function getGdpColorTier(rank: number, tierIndex: number): number {
+  if (rank >= 1 && rank <= 2) return 6
+  if (rank >= 3 && rank <= 5) return 5
+  return tierIndex
+}
+
+// Structural (layer count / dot size) tier for each color tier
+function getGdpStructTier(colorTier: number): number {
+  if (colorTier === 6) return 4
+  if (colorTier === 5) return 3
+  return colorTier
 }
 
 interface ProjectedCapsule {
@@ -159,6 +175,7 @@ interface ProjectedCapsule {
   gdpPerCapitaUsd: number
   growthRatePct: number | null
   gdpRank: number
+  colorTier?: number
   stock?: StockPriceInfo
   stockChangePct: number
   indexName: string
@@ -199,11 +216,23 @@ const GDP_VOXEL_STYLES: Array<{
     topCapMid: 'rgba(110, 231, 183, 0.80)',
     topCapFront: 'rgba(167, 243, 208, 0.95)',
   },
-  // Tier 4: $10T+ Superpowers (tallest block: USA, China)
+  // Tier 4: $10T+ (tallest emerald block, used only when not in Top 5)
   {
     sideWall: 'rgba(16, 185, 129, 0.85)',
     topCapMid: 'rgba(167, 243, 208, 0.90)',
     topCapFront: 'rgba(209, 250, 229, 1.0)',
+  },
+  // Tier 5: GDP Rank Top 3~5 (pale soft amber #fde68a, lighter than Top 1~2)
+  {
+    sideWall: 'rgba(202, 138, 4, 0.55)',
+    topCapMid: 'rgba(253, 230, 138, 0.78)',
+    topCapFront: 'rgba(254, 243, 199, 0.95)',
+  },
+  // Tier 6: GDP Rank Top 1~2 (rich gold amber #fbbf24)
+  {
+    sideWall: 'rgba(217, 119, 6, 0.85)',
+    topCapMid: 'rgba(251, 191, 36, 0.90)',
+    topCapFront: 'rgba(252, 211, 77, 1.0)',
   },
 ]
 
@@ -2110,16 +2139,22 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     const map = new Map<string, CountryGdpElevationInfo>()
 
     if (items && items.length > 0 && items[0].totalGdpUsd > 0) {
-      for (const item of items) {
+      // Rank strictly by total GDP so Top 5 amber tier matches the 2D tile map exactly
+      const sortedItems = [...items]
+        .filter((it) => it.totalGdpUsd > 0)
+        .sort((a, b) => b.totalGdpUsd - a.totalGdpUsd)
+      sortedItems.forEach((item, idx) => {
         const elev = computeGdpElevation(item.totalGdpUsd)
+        const gdpRank = idx + 1
         map.set(item.country.id, {
           totalGdpUsd: item.totalGdpUsd,
           gdpPerCapitaUsd: item.gdpPerCapitaUsd,
           growthRatePct: item.growthRatePct,
           rank: item.rank,
           ...elev,
+          colorTier: getGdpColorTier(gdpRank, elev.tierIndex),
         })
-      }
+      })
       return map
     }
 
@@ -2135,6 +2170,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         growthRatePct: m.growthRatePct,
         rank: idx + 1,
         ...elev,
+        colorTier: getGdpColorTier(idx + 1, elev.tierIndex),
       })
     })
     return map
@@ -2335,6 +2371,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         gdpPerCapitaUsd: gdpInfo?.gdpPerCapitaUsd ?? 0,
         growthRatePct: gdpInfo?.growthRatePct ?? null,
         gdpRank: gdpInfo?.rank ?? 99,
+        colorTier: gdpInfo?.colorTier ?? 0,
         terrainElev: gdpInfo?.terrainElev ?? 1.01,
         tierIndex: gdpInfo?.tierIndex ?? 0,
         stock,
@@ -2554,9 +2591,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       // - 'stocks': Flat sphere surface (no elevation) with country dots colored by stock index change %
       // - 'fx': Flat sphere surface (no elevation) with country dots colored by FX 24h change %
       if (isGdpMode) {
-        for (let tier = 0; tier <= 4; tier++) {
+        for (let tier = 0; tier < GDP_VOXEL_STYLES.length; tier++) {
           const style = GDP_VOXEL_STYLES[tier]
-          const maxLayers = tier === 4 ? 7 : tier === 3 ? 5 : tier === 2 ? 4 : tier === 1 ? 2 : 1
+          const structTier = getGdpStructTier(tier)
+          const maxLayers =
+            structTier === 4 ? 7 : structTier === 3 ? 5 : structTier === 2 ? 4 : structTier === 1 ? 2 : 1
 
           // 1) Draw stacked intermediate 3D voxel slices (side wall body along coastlines, borders & oblique angles)
           if (maxLayers > 1) {
@@ -2568,7 +2607,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               for (let i = 0; i < landDots.length; i++) {
                 const dot = landDots[i]
                 const info = currentGdpMap.get(dot.countryId)
-                const dotTier = info?.tierIndex ?? 0
+                const dotTier = info?.colorTier ?? 0
                 if (dotTier !== tier) continue
 
                 const rp = rotatePoint(dot, rotLonRad, rotLatRad)
@@ -2592,7 +2631,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           for (let i = 0; i < landDots.length; i++) {
             const dot = landDots[i]
             const info = currentGdpMap.get(dot.countryId)
-            const dotTier = info?.tierIndex ?? 0
+            const dotTier = info?.colorTier ?? 0
             if (dotTier !== tier) continue
 
             const rp = rotatePoint(dot, rotLonRad, rotLatRad)
@@ -2601,7 +2640,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               const elev = 1.0 + rawDelta * elevMultiplier
               const ex = cx + rp.x * radius * elev
               const ey = cy + rp.y * radius * elev
-              const rTop = dotSizeFront * (0.88 + tier * 0.025)
+              const rTop = dotSizeFront * (0.88 + structTier * 0.025)
               ctx.moveTo(ex + rTop, ey)
               ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
             }
@@ -2614,7 +2653,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           for (let i = 0; i < landDots.length; i++) {
             const dot = landDots[i]
             const info = currentGdpMap.get(dot.countryId)
-            const dotTier = info?.tierIndex ?? 0
+            const dotTier = info?.colorTier ?? 0
             if (dotTier !== tier) continue
 
             const rp = rotatePoint(dot, rotLonRad, rotLatRad)
@@ -2623,7 +2662,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               const elev = 1.0 + rawDelta * elevMultiplier
               const ex = cx + rp.x * radius * elev
               const ey = cy + rp.y * radius * elev
-              const rTop = dotSizeFront * (0.94 + tier * 0.03)
+              const rTop = dotSizeFront * (0.94 + structTier * 0.03)
               ctx.moveTo(ex + rTop, ey)
               ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
             }
@@ -2790,6 +2829,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           gdpPerCapitaUsd: h.gdpPerCapitaUsd,
           growthRatePct: h.growthRatePct,
           gdpRank: h.gdpRank,
+          colorTier: h.colorTier,
           stock: h.stock,
           stockChangePct: h.stockChangePct,
           indexName: h.indexName,
@@ -2860,12 +2900,29 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               ? cap.stockChangePct < -0.15
               : (cap.fxChangePct ?? 0) < -0.01
 
-        const colorHex = isUp ? '#10b981' : isDown ? '#f43f5e' : '#818cf8'
-        const colorRgba = isUp
-          ? 'rgba(16, 185, 129,'
-          : isDown
-            ? 'rgba(244, 63, 94,'
-            : 'rgba(129, 140, 248,'
+        // Beacon color matches amber tier in GDP mode
+        const isTop12Gdp = displayModeRef.current === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2)
+        const isTop35Gdp = displayModeRef.current === 'gdp' && (cap.colorTier === 5 || (cap.gdpRank >= 3 && cap.gdpRank <= 5))
+
+        const colorHex = isTop12Gdp
+          ? '#fbbf24'
+          : isTop35Gdp
+            ? '#fde68a'
+            : isUp
+              ? '#10b981'
+              : isDown
+                ? '#f43f5e'
+                : '#818cf8'
+
+        const colorRgba = isTop12Gdp
+          ? 'rgba(251, 191, 36,'
+          : isTop35Gdp
+            ? 'rgba(253, 230, 138,'
+            : isUp
+              ? 'rgba(16, 185, 129,'
+              : isDown
+                ? 'rgba(244, 63, 94,'
+                : 'rgba(129, 140, 248,'
 
         // Leader line from voxel block top surface to floating capsule
         ctx.beginPath()
@@ -3127,10 +3184,21 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           const sparklineData =
             displayMode === 'stocks' && isHovered ? getCapsuleSparkline(cap) : null
 
+          const isTop12Gdp = displayMode === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2)
+          const isTop35Gdp = displayMode === 'gdp' && (cap.colorTier === 5 || (cap.gdpRank >= 3 && cap.gdpRank <= 5))
+
           const borderClass = isHovered
-            ? 'border-white ring-2 ring-emerald-400/50 bg-slate-900/95'
+            ? isTop12Gdp
+              ? 'border-amber-300 ring-2 ring-amber-400/50 bg-slate-900/95'
+              : isTop35Gdp
+                ? 'border-amber-200 ring-2 ring-amber-300/40 bg-slate-900/95'
+                : 'border-white ring-2 ring-emerald-400/50 bg-slate-900/95'
             : displayMode === 'gdp'
-              ? 'border-emerald-500/45 bg-slate-900/85 hover:border-emerald-400'
+              ? isTop12Gdp
+                ? 'border-amber-400/70 bg-amber-950/20 hover:border-amber-300 shadow-amber-500/10'
+                : isTop35Gdp
+                  ? 'border-amber-200/50 bg-amber-950/15 hover:border-amber-200 shadow-amber-300/10'
+                  : 'border-emerald-500/45 bg-slate-900/85 hover:border-emerald-400'
               : isUp
                 ? 'border-emerald-500/45 bg-slate-900/85 hover:border-emerald-400'
                 : isDown
@@ -3173,7 +3241,15 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 </div>
 
                 {displayMode === 'gdp' ? (
-                  <span className="text-[10px] font-mono font-black px-1 py-0.2 rounded shrink-0 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span
+                    className={`text-[10px] font-mono font-black px-1 py-0.2 rounded shrink-0 border ${
+                      isTop12Gdp
+                        ? 'bg-amber-400/20 text-amber-300 border-amber-400/40'
+                        : isTop35Gdp
+                          ? 'bg-amber-200/15 text-amber-200 border-amber-300/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    }`}
+                  >
                     #{cap.gdpRank}
                   </span>
                 ) : displayMode === 'stocks' ? (
@@ -3209,7 +3285,15 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               <div className="mt-0.5 flex items-center justify-between gap-1 text-[10px] font-mono">
                 {displayMode === 'gdp' && (
                   <>
-                    <span className="text-emerald-200 font-bold whitespace-nowrap">
+                    <span
+                      className={`font-bold whitespace-nowrap ${
+                        isTop12Gdp
+                          ? 'text-amber-300'
+                          : isTop35Gdp
+                            ? 'text-amber-200'
+                            : 'text-emerald-200'
+                      }`}
+                    >
                       {formatGdpCompact(cap.totalGdpUsd, baseCurrency, usdToBase, lang)}
                     </span>
                     {cap.growthRatePct !== null && (
@@ -3339,7 +3423,15 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
                 {displayMode === 'gdp' ? (
                   <div className="text-right shrink-0 font-mono">
-                    <div className="text-xs font-black text-emerald-300">
+                    <div
+                      className={`text-xs font-black ${
+                        hub.colorTier === 6 || hub.gdpRank <= 2
+                          ? 'text-amber-300'
+                          : hub.colorTier === 5 || (hub.gdpRank >= 3 && hub.gdpRank <= 5)
+                            ? 'text-amber-200'
+                            : 'text-emerald-300'
+                      }`}
+                    >
                       {formatGdpCompact(hub.totalGdpUsd, baseCurrency, usdToBase, lang)}
                     </div>
                     <div

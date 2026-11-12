@@ -196,6 +196,16 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     return items.filter((item) => selectedRegions.includes(item.country.region))
   }, [items, selectedRegions, isAllRegions])
 
+  // Rank strictly by total GDP for the Top 5 amber tier (matches Economic Globe)
+  const gdpRankMap = useMemo(() => {
+    const map = new Map<string, number>()
+    ;[...items]
+      .filter((it) => it.totalGdpUsd > 0)
+      .sort((a, b) => b.totalGdpUsd - a.totalGdpUsd)
+      .forEach((it, idx) => map.set(it.country.id, idx + 1))
+    return map
+  }, [items])
+
   // Color generator based on selected metric
   const getCountryFill = useCallback(
     (countryId: string) => {
@@ -206,9 +216,11 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       }
 
       if (metric === 'gdp') {
+        const gdpRank = gdpRankMap.get(countryId) ?? 999
+        if (gdpRank <= 2) return '#fbbf24' // Top 1~2 Rich Gold Amber
+        if (gdpRank <= 5) return '#fde68a' // Top 3~5 Pale Soft Amber
         const gdp = item.totalGdpUsd
-        if (gdp >= 10_000_000_000_000) return '#6ee7b7' // $10T+ Vivid Mint Emerald (USA, China)
-        if (gdp >= 2_000_000_000_000) return '#34d399' // $2T-$10T Bright Emerald
+        if (gdp >= 2_000_000_000_000) return '#34d399' // $2T+ Bright Emerald
         if (gdp >= 500_000_000_000) return '#10b981' // $500B-$2T Medium Emerald
         if (gdp >= 100_000_000_000) return '#047857' // $100B-$500B Deep Forest
         return '#064e3b' // < $100B Dark Forest Slate
@@ -253,7 +265,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       return '#334155'
     },
-    [countryItemMap, metric]
+    [countryItemMap, gdpRankMap, metric]
   )
 
   const handleToggleRegion = (reg: Region) => {
@@ -699,12 +711,16 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   {metric === 'gdp' && (
                     <>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#6ee7b7] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">$10T+</span>
+                        <span className="w-3.5 h-3.5 rounded bg-[#fbbf24] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">Top 1~2</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 rounded bg-[#fde68a] shadow-sm"></span>
+                        <span className="text-slate-300 font-mono font-medium">Top 3~5</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">$2T ~ $10T</span>
+                        <span className="text-slate-300 font-mono font-medium">$2T+</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
