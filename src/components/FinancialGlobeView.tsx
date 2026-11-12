@@ -770,11 +770,11 @@ function drawArcticEasterEgg(
   // 5. Build True 3D Volumetric Mesh Quads for the Igloo & Articulated 3D Arctic Fox
   const quads: MeshQuad3D[] = []
 
-  // --- 5A. 3D Faceted Ice-Block Igloo (centered at 88.5°N, 20°E, tunnel facing 25°E) ---
-  const iglooCenterUnit = latLonToVec3(88.5, 20)
+  // --- 5A. 3D Faceted Ice-Block Igloo (positioned slightly further back on the polar floe, with compact entrance) ---
+  const iglooCenterUnit = latLonToVec3(89.1, -160)
   const iglooOrigin = vScale(iglooCenterUnit, surfaceElev)
   const iglooN = vNorm(iglooCenterUnit)
-  const iglooAimVec = latLonToVec3(80, 25)
+  const iglooAimVec = latLonToVec3(80, 20)
   const iglooRawF = {
     x: iglooAimVec.x - iglooCenterUnit.x,
     y: iglooAimVec.y - iglooCenterUnit.y,
@@ -784,13 +784,17 @@ function drawArcticEasterEgg(
     vAdd(iglooRawF, vScale(iglooN, -vDot(iglooRawF, iglooN)))
   )
   const iglooR = vNorm(vCross(iglooF, iglooN))
-  const iglooScale = 0.044
+  const iglooScale = 0.043
+  const iglooBackOffset = -0.36
 
   const iglooToWorld = (f: number, r: number, u: number): Vec3 =>
     vAdd(
       iglooOrigin,
       vScale(
-        vAdd(vAdd(vScale(iglooF, f), vScale(iglooR, r)), vScale(iglooN, u)),
+        vAdd(
+          vAdd(vScale(iglooF, f + iglooBackOffset), vScale(iglooR, r)),
+          vScale(iglooN, u)
+        ),
         iglooScale
       )
     )
@@ -798,13 +802,13 @@ function drawArcticEasterEgg(
   const iglooToWorldDir = (df: number, dr: number, du: number): Vec3 =>
     vNorm(vAdd(vAdd(vScale(iglooF, df), vScale(iglooR, dr)), vScale(iglooN, du)))
 
-  // Warm golden hearth light patch on the snow right outside the 3D tunnel entrance
+  // Warm golden hearth light patch on the snow right outside the shortened 3D tunnel entrance
   const glowPulse = 0.85 + 0.15 * Math.sin(pulsePhase * 2.4)
-  const hearthSnowCenter = rotatePoint(iglooToWorld(1.52, 0, 0.02), rotLonRad, rotLatRad)
+  const hearthSnowCenter = rotatePoint(iglooToWorld(1.22, 0, 0.02), rotLonRad, rotLatRad)
   if (hearthSnowCenter.z > 0.06) {
     const hsx = cx + hearthSnowCenter.x * radius
     const hsy = cy + hearthSnowCenter.y * radius
-    const hsr = Math.max(6, radius * 0.036)
+    const hsr = Math.max(6, radius * 0.034)
     const hearthGrad = ctx.createRadialGradient(hsx, hsy, 0.5, hsx, hsy, hsr)
     hearthGrad.addColorStop(0, `rgba(251, 191, 36, ${(0.55 * glowPulse * polarVisibility).toFixed(3)})`)
     hearthGrad.addColorStop(0.55, `rgba(245, 158, 11, ${(0.22 * glowPulse * polarVisibility).toFixed(3)})`)
@@ -872,13 +876,13 @@ function drawArcticEasterEgg(
     }
   }
 
-  // 3D Protruding Arched Entrance Tunnel along +F
-  const tunSteps = 2
+  // Compact 3D Protruding Arched Entrance Tunnel along +F
+  const tunSteps = 1
   const tunArchSegs = 6
-  const tunW = 0.44
-  const tunH = 0.52
-  const tunStartF = 0.58
-  const tunEndF = 1.46
+  const tunW = 0.42
+  const tunH = 0.48
+  const tunStartF = 0.74
+  const tunEndF = 1.14
   for (let ts = 0; ts < tunSteps; ts++) {
     const f0 = tunStartF + (ts / tunSteps) * (tunEndF - tunStartF)
     const f1 = tunStartF + ((ts + 1) / tunSteps) * (tunEndF - tunStartF)
@@ -1430,64 +1434,126 @@ function drawAntarcticEasterEgg(
   const surfaceElev = 1.0125
   const quads: MeshQuad3D[] = []
 
-  // 4. 3D Sculpted Antarctic Glacial Iceberg Peak near the South Pole (-88.6°S, -30°W)
-  const glacierUnit = latLonToVec3(-88.6, -30)
-  const glacierOrigin = vScale(glacierUnit, surfaceElev)
-  const glacierN = vNorm(glacierUnit)
-  const glacierAim = latLonToVec3(-80, 15)
-  const glacierRawF = {
-    x: glacierAim.x - glacierUnit.x,
-    y: glacierAim.y - glacierUnit.y,
-    z: glacierAim.z - glacierUnit.z,
+  // 4. 3D South Pole Red Flag at the center of the Antarctic Ice Shelf (-89.85°S)
+  const flagUnit = latLonToVec3(-89.85, 0)
+  const flagOrigin = vScale(flagUnit, surfaceElev)
+  const flagN = vNorm(flagUnit)
+  const flagAim = latLonToVec3(-80, 90)
+  const flagRawF = {
+    x: flagAim.x - flagUnit.x,
+    y: flagAim.y - flagUnit.y,
+    z: flagAim.z - flagUnit.z,
   }
-  const glacierF = vNorm(vAdd(glacierRawF, vScale(glacierN, -vDot(glacierRawF, glacierN))))
-  const glacierR = vNorm(vCross(glacierF, glacierN))
-  const glacierScale = 0.036
+  const flagF = vNorm(vAdd(flagRawF, vScale(flagN, -vDot(flagRawF, flagN))))
+  const flagR = vNorm(vCross(flagF, flagN))
+  const flagScale = 0.032
 
-  const glacierToWorld = (f: number, r: number, u: number): Vec3 =>
+  const flagToWorld = (f: number, r: number, u: number): Vec3 =>
     vAdd(
-      glacierOrigin,
+      flagOrigin,
       vScale(
-        vAdd(vAdd(vScale(glacierF, f), vScale(glacierR, r)), vScale(glacierN, u)),
-        glacierScale
+        vAdd(vAdd(vScale(flagF, f), vScale(flagR, r)), vScale(flagN, u)),
+        flagScale
       )
     )
-  const glacierToWorldDir = (df: number, dr: number, du: number): Vec3 =>
-    vNorm(vAdd(vAdd(vScale(glacierF, df), vScale(glacierR, dr)), vScale(glacierN, du)))
+  const flagToWorldDir = (df: number, dr: number, du: number): Vec3 =>
+    vNorm(vAdd(vAdd(vScale(flagF, df), vScale(flagR, dr)), vScale(flagN, du)))
 
-  const glacierStroke = `rgba(56, 189, 248, ${(0.52 * polarVisibility).toFixed(3)})`
-  // Main tall crystalline glacier spire
+  // Soft ground shadow beneath the flagpole base
+  const flagShadowRp = rotatePoint(flagOrigin, rotLonRad, rotLatRad)
+  if (flagShadowRp.z > 0.06) {
+    const fsx = cx + flagShadowRp.x * radius
+    const fsy = cy + flagShadowRp.y * radius
+    ctx.fillStyle = `rgba(14, 116, 144, ${(0.26 * polarVisibility).toFixed(3)})`
+    ctx.beginPath()
+    ctx.ellipse(
+      fsx,
+      fsy + 1.0,
+      Math.max(3.5, radius * 0.022),
+      Math.max(1.8, radius * 0.012),
+      0,
+      0,
+      Math.PI * 2
+    )
+    ctx.fill()
+  }
+
+  // Snow/ice anchor mound at base of flagpole
   addLocalBoxQuads(
     quads,
-    glacierToWorld,
-    glacierToWorldDir,
-    -0.55,
-    0.55,
-    -0.52,
-    0.52,
+    flagToWorld,
+    flagToWorldDir,
+    -0.28,
+    0.28,
+    -0.28,
+    0.28,
     0.0,
-    1.28,
+    0.18,
     [224, 242, 254],
-    glacierStroke,
-    0.46,
-    0.88
+    `rgba(56, 189, 248, ${(0.5 * polarVisibility).toFixed(3)})`,
+    0.65,
+    1.0
   )
-  // Secondary side tabular ice crystal block
+
+  // Slender 3D Vertical Flagpole
   addLocalBoxQuads(
     quads,
-    glacierToWorld,
-    glacierToWorldDir,
-    -0.25,
-    0.68,
-    0.35,
-    1.05,
-    0.0,
-    0.78,
-    [186, 230, 253],
-    glacierStroke,
-    0.62,
-    0.92
+    flagToWorld,
+    flagToWorldDir,
+    -0.055,
+    0.055,
+    -0.055,
+    0.055,
+    0.15,
+    1.86,
+    [241, 245, 249],
+    `rgba(100, 116, 139, ${(0.6 * polarVisibility).toFixed(3)})`
   )
+
+  // Golden Finial Ball at the top of the flagpole
+  addLocalBoxQuads(
+    quads,
+    flagToWorld,
+    flagToWorldDir,
+    -0.1,
+    0.1,
+    -0.1,
+    0.1,
+    1.86,
+    2.04,
+    [251, 191, 36]
+  )
+
+  // 3-Segment Fluttering 3D Red Flag waving in the polar wind
+  const flagSegs = 3
+  const flagStartF = 0.055
+  const flagTotalLen = 1.18
+  const flagSegLen = flagTotalLen / flagSegs
+  const flagRedStroke = `rgba(185, 28, 28, ${(0.65 * polarVisibility).toFixed(3)})`
+
+  for (let s = 0; s < flagSegs; s++) {
+    const f0 = flagStartF + s * flagSegLen
+    const f1 = flagStartF + (s + 1) * flagSegLen
+    const waveR = Math.sin(pulsePhase * 5.2 - s * 1.15) * (0.04 + s * 0.07)
+    const verticalFlutter = Math.cos(pulsePhase * 5.2 - s * 1.15) * (s * 0.025)
+    // Slight taper toward the fly end of the flag
+    const halfH = 0.31 - s * 0.025
+    const uMid = 1.48 + verticalFlutter
+
+    addLocalBoxQuads(
+      quads,
+      flagToWorld,
+      flagToWorldDir,
+      f0,
+      f1,
+      waveR - 0.045,
+      waveR + 0.045,
+      uMid - halfH,
+      uMid + halfH,
+      s % 2 === 0 ? [239, 68, 68] : [220, 38, 38],
+      flagRedStroke
+    )
+  }
 
   // 5. Two Strolling 3D Penguins ("뒤뚱뒤뚱" waddling side-by-side / companion trail)
   const baseLonDeg = ((pulsePhase * 17) % 360) - 180
@@ -1987,6 +2053,39 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   useEffect(() => {
     isSpinningRef.current = isSpinning
   }, [isSpinning])
+
+  // Spacebar shortcut to toggle globe play / pause
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' && e.key !== ' ') return
+      if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return
+
+      const target = e.target as HTMLElement | null
+      if (target) {
+        const tag = target.tagName
+        if (
+          tag === 'INPUT' ||
+          tag === 'TEXTAREA' ||
+          tag === 'SELECT' ||
+          target.isContentEditable ||
+          target.closest('[role="listbox"]')
+        ) {
+          return
+        }
+      }
+
+      e.preventDefault()
+      targetRotationRef.current = null
+      setIsSpinning((prev) => {
+        const next = !prev
+        if (next) setActivePreset('auto')
+        return next
+      })
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     hoveredHubIdRef.current = hoveredHubId
@@ -2974,6 +3073,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
+            title={lang === 'ko' ? '일시정지 / 재생 (Space)' : 'Pause / Play (Space)'}
             onClick={() => {
               targetRotationRef.current = null
               setIsSpinning((s) => !s)
