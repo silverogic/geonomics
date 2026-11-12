@@ -3062,7 +3062,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               }`}
             >
               <BarChart3 className="w-3 h-3" />
-              <span>GDP</span>
+              <span>{t('globeDisplayModeGdp')}</span>
             </button>
             <button
               type="button"
