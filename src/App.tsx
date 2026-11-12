@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertCircle, GitCompare, X } from 'lucide-react'
 import { COUNTRIES } from './data/countries'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, EconomicYear, InterestRateInfo } from './types/economics'
@@ -30,12 +31,15 @@ import {
 } from './utils/locale'
 
 export function App() {
+  const { i18n } = useTranslation()
+
   // Localization: Auto-detected from browser locale or restored from localStorage
   const [lang, setLangState] = useState<Language>(() => detectBrowserLanguage())
 
   const setLang = (newLang: Language) => {
     setLangState(newLang)
     saveLanguagePreference(newLang)
+    i18n.changeLanguage(newLang)
   }
 
   // Base currency: Auto-detected based on regional hints or restored from localStorage
@@ -48,7 +52,10 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.lang = lang
-  }, [lang])
+    if (i18n.language !== lang) {
+      i18n.changeLanguage(lang)
+    }
+  }, [lang, i18n])
 
   const t = translations[lang]
   const [activeTab, setActiveTab] = useState<'globe' | 'cards' | 'heatmap' | 'news'>('globe')

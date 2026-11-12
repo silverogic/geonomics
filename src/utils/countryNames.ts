@@ -657,14 +657,60 @@ export const CURRENCY_NAMES_ZH: Record<string, string> = {
   BAM: '波黑可兑换马克',
 }
 
+const regionDisplayNamesCache = new Map<string, Intl.DisplayNames>()
+const currencyDisplayNamesCache = new Map<string, Intl.DisplayNames>()
+
+function getRegionDisplayNames(lang: string): Intl.DisplayNames | null {
+  if (typeof Intl === 'undefined' || !Intl.DisplayNames) return null
+  if (!regionDisplayNamesCache.has(lang)) {
+    try {
+      regionDisplayNamesCache.set(lang, new Intl.DisplayNames([lang], { type: 'region' }))
+    } catch {
+      return null
+    }
+  }
+  return regionDisplayNamesCache.get(lang) || null
+}
+
+function getCurrencyDisplayNames(lang: string): Intl.DisplayNames | null {
+  if (typeof Intl === 'undefined' || !Intl.DisplayNames) return null
+  if (!currencyDisplayNamesCache.has(lang)) {
+    try {
+      currencyDisplayNamesCache.set(lang, new Intl.DisplayNames([lang], { type: 'currency' }))
+    } catch {
+      return null
+    }
+  }
+  return currencyDisplayNamesCache.get(lang) || null
+}
+
 /**
  * Returns country display name based on current language.
+ * Uses native browser Intl.DisplayNames with fallback to curated and metadata names.
  */
 export function getCountryName(country: CountryMeta, lang: Language): string {
   if (lang === 'ko') return country.nameKo
-  if (lang === 'ja') return COUNTRY_NAMES_JA[country.id] || country.nameJa || country.nameEn
-  if (lang === 'es') return COUNTRY_NAMES_ES[country.id] || country.nameEs || country.nameEn
-  if (lang === 'zh') return COUNTRY_NAMES_ZH[country.id] || country.nameZh || country.nameEn
+  if (lang === 'en') return country.nameEn
+
+  // 1. Check curated manual overrides
+  if (lang === 'ja' && COUNTRY_NAMES_JA[country.id]) return COUNTRY_NAMES_JA[country.id]
+  if (lang === 'es' && COUNTRY_NAMES_ES[country.id]) return COUNTRY_NAMES_ES[country.id]
+  if (lang === 'zh' && COUNTRY_NAMES_ZH[country.id]) return COUNTRY_NAMES_ZH[country.id]
+
+  // 2. Native browser Intl translation for ANY language (e.g. Hindi, French, German)
+  if (country.iso2) {
+    const resolver = getRegionDisplayNames(lang)
+    if (resolver) {
+      try {
+        const resolved = resolver.of(country.iso2)
+        if (resolved) return resolved
+      } catch {}
+    }
+  }
+
+  if (lang === 'ja') return country.nameJa || country.nameEn
+  if (lang === 'es') return country.nameEs || country.nameEn
+  if (lang === 'zh') return country.nameZh || country.nameEn
   return country.nameEn
 }
 
@@ -678,12 +724,31 @@ export function getCountrySecondaryName(country: CountryMeta, lang: Language): s
 
 /**
  * Returns currency display name based on current language.
+ * Uses native browser Intl.DisplayNames with fallback to curated and metadata names.
  */
 export function getCurrencyName(country: CountryMeta, lang: Language): string {
   if (lang === 'ko') return country.currencyNameKo
-  if (lang === 'ja') return CURRENCY_NAMES_JA[country.currencyCode] || country.currencyNameJa || country.currencyNameEn
-  if (lang === 'es') return CURRENCY_NAMES_ES[country.currencyCode] || country.currencyNameEs || country.currencyNameEn
-  if (lang === 'zh') return CURRENCY_NAMES_ZH[country.currencyCode] || country.currencyNameZh || country.currencyNameEn
+  if (lang === 'en') return country.currencyNameEn
+
+  // 1. Check curated manual overrides
+  if (lang === 'ja' && CURRENCY_NAMES_JA[country.currencyCode]) return CURRENCY_NAMES_JA[country.currencyCode]
+  if (lang === 'es' && CURRENCY_NAMES_ES[country.currencyCode]) return CURRENCY_NAMES_ES[country.currencyCode]
+  if (lang === 'zh' && CURRENCY_NAMES_ZH[country.currencyCode]) return CURRENCY_NAMES_ZH[country.currencyCode]
+
+  // 2. Native browser Intl translation for ANY language
+  if (country.currencyCode) {
+    const resolver = getCurrencyDisplayNames(lang)
+    if (resolver) {
+      try {
+        const resolved = resolver.of(country.currencyCode)
+        if (resolved) return resolved
+      } catch {}
+    }
+  }
+
+  if (lang === 'ja') return country.currencyNameJa || country.currencyNameEn
+  if (lang === 'es') return country.currencyNameEs || country.currencyNameEn
+  if (lang === 'zh') return country.currencyNameZh || country.currencyNameEn
   return country.currencyNameEn
 }
 

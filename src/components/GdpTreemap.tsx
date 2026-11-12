@@ -447,9 +447,9 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                         </div>
                         <div className="text-[10px] leading-tight text-slate-300/90 font-mono font-medium truncate">
                           {metric === 'debt' && p.totalDebtUsd ? (
-                            <span>{formatGdpCompact(p.totalDebtUsd, baseCurrency, usdToBase, lang)} {lang === 'ko' ? '부채' : 'Debt'}</span>
+                            <span>{formatGdpCompact(p.totalDebtUsd, baseCurrency, usdToBase, lang)} {t.globeDebtRatio}</span>
                           ) : (
-                            <span>{sharePct.toFixed(1)}% {lang === 'ko' ? '세계 점유' : 'of World'}</span>
+                            <span>{sharePct.toFixed(1)}% {t.ofWorld}</span>
                           )}
                         </div>
                       </div>
@@ -466,7 +466,7 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
                           <span className="text-[10px] leading-none text-slate-400 font-mono">-</span>
                         )}
                         <span className="text-[9px] leading-none font-mono text-slate-400 truncate">
-                          {lang === 'ko' ? `전년비` : `YoY`}
+                          {t.yoy}
                         </span>
                       </div>
                     </div>
@@ -619,11 +619,7 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
       {/* 3. DYNAMIC YOY LEGEND */}
       <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2 text-indigo-400 font-bold">
-          <span>
-            {lang === 'ko'
-              ? `전년(${prevYearStr}년) 대비 증감률`
-              : `YoY Growth Rate (vs. ${prevYearStr})`}
-          </span>
+          <span>{t.yoyGrowth} ({prevYearStr})</span>
         </div>
 
         {metric === 'debt' ? (
@@ -632,17 +628,17 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded bg-[#881337] shadow-sm"></span>
               <span className="text-slate-300 font-mono font-medium">&gt; +5.0%</span>
-              <span className="text-[10px] text-rose-400">({lang === 'ko' ? '부채 급증' : 'High Surge'})</span>
+              <span className="text-[10px] text-rose-400">({t.debtSurge})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded bg-[#713f12] shadow-sm"></span>
               <span className="text-slate-300 font-mono font-medium">0% ~ +5.0%</span>
-              <span className="text-[10px] text-amber-300">({lang === 'ko' ? '부채 증가' : 'Increase'})</span>
+              <span className="text-[10px] text-amber-300">({t.debtIncrease})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
               <span className="text-slate-300 font-mono font-medium">&le; 0%</span>
-              <span className="text-[10px] text-emerald-400">({lang === 'ko' ? '부채 건전화/감소' : 'Fiscal Health'})</span>
+              <span className="text-[10px] text-emerald-400">({t.debtFiscalHealth})</span>
             </div>
           </div>
         ) : (
@@ -651,22 +647,22 @@ ${p.totalDebtUsd ? `Total Gov Debt: ${formatGdpCompact(p.totalDebtUsd, baseCurre
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
               <span className="text-slate-300 font-mono font-medium">&ge; +5.0%</span>
-              <span className="text-[10px] text-emerald-400">({lang === 'ko' ? '고성장' : 'High Growth'})</span>
+              <span className="text-[10px] text-emerald-400">({t.growthHigh})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded bg-[#065f46] shadow-sm"></span>
               <span className="text-slate-300 font-mono font-medium">+2.0% ~ +5.0%</span>
-              <span className="text-[10px] text-emerald-300">({lang === 'ko' ? '견고' : 'Solid'})</span>
+              <span className="text-[10px] text-emerald-300">({t.growthSolid})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded bg-[#1e293b] border border-slate-700 shadow-sm"></span>
               <span className="text-slate-300 font-mono font-medium">0.0% ~ +2.0%</span>
-              <span className="text-[10px] text-slate-400">({lang === 'ko' ? '보합/저성장' : 'Moderate'})</span>
+              <span className="text-[10px] text-slate-400">({t.growthModerate})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded bg-[#881337] shadow-sm"></span>
               <span className="text-slate-300 font-mono font-medium">&lt; 0.0%</span>
-              <span className="text-[10px] text-rose-400">({lang === 'ko' ? '역성장/감소' : 'Contraction'})</span>
+              <span className="text-[10px] text-rose-400">({t.growthContraction})</span>
             </div>
           </div>
         )}

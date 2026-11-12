@@ -356,7 +356,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     if (lang === 'ja') return `${selectedRegions.length}地域`
     if (lang === 'es') return `${selectedRegions.length} regiones`
     if (lang === 'zh') return `${selectedRegions.length}个大洲`
-    return `${selectedRegions.length} Regions`
+    return `${selectedRegions.length} ${t.mapRegion}`
   }
 
   const getMetricLabel = (m: MapMetric) => {
@@ -458,7 +458,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               >
                 <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5 shrink-0">
                   <Filter className="w-3.5 h-3.5 text-indigo-400" />
-                  <span className="hidden sm:inline">{lang === 'ko' ? '대륙' : lang === 'ja' ? '地域' : lang === 'es' ? 'Región' : lang === 'zh' ? '大洲' : 'Region'}:</span>
+                  <span className="hidden sm:inline">{t.mapRegion}:</span>
                 </span>
                 <span className="text-slate-100 font-bold max-w-[110px] sm:max-w-[180px] truncate">
                   {getRegionButtonLabel()}
@@ -488,7 +488,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                         }`}>
                         {isAllRegions && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
-                      <span>{t.filterAll} ({lang === 'ko' ? '전체 대륙' : 'All Regions'})</span>
+                      <span>{t.filterAll} ({t.mapRegion})</span>
                     </div>
                     <span className="text-[10px] text-slate-400 font-mono">{items.length}</span>
                   </button>
@@ -560,11 +560,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                   {/* 1-second Long-press Discovery Tip */}
                   <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-950/40 border border-indigo-900/30 text-[10px] text-indigo-300/80 flex items-center justify-center gap-1.5">
                     <Lightbulb className="w-3 h-3 text-indigo-400 shrink-0" />
-                    <span>
-                      {lang === 'ko'
-                        ? '길게 누르면 해당 대륙만 단독 선택'
-                        : 'Hold for long to select only this region'}
-                    </span>
+                    <span>{t.mapLongPressTip}</span>
                   </div>
 
                   {/* Quick Actions Footer */}
@@ -574,7 +570,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       onClick={handleSelectAllRegions}
                       className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors py-1 px-1.5 rounded hover:bg-indigo-950/40 cursor-pointer"
                     >
-                      {lang === 'ko' ? '전체 선택' : lang === 'ja' ? '全選択' : lang === 'es' ? 'Seleccionar todo' : lang === 'zh' ? '全选' : 'Select All'}
+                      {t.mapSelectAll}
                     </button>
                     <button
                       type="button"
@@ -583,7 +579,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
                       }}
                       className="text-slate-400 hover:text-slate-200 transition-colors py-1 px-1.5 rounded hover:bg-slate-800/40 cursor-pointer"
                     >
-                      {lang === 'ko' ? '초기화' : lang === 'ja' ? 'リセット' : lang === 'es' ? 'Restablecer' : lang === 'zh' ? '重置' : 'Reset'}
+                      {t.mapReset}
                     </button>
                   </div>
                 </div>

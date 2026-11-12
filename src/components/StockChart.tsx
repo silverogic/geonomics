@@ -14,6 +14,7 @@ import {
 import { Line } from 'react-chartjs-2'
 import { TrendingUp, TrendingDown, ShieldAlert } from 'lucide-react'
 import type { Language } from '../types/economics'
+import { translations } from '../i18n/translations'
 import { getStockPriceData } from '../data/stockPrices'
 import { fetchLiveStocks } from '../services/liveStockApi'
 
@@ -38,6 +39,7 @@ export const StockChart: React.FC<StockChartProps> = ({
   countryId,
   lang = 'en',
 }) => {
+  const t = translations[lang]
   const [, setLiveTick] = React.useState(0)
   React.useEffect(() => {
     let mounted = true
@@ -245,23 +247,14 @@ export const StockChart: React.FC<StockChartProps> = ({
                   ? 'text-emerald-400/90 bg-slate-900 border border-emerald-500/20'
                   : 'text-rose-400/90 bg-slate-900 border border-rose-500/20'
               }`}
-              title={lang === 'ko' ? '최근 30거래일 누적 등락률' : '30-Day Cumulative Trend'}
+              title={t.trend30dTitle}
             >
               <span className="text-[10px] text-slate-500">30D:</span>
               <span>{display30dChange >= 0 ? '+' : ''}{display30dChange.toFixed(2)}%</span>
             </div>
           </div>
           <span className="text-[11px] text-slate-500">
-            {lang === 'ko'
-              ? '전일 대비 1일 등락률'
-              : lang === 'ja'
-              ? '前日比（1日）騰落率'
-              : lang === 'es'
-              ? 'Variación diaria (1 día)'
-              : lang === 'zh'
-              ? '较前一交易日涨跌幅 (1日)'
-              : 'Daily Change (1-Day)'}{' '}
-            · 30D ({startDate} ~ {endDate})
+            {t.dailyChange} · 30D ({startDate} ~ {endDate})
           </span>
         </div>
 
@@ -269,7 +262,7 @@ export const StockChart: React.FC<StockChartProps> = ({
         <div className="flex items-center gap-4 text-xs">
           <div className="bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-right">
             <span className="text-[10px] text-slate-500 block">
-              {lang === 'ko' ? '30일 최고' : lang === 'ja' ? '30日最高' : lang === 'es' ? 'Máx 30D' : lang === 'zh' ? '30日最高' : '30D High'}
+              {t.high30d}
             </span>
             <span className="font-mono font-semibold text-slate-200">
               {maxPrice.toLocaleString()}
@@ -277,7 +270,7 @@ export const StockChart: React.FC<StockChartProps> = ({
           </div>
           <div className="bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-right">
             <span className="text-[10px] text-slate-500 block">
-              {lang === 'ko' ? '30일 최저' : lang === 'ja' ? '30日最安' : lang === 'es' ? 'Mín 30D' : lang === 'zh' ? '30日最低' : '30D Low'}
+              {t.low30d}
             </span>
             <span className="font-mono font-semibold text-slate-200">
               {minPrice.toLocaleString()}

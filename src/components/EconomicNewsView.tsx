@@ -134,6 +134,20 @@ const QUICK_PICKS: Array<{
   },
 ]
 
+const relativeTimeFormatCache = new Map<string, Intl.RelativeTimeFormat>()
+
+function getRelativeTimeFormatter(lang: string): Intl.RelativeTimeFormat | null {
+  if (typeof Intl === 'undefined' || !Intl.RelativeTimeFormat) return null
+  if (!relativeTimeFormatCache.has(lang)) {
+    try {
+      relativeTimeFormatCache.set(lang, new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }))
+    } catch {
+      return null
+    }
+  }
+  return relativeTimeFormatCache.get(lang) || null
+}
+
 function formatRelativeTime(isoString: string, lang: Language): string {
   const date = new Date(isoString)
   if (isNaN(date.getTime())) return ''
@@ -142,24 +156,15 @@ function formatRelativeTime(isoString: string, lang: Language): string {
   const diffHours = Math.floor(diffMins / 60)
   const diffDays = Math.floor(diffHours / 24)
 
-  if (diffMins < 60) {
-    if (lang === 'ko') return `${diffMins}분 전`
-    if (lang === 'ja') return `${diffMins}分前`
-    if (lang === 'zh') return `${diffMins}分钟前`
-    if (lang === 'es') return `hace ${diffMins} min`
-    return `${diffMins}m ago`
+  const rtf = getRelativeTimeFormatter(lang)
+  if (rtf) {
+    if (diffMins < 60) return rtf.format(-diffMins, 'minute')
+    if (diffHours < 24) return rtf.format(-diffHours, 'hour')
+    return rtf.format(-diffDays, 'day')
   }
-  if (diffHours < 24) {
-    if (lang === 'ko') return `${diffHours}시간 전`
-    if (lang === 'ja') return `${diffHours}時間前`
-    if (lang === 'zh') return `${diffHours}小时前`
-    if (lang === 'es') return `hace ${diffHours} h`
-    return `${diffHours}h ago`
-  }
-  if (lang === 'ko') return `${diffDays}일 전`
-  if (lang === 'ja') return `${diffDays}日前`
-  if (lang === 'zh') return `${diffDays}天前`
-  if (lang === 'es') return `hace ${diffDays} d`
+
+  if (diffMins < 60) return `${diffMins}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
   return `${diffDays}d ago`
 }
 

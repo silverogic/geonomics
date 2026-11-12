@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { Maximize2, Minimize2, TrendingUp, TrendingDown } from 'lucide-react'
 import type { CountryMeta, BaseCurrency, Language } from '../types/economics'
+import { translations } from '../i18n/translations'
 import { formatStockMarketCap } from '../data/stockMarketCaps'
 import { computeSquarifiedTreemap, type TreemapRect } from '../utils/squarifiedTreemap'
 import { CountryFlag } from './CountryFlag'
@@ -109,6 +110,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
   showZoomBtn = false,
   hideHeader = false,
 }) => {
+  const t = translations[lang]
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(1200)
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null)
@@ -219,7 +221,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
       >
         {items.length === 0 ? (
           <div className="flex items-center justify-center h-full text-slate-400 text-xs font-medium">
-            {lang === 'ko' ? '조건에 일치하는 종목 데이터가 없습니다.' : 'No company data matches the criteria.'}
+            {t.noCompanyData}
           </div>
         ) : (
           rects.map((rect) => {
@@ -477,7 +479,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
             <div className="mt-3 pt-2.5 border-t border-slate-800/90 grid grid-cols-2 gap-2">
               <div className="bg-slate-900/80 rounded-lg p-2 border border-slate-800/70">
                 <div className="text-[10px] text-slate-400 font-medium">
-                  {lang === 'ko' ? '시가총액' : 'Market Cap'}
+                  {t.globeMarketCap}
                 </div>
                 <div className="text-xs font-mono font-black text-white mt-0.5">
                   {formatStockMarketCap(
@@ -489,7 +491,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                 </div>
                 {hoveredItem.nationalCapUsd > 0 && (
                   <div className="text-[10px] text-indigo-400 font-mono mt-0.5">
-                    {lang === 'ko' ? '자국 증시 비중' : 'National Share'}{' '}
+                    {t.globeNationalShare}{' '}
                     {Math.min(
                       99.9,
                       (hoveredItem.company.marketCapUsd / hoveredItem.nationalCapUsd) * 100
@@ -501,7 +503,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
 
               <div className="bg-slate-900/80 rounded-lg p-2 border border-slate-800/70">
                 <div className="text-[10px] text-slate-400 font-medium">
-                  {lang === 'ko' ? '현재 주가' : 'Share Price'}
+                  {t.globeSharePrice}
                 </div>
                 <div className="text-xs font-mono font-black text-white mt-0.5">
                   {hoveredItem.company.price > 0

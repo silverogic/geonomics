@@ -2,7 +2,7 @@
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/silverogic/geonomics)
 
-🌐 **Languages**: **English** | [한국어 (Korean)](./README.ko.md) | [中文 (Chinese)](./README.zh.md)
+**Languages**: **English** | [한국어 (Korean)](./README.ko.md) | [中文 (Chinese)](./README.zh.md)
 
 **Geonomics** is a serverless, client-side macroeconomic and financial market intelligence platform hosted on GitHub Pages. It synthesizes official **IMF World Economic Outlook (WEO)** and **World Bank** indicators, real-time foreign exchange rates, global equity market capitalizations, benchmark stock indices, central bank policy rates, retail gasoline prices, and **The Economist Big Mac Index (PPP)** across **125 economies**—with zero backend database overhead.
 
@@ -10,9 +10,20 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 1. Global Economic Map & Macroeconomic Explorer (`GdpWorldMap`)
+### 1. Interactive 3D Financial & Economic Globe (`FinancialGlobeView`)
+- **Three Core Analytical Modes**:
+  - **GDP Mode**: 6-tier choropleth terrain elevation with dedicated **Top 5 Amber Tier** (Top 1–2 in rich gold `#fbbf24`, Top 3–5 in pale amber `#fde68a`), front spotlight strip, and delayed hover card expansion displaying national **Debt-to-GDP Ratio** with a visual status bar.
+  - **Stocks Mode**: 3D leader beacons and live equity index price/performance, expanding on hover to reveal an embedded **30-Day Trend Sparkline**.
+  - **FX Mode**: Real-time currency exchange rates against the selected base currency, expanding on hover to display the national **Central Bank Policy Rate** with institution abbreviation badges (Fed, BOK, ECB, BOJ, PBOC, etc.).
+- **Smooth Interaction & Physics**:
+  - **Auto-Orbit & Spacebar Toggle**: Continuous smooth rotation with keyboard shortcut (`Space`) to pause/resume.
+  - **Region Quick-Jump Presets**: One-click smooth animation to focus on `Asia`, `Europe`, `Americas`, `Oceania`, or `Auto Orbit`.
+  - **2D Collision Relaxation**: Prevents floating country cards from overlapping regardless of angle or zoom.
+  - **3D Polar Easter Eggs**: Discoverable interactive elements at the North Pole (Arctic Igloo) and South Pole (Antarctic Flagpole).
+
+### 2. Global Economic Map & Macroeconomic Explorer (`GdpWorldMap`)
 - **Dual Visualization Modes**:
   - **Squarified Macroeconomic Heatmap (`GdpTreemap`, Default)**: Partitions global economic scale (Total GDP or National Debt volume) proportionally using the Bruls–Huizing–van Wijk squarified treemap algorithm, color-coded by YoY growth/change rate with world share % and mobile-safe adaptive typography.
   - **53×28 Pixel Tile World Map (`TileWorldMap`)**: Interactive grid world map supporting 7 color-coded indicator modes (**Total GDP**, **GDP per Capita**, **Real Growth Rate**, **Gov Debt Ratio**, **Inflation Rate**, **Gasoline Price**, **Big Mac PPP Index**) with zero-re-render `requestAnimationFrame` floating tooltips.
@@ -20,41 +31,44 @@ Geonomics also publishes **free, open static REST API v1 endpoints** updated aut
 - **Multi-Horizon Time Travel**: Switch seamlessly across **Actual ($Y-2$)**, **Estimate ($Y-1$)**, and **Projection ($Y$)** horizons (e.g., 2024 Actual / 2025 Estimate / 2026 Projection).
 - **Responsive UX**: Includes a live Economy Inspector HUD sidebar on desktop/tablet screens (automatically hidden on mobile `< 640px` to minimize cognitive load).
 
-### 2. Global Stock Market Heatmap (`StockHeatmap`)
+### 3. Global Stock Market Heatmap (`StockHeatmap`)
 - **~$144T+ Global Equity Universe**: Visualizes domestic equity market capitalization across 125 countries using a responsive squarified treemap.
 - **TradingView Representative Mainboard Valuation Engine**: Aggregates primary-listed common stock market capitalizations across 72 national mainboard exchanges via the **TradingView Global Scanner API** (with curated baselines for smaller economies) and scales dynamically with **Yahoo Finance live index quotes**.
 - **Unified & 5-Continent Split Modes**: Toggle between a single global canvas and a 5-continent comparative grid (`Americas`, `Asia`, `Europe`, `Oceania`, `Africa`).
 - **Zen Fullscreen Immersion & Floating Glassmorphic HUD**: Single-line control bar, one-click fullscreen mode, and hover HUD with 30-day index sparklines (`StockSparkline`), live index price, live market cap valuation, and **live Top 5 companies by market cap** (company logo, name, market cap, and 24h change %).
 - **Near-Real-Time Quotes (Cloudflare Worker Proxy)**: When `VITE_STOCK_PROXY_URL` is set, intraday quotes are refreshed every 60 seconds with a `LIVE` badge in the heatmap toolbar, and `LIVE` / `CLOSED` market-state badges in the country modal stock chart. Yahoo Finance blocks direct browser calls (CORS), so a small Worker (`workers/stock-proxy`) relays requests with a 60s edge cache and an origin allow-list. If the proxy is unavailable, the app falls back to the prebuilt static data.
 
-### 3. Interactive Ranking Table (`RankingTable`)
+### 4. Interactive Ranking Table (`RankingTable`)
 - **Category Switcher**: Filter columns by **Macroeconomic** (Total GDP, GDP per Capita, Real Growth, Inflation, Gov Debt), **Market & Finance** (FX Rate, Stock Index & 30D Sparkline, Central Bank Policy Rate, Retail Fuel Price, Big Mac Index), or **All Metrics** (12 sortable columns).
 - **Floating Sticky Dock**: Automatically docks the search bar and table headers below the navbar while scrolling, with frozen sticky rank and country columns on horizontal scroll.
 
-### 4. 1:1 Economy Comparison (`CompareView`)
+### 5. 1:1 Economy Comparison (`CompareView`)
 - **Side-by-Side Benchmarking**: Compare any two countries with one-click rivalry presets (`USA vs CHN`, `KOR vs JPN`, `DEU vs GBR`, `IND vs JPN`, etc.).
 - **Scale Multiples & Spreads**: Automatically computes GDP scale multiples, GDP per capita ratios, central bank interest rate spreads, bilateral FX cross-rates, Big Mac PPP valuations, and dual 10-year historical trajectory charts (`GdpChart`).
 - **Mobile-Optimized Head-to-Head Matrix**: A symmetric 1:1 metric matrix with a sticky country header (e.g. "USA vs CHN") that stays pinned under the navbar while scrolling; the `VS` badge doubles as a one-tap swap button.
 - **Side-by-Side Top 5 Market Cap Companies Comparison**: Directly compares the Top 5 flagship companies of Country A and Country B (with official logos, tickers, localized sectors, live market caps in the selected base currency, 24h change %, and 100% national market share stacked bars).
 
-### 5. Country & Sector Customized Economic News (`EconomicNewsView`)
+### 6. Country & Sector Customized Economic News (`EconomicNewsView`)
 - **Global Wire RSS News Aggregation (`newsApi.ts`)**: Collects and normalizes live articles from the **Reuters/Bloomberg/CNBC/FT Wire RSS Pool** (`laapy/reuters-bloomberg-news-rss-pool`, 800+ deduplicated wire articles with summaries), with non-blocking timeout guards and country/sector tagging.
 - **Country × Sector & Custom Keyword Search**: Explore targeted economic articles for any country across **6 industry/macro themes** (**All Economy & Business**, **Semiconductors & AI**, **Rates, FX & Inflation**, **Energy, EV & Battery**, **Trade, Tariffs & Supply Chain**, **Stocks & Corporate**) or type custom keywords in any supported language (automatically translated to English for global querying).
 - **Financial Domain Real-Time Translation Pipeline**: Translates English wire headlines and summaries on-the-fly into Korean, Japanese, Spanish, and Chinese using ALL-CAPS headline normalization, a 60+ Wall Street idiom pre-glossary, and natural financial terminology post-processing, with instant **View Original (EN) / Auto-Translate** toggling and original English hover tooltips.
 
-### 6. Country Deep-Dive Modal (`CountryModal`)
+### 7. Country Deep-Dive Modal (`CountryModal`)
 - **All-in-One Country Profile**: Displays 10-year historical macroeconomic trajectory charts (`GdpChart`), 30-day stock index performance charts (`StockChart`), an interactive two-way **Currency Converter (`CurrencyConverter`)**, central bank policy rate, fuel price, and Big Mac PPP valuation.
 - **100% Dynamic Runtime Top 5 Companies by Market Cap (`topCompaniesApi.ts`)**: Queries the **TradingView Global Scanner API** on-demand at runtime (zero static JSON storage, 2-minute in-memory TTL cache) to display each country's live Top 5 companies with borderless official SVG logos (`CompanyLogo`), tickers, localized industry sectors, live market cap in `baseCurrency`, 24h price change %, and a **Unified 100% Market Share Stacked Bar (`TopCompaniesStackedBar`)** visualizing Top 1–5 concentration vs. the rest of the market.
 - **Strict 72-Exchange & Benchmark Index Verification**: Enforces a 72-country domestic exchange whitelist (`COUNTRY_DOMESTIC_EXCHANGES`) and index membership rules (e.g. strictly `KRX:KOSPI` excluding `KOSDAQ` for South Korea, `SP:SPX` for the US, `TWSE` main board for Taiwan, `SSE`/`SZSE` A-shares for mainland China, `HKEX` for Hong Kong) while deduplicating dual-class shares by normalized company name so conglomerate affiliates (e.g. Samsung Electronics vs. Samsung Biologics) are accurately preserved.
 
-### 7. Multi-Currency & 5-Language Localization (i18n)
+### 8. Multi-Currency & Modernized Localization Architecture (i18n)
 - **8 Base Currencies**: `USD ($)`, `EUR (€)`, `KRW (₩)`, `JPY (¥)`, `GBP (£)`, `CNY (¥)`, `CHF`, and `AUD (A$)` with native unit formatting (`조/억/만 원`, `兆/億/万円`, `万亿/亿/万元`, `T/B/M`).
-- **5 Languages**: English (`en`), Korean (`ko`), Japanese (`ja`), Spanish (`es`), and Chinese (`zh`), with automatic browser locale and regional currency detection (`src/utils/locale.ts`).
-- **Streamlined Header & 777 FX Slot Reel (`Navbar`, `TickerBar`)**: Features a borderless open desktop navigation bar with gradient active indicators, unified 36px (`h-9`) control height across the localized 777 slot-machine FX reel and selectors, and a unified mobile language + currency quick-switch popover (`[ 🇰🇷 KO · ₩ ▾ ]`).
+- **5 Supported Languages**: English (`en`), Korean (`ko`), Japanese (`ja`), Spanish (`es`), and Chinese (`zh`), with automatic browser locale and regional currency detection (`src/utils/locale.ts`).
+- **Standardized i18n Architecture**:
+  - Powered by **`i18next` & `react-i18next`** with synchronized reactive state.
+  - Leverages native browser **`Intl.DisplayNames`** and **`Intl.RelativeTimeFormat`** for zero-bundle-overhead localization of all global country and currency names without static dictionary bloat.
+- **Streamlined Header & 777 FX Slot Reel (`Navbar`, `TickerBar`)**: Features a borderless open desktop navigation bar with gradient active indicators, unified 36px (`h-9`) control height across the localized 777 slot-machine FX reel and selectors, and a unified mobile language + currency quick-switch popover (`[ KO · ₩ ▾ ]`).
 
 ---
 
-## 📡 Open REST API v1
+## Open REST API v1
 
 Geonomics serves static JSON REST API v1 endpoints via GitHub Pages CDN. No API keys or authentication required.
 
@@ -110,7 +124,7 @@ console.log(marketCaps.caps['USA'])
 
 ---
 
-## 🧭 System Overview
+## System Overview
 
 Static data is prebuilt by GitHub Actions and served from GitHub Pages. The browser additionally pulls live FX rates and news directly, and near-real-time stock quotes through a small Cloudflare Worker proxy (Yahoo Finance does not allow direct browser calls due to CORS). If the proxy is unavailable, the app falls back to the prebuilt static data.
 
@@ -155,7 +169,7 @@ flowchart LR
   WEB -. "Top 5 companies (live)" .-> S7
 ```
 
-## 🗂️ Project Architecture
+## Project Architecture
 
 ```text
 geonomics/
@@ -172,9 +186,9 @@ geonomics/
 ├── workers/
 │   └── stock-proxy/             # Cloudflare Worker: near-real-time stock quote proxy (CORS + 60s cache)
 └── src/
-    ├── components/              # UI Components (GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, TopCompaniesStackedBar, CompanyLogo, Navbar, TickerBar, etc.)
+    ├── components/              # UI Components (FinancialGlobeView, GdpWorldMap, GdpTreemap, TileWorldMap, StockHeatmap, RankingTable, CompareView, EconomicNewsView, CountryModal, TopCompaniesStackedBar, CompanyLogo, Navbar, TickerBar, etc.)
     ├── data/                    # Typed fallback & build-time synchronized datasets
-    ├── i18n/                    # 5-language translation dictionary (en, ko, ja, es, zh)
+    ├── i18n/                    # i18next configuration & multi-language translation dictionary
     ├── services/                # API clients with in-memory TTL caching (worldBankApi, exchangeApi, interestRateApi, stockMarketCapApi, topCompaniesApi, liveStockApi, newsApi, geonomicsApi)
     ├── types/                   # Core TypeScript interfaces (economics.ts)
     └── utils/                   # Squarified treemap layout, currency/number formatters, locale detection, dynamic year helpers
@@ -182,11 +196,12 @@ geonomics/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React 19, TypeScript 6, Vite 8
 - **Styling**: Tailwind CSS v4 (`@tailwindcss/vite`)
-- **Data Visualization**: Custom SVG Squarified Treemap Engine, 53×28 CSS Grid Pixel Map, Chart.js 4 (`react-chartjs-2`)
+- **Internationalization**: `i18next`, `react-i18next`, native `Intl` API
+- **Data Visualization**: 3D Canvas Voxel Engine, Custom SVG Squarified Treemap Engine, 53×28 CSS Grid Pixel Map, Chart.js 4 (`react-chartjs-2`)
 - **Icons & Flags**: `lucide-react`, `country-flag-icons`
 - **Linter**: `oxlint`
 - **Data Pipeline & CI/CD**: Node.js ESM data extractors, `xlsx`, GitHub Actions (daily cron + push deployment to GitHub Pages)
@@ -194,7 +209,7 @@ geonomics/
 
 ---
 
-## 💻 Getting Started Locally
+## Getting Started Locally
 
 ### Prerequisites
 - **Node.js**: v20+ (v22 recommended)
@@ -256,7 +271,7 @@ npm run lint
 
 ---
 
-## 📊 Data Sources & Attribution
+## Data Sources & Attribution
 
 - **Macroeconomic Indicators**: [IMF World Economic Outlook (WEO)](https://www.imf.org/en/Publications/WEO) & [World Bank Open Data](https://data.worldbank.org/)
 - **Foreign Exchange Rates**: [European Central Bank (ECB)](https://www.ecb.europa.eu/) & [Open Exchange Rates API](https://open.er-api.com/)
@@ -269,6 +284,6 @@ npm run lint
 
 ---
 
-## 📄 License
+## License
 
 MIT License. Free for educational, analytical, and commercial use.

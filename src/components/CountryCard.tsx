@@ -169,15 +169,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
                     </span>
                   ) : (
                     <span className="text-[10px] text-slate-400 font-mono">
-                      {lang === 'ko'
-                        ? '제재/조회제한'
-                        : lang === 'ja'
-                        ? '制限地域'
-                        : lang === 'es'
-                        ? 'Restringido'
-                        : lang === 'zh'
-                        ? '限制区域'
-                        : 'Restricted'}
+                      {t.restrictedMarket}
                     </span>
                   )}
                 </div>

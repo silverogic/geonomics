@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Play,
   Pause,
@@ -2045,6 +2046,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   onSelectCountry,
   refreshKey,
 }) => {
+  const { t } = useTranslation()
   const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('gdp')
   const [activePreset, setActivePreset] = useState<RegionPreset>('auto')
   const [isSpinning, setIsSpinning] = useState(true)
@@ -3072,17 +3074,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               }`}
             >
               <TrendingUp className="w-3 h-3" />
-              <span>
-                {lang === 'ko'
-                  ? '증시'
-                  : lang === 'ja'
-                    ? '株価'
-                    : lang === 'zh'
-                      ? '股市'
-                      : lang === 'es'
-                        ? 'Bolsa'
-                        : 'Stocks'}
-              </span>
+              <span>{t('globeDisplayModeStocks')}</span>
             </button>
             <button
               type="button"
@@ -3094,17 +3086,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               }`}
             >
               <Coins className="w-3 h-3" />
-              <span>
-                {lang === 'ko'
-                  ? '환율'
-                  : lang === 'ja'
-                    ? '為替'
-                    : lang === 'zh'
-                      ? '汇率'
-                      : lang === 'es'
-                        ? 'Divisas'
-                        : 'FX'}
-              </span>
+              <span>{t('globeDisplayModeFx')}</span>
             </button>
           </div>
 
@@ -3112,11 +3094,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           <div className="hidden md:flex items-center gap-1">
             {(
               [
-                { id: 'auto', ko: '자동 회전', en: 'Auto Orbit' },
-                { id: 'asia', ko: '아시아', en: 'Asia' },
-                { id: 'europe', ko: '유럽', en: 'Europe' },
-                { id: 'americas', ko: '미주', en: 'Americas' },
-                { id: 'oceania', ko: '오세아니아', en: 'Oceania' },
+                { id: 'auto', labelKey: 'globeAutoOrbit' as const },
+                { id: 'asia', labelKey: 'globeAsia' as const },
+                { id: 'europe', labelKey: 'globeEurope' as const },
+                { id: 'americas', labelKey: 'globeAmericas' as const },
+                { id: 'oceania', labelKey: 'globeOceania' as const },
               ] as const
             ).map((p) => (
               <button
@@ -3129,7 +3111,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                     : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
                 }`}
               >
-                {lang === 'ko' ? p.ko : p.en}
+                {t(p.labelKey)}
               </button>
             ))}
           </div>
@@ -3139,7 +3121,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
-            title={lang === 'ko' ? '일시정지 / 재생 (Space)' : 'Pause / Play (Space)'}
+            title={t('globePausePlay')}
             onClick={() => {
               targetRotationRef.current = null
               setIsSpinning((s) => !s)
@@ -3151,21 +3133,13 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             }`}
           >
             {isSpinning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-            <span>
-              {isSpinning
-                ? lang === 'ko'
-                  ? '회전 중'
-                  : 'Orbiting'
-                : lang === 'ko'
-                  ? '일시정지'
-                  : 'Paused'}
-            </span>
+            <span>{isSpinning ? t('globeOrbiting') : t('globePaused')}</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleSelectPreset('auto')}
-            title={lang === 'ko' ? '기본 회전 초기화' : 'Reset orbit'}
+            title={t('globeResetOrbit')}
             className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -3353,7 +3327,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                     <div className="space-y-1.5 py-0.5">
                       <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono leading-tight">
                         <span className="font-semibold text-slate-200">
-                          {lang === 'ko' ? '부채 비율' : 'Debt Ratio'}
+                          {t('globeDebtRatio')}
                         </span>
                         <span
                           className={`font-black text-[11px] sm:text-xs ${
@@ -3397,7 +3371,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                       <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono leading-tight">
                         <div className="flex items-center gap-1 min-w-0">
                           <span className="font-semibold text-slate-200 shrink-0">
-                            {lang === 'ko' ? '기준금리' : 'Policy Rate'}
+                            {t('globePolicyRate')}
                           </span>
                           {cap.centralBankName && (
                             <span className="text-[8px] sm:text-[9px] font-sans font-medium text-indigo-300/80 bg-indigo-950/60 px-1 py-px rounded border border-indigo-500/30 truncate">
@@ -3443,13 +3417,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       >
         <div className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-300 shrink-0 pr-2 border-r border-slate-800">
           <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <span>
-            {lang === 'ko'
-              ? '현재 정면 포커스 마켓'
-              : lang === 'ja'
-                ? '正面フォーカス市場'
-                : 'Front-Facing Spotlight'}
-          </span>
+          <span>{t('globeSpotlightTitle')}</span>
         </div>
 
         <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 min-w-0">

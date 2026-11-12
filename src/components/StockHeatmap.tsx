@@ -706,7 +706,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                 ? 'bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/30'
                 : 'bg-slate-950/80 border-slate-800 text-slate-400 hover:text-slate-100 hover:bg-slate-800'
             }`}
-            title={isZenMode ? (lang === 'ko' ? '일반 화면으로 복귀' : 'Exit Fullscreen') : (lang === 'ko' ? '전체화면 몰입 모드' : 'Zen Fullscreen Mode')}
+            title={isZenMode ? t.heatmapZenExit : t.heatmapZenEnter}
           >
             {isZenMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
@@ -844,7 +844,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
           <TreemapPanel
             title={
               selectedContinent === 'All'
-                ? (lang === 'ko' ? '글로벌 전체 통합 증시' : 'Global Stock Markets')
+                ? t.globalStockMarkets
                 : selectedContinent
             }
             items={selectedContinent === 'All' ? filteredBySearch : (regionGroups.get(selectedContinent) || [])}
@@ -1009,6 +1009,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
   hideHeader = false,
   flashingCountries,
 }) => {
+  const t = translations[lang]
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(1200)
 
@@ -1191,7 +1192,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
               {hoveredItem.multiplier && hoveredItem.multiplier !== 1.0 && (
                 <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 bg-slate-950/60 px-1.5 py-0.5 rounded border border-slate-800/60">
                   <span>
-                    {lang === 'ko' ? '기준치 대비' : 'vs. Base'}:
+                    {t.heatmapVsBase}:
                   </span>
                   <span className="text-emerald-400 font-bold">
                     {hoveredItem.multiplier > 1.0 ? `+${Math.round((hoveredItem.multiplier - 1) * 100)}%` : `${Math.round((hoveredItem.multiplier - 1) * 100)}%`} ({hoveredItem.multiplier}x)
@@ -1254,7 +1255,7 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
 
         {items.length === 0 ? (
           <div className="flex items-center justify-center h-48 text-slate-400 text-xs font-medium">
-            {lang === 'ko' ? '조건에 일치하는 증시 데이터가 없습니다.' : 'No market data matches the criteria.'}
+            {t.noMarketData}
           </div>
         ) : (
           <svg

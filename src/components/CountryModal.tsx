@@ -166,18 +166,10 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 type="button"
                 onClick={() => onStartCompare(country)}
                 className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-500/40 text-indigo-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
-                title={lang === 'ko' ? '이 국가와 다른 국가 1:1 비교' : 'Compare 1:1 with another country'}
+                title={t.modalCompareBtn}
               >
                 <GitCompare className="w-3.5 h-3.5 shrink-0" />
-                <span>
-                  {lang === 'ko'
-                    ? '1:1 비교'
-                    : lang === 'ja'
-                      ? '1:1 比較'
-                      : lang === 'zh'
-                        ? '1:1 对比'
-                        : 'Compare'}
-                </span>
+                <span>{t.navCompare}</span>
               </button>
             )}
             <button
@@ -328,7 +320,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
               className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-0 overflow-hidden"
               title={
                 prevFxRate
-                  ? `1 ${country.currencyCode} = ${formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency} (${lang === 'ko' ? '전일 종가' : 'Prev Close'}: ${formatExchangeRate(prevFxRate, country.currencyCode === 'KRW' ? 4 : 2)})`
+                  ? `1 ${country.currencyCode} = ${formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency} (${t.prevClose}: ${formatExchangeRate(prevFxRate, country.currencyCode === 'KRW' ? 4 : 2)})`
                   : `1 ${country.currencyCode} = ${formatExchangeRate(fxRate, country.currencyCode === 'KRW' ? 4 : 2)} ${baseCurrency}`
               }
             >

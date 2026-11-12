@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { ChevronDown, Sparkles } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo, CountryMeta } from '../types/economics'
+import { translations } from '../i18n/translations'
 import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
 import { getFxRateColorClass, getFxBadgeColorClass, formatFxChangeBadgeText } from '../utils/formatters'
@@ -153,6 +154,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
   baseCurrency,
   lang,
 }) => {
+  const t = translations[lang]
   const [liveFxQuotes, setLiveFxQuotes] = useState<Record<string, LiveFxQuote>>({})
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
@@ -302,8 +304,8 @@ export const TickerBar: React.FC<TickerBarProps> = ({
   }, null)
 
   const liveTooltipText = latestQuoteEpoch
-    ? `${lang === 'ko' ? '기준' : 'As of'}: ${new Date(latestQuoteEpoch * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
-    : `${lang === 'ko' ? '기준' : 'As of'}: ${exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}`
+    ? `${t.asOf}: ${new Date(latestQuoteEpoch * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
+    : `${t.asOf}: ${exchangeRates.timeLastUpdateUtc.replace('00:00:00', '').trim()}`
 
   return (
     <div ref={popoverRef} className="relative flex items-center shrink-0">
@@ -313,15 +315,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         onMouseLeave={() => setIsPaused(false)}
         onClick={() => setIsPopoverOpen((prev) => !prev)}
         className="h-9 flex items-center gap-1 sm:gap-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-2 sm:px-2.5 text-xs font-medium transition-all select-none shadow-sm cursor-pointer group"
-        title={
-          lang === 'ko'
-            ? '클릭 시 주요 통화 환율 & 기준금리 요약 보기'
-            : lang === 'ja'
-              ? 'クリックで為替レート＆政策金利一覧を表示'
-              : lang === 'zh'
-                ? '点击查看主要汇率与政策利率概览'
-                : 'Click to view key FX & policy rates summary'
-        }
+        title={t.tickerPopoverTooltip}
       >
         {/* Vertical Rolling Slot Reel Window */}
         <div className="h-7 overflow-hidden relative w-[130px] sm:w-[230px] lg:w-[245px]">
@@ -360,7 +354,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                     <span
                       title={
                         item.prevClose
-                          ? `${lang === 'ko' ? '전일 종가' : 'Prev Close'}: ${formatLocalizedFxRate(item.prevClose, baseCurrency, lang)}`
+                          ? `${t.prevClose}: ${formatLocalizedFxRate(item.prevClose, baseCurrency, lang)}`
                           : undefined
                       }
                       className={`hidden sm:inline-flex items-center text-[10px] font-mono font-bold px-1 py-0.2 rounded shrink-0 whitespace-nowrap ${getFxBadgeColorClass(
@@ -399,17 +393,11 @@ export const TickerBar: React.FC<TickerBarProps> = ({
             <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200 min-w-0">
               <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
               <span className="truncate">
-                {lang === 'ko'
-                  ? '주요 통화 환율 & 기준금리 요약'
-                  : lang === 'ja'
-                    ? '主要通貨の為替レート＆政策金利'
-                    : lang === 'zh'
-                      ? '主要货币汇率与政策利率'
-                      : 'Key FX Rates & Policy Rates'}
+                {t.tickerTitle}
               </span>
             </div>
             <span className="text-[10px] font-mono text-slate-400 shrink-0">
-              {lang === 'ko' ? '기준 통화: ' : lang === 'ja' ? '基準通貨: ' : lang === 'zh' ? '基准货币: ' : 'Base: '}
+              {t.baseCurrencyLabel}{' '}
               <strong className="text-white">{baseCurrency}</strong>
             </span>
           </div>
