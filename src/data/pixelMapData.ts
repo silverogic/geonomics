@@ -3594,25 +3594,25 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 29,
     "r": 19,
     "id": "ZMB",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 30,
     "r": 19,
     "id": "MOZ",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 31,
     "r": 19,
     "id": "MOZ",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 32,
     "r": 19,
     "id": "MDG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 44,
@@ -3696,13 +3696,13 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 30,
     "r": 20,
     "id": "MOZ",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 32,
     "r": 20,
     "id": "MDG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 34,
@@ -3804,7 +3804,7 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
     "c": 32,
     "r": 21,
     "id": "MDG",
-    "isTracked": false
+    "isTracked": true
   },
   {
     "c": 42,
@@ -4067,6 +4067,18 @@ export const PIXEL_MAP_TILES: PixelTile[] = [
 ]
 
 export const COUNTRY_LABEL_ANCHORS: Record<string, { c: number; r: number }> = {
+  "ZMB": {
+    "c": 29,
+    "r": 19
+  },
+  "MOZ": {
+    "c": 31,
+    "r": 19
+  },
+  "MDG": {
+    "c": 32,
+    "r": 20
+  },
   "CAN": {
     "c": 11,
     "r": 2

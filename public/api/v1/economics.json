@@ -31248,5 +31248,755 @@
         "inflationRate": 2
       }
     ]
+  },
+  "ZMB": {
+    "countryId": "ZMB",
+    "countryName": "Zambia",
+    "source": "IMF DataMapper API v1 (WEO)",
+    "lastUpdated": "IMF WEO Official API (2026-11-12)",
+    "years": {
+      "2015": {
+        "totalGdpUsd": 21245000000,
+        "gdpPerCapitaUsd": 1295.51,
+        "growthRatePct": 2.9,
+        "debtRatioPct": 61.9,
+        "inflationRatePct": 10.1
+      },
+      "2016": {
+        "totalGdpUsd": 20965000000,
+        "gdpPerCapitaUsd": 1239.48,
+        "growthRatePct": 3.8,
+        "debtRatioPct": 61.2,
+        "inflationRatePct": 17.9
+      },
+      "2017": {
+        "totalGdpUsd": 25874000000,
+        "gdpPerCapitaUsd": 1483.46,
+        "growthRatePct": 3.5,
+        "debtRatioPct": 66.6,
+        "inflationRatePct": 6.6
+      },
+      "2018": {
+        "totalGdpUsd": 26311000000,
+        "gdpPerCapitaUsd": 1463.9,
+        "growthRatePct": 4,
+        "debtRatioPct": 81.2,
+        "inflationRatePct": 7.5
+      },
+      "2019": {
+        "totalGdpUsd": 23309000000,
+        "gdpPerCapitaUsd": 1258.99,
+        "growthRatePct": 1.4,
+        "debtRatioPct": 103.3,
+        "inflationRatePct": 9.2
+      },
+      "2020": {
+        "totalGdpUsd": 18138000000,
+        "gdpPerCapitaUsd": 951.64,
+        "growthRatePct": -2.8,
+        "debtRatioPct": 140,
+        "inflationRatePct": 15.7
+      },
+      "2021": {
+        "totalGdpUsd": 22096000000,
+        "gdpPerCapitaUsd": 1127.16,
+        "growthRatePct": 6.2,
+        "debtRatioPct": 111,
+        "inflationRatePct": 22
+      },
+      "2022": {
+        "totalGdpUsd": 29164000000,
+        "gdpPerCapitaUsd": 1447.12,
+        "growthRatePct": 5.2,
+        "debtRatioPct": 99.5,
+        "inflationRatePct": 11
+      },
+      "2023": {
+        "totalGdpUsd": 27578000000,
+        "gdpPerCapitaUsd": 1330.73,
+        "growthRatePct": 5.4,
+        "debtRatioPct": 136.8,
+        "inflationRatePct": 10.9
+      },
+      "2024": {
+        "totalGdpUsd": 25303000000,
+        "gdpPerCapitaUsd": 1187.11,
+        "growthRatePct": 3.8,
+        "debtRatioPct": 125.5,
+        "inflationRatePct": 15
+      },
+      "2025": {
+        "totalGdpUsd": 28709000000,
+        "gdpPerCapitaUsd": 1310.09,
+        "growthRatePct": 3.8,
+        "debtRatioPct": 100.6,
+        "inflationRatePct": 13.9
+      },
+      "2026": {
+        "totalGdpUsd": 42384000000,
+        "gdpPerCapitaUsd": 1881.91,
+        "growthRatePct": 5.6,
+        "debtRatioPct": 82.1,
+        "inflationRatePct": 8
+      },
+      "2027": {
+        "totalGdpUsd": 45580000000,
+        "gdpPerCapitaUsd": 1969.84,
+        "growthRatePct": 4.9,
+        "debtRatioPct": 77,
+        "inflationRatePct": 7.5
+      },
+      "2028": {
+        "totalGdpUsd": 48615000000,
+        "gdpPerCapitaUsd": 2045.95,
+        "growthRatePct": 5,
+        "debtRatioPct": 72.2,
+        "inflationRatePct": 7
+      },
+      "2029": {
+        "totalGdpUsd": 54633000000,
+        "gdpPerCapitaUsd": 2240.02,
+        "growthRatePct": 5.3,
+        "debtRatioPct": 67.2,
+        "inflationRatePct": 7
+      },
+      "2030": {
+        "totalGdpUsd": 59105000000,
+        "gdpPerCapitaUsd": 2361.85,
+        "growthRatePct": 5.3,
+        "debtRatioPct": 61.9,
+        "inflationRatePct": 7
+      }
+    },
+    "historical": [
+      {
+        "year": 2015,
+        "gdp": 21245000000,
+        "gdpPerCapita": 1295.51,
+        "growthRate": 2.9,
+        "debtRatio": 61.9,
+        "inflationRate": 10.1
+      },
+      {
+        "year": 2016,
+        "gdp": 20965000000,
+        "gdpPerCapita": 1239.48,
+        "growthRate": 3.8,
+        "debtRatio": 61.2,
+        "inflationRate": 17.9
+      },
+      {
+        "year": 2017,
+        "gdp": 25874000000,
+        "gdpPerCapita": 1483.46,
+        "growthRate": 3.5,
+        "debtRatio": 66.6,
+        "inflationRate": 6.6
+      },
+      {
+        "year": 2018,
+        "gdp": 26311000000,
+        "gdpPerCapita": 1463.9,
+        "growthRate": 4,
+        "debtRatio": 81.2,
+        "inflationRate": 7.5
+      },
+      {
+        "year": 2019,
+        "gdp": 23309000000,
+        "gdpPerCapita": 1258.99,
+        "growthRate": 1.4,
+        "debtRatio": 103.3,
+        "inflationRate": 9.2
+      },
+      {
+        "year": 2020,
+        "gdp": 18138000000,
+        "gdpPerCapita": 951.64,
+        "growthRate": -2.8,
+        "debtRatio": 140,
+        "inflationRate": 15.7
+      },
+      {
+        "year": 2021,
+        "gdp": 22096000000,
+        "gdpPerCapita": 1127.16,
+        "growthRate": 6.2,
+        "debtRatio": 111,
+        "inflationRate": 22
+      },
+      {
+        "year": 2022,
+        "gdp": 29164000000,
+        "gdpPerCapita": 1447.12,
+        "growthRate": 5.2,
+        "debtRatio": 99.5,
+        "inflationRate": 11
+      },
+      {
+        "year": 2023,
+        "gdp": 27578000000,
+        "gdpPerCapita": 1330.73,
+        "growthRate": 5.4,
+        "debtRatio": 136.8,
+        "inflationRate": 10.9
+      },
+      {
+        "year": 2024,
+        "gdp": 25303000000,
+        "gdpPerCapita": 1187.11,
+        "growthRate": 3.8,
+        "debtRatio": 125.5,
+        "inflationRate": 15
+      },
+      {
+        "year": 2025,
+        "gdp": 28709000000,
+        "gdpPerCapita": 1310.09,
+        "growthRate": 3.8,
+        "debtRatio": 100.6,
+        "inflationRate": 13.9
+      },
+      {
+        "year": 2026,
+        "gdp": 42384000000,
+        "gdpPerCapita": 1881.91,
+        "growthRate": 5.6,
+        "debtRatio": 82.1,
+        "inflationRate": 8
+      },
+      {
+        "year": 2027,
+        "gdp": 45580000000,
+        "gdpPerCapita": 1969.84,
+        "growthRate": 4.9,
+        "debtRatio": 77,
+        "inflationRate": 7.5
+      },
+      {
+        "year": 2028,
+        "gdp": 48615000000,
+        "gdpPerCapita": 2045.95,
+        "growthRate": 5,
+        "debtRatio": 72.2,
+        "inflationRate": 7
+      },
+      {
+        "year": 2029,
+        "gdp": 54633000000,
+        "gdpPerCapita": 2240.02,
+        "growthRate": 5.3,
+        "debtRatio": 67.2,
+        "inflationRate": 7
+      },
+      {
+        "year": 2030,
+        "gdp": 59105000000,
+        "gdpPerCapita": 2361.85,
+        "growthRate": 5.3,
+        "debtRatio": 61.9,
+        "inflationRate": 7
+      }
+    ]
+  },
+  "MOZ": {
+    "countryId": "MOZ",
+    "countryName": "Mozambique",
+    "source": "IMF DataMapper API v1 (WEO)",
+    "lastUpdated": "IMF WEO Official API (2026-11-12)",
+    "years": {
+      "2015": {
+        "totalGdpUsd": 16209000000,
+        "gdpPerCapitaUsd": 599.4,
+        "growthRatePct": 7.4,
+        "debtRatioPct": 86,
+        "inflationRatePct": 3.6
+      },
+      "2016": {
+        "totalGdpUsd": 12069000000,
+        "gdpPerCapitaUsd": 433.67,
+        "growthRatePct": 4.7,
+        "debtRatioPct": 124.8,
+        "inflationRatePct": 18.4
+      },
+      "2017": {
+        "totalGdpUsd": 13265000000,
+        "gdpPerCapitaUsd": 463.01,
+        "growthRatePct": 2.6,
+        "debtRatioPct": 103.8,
+        "inflationRatePct": 15.8
+      },
+      "2018": {
+        "totalGdpUsd": 15017000000,
+        "gdpPerCapitaUsd": 510.38,
+        "growthRatePct": 3.5,
+        "debtRatioPct": 105.5,
+        "inflationRatePct": 3.2
+      },
+      "2019": {
+        "totalGdpUsd": 15513000000,
+        "gdpPerCapitaUsd": 512.22,
+        "growthRatePct": 2.3,
+        "debtRatioPct": 98.3,
+        "inflationRatePct": 5.7
+      },
+      "2020": {
+        "totalGdpUsd": 14235000000,
+        "gdpPerCapitaUsd": 456.58,
+        "growthRatePct": -1.2,
+        "debtRatioPct": 120,
+        "inflationRatePct": 0.9
+      },
+      "2021": {
+        "totalGdpUsd": 16168000000,
+        "gdpPerCapitaUsd": 504.04,
+        "growthRatePct": 2.4,
+        "debtRatioPct": 101.4,
+        "inflationRatePct": 6.6
+      },
+      "2022": {
+        "totalGdpUsd": 18884000000,
+        "gdpPerCapitaUsd": 572.76,
+        "growthRatePct": 4.4,
+        "debtRatioPct": 97.3,
+        "inflationRatePct": 10.4
+      },
+      "2023": {
+        "totalGdpUsd": 20921000000,
+        "gdpPerCapitaUsd": 617.19,
+        "growthRatePct": 5.5,
+        "debtRatioPct": 90.8,
+        "inflationRatePct": 7
+      },
+      "2024": {
+        "totalGdpUsd": 22800000000,
+        "gdpPerCapitaUsd": 654.07,
+        "growthRatePct": 2.2,
+        "debtRatioPct": 91.2,
+        "inflationRatePct": 3.2
+      },
+      "2025": {
+        "totalGdpUsd": 23603000000,
+        "gdpPerCapitaUsd": 658.67,
+        "growthRatePct": -0.2,
+        "debtRatioPct": 90.3,
+        "inflationRatePct": 4.4
+      },
+      "2026": {
+        "totalGdpUsd": 24769000000,
+        "gdpPerCapitaUsd": 672.6,
+        "growthRatePct": 1,
+        "debtRatioPct": 91,
+        "inflationRatePct": 5.6
+      },
+      "2027": {
+        "totalGdpUsd": 26193000000,
+        "gdpPerCapitaUsd": 692.37,
+        "growthRatePct": 2,
+        "debtRatioPct": 98.6,
+        "inflationRatePct": 6.8
+      },
+      "2028": {
+        "totalGdpUsd": 27431000000,
+        "gdpPerCapitaUsd": 706.07,
+        "growthRatePct": 2.6,
+        "debtRatioPct": 104.8,
+        "inflationRatePct": 5.2
+      },
+      "2029": {
+        "totalGdpUsd": 28930000000,
+        "gdpPerCapitaUsd": 725.43,
+        "growthRatePct": 3.1,
+        "debtRatioPct": 109.8,
+        "inflationRatePct": 5
+      },
+      "2030": {
+        "totalGdpUsd": 32497000000,
+        "gdpPerCapitaUsd": 794.14,
+        "growthRatePct": 9.8,
+        "debtRatioPct": 108.8,
+        "inflationRatePct": 5
+      }
+    },
+    "historical": [
+      {
+        "year": 2015,
+        "gdp": 16209000000,
+        "gdpPerCapita": 599.4,
+        "growthRate": 7.4,
+        "debtRatio": 86,
+        "inflationRate": 3.6
+      },
+      {
+        "year": 2016,
+        "gdp": 12069000000,
+        "gdpPerCapita": 433.67,
+        "growthRate": 4.7,
+        "debtRatio": 124.8,
+        "inflationRate": 18.4
+      },
+      {
+        "year": 2017,
+        "gdp": 13265000000,
+        "gdpPerCapita": 463.01,
+        "growthRate": 2.6,
+        "debtRatio": 103.8,
+        "inflationRate": 15.8
+      },
+      {
+        "year": 2018,
+        "gdp": 15017000000,
+        "gdpPerCapita": 510.38,
+        "growthRate": 3.5,
+        "debtRatio": 105.5,
+        "inflationRate": 3.2
+      },
+      {
+        "year": 2019,
+        "gdp": 15513000000,
+        "gdpPerCapita": 512.22,
+        "growthRate": 2.3,
+        "debtRatio": 98.3,
+        "inflationRate": 5.7
+      },
+      {
+        "year": 2020,
+        "gdp": 14235000000,
+        "gdpPerCapita": 456.58,
+        "growthRate": -1.2,
+        "debtRatio": 120,
+        "inflationRate": 0.9
+      },
+      {
+        "year": 2021,
+        "gdp": 16168000000,
+        "gdpPerCapita": 504.04,
+        "growthRate": 2.4,
+        "debtRatio": 101.4,
+        "inflationRate": 6.6
+      },
+      {
+        "year": 2022,
+        "gdp": 18884000000,
+        "gdpPerCapita": 572.76,
+        "growthRate": 4.4,
+        "debtRatio": 97.3,
+        "inflationRate": 10.4
+      },
+      {
+        "year": 2023,
+        "gdp": 20921000000,
+        "gdpPerCapita": 617.19,
+        "growthRate": 5.5,
+        "debtRatio": 90.8,
+        "inflationRate": 7
+      },
+      {
+        "year": 2024,
+        "gdp": 22800000000,
+        "gdpPerCapita": 654.07,
+        "growthRate": 2.2,
+        "debtRatio": 91.2,
+        "inflationRate": 3.2
+      },
+      {
+        "year": 2025,
+        "gdp": 23603000000,
+        "gdpPerCapita": 658.67,
+        "growthRate": -0.2,
+        "debtRatio": 90.3,
+        "inflationRate": 4.4
+      },
+      {
+        "year": 2026,
+        "gdp": 24769000000,
+        "gdpPerCapita": 672.6,
+        "growthRate": 1,
+        "debtRatio": 91,
+        "inflationRate": 5.6
+      },
+      {
+        "year": 2027,
+        "gdp": 26193000000,
+        "gdpPerCapita": 692.37,
+        "growthRate": 2,
+        "debtRatio": 98.6,
+        "inflationRate": 6.8
+      },
+      {
+        "year": 2028,
+        "gdp": 27431000000,
+        "gdpPerCapita": 706.07,
+        "growthRate": 2.6,
+        "debtRatio": 104.8,
+        "inflationRate": 5.2
+      },
+      {
+        "year": 2029,
+        "gdp": 28930000000,
+        "gdpPerCapita": 725.43,
+        "growthRate": 3.1,
+        "debtRatio": 109.8,
+        "inflationRate": 5
+      },
+      {
+        "year": 2030,
+        "gdp": 32497000000,
+        "gdpPerCapita": 794.14,
+        "growthRate": 9.8,
+        "debtRatio": 108.8,
+        "inflationRate": 5
+      }
+    ]
+  },
+  "MDG": {
+    "countryId": "MDG",
+    "countryName": "Madagascar",
+    "source": "IMF DataMapper API v1 (WEO)",
+    "lastUpdated": "IMF WEO Official API (2026-11-12)",
+    "years": {
+      "2015": {
+        "totalGdpUsd": 11323000000,
+        "gdpPerCapitaUsd": 481.81,
+        "growthRatePct": 3.1,
+        "debtRatioPct": 44.1,
+        "inflationRatePct": 7.4
+      },
+      "2016": {
+        "totalGdpUsd": 11849000000,
+        "gdpPerCapitaUsd": 489.44,
+        "growthRatePct": 4,
+        "debtRatioPct": 40.3,
+        "inflationRatePct": 6.1
+      },
+      "2017": {
+        "totalGdpUsd": 13176000000,
+        "gdpPerCapitaUsd": 528.38,
+        "growthRatePct": 3.9,
+        "debtRatioPct": 40.1,
+        "inflationRatePct": 8.6
+      },
+      "2018": {
+        "totalGdpUsd": 13760000000,
+        "gdpPerCapitaUsd": 535.95,
+        "growthRatePct": 3.2,
+        "debtRatioPct": 42.9,
+        "inflationRatePct": 8.6
+      },
+      "2019": {
+        "totalGdpUsd": 14105000000,
+        "gdpPerCapitaUsd": 531.75,
+        "growthRatePct": 4.4,
+        "debtRatioPct": 41.3,
+        "inflationRatePct": 5.6
+      },
+      "2020": {
+        "totalGdpUsd": 13051000000,
+        "gdpPerCapitaUsd": 477.38,
+        "growthRatePct": -7.1,
+        "debtRatioPct": 52.9,
+        "inflationRatePct": 4.2
+      },
+      "2021": {
+        "totalGdpUsd": 14355000000,
+        "gdpPerCapitaUsd": 509.43,
+        "growthRatePct": 4.7,
+        "debtRatioPct": 49.4,
+        "inflationRatePct": 5.8
+      },
+      "2022": {
+        "totalGdpUsd": 15342000000,
+        "gdpPerCapitaUsd": 529.75,
+        "growthRatePct": 4.1,
+        "debtRatioPct": 49.8,
+        "inflationRatePct": 8.2
+      },
+      "2023": {
+        "totalGdpUsd": 16037000000,
+        "gdpPerCapitaUsd": 538.75,
+        "growthRatePct": 4.2,
+        "debtRatioPct": 52.1,
+        "inflationRatePct": 9.9
+      },
+      "2024": {
+        "totalGdpUsd": 17593000000,
+        "gdpPerCapitaUsd": 575.04,
+        "growthRatePct": 4.3,
+        "debtRatioPct": 49.8,
+        "inflationRatePct": 7.6
+      },
+      "2025": {
+        "totalGdpUsd": 19468000000,
+        "gdpPerCapitaUsd": 619.11,
+        "growthRatePct": 3.1,
+        "debtRatioPct": 47.7,
+        "inflationRatePct": 8
+      },
+      "2026": {
+        "totalGdpUsd": 20975000000,
+        "gdpPerCapitaUsd": 649.01,
+        "growthRatePct": 3.8,
+        "debtRatioPct": 49.8,
+        "inflationRatePct": 8.4
+      },
+      "2027": {
+        "totalGdpUsd": 22723000000,
+        "gdpPerCapitaUsd": 684.08,
+        "growthRatePct": 4.5,
+        "debtRatioPct": 50.6,
+        "inflationRatePct": 8
+      },
+      "2028": {
+        "totalGdpUsd": 25110000000,
+        "gdpPerCapitaUsd": 735.47,
+        "growthRatePct": 4.6,
+        "debtRatioPct": 50.9,
+        "inflationRatePct": 6.5
+      },
+      "2029": {
+        "totalGdpUsd": 27657000000,
+        "gdpPerCapitaUsd": 788.18,
+        "growthRatePct": 4.7,
+        "debtRatioPct": 50.9,
+        "inflationRatePct": 6
+      },
+      "2030": {
+        "totalGdpUsd": 30372000000,
+        "gdpPerCapitaUsd": 842.16,
+        "growthRatePct": 4.8,
+        "debtRatioPct": 49.9,
+        "inflationRatePct": 5.5
+      }
+    },
+    "historical": [
+      {
+        "year": 2015,
+        "gdp": 11323000000,
+        "gdpPerCapita": 481.81,
+        "growthRate": 3.1,
+        "debtRatio": 44.1,
+        "inflationRate": 7.4
+      },
+      {
+        "year": 2016,
+        "gdp": 11849000000,
+        "gdpPerCapita": 489.44,
+        "growthRate": 4,
+        "debtRatio": 40.3,
+        "inflationRate": 6.1
+      },
+      {
+        "year": 2017,
+        "gdp": 13176000000,
+        "gdpPerCapita": 528.38,
+        "growthRate": 3.9,
+        "debtRatio": 40.1,
+        "inflationRate": 8.6
+      },
+      {
+        "year": 2018,
+        "gdp": 13760000000,
+        "gdpPerCapita": 535.95,
+        "growthRate": 3.2,
+        "debtRatio": 42.9,
+        "inflationRate": 8.6
+      },
+      {
+        "year": 2019,
+        "gdp": 14105000000,
+        "gdpPerCapita": 531.75,
+        "growthRate": 4.4,
+        "debtRatio": 41.3,
+        "inflationRate": 5.6
+      },
+      {
+        "year": 2020,
+        "gdp": 13051000000,
+        "gdpPerCapita": 477.38,
+        "growthRate": -7.1,
+        "debtRatio": 52.9,
+        "inflationRate": 4.2
+      },
+      {
+        "year": 2021,
+        "gdp": 14355000000,
+        "gdpPerCapita": 509.43,
+        "growthRate": 4.7,
+        "debtRatio": 49.4,
+        "inflationRate": 5.8
+      },
+      {
+        "year": 2022,
+        "gdp": 15342000000,
+        "gdpPerCapita": 529.75,
+        "growthRate": 4.1,
+        "debtRatio": 49.8,
+        "inflationRate": 8.2
+      },
+      {
+        "year": 2023,
+        "gdp": 16037000000,
+        "gdpPerCapita": 538.75,
+        "growthRate": 4.2,
+        "debtRatio": 52.1,
+        "inflationRate": 9.9
+      },
+      {
+        "year": 2024,
+        "gdp": 17593000000,
+        "gdpPerCapita": 575.04,
+        "growthRate": 4.3,
+        "debtRatio": 49.8,
+        "inflationRate": 7.6
+      },
+      {
+        "year": 2025,
+        "gdp": 19468000000,
+        "gdpPerCapita": 619.11,
+        "growthRate": 3.1,
+        "debtRatio": 47.7,
+        "inflationRate": 8
+      },
+      {
+        "year": 2026,
+        "gdp": 20975000000,
+        "gdpPerCapita": 649.01,
+        "growthRate": 3.8,
+        "debtRatio": 49.8,
+        "inflationRate": 8.4
+      },
+      {
+        "year": 2027,
+        "gdp": 22723000000,
+        "gdpPerCapita": 684.08,
+        "growthRate": 4.5,
+        "debtRatio": 50.6,
+        "inflationRate": 8
+      },
+      {
+        "year": 2028,
+        "gdp": 25110000000,
+        "gdpPerCapita": 735.47,
+        "growthRate": 4.6,
+        "debtRatio": 50.9,
+        "inflationRate": 6.5
+      },
+      {
+        "year": 2029,
+        "gdp": 27657000000,
+        "gdpPerCapita": 788.18,
+        "growthRate": 4.7,
+        "debtRatio": 50.9,
+        "inflationRate": 6
+      },
+      {
+        "year": 2030,
+        "gdp": 30372000000,
+        "gdpPerCapita": 842.16,
+        "growthRate": 4.8,
+        "debtRatio": 49.9,
+        "inflationRate": 5.5
+      }
+    ]
   }
 }
