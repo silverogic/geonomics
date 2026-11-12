@@ -318,7 +318,7 @@ export function detectVisitorCountry(): CountryMeta | null {
 export function detectBrowserLanguage(): Language {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem(STORAGE_LANG_KEY)
-    if (saved === 'ko' || saved === 'en' || saved === 'ja' || saved === 'es' || saved === 'zh') {
+    if (saved === 'ko' || saved === 'en' || saved === 'ja' || saved === 'es' || saved === 'zh' || saved === 'hi') {
       return saved
     }
 
@@ -342,6 +342,9 @@ export function detectBrowserLanguage(): Language {
         if (lower.startsWith('es')) {
           return 'es'
         }
+        if (lower.startsWith('hi')) {
+          return 'hi'
+        }
       }
 
       // TimeZone & geographic hints for automatic language selection
@@ -359,6 +362,9 @@ export function detectBrowserLanguage(): Language {
         timeZone.includes('caracas')
       ) {
         return 'es'
+      }
+      if (timeZone.includes('kolkata') || timeZone.includes('calcutta') || timeZone.includes('delhi')) {
+        return 'hi'
       }
     }
   }

@@ -11,6 +11,7 @@ export const resources = {
   ja: { translation: translations.ja },
   es: { translation: translations.es },
   zh: { translation: translations.zh },
+  hi: { translation: translations.hi },
 } as const
 
 i18n

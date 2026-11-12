@@ -1,6 +1,6 @@
 export type Region = 'Asia' | 'Europe' | 'Americas' | 'Africa' | 'Oceania'
 
-export type Language = 'en' | 'ko' | 'ja' | 'es' | 'zh'
+export type Language = 'en' | 'ko' | 'ja' | 'es' | 'zh' | 'hi'
 
 export interface CountryMeta {
   id: string // ISO 3166-1 alpha-3 (World Bank API country id, e.g., 'KOR', 'USA')

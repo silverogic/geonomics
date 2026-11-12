@@ -12,6 +12,7 @@ const LANGUAGE_CONFIG: Record<Language, { label: string; short: string; flagIso2
   ja: { label: '日本語 (JA)', short: 'JA', flagIso2: 'JP' },
   es: { label: 'Español (ES)', short: 'ES', flagIso2: 'ES' },
   zh: { label: '中文 (ZH)', short: 'ZH', flagIso2: 'CN' },
+  hi: { label: 'हिन्दी (HI)', short: 'HI', flagIso2: 'IN' },
 }
 
 interface NavbarProps {
@@ -191,7 +192,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {/* Language Section */}
                   <div>
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                      <span>{lang === 'ko' ? '언어 설정' : lang === 'ja' ? '言語設定' : lang === 'zh' ? '语言设置' : 'Language'}</span>
+                      <span>{lang === 'ko' ? '언어 설정' : lang === 'ja' ? '言語設定' : lang === 'zh' ? '语言设置' : lang === 'es' ? 'Idioma' : lang === 'hi' ? 'भाषा सेटिंग' : 'Language'}</span>
                       <span className="text-indigo-400 font-mono text-[10px] font-bold">{LANGUAGE_CONFIG[lang].short}</span>
                     </div>
                     <div className="grid grid-cols-2 gap-1">
@@ -227,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {/* Base Currency Section */}
                   <div>
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                      <span>{lang === 'ko' ? '기준 통화' : lang === 'ja' ? '基準通貨' : lang === 'zh' ? '基准货币' : 'Base Currency'}</span>
+                      <span>{lang === 'ko' ? '기준 통화' : lang === 'ja' ? '基準通貨' : lang === 'zh' ? '基准货币' : lang === 'es' ? 'Moneda Base' : lang === 'hi' ? 'मूल मुद्रा' : 'Base Currency'}</span>
                       <span className="text-emerald-400 font-mono text-[10px] font-bold">{baseCurrency}</span>
                     </div>
                     <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto [scrollbar-width:thin]">
@@ -240,7 +241,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                               ? bc.nameJa.split(' ')[0]
                               : lang === 'zh'
                                 ? bc.nameZh.split(' ')[0]
-                                : bc.code
+                                : lang === 'hi'
+                                  ? bc.nameHi.split(' ')[0]
+                                  : bc.code
 
                         return (
                           <button
@@ -390,7 +393,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                             ? bc.nameEs
                             : lang === 'zh'
                               ? bc.nameZh
-                              : bc.nameEn
+                              : lang === 'hi'
+                                ? bc.nameHi
+                                : bc.nameEn
 
                     return (
                       <button

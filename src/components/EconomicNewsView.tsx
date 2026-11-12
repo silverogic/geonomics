@@ -70,6 +70,7 @@ const QUICK_PICKS: Array<{
       ja: '米国 · FRB金利 & 物価',
       es: 'EE.UU. · Fed y Tasas',
       zh: '美国 · 美联储与利率',
+      hi: 'अमेरिका · फेड और दरें',
     },
   },
   {
@@ -82,6 +83,7 @@ const QUICK_PICKS: Array<{
       ja: '韓国 · 半導体 & AI',
       es: 'Corea del Sur · Chips e IA',
       zh: '韩国 · 芯片与AI',
+      hi: 'दक्षिण कोरिया · चिप्स और एआई',
     },
   },
   {
@@ -94,6 +96,7 @@ const QUICK_PICKS: Array<{
       ja: 'インド · 半導体 & AI',
       es: 'India · Semiconductores',
       zh: '印度 · 半导体与AI',
+      hi: 'भारत · सेमीकंडक्टर और एआई',
     },
   },
   {
@@ -106,6 +109,7 @@ const QUICK_PICKS: Array<{
       ja: '日本 · 円相場 & 日銀',
       es: 'Japón · Yen y BOJ',
       zh: '日本 · 日元与央行',
+      hi: 'जापान · येन और बैंक ऑफ जापान',
     },
   },
   {
@@ -118,6 +122,7 @@ const QUICK_PICKS: Array<{
       ja: '中国 · EV & 電池',
       es: 'China · VE y Baterías',
       zh: '中国 · 新能源与电池',
+      hi: 'चीन · ईवी और बैटरी',
     },
   },
   {
@@ -130,6 +135,7 @@ const QUICK_PICKS: Array<{
       ja: '台湾 · TSMC & 半導体',
       es: 'Taiwán · TSMC y Chips',
       zh: '台湾 · 晶圆代工与AI',
+      hi: 'ताइवान · टीएसएमसी और फाउंड्री',
     },
   },
 ]

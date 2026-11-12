@@ -1664,13 +1664,13 @@ export const COUNTRIES: CountryMeta[] = [
 ]
 
 export const BASE_CURRENCIES = [
-  { code: 'USD', nameEn: 'US Dollar (USD)', nameKo: '미국 달러 (USD)', nameJa: '米ドル (USD)', nameEs: 'Dólar estadounidense (USD)', nameZh: '美元 (USD)', symbol: '$' },
-  { code: 'EUR', nameEn: 'Euro (EUR)', nameKo: '유로 (EUR)', nameJa: 'ユーロ (EUR)', nameEs: 'Euro (EUR)', nameZh: '欧元 (EUR)', symbol: '€' },
-  { code: 'KRW', nameEn: 'Korean Won (KRW)', nameKo: '원화 (KRW)', nameJa: '韓国ウォン (KRW)', nameEs: 'Won surcoreano (KRW)', nameZh: '韩元 (KRW)', symbol: '₩' },
-  { code: 'JPY', nameEn: 'Japanese Yen (JPY)', nameKo: '일본 엔 (JPY)', nameJa: '日本円 (JPY)', nameEs: 'Yen japonés (JPY)', nameZh: '日元 (JPY)', symbol: '¥' },
-  { code: 'GBP', nameEn: 'British Pound (GBP)', nameKo: '영국 파운드 (GBP)', nameJa: '英ポンド (GBP)', nameEs: 'Libra esterlina (GBP)', nameZh: '英镑 (GBP)', symbol: '£' },
-  { code: 'CNY', nameEn: 'Chinese Yuan (CNY)', nameKo: '중국 위안 (CNY)', nameJa: '中国人民元 (CNY)', nameEs: 'Yuan chino (CNY)', nameZh: '人民币 (CNY)', symbol: '¥' },
-  { code: 'CHF', nameEn: 'Swiss Franc (CHF)', nameKo: '스위스 프랑 (CHF)', nameJa: 'スイス・フラン (CHF)', nameEs: 'Franco suizo (CHF)', nameZh: '瑞士法郎 (CHF)', symbol: 'CHF' },
-  { code: 'AUD', nameEn: 'Australian Dollar (AUD)', nameKo: '호주 달러 (AUD)', nameJa: '豪ドル (AUD)', nameEs: 'Dólar australiano (AUD)', nameZh: '澳元 (AUD)', symbol: 'A$' },
+  { code: 'USD', nameEn: 'US Dollar (USD)', nameKo: '미국 달러 (USD)', nameJa: '米ドル (USD)', nameEs: 'Dólar estadounidense (USD)', nameZh: '美元 (USD)', nameHi: 'अमेरिकी डॉलर (USD)', symbol: '$' },
+  { code: 'EUR', nameEn: 'Euro (EUR)', nameKo: '유로 (EUR)', nameJa: 'ユーロ (EUR)', nameEs: 'Euro (EUR)', nameZh: '欧元 (EUR)', nameHi: 'यूरो (EUR)', symbol: '€' },
+  { code: 'KRW', nameEn: 'Korean Won (KRW)', nameKo: '원화 (KRW)', nameJa: '韓国ウォン (KRW)', nameEs: 'Won surcoreano (KRW)', nameZh: '韩元 (KRW)', nameHi: 'दक्षिण कोरियाई वॉन (KRW)', symbol: '₩' },
+  { code: 'JPY', nameEn: 'Japanese Yen (JPY)', nameKo: '일본 엔 (JPY)', nameJa: '日本円 (JPY)', nameEs: 'Yen japonés (JPY)', nameZh: '日元 (JPY)', nameHi: 'जापानी येन (JPY)', symbol: '¥' },
+  { code: 'GBP', nameEn: 'British Pound (GBP)', nameKo: '영국 파운드 (GBP)', nameJa: '英ポンド (GBP)', nameEs: 'Libra esterlina (GBP)', nameZh: '英镑 (GBP)', nameHi: 'ब्रिटिश पाउंड (GBP)', symbol: '£' },
+  { code: 'CNY', nameEn: 'Chinese Yuan (CNY)', nameKo: '중국 위안 (CNY)', nameJa: '中国人民元 (CNY)', nameEs: 'Yuan chino (CNY)', nameZh: '人民币 (CNY)', nameHi: 'चीनी युआन (CNY)', symbol: '¥' },
+  { code: 'CHF', nameEn: 'Swiss Franc (CHF)', nameKo: '스위스 프랑 (CHF)', nameJa: 'スイス・フラン (CHF)', nameEs: 'Franco suizo (CHF)', nameZh: '瑞士法郎 (CHF)', nameHi: 'स्विस फ़्रैंक (CHF)', symbol: 'CHF' },
+  { code: 'AUD', nameEn: 'Australian Dollar (AUD)', nameKo: '호주 달러 (AUD)', nameJa: '豪ドル (AUD)', nameEs: 'Dólar australiano (AUD)', nameZh: '澳元 (AUD)', nameHi: 'ऑस्ट्रेलियाई डॉलर (AUD)', symbol: 'A$' },
 ] as const
 

@@ -184,6 +184,7 @@ const TARGET_LANG_CODE_MAP: Record<Language, string> = {
   ja: 'ja',
   zh: 'zh-CN',
   es: 'es',
+  hi: 'hi',
 }
 
 function getCacheKey(lang: Language, text: string): string {
