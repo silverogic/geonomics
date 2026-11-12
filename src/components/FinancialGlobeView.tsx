@@ -186,6 +186,7 @@ interface ProjectedCapsule {
   fxRate: number
   fxChangePct: number | null
   policyRatePct: number | null
+  centralBankName?: string | null
 }
 
 // 5 GDP Choropleth Tiers for 3D Stacked Voxel Continents (side wall shading + top cap highlight)
@@ -2120,7 +2121,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
   useEffect(() => {
     hoveredHubIdRef.current = hoveredHubId
-    if (!hoveredHubId || (displayMode !== 'stocks' && displayMode !== 'gdp')) {
+    if (!hoveredHubId) {
       setExpandedHubId(null)
       return
     }
@@ -2387,6 +2388,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         fxRate,
         fxChangePct,
         policyRatePct: cbInfo?.ratePct ?? null,
+        centralBankName: cbInfo?.centralBankName ?? null,
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2844,6 +2846,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           fxRate: h.fxRate,
           fxChangePct: h.fxChangePct,
           policyRatePct: h.policyRatePct,
+          centralBankName: h.centralBankName,
         })
       }
 
@@ -3186,8 +3189,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 ? cap.stockChangePct < -0.15
                 : (cap.fxChangePct ?? 0) < -0.01
           const isHovered = hoveredHubId === cap.id
-          const isExpanded =
-            (displayMode === 'stocks' || displayMode === 'gdp') && expandedHubId === cap.id
+          const isExpanded = expandedHubId === cap.id
           const sparklineData =
             displayMode === 'stocks' && isHovered ? getCapsuleSparkline(cap) : null
 
@@ -3338,7 +3340,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 )}
               </div>
 
-              {/* Row 3: Delayed Hover Height Expansion (Stocks 30-Day Trend Sparkline or GDP Debt Ratio) inside the Same Box */}
+              {/* Row 3: Delayed Hover Height Expansion (Stocks 30D Trend, GDP Debt Ratio, or FX Policy Rate) inside the Same Box */}
               <div
                 className={`grid transition-[grid-template-rows,opacity,margin,padding] duration-200 ease-out ${
                   isExpanded
@@ -3384,6 +3386,29 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                           />
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {displayMode === 'fx' && isExpanded && (
+                    <div
+                      className="py-0.5"
+                      title={cap.centralBankName ? `${cap.centralBankName}: ${cap.policyRatePct != null ? `${cap.policyRatePct}%` : 'N/A'}` : undefined}
+                    >
+                      <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono leading-tight">
+                        <div className="flex items-center gap-1 min-w-0">
+                          <span className="font-semibold text-slate-200 shrink-0">
+                            {lang === 'ko' ? '기준금리' : 'Policy Rate'}
+                          </span>
+                          {cap.centralBankName && (
+                            <span className="text-[8px] sm:text-[9px] font-sans font-medium text-indigo-300/80 bg-indigo-950/60 px-1 py-px rounded border border-indigo-500/30 truncate">
+                              {cap.centralBankName}
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-black text-[11px] sm:text-xs text-indigo-300 shrink-0">
+                          {cap.policyRatePct != null ? `${cap.policyRatePct.toFixed(2)}%` : 'N/A'}
+                        </span>
+                      </div>
                     </div>
                   )}
 
