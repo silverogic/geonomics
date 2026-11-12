@@ -94,7 +94,6 @@ export const translations = {
     cardGrowthRate: 'Growth Rate',
     cardDebtRatio: 'Gov Debt',
     cardInflationRate: 'Inflation Rate',
-    cardViewDetails: 'Detailed Metrics & 10-Yr Chart',
     loadingData: 'Loading data...',
     noCountriesFound: 'No countries match your search criteria.',
 
@@ -321,7 +320,6 @@ export const translations = {
     cardGrowthRate: '성장률',
     cardDebtRatio: '국가 부채',
     cardInflationRate: '인플레이션',
-    cardViewDetails: '상세 지표 및 10개년 차트',
     loadingData: '데이터 로딩 중...',
     noCountriesFound: '검색 조건에 맞는 국가가 없습니다.',
 
@@ -548,7 +546,6 @@ export const translations = {
     cardGrowthRate: '成長率',
     cardDebtRatio: '政府債務',
     cardInflationRate: 'インフレ率',
-    cardViewDetails: '詳細指標 & 10年チャート',
     loadingData: 'データを読み込み中...',
     noCountriesFound: '検索条件に一致する国が見つかりません。',
 
@@ -775,7 +772,6 @@ export const translations = {
     cardGrowthRate: 'Tasa de crecimiento',
     cardDebtRatio: 'Deuda pública',
     cardInflationRate: 'Tasa de inflación',
-    cardViewDetails: 'Métricas detalladas y gráfico de 10 años',
     loadingData: 'Cargando datos...',
     noCountriesFound: 'No se encontraron países que coincidan con la búsqueda.',
 
@@ -1002,7 +998,6 @@ export const translations = {
     cardGrowthRate: '经济增长率',
     cardDebtRatio: '政府负债率',
     cardInflationRate: '通胀率',
-    cardViewDetails: '详细指标与10年走势',
     loadingData: '正在加载数据...',
     noCountriesFound: '没有找到符合搜索条件的国家。',
 
@@ -1215,7 +1210,6 @@ export const translations = {
     cardGrowthRate: 'विकास दर',
     cardDebtRatio: 'सरकारी ऋण',
     cardInflationRate: 'मुद्रास्फीति दर',
-    cardViewDetails: 'विस्तृत संकेतक और 10-वर्षीय चार्ट',
     loadingData: 'डेटा लोड हो रहा है...',
     noCountriesFound: 'आपके खोज मानदंडों से मेल खाने वाला कोई देश नहीं मिला।',
     modalTotalGdpTitle: 'कुल जीडीपी',

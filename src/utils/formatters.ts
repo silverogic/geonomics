@@ -173,22 +173,6 @@ export function getInflationColorClass(inflationRatePct: number | null | undefin
 }
 
 /**
- * Returns badge styling classes for inflation rate pill badges.
- */
-export function getInflationBadgeClass(inflationRatePct: number | null | undefined): string {
-  if (inflationRatePct === null || inflationRatePct === undefined) {
-    return 'text-slate-400 bg-slate-900/60 border-slate-800'
-  }
-  if (inflationRatePct <= 2.5) {
-    return 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
-  }
-  if (inflationRatePct <= 4.5) {
-    return 'text-slate-300 bg-slate-800/60 border-slate-600/30'
-  }
-  return 'text-rose-400 bg-rose-950/60 border-rose-500/30'
-}
-
-/**
  * Returns hex color code for choropleth map fills (Emerald -> Amber -> Rose).
  */
 export function getInflationHexColor(inflationRatePct: number | null | undefined): string {

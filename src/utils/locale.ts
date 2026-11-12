@@ -413,12 +413,3 @@ export function saveBaseCurrencyPreference(currency: BaseCurrency): void {
     localStorage.setItem(STORAGE_CURRENCY_KEY, currency)
   }
 }
-
-/**
- * Detects the user's localized home country code (ISO-3) from browser locale and timezone hints.
- * Returns matching country ID (e.g. 'KOR', 'JPN', 'USA', 'DEU', 'GBR', 'VNM', 'IND') or defaults to 'KOR'.
- */
-export function detectLocalCountryId(): string {
-  const visitor = detectVisitorCountry()
-  return visitor ? visitor.id : 'KOR'
-}
