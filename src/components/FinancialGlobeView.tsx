@@ -73,7 +73,7 @@ interface HubDefinition {
 }
 
 const FLAGSHIP_HUBS: HubDefinition[] = [
-  // Asia & Middle East (15)
+  // Asia & Middle East (16)
   { id: 'KOR', offsetX: -18, offsetY: -26 },
   { id: 'JPN', offsetX: 34, offsetY: -16 },
   { id: 'CHN', offsetX: -36, offsetY: 6 },
@@ -89,8 +89,9 @@ const FLAGSHIP_HUBS: HubDefinition[] = [
   { id: 'PHL', offsetX: 36, offsetY: 22, desktopOnly: true },
   { id: 'ARE', offsetX: 28, offsetY: 20, desktopOnly: true },
   { id: 'ISR', offsetX: -26, offsetY: -14, desktopOnly: true },
+  { id: 'QAT', offsetX: 26, offsetY: -16, desktopOnly: true },
 
-  // Europe (13)
+  // Europe (16)
   { id: 'GBR', offsetX: -38, offsetY: -22 },
   { id: 'FRA', offsetX: -36, offsetY: 16 },
   { id: 'DEU', offsetX: 30, offsetY: -18 },
@@ -104,8 +105,11 @@ const FLAGSHIP_HUBS: HubDefinition[] = [
   { id: 'NOR', offsetX: -20, offsetY: -32, desktopOnly: true },
   { id: 'BEL', offsetX: -34, offsetY: -6, desktopOnly: true },
   { id: 'AUT', offsetX: 32, offsetY: 8, desktopOnly: true },
+  { id: 'IRL', offsetX: -38, offsetY: 4, desktopOnly: true },
+  { id: 'DNK', offsetX: -14, offsetY: -12, desktopOnly: true },
+  { id: 'FIN', offsetX: 34, offsetY: -18, desktopOnly: true },
 
-  // Americas (7)
+  // Americas (8)
   { id: 'USA', offsetX: 24, offsetY: 14 },
   { id: 'CAN', offsetX: -24, offsetY: -26 },
   { id: 'MEX', offsetX: -26, offsetY: 20 },
@@ -113,6 +117,7 @@ const FLAGSHIP_HUBS: HubDefinition[] = [
   { id: 'ARG', offsetX: -22, offsetY: 24 },
   { id: 'CHL', offsetX: -30, offsetY: 16, desktopOnly: true },
   { id: 'COL', offsetX: -28, offsetY: -12, desktopOnly: true },
+  { id: 'PER', offsetX: -34, offsetY: 4, desktopOnly: true },
 
   // Oceania & Africa (5)
   { id: 'AUS', offsetX: -24, offsetY: -16 },
@@ -2452,16 +2457,32 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     enrichedHubsRef.current = enrichedHubs
   }, [enrichedHubs])
 
-  // Summary counts
+  // Summary counts matching the active displayMode's globe/map color buckets
   const hubSummary = useMemo(() => {
     let up = 0
     let down = 0
-    for (const h of enrichedHubs) {
-      if (h.stockChangePct > 0.15) up++
-      else if (h.stockChangePct < -0.15) down++
+    if (displayMode === 'stocks') {
+      for (const bucket of stockBucketLookup.values()) {
+        if (bucket > 4) up++
+        else if (bucket >= 1 && bucket < 4) down++
+      }
+      return { up, down, total: stockBucketLookup.size }
     }
-    return { up, down, total: enrichedHubs.length }
-  }, [enrichedHubs])
+    if (displayMode === 'fx') {
+      for (const bucket of fxBucketLookup.values()) {
+        if (bucket > 4) up++
+        else if (bucket >= 1 && bucket < 4) down++
+      }
+      return { up, down, total: fxBucketLookup.size }
+    }
+    // displayMode === 'gdp'
+    for (const info of gdpLookup.values()) {
+      if (info.growthRatePct == null) continue
+      if (info.growthRatePct > 0) up++
+      else if (info.growthRatePct < 0) down++
+    }
+    return { up, down, total: gdpLookup.size }
+  }, [displayMode, stockBucketLookup, fxBucketLookup, gdpLookup])
 
   const handleSelectPreset = (preset: RegionPreset) => {
     setActivePreset(preset)
@@ -3379,36 +3400,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           )}
         </div>
 
-        {/* Right: 3D / 2D Dimension Toggle + Spin Toggle & Reset */}
+        {/* Right: Spin Toggle & Reset */}
         <div className="flex items-center gap-1.5 shrink-0">
-          {/* 3D / 2D Morph Toggle */}
-          <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5">
-            <button
-              type="button"
-              onClick={() => setViewDimension('3d')}
-              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                viewDimension === '3d'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Globe className="w-3 h-3" />
-              <span>3D</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewDimension('2d')}
-              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                viewDimension === '2d'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <MapIcon className="w-3 h-3" />
-              <span>2D</span>
-            </button>
-          </div>
-
           {viewDimension === '3d' && (
             <>
               <button
@@ -3702,6 +3695,39 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             </button>
           )
         })}
+      </div>
+
+      {/* Vertical Floating 2D / 3D Dimension Toggle (Bottom-Right above Focus Market strip) */}
+      <div
+        data-globe-ui="true"
+        className={`absolute right-2.5 z-30 flex flex-col items-center rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-1 gap-1 shadow-xl transition-all duration-300 ${
+          viewDimension === '3d' ? 'bottom-[138px] sm:bottom-[92px]' : 'bottom-3'
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setViewDimension('2d')}
+          className={`w-11 py-1.5 rounded-lg text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+            viewDimension === '2d'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+          }`}
+        >
+          <MapIcon className="w-3.5 h-3.5" />
+          <span>2D</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewDimension('3d')}
+          className={`w-11 py-1.5 rounded-lg text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+            viewDimension === '3d'
+              ? 'bg-emerald-600 text-white shadow-sm'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+          }`}
+        >
+          <Globe className="w-3.5 h-3.5" />
+          <span>3D</span>
+        </button>
       </div>
 
       {/* Bottom Live Spotlight Strip (Front-Facing Hubs Currently in Focus - 3D mode only) */}
