@@ -2929,13 +2929,13 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         // 4d. South Pole Easter Egg: 3D Antarctic Ice Shelf, Glacier Peak & Two Strolling Penguins ("뒤뚱뒤뚱")
         drawAntarcticEasterEgg(ctx, cx, cy, radius, rotLonRad, rotLatRad, pulsePhase)
 
-        // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub (Hidden in 'stocks' mode)
+        // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub (FX mode only)
         const currentHubs = enrichedHubsRef.current
         const baseHubId = BASE_CURRENCY_HUB_ID[baseCurrency] || 'USA'
         const baseHub = currentHubs.find((h) => h.id === baseHubId)
         const isDesktopRatio = width >= 768 && width >= height * 0.95
 
-        if (baseHub && activeMode !== 'stocks') {
+        if (baseHub && activeMode === 'fx') {
           for (const target of currentHubs) {
             if (target.id === baseHub.id) continue
             if (!isDesktopRatio && target.desktopOnly) continue
@@ -2976,25 +2976,19 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 ctx.lineTo(sx, sy)
               }
             }
-            if (activeMode === 'fx') {
-              const fxChg = target.fxChangePct ?? 0
-              if (fxChg > 0.01) {
-                ctx.strokeStyle = isHighlighted
-                  ? 'rgba(52, 211, 153, 0.85)'
-                  : 'rgba(16, 185, 129, 0.38)'
-              } else if (fxChg < -0.01) {
-                ctx.strokeStyle = isHighlighted
-                  ? 'rgba(251, 113, 133, 0.85)'
-                  : 'rgba(244, 63, 94, 0.38)'
-              } else {
-                ctx.strokeStyle = isHighlighted
-                  ? 'rgba(148, 163, 184, 0.75)'
-                  : 'rgba(100, 116, 139, 0.25)'
-              }
+            const fxChg = target.fxChangePct ?? 0
+            if (fxChg > 0.01) {
+              ctx.strokeStyle = isHighlighted
+                ? 'rgba(52, 211, 153, 0.85)'
+                : 'rgba(16, 185, 129, 0.38)'
+            } else if (fxChg < -0.01) {
+              ctx.strokeStyle = isHighlighted
+                ? 'rgba(251, 113, 133, 0.85)'
+                : 'rgba(244, 63, 94, 0.38)'
             } else {
               ctx.strokeStyle = isHighlighted
-                ? 'rgba(52, 211, 153, 0.7)'
-                : 'rgba(99, 102, 241, 0.20)'
+                ? 'rgba(148, 163, 184, 0.75)'
+                : 'rgba(100, 116, 139, 0.25)'
             }
             ctx.lineWidth = isHighlighted ? 1.8 : 1.0
             ctx.stroke()
