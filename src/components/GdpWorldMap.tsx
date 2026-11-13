@@ -1,11 +1,8 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import {
-  TrendingUp,
-  TrendingDown,
   Filter,
   ChevronDown,
   Check,
-  ExternalLink,
   Activity,
   Globe,
   LayoutGrid,
@@ -15,25 +12,13 @@ import {
 import { TileWorldMap } from './TileWorldMap'
 import { GdpTreemap } from './GdpTreemap'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Region, Language, EconomicYear } from '../types/economics'
-import { CountryFlag } from './CountryFlag'
 import { RankingTable, type CountryRowItem } from './RankingTable'
-import {
-  formatGdpCompact,
-  formatPerCapita,
-  formatExchangeRate,
-  getPerCapitaColorClass,
-  getInflationColorClass,
-  getInflationHexColor,
-  getFxRateColorClass,
-  getFxBadgeColorClass,
-  formatFxChangeBadgeText,
-} from '../utils/formatters'
-import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
+import { getInflationHexColor } from '../utils/formatters'
+import { getConversionRate } from '../services/exchangeApi'
 import { translations } from '../i18n/translations'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
-import { getCountryName, COUNTRY_NAMES_JA } from '../utils/countryNames'
-import { getFuelPriceColor, formatFuelPrice, FUEL_COLOR_LOW, FUEL_COLOR_MID, FUEL_COLOR_HIGH } from '../data/fuelPrices'
-import { getBigMacData, getBigMacColor, formatBigMacPrice } from '../data/bigMac'
+import { getFuelPriceColor, FUEL_COLOR_LOW, FUEL_COLOR_MID, FUEL_COLOR_HIGH } from '../data/fuelPrices'
+import { getBigMacColor } from '../data/bigMac'
 
 export type MapMetric = 'gdp' | 'perCapita' | 'growth' | 'debt' | 'inflation' | 'fuelPrice' | 'bigMac'
 
@@ -53,11 +38,10 @@ const ALL_REGIONS: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania'
 
 interface MetricOptionConfig {
   id: MapMetric
-  labelKey: 'metricTotalGdp' | 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation' | 'metricFuelPrice' | 'metricBigMac'
+  labelKey: 'metricPerCapita' | 'metricGrowth' | 'metricDebt' | 'metricInflation' | 'metricFuelPrice' | 'metricBigMac'
 }
 
 const METRIC_OPTIONS: MetricOptionConfig[] = [
-  { id: 'gdp', labelKey: 'metricTotalGdp' },
   { id: 'perCapita', labelKey: 'metricPerCapita' },
   { id: 'growth', labelKey: 'metricGrowth' },
   { id: 'debt', labelKey: 'metricDebt' },
@@ -93,8 +77,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     } catch { }
   }
 
-  const [metric, setMetric] = useState<MapMetric>('gdp')
-  const isHeatmapSupported = metric === 'gdp' || metric === 'debt'
+  const [metric, setMetric] = useState<MapMetric>('perCapita')
+  const isHeatmapSupported = metric === 'debt'
   const activeVisualMode = isHeatmapSupported ? visualMode : 'map'
 
   const [isMetricMenuOpen, setIsMetricMenuOpen] = useState(false)
@@ -147,32 +131,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     return map
   }, [items])
 
-  // Filtered items when search is active
-  const searchMatchedCountry = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim()
-    if (!q) return null
-    return items.find(
-      (item) =>
-        item.country.id.toLowerCase() === q ||
-        item.country.nameEn.toLowerCase().includes(q) ||
-        item.country.nameKo.toLowerCase().includes(q) ||
-        (COUNTRY_NAMES_JA[item.country.id] && COUNTRY_NAMES_JA[item.country.id].toLowerCase().includes(q)) ||
-        item.country.currencyCode.toLowerCase() === q
-    )
-  }, [items, searchQuery])
-
-  // Compute active country for inspection HUD
-  const inspectedCountryItem = useMemo(() => {
-    if (searchMatchedCountry) return searchMatchedCountry
-    if (hoveredCountryId && countryItemMap.has(hoveredCountryId)) {
-      return countryItemMap.get(hoveredCountryId)
-    }
-    if (pinnedCountryId && countryItemMap.has(pinnedCountryId)) {
-      return countryItemMap.get(pinnedCountryId)
-    }
-    return items[0] // Default to #1 economy (US)
-  }, [searchMatchedCountry, hoveredCountryId, pinnedCountryId, countryItemMap, items])
-
   // Country count per region for informative multi-select badges
   const regionCountryCounts = useMemo(() => {
     const counts: Record<Region, number> = {
@@ -196,16 +154,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
     return items.filter((item) => selectedRegions.includes(item.country.region))
   }, [items, selectedRegions, isAllRegions])
 
-  // Rank strictly by total GDP for the Top 5 amber tier (matches Economic Globe)
-  const gdpRankMap = useMemo(() => {
-    const map = new Map<string, number>()
-    ;[...items]
-      .filter((it) => it.totalGdpUsd > 0)
-      .sort((a, b) => b.totalGdpUsd - a.totalGdpUsd)
-      .forEach((it, idx) => map.set(it.country.id, idx + 1))
-    return map
-  }, [items])
-
   // Color generator based on selected metric
   const getCountryFill = useCallback(
     (countryId: string) => {
@@ -213,17 +161,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
       if (!item) {
         // Untracked background country
         return '#1e293b' // slate-800
-      }
-
-      if (metric === 'gdp') {
-        const gdpRank = gdpRankMap.get(countryId) ?? 999
-        if (gdpRank <= 2) return '#fbbf24' // Top 1~2 Rich Gold Amber
-        if (gdpRank <= 5) return '#fde68a' // Top 3~5 Pale Soft Amber
-        const gdp = item.totalGdpUsd
-        if (gdp >= 2_000_000_000_000) return '#34d399' // $2T+ Bright Emerald
-        if (gdp >= 500_000_000_000) return '#10b981' // $500B-$2T Medium Emerald
-        if (gdp >= 100_000_000_000) return '#047857' // $100B-$500B Deep Forest
-        return '#064e3b' // < $100B Dark Forest Slate
       }
 
       if (metric === 'perCapita') {
@@ -265,7 +202,7 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
 
       return '#334155'
     },
-    [countryItemMap, gdpRankMap, metric]
+    [countryItemMap, metric]
   )
 
   const handleToggleRegion = (reg: Region) => {
@@ -660,10 +597,8 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
         </div>
       </div>
 
-      {/* 3. INTERACTIVE WORLD MAP & INSPECTOR HUD */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        {/* MAP CANVAS (Takes 3 columns on wide screens) */}
-        <div className="xl:col-span-3 space-y-4">
+      {/* 3. INTERACTIVE WORLD MAP / HEATMAP (Full-width) */}
+      <div className="space-y-4">
           {activeVisualMode === 'map' ? (
             <>
               <TileWorldMap
@@ -686,52 +621,22 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2 text-indigo-400 font-bold">
                   <span>
-                    {metric === 'gdp'
-                      ? t.metricTotalGdp
-                      : metric === 'perCapita'
-                        ? t.metricPerCapita
-                        : metric === 'growth'
-                          ? t.metricGrowth
-                          : metric === 'debt'
-                            ? t.metricDebt
-                            : metric === 'inflation'
-                              ? t.metricInflation
-                              : metric === 'fuelPrice'
-                                ? t.metricFuelPrice
-                                : t.metricBigMac}
+                    {metric === 'perCapita'
+                      ? t.metricPerCapita
+                      : metric === 'growth'
+                        ? t.metricGrowth
+                        : metric === 'debt'
+                          ? t.metricDebt
+                          : metric === 'inflation'
+                            ? t.metricInflation
+                            : metric === 'fuelPrice'
+                              ? t.metricFuelPrice
+                              : t.metricBigMac}
                   </span>
                 </div>
 
                 {/* Legend scale swatches */}
                 <div className="flex flex-wrap items-center gap-3">
-                  {metric === 'gdp' && (
-                    <>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#fbbf24] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">Top 1~2</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#fde68a] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">Top 3~5</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#34d399] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">$2T+</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#10b981] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">$500B ~ $2T</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#047857] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">$100B ~ $500B</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded bg-[#064e3b] shadow-sm"></span>
-                        <span className="text-slate-300 font-mono font-medium">&lt; $100B</span>
-                      </div>
-                    </>
-                  )}
 
                   {metric === 'perCapita' && (
                     <>
@@ -925,283 +830,6 @@ export const GdpWorldMap: React.FC<GdpWorldMapProps> = ({
               selectedYear={selectedYear}
             />
           )}
-        </div>
-
-        {/* RIGHT SIDEBAR: Selected / Hovered Economy Inspector HUD */}
-        <div className="hidden sm:block xl:col-span-1 space-y-4">
-          {inspectedCountryItem && (
-            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5">
-              {/* Badge & Country Identity */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-semibold text-indigo-400 tracking-wide uppercase">
-                    {t.selectedCountryBadge}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono font-bold text-xs">
-                    #{inspectedCountryItem.rank}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CountryFlag
-                    iso2={inspectedCountryItem.country.iso2}
-                    className="w-8 h-6 rounded-md shadow"
-                  />
-                  <div>
-                    <h2 className="text-xl font-black text-white leading-tight">
-                      {getCountryName(inspectedCountryItem.country, lang)}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {inspectedCountryItem.country.region} · {inspectedCountryItem.country.currencyCode}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Key Metrics Cards */}
-              <div className="space-y-2.5">
-                {/* Total GDP */}
-                <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
-                  <div className="text-[11px] text-slate-400 font-medium">{t.cardTotalGdp}</div>
-                  <div className="text-xl font-black text-white font-mono mt-0.5">
-                    {formatGdpCompact(
-                      inspectedCountryItem.totalGdpUsd,
-                      baseCurrency,
-                      usdToBase,
-                      lang
-                    )}
-                  </div>
-                  {baseCurrency !== 'USD' && (
-                    <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
-                      ${(inspectedCountryItem.totalGdpUsd / 1e12).toFixed(2)}T
-                    </div>
-                  )}
-                </div>
-
-                {/* GDP Per Capita */}
-                <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
-                  <div className="text-[11px] text-slate-400 font-medium">{t.cardPerCapita}</div>
-                  <div className={`text-lg font-bold font-mono mt-0.5 ${getPerCapitaColorClass(inspectedCountryItem.gdpPerCapitaUsd)}`}>
-                    {formatPerCapita(
-                      inspectedCountryItem.gdpPerCapitaUsd,
-                      baseCurrency,
-                      usdToBase,
-                      lang
-                    )}
-                  </div>
-                  {baseCurrency !== 'USD' && (
-                    <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
-                      ${Math.round(inspectedCountryItem.gdpPerCapitaUsd).toLocaleString()}
-                    </div>
-                  )}
-                </div>
-
-                {/* Growth Rate, Inflation Rate & Debt Ratio Grid */}
-                <div className="grid grid-cols-3 gap-1.5">
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
-                    <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricGrowth}</div>
-                    <div
-                      className={`text-sm font-bold font-mono mt-0.5 flex items-center gap-0.5 min-w-0 ${inspectedCountryItem.growthRatePct === null || inspectedCountryItem.growthRatePct === undefined
-                        ? 'text-slate-400'
-                        : inspectedCountryItem.growthRatePct >= 0
-                          ? 'text-emerald-400'
-                          : 'text-rose-400'
-                        }`}
-                    >
-                      {inspectedCountryItem.growthRatePct !== null && inspectedCountryItem.growthRatePct !== undefined ? (
-                        inspectedCountryItem.growthRatePct >= 0 ? (
-                          <TrendingUp className="w-3 h-3 shrink-0" />
-                        ) : (
-                          <TrendingDown className="w-3 h-3 shrink-0" />
-                        )
-                      ) : null}
-                      <span className="truncate">
-                        {inspectedCountryItem.growthRatePct !== null && inspectedCountryItem.growthRatePct !== undefined
-                          ? inspectedCountryItem.growthRatePct > 0
-                            ? `+${inspectedCountryItem.growthRatePct.toFixed(1)}%`
-                            : `${inspectedCountryItem.growthRatePct.toFixed(1)}%`
-                          : '-'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
-                    <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricInflation}</div>
-                    <div
-                      className={`text-sm font-bold font-mono mt-0.5 truncate ${getInflationColorClass(
-                        inspectedCountryItem.inflationRatePct
-                      )}`}
-                    >
-                      {inspectedCountryItem.inflationRatePct !== null && inspectedCountryItem.inflationRatePct !== undefined
-                        ? `${inspectedCountryItem.inflationRatePct.toFixed(1)}%`
-                        : '-'}
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2 min-w-0 overflow-hidden">
-                    <div className="text-[10px] text-slate-400 font-medium truncate">{t.metricDebt}</div>
-                    <div
-                      className={`text-sm font-bold font-mono mt-0.5 truncate ${inspectedCountryItem.debtRatioPct === null || inspectedCountryItem.debtRatioPct === undefined
-                        ? 'text-slate-400'
-                        : inspectedCountryItem.debtRatioPct < 60
-                          ? 'text-emerald-400'
-                          : inspectedCountryItem.debtRatioPct < 90
-                            ? 'text-amber-400'
-                            : 'text-rose-400'
-                        }`}
-                    >
-                      {inspectedCountryItem.debtRatioPct !== null &&
-                        inspectedCountryItem.debtRatioPct !== undefined
-                        ? `${inspectedCountryItem.debtRatioPct.toFixed(1)}%`
-                        : '-'}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Live Exchange Rate & 24h Change Card in HUD */}
-                {exchangeRates && (() => {
-                  const curr = inspectedCountryItem.country.currencyCode
-                  const fxRate = getConversionRate(exchangeRates, curr, baseCurrency)
-                  const fxChangePct = getFxChangePct(exchangeRates, curr, baseCurrency)
-                  const prevFxRate = getPreviousConversionRate(exchangeRates, curr, baseCurrency)
-                  const digits = curr === 'KRW' ? 4 : 2
-
-                  return (
-                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 flex items-center justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                          <span>{t.cardFxRate}</span>
-                        </div>
-                        <div className={`text-sm font-bold font-mono mt-0.5 truncate ${getFxRateColorClass(fxChangePct)}`}>
-                          1 {curr} = {formatExchangeRate(fxRate, digits)} {baseCurrency}
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        {fxChangePct !== null ? (
-                          <>
-                            <span
-                              className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded inline-block ${getFxBadgeColorClass(
-                                fxChangePct
-                              )}`}
-                            >
-                              {formatFxChangeBadgeText(fxChangePct)}
-                            </span>
-                            {prevFxRate && (
-                              <span className="text-[9px] text-slate-500 font-mono block mt-0.5">
-                                {lang === 'ko' ? '전일' : 'Prev'}: {formatExchangeRate(prevFxRate, digits)}
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <span className="text-[10px] font-mono text-slate-500">
-                            {curr === baseCurrency ? 'Base' : '-'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })()}
-
-                {/* Fuel Price Card in HUD */}
-                {inspectedCountryItem.fuelPriceUsd !== null && inspectedCountryItem.fuelPriceUsd !== undefined && (
-                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
-                        <span
-                          className="w-2 h-2 rounded-full shrink-0 shadow-sm"
-                          style={{ backgroundColor: getFuelPriceColor(inspectedCountryItem.fuelPriceUsd) }}
-                        />
-                        <span>{t.metricFuelPrice}</span>
-                      </div>
-                      <div className="text-base font-bold text-white font-mono mt-0.5">
-                        {formatFuelPrice(inspectedCountryItem.fuelPriceUsd, baseCurrency, usdToBase, lang)}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] text-slate-500 font-mono block">
-                        RON 95 / ${inspectedCountryItem.fuelPriceUsd.toFixed(2)}/L
-                      </span>
-                      <span
-                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5"
-                        style={{
-                          backgroundColor: `${getFuelPriceColor(inspectedCountryItem.fuelPriceUsd)}20`,
-                          color: getFuelPriceColor(inspectedCountryItem.fuelPriceUsd),
-                        }}
-                      >
-                        {inspectedCountryItem.fuelPriceUsd < 0.8
-                          ? t.fuelLowPrice
-                          : inspectedCountryItem.fuelPriceUsd <= 1.8
-                            ? t.fuelMidPrice
-                            : t.fuelHighPrice}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Big Mac Index Card in HUD */}
-                {(() => {
-                  const bm = getBigMacData(inspectedCountryItem.country.id)
-                  if (!bm) return null
-                  const color = getBigMacColor(bm.valuationRawPct)
-                  return (
-                    <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 flex items-center justify-between">
-                      <div>
-                        <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
-                          <span
-                            className="w-2 h-2 rounded-full shrink-0 shadow-sm"
-                            style={{ backgroundColor: color }}
-                          />
-                          <span>{t.metricBigMac}</span>
-                        </div>
-                        <div className="text-base font-bold text-white font-mono mt-0.5">
-                          {formatBigMacPrice(bm.dollarPrice, baseCurrency, usdToBase, lang)}
-                        </div>
-                        <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                          {bm.localPrice.toLocaleString()} {bm.currencyCode} (${bm.dollarPrice.toFixed(2)})
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span
-                          className="text-[11px] font-mono font-bold block"
-                          style={{ color }}
-                        >
-                          {bm.valuationRawPct > 0 ? `+${bm.valuationRawPct.toFixed(1)}%` : `${bm.valuationRawPct.toFixed(1)}%`}
-                        </span>
-                        <span
-                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5"
-                          style={{
-                            backgroundColor: `${color}20`,
-                            color: color,
-                          }}
-                        >
-                          {bm.valuationRawPct < -10
-                            ? (lang === 'ko' ? '저평가' : lang === 'ja' ? '割安' : lang === 'es' ? 'Infravalorada' : lang === 'zh' ? '低估' : 'Undervalued')
-                            : bm.valuationRawPct > 10
-                            ? (lang === 'ko' ? '고평가' : lang === 'ja' ? '割高' : lang === 'es' ? 'Sobrevalorada' : lang === 'zh' ? '高估' : 'Overvalued')
-                            : (lang === 'ko' ? '적정 수준' : lang === 'ja' ? '適正' : lang === 'es' ? 'Equilibrado' : lang === 'zh' ? '合理' : 'Fair Value')}
-                        </span>
-                        {bm.valuationAdjustedPct !== null && (
-                          <span className="text-[9px] text-slate-500 block mt-0.5" title="GDP-adjusted valuation">
-                            {lang === 'ko' ? `GDP보정: ${bm.valuationAdjustedPct > 0 ? '+' : ''}${bm.valuationAdjustedPct.toFixed(1)}%` : `GDP-adj: ${bm.valuationAdjustedPct > 0 ? '+' : ''}${bm.valuationAdjustedPct.toFixed(1)}%`}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })()}
-              </div>
-
-              {/* Open Modal CTA Button */}
-              <button
-                onClick={() => onSelectCountry(inspectedCountryItem.country)}
-                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <span>{t.viewDetailsBtn}</span>
-                <ExternalLink className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* 4. FULL RANKING LIST TABLE */}

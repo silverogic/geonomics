@@ -261,6 +261,8 @@ export function App() {
             exchangeRates={exchangeRates}
             interestRates={interestRates}
             lang={lang}
+            selectedYear={selectedYear}
+            onYearChange={handleYearChange}
             onSelectCountry={handleSelectCountry}
             refreshKey={refreshCount}
           />

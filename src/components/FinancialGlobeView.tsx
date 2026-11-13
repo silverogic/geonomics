@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Play,
@@ -9,10 +9,13 @@ import {
   BarChart3,
   RotateCcw,
   Sparkles,
+  Globe,
+  Map as MapIcon,
 } from 'lucide-react'
 import type {
   BaseCurrency,
   CountryMeta,
+  EconomicYear,
   ExchangeRates,
   InterestRateInfo,
   Language,
@@ -22,6 +25,7 @@ import { COUNTRIES } from '../data/countries'
 import { getImfYearMap } from '../data/imfEconomic'
 import {
   PIXEL_MAP_COLS,
+  PIXEL_MAP_ROWS,
   COUNTRY_LABEL_ANCHORS,
 } from '../data/pixelMapData'
 import { GLOBE_TERRAIN_DOTS } from '../data/globeTerrainDots'
@@ -34,6 +38,7 @@ import {
 } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
 import { getCountryName } from '../utils/countryNames'
+import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
 import { detectVisitorCountry } from '../utils/locale'
 import {
   formatGdpCompact,
@@ -43,6 +48,7 @@ import {
 } from '../utils/formatters'
 import { CountryFlag } from './CountryFlag'
 import { StockSparkline } from './StockSparkline'
+import { TileWorldMap } from './TileWorldMap'
 
 interface FinancialGlobeViewProps {
   items?: CountryRowItem[]
@@ -50,6 +56,8 @@ interface FinancialGlobeViewProps {
   exchangeRates: ExchangeRates | null
   interestRates?: Record<string, InterestRateInfo> | null
   lang: Language
+  selectedYear?: EconomicYear
+  onYearChange?: (year: EconomicYear) => void
   onSelectCountry: (country: CountryMeta) => void
   refreshKey?: number
 }
@@ -134,6 +142,8 @@ interface Vec3 {
 interface LandDot extends Vec3 {
   countryId: string
   isEdge: boolean
+  c: number
+  r: number
 }
 
 interface CountryGdpElevationInfo {
@@ -473,7 +483,7 @@ function getGlobeGeometry(): { landDots: LandDot[]; graticuleLines: Vec3[][] } {
   for (const dot of GLOBE_TERRAIN_DOTS) {
     const { lat, lon } = gridColRowToLatLon(dot.c, dot.r)
     const v = latLonToVec3(lat, lon)
-    landDots.push({ ...v, countryId: dot.id, isEdge: dot.e === 1 })
+    landDots.push({ ...v, countryId: dot.id, isEdge: dot.e === 1, c: dot.c, r: dot.r })
   }
 
   // 2. Precompute subtle latitude & longitude graticule curves
@@ -2043,11 +2053,15 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   exchangeRates,
   interestRates,
   lang,
+  selectedYear,
+  onYearChange,
   onSelectCountry,
   refreshKey,
 }) => {
   const { t } = useTranslation()
   const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('gdp')
+  const [viewDimension, setViewDimension] = useState<'3d' | '2d'>('3d')
+  const [hovered2dCountryId, setHovered2dCountryId] = useState<string | null>(null)
   const [activePreset, setActivePreset] = useState<RegionPreset>('auto')
   const [isSpinning, setIsSpinning] = useState(true)
   const [hoveredHubId, setHoveredHubId] = useState<string | null>(null)
@@ -2058,6 +2072,20 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const tileOverlayRef = useRef<HTMLDivElement>(null)
+  const viewDimensionRef = useRef<'3d' | '2d'>('3d')
+  const morphRef = useRef<number>(0)
+
+  useEffect(() => {
+    viewDimensionRef.current = viewDimension
+    if (viewDimension === '2d') {
+      setHoveredHubId(null)
+      hoveredHubIdRef.current = null
+      setExpandedHubId(null)
+    } else {
+      setHovered2dCountryId(null)
+    }
+  }, [viewDimension])
 
   // Rotation state in degrees: start facing East Asia / Pacific (~126°E, 16°N)
   const rotationRef = useRef<{ lon: number; lat: number; velLon: number; velLat: number }>({
@@ -2092,6 +2120,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code !== 'Space' && e.key !== ' ') return
+      if (viewDimensionRef.current === '2d') return
       if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return
 
       const target = e.target as HTMLElement | null
@@ -2164,7 +2193,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       return map
     }
 
-    const imfFallback = getImfYearMap('2026')
+    const imfFallback = getImfYearMap(selectedYear || '2026')
     const sorted = Array.from(imfFallback.entries()).sort(
       (a, b) => b[1].totalGdpUsd - a[1].totalGdpUsd
     )
@@ -2181,7 +2210,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       })
     })
     return map
-  }, [items])
+  }, [items, selectedYear])
 
   const gdpLookupRef = useRef(gdpLookup)
   useEffect(() => {
@@ -2240,6 +2269,19 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   useEffect(() => {
     fxBucketLookupRef.current = fxBucketLookup
   }, [fxBucketLookup])
+
+  const get2dCountryFill = useCallback(
+    (countryId: string): string => {
+      if (displayMode === 'gdp') {
+        const tier = gdpLookup.get(countryId)?.colorTier ?? 0
+        return GDP_VOXEL_STYLES[tier]?.topCapFront ?? '#1e293b'
+      }
+      const bucketMap = displayMode === 'stocks' ? stockBucketLookup : fxBucketLookup
+      const bucket = bucketMap.get(countryId) ?? 0
+      return STOCK_DOT_STYLES[bucket]?.front ?? '#1e293b'
+    },
+    [displayMode, gdpLookup, stockBucketLookup, fxBucketLookup]
+  )
 
   // Build hubs list calibrated directly to COUNTRY_LABEL_ANCHORS so every pin sits on its landmass dot
   const hubItems = useMemo(() => {
@@ -2471,9 +2513,36 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       ctx.scale(dpr, dpr)
       ctx.clearRect(0, 0, width, height)
 
+      // Morph progress: 0 = 3D Sphere, 1 = 2D Flat Map
+      const targetMorph = viewDimensionRef.current === '2d' ? 1 : 0
+      const morphDiff = targetMorph - morphRef.current
+      if (Math.abs(morphDiff) > 0.001) {
+        morphRef.current += morphDiff * 0.11
+      } else {
+        morphRef.current = targetMorph
+      }
+      const rawM = morphRef.current
+      const m = rawM < 0.5 ? 4 * rawM * rawM * rawM : 1 - Math.pow(-2 * rawM + 2, 3) / 2
+      const isMorphingOr2D = m >= 0.001
+
+      // Sync 2D TileWorldMap overlay opacity directly via DOM (zero React re-renders)
+      if (tileOverlayRef.current) {
+        const overlayOpacity = m > 0.85 ? Math.min(1, (m - 0.85) / 0.15) : 0
+        tileOverlayRef.current.style.opacity = overlayOpacity.toFixed(3)
+        tileOverlayRef.current.style.pointerEvents = m >= 0.99 ? 'auto' : 'none'
+        tileOverlayRef.current.style.visibility = m > 0.01 ? 'visible' : 'hidden'
+      }
+
       // Update rotation physics
       const rot = rotationRef.current
-      if (!dragRef.current.isDown) {
+      if (targetMorph === 1) {
+        // Unrolling to 2D: smoothly align globe face toward prime meridian (0, 0)
+        const dLon = ((0 - rot.lon + 540) % 360) - 180
+        rot.lon += dLon * 0.12
+        rot.lat += (0 - rot.lat) * 0.12
+        rot.velLon = 0
+        rot.velLat = 0
+      } else if (!dragRef.current.isDown) {
         if (targetRotationRef.current) {
           const dLon = ((targetRotationRef.current.lon - rot.lon + 540) % 360) - 180
           const dLat = targetRotationRef.current.lat - rot.lat
@@ -2506,263 +2575,71 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       const cy = topSafe + usableH / 2
       const radius = Math.min(width * (width < 640 ? 0.38 : 0.40), usableH * 0.45)
 
+      // Measure target 2D grid bounds from DOM TileWorldMap so morph aligns 1:1 with pixels
+      let mapW = Math.min(width - 48, usableH * (PIXEL_MAP_COLS / PIXEL_MAP_ROWS))
+      let mapH = mapW * (PIXEL_MAP_ROWS / PIXEL_MAP_COLS)
+      let mapLeft = cx - mapW / 2
+      let mapTop = cy - mapH / 2
+      if (isMorphingOr2D && tileOverlayRef.current) {
+        const gridEl = tileOverlayRef.current.querySelector('[data-tile-grid="true"]') as HTMLElement | null
+        if (gridEl) {
+          const gridRect = gridEl.getBoundingClientRect()
+          if (gridRect.width > 100 && gridRect.height > 50) {
+            mapLeft = gridRect.left - rect.left
+            mapTop = gridRect.top - rect.top
+            mapW = gridRect.width
+            mapH = gridRect.height
+          }
+        }
+      }
+
+      const globeBgAlpha = Math.max(0, 1 - m * 1.45)
+
       // 1. Outer Atmospheric Halo Glow
-      const outerHalo = ctx.createRadialGradient(
-        cx,
-        cy,
-        radius * 0.72,
-        cx,
-        cy,
-        radius * 1.34
-      )
-      outerHalo.addColorStop(0, 'rgba(16, 185, 129, 0.16)')
-      outerHalo.addColorStop(0.45, 'rgba(79, 70, 229, 0.16)')
-      outerHalo.addColorStop(1, 'rgba(2, 6, 23, 0)')
-      ctx.fillStyle = outerHalo
-      ctx.beginPath()
-      ctx.arc(cx, cy, radius * 1.34, 0, Math.PI * 2)
-      ctx.fill()
-
-      // 2. 3D Sphere Ocean Body with Specular Highlight
-      const sphereGrad = ctx.createRadialGradient(
-        cx - radius * 0.28,
-        cy - radius * 0.28,
-        radius * 0.08,
-        cx,
-        cy,
-        radius
-      )
-      sphereGrad.addColorStop(0, '#132046')
-      sphereGrad.addColorStop(0.65, '#091128')
-      sphereGrad.addColorStop(1, '#040817')
-      ctx.fillStyle = sphereGrad
-      ctx.beginPath()
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-      ctx.fill()
-
-      // 3. Subtle Graticule Wireframe Lines (Back & Front)
-      ctx.lineWidth = 0.8
-      for (const line of graticuleLines) {
+      if (globeBgAlpha > 0.01) {
+        ctx.save()
+        ctx.globalAlpha = globeBgAlpha
+        const outerHalo = ctx.createRadialGradient(
+          cx,
+          cy,
+          radius * 0.72,
+          cx,
+          cy,
+          radius * 1.34
+        )
+        outerHalo.addColorStop(0, 'rgba(16, 185, 129, 0.16)')
+        outerHalo.addColorStop(0.45, 'rgba(79, 70, 229, 0.16)')
+        outerHalo.addColorStop(1, 'rgba(2, 6, 23, 0)')
+        ctx.fillStyle = outerHalo
         ctx.beginPath()
-        let started = false
-        for (let i = 0; i < line.length; i++) {
-          const rp = rotatePoint(line[i], rotLonRad, rotLatRad)
-          if (rp.z < -0.15) {
-            started = false
-            continue
-          }
-          const sx = cx + rp.x * radius
-          const sy = cy + rp.y * radius
-          if (!started) {
-            ctx.moveTo(sx, sy)
-            started = true
-          } else {
-            ctx.lineTo(sx, sy)
-          }
-        }
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.13)'
-        ctx.stroke()
-      }
+        ctx.arc(cx, cy, radius * 1.34, 0, Math.PI * 2)
+        ctx.fill()
 
-      // Crisp Atmospheric Rim Ring on Base Sphere
-      ctx.beginPath()
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-      ctx.strokeStyle = 'rgba(52, 211, 153, 0.30)'
-      ctx.lineWidth = 1.2
-      ctx.stroke()
+        // 2. 3D Sphere Ocean Body with Specular Highlight
+        const sphereGrad = ctx.createRadialGradient(
+          cx - radius * 0.28,
+          cy - radius * 0.28,
+          radius * 0.08,
+          cx,
+          cy,
+          radius
+        )
+        sphereGrad.addColorStop(0, '#132046')
+        sphereGrad.addColorStop(0.65, '#091128')
+        sphereGrad.addColorStop(1, '#040817')
+        ctx.fillStyle = sphereGrad
+        ctx.beginPath()
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+        ctx.fill()
 
-      // 4. Mode-Specific Continent Rendering
-      const dotSizeBack = Math.max(0.88, radius * 0.0052)
-      const dotSizeFront = Math.max(1.38, radius * 0.0082)
-      const currentGdpMap = gdpLookupRef.current
-      const currentStockBucketMap = stockBucketLookupRef.current
-      const currentFxBucketMap = fxBucketLookupRef.current
-      const activeMode = displayModeRef.current
-      const isGdpMode = activeMode === 'gdp'
-      const elevMultiplier = 1.25
-
-      // 4a. Back hemisphere dim hologram dots
-      ctx.fillStyle = 'rgba(71, 85, 105, 0.14)'
-      ctx.beginPath()
-      for (let i = 0; i < landDots.length; i++) {
-        const rp = rotatePoint(landDots[i], rotLonRad, rotLatRad)
-        if (rp.z < 0) {
-          const sx = cx + rp.x * radius
-          const sy = cy + rp.y * radius
-          ctx.moveTo(sx + dotSizeBack, sy)
-          ctx.arc(sx, sy, dotSizeBack, 0, Math.PI * 2)
-        }
-      }
-      ctx.fill()
-
-      // 4b. Front hemisphere continents based on active display mode:
-      // - 'gdp': 3D Stacked Voxel Continent Blocks with GDP elevation
-      // - 'stocks': Flat sphere surface (no elevation) with country dots colored by stock index change %
-      // - 'fx': Flat sphere surface (no elevation) with country dots colored by FX 24h change %
-      if (isGdpMode) {
-        for (let tier = 0; tier < GDP_VOXEL_STYLES.length; tier++) {
-          const style = GDP_VOXEL_STYLES[tier]
-          const structTier = getGdpStructTier(tier)
-          const maxLayers =
-            structTier === 4 ? 7 : structTier === 3 ? 5 : structTier === 2 ? 4 : structTier === 1 ? 2 : 1
-
-          // 1) Draw stacked intermediate 3D voxel slices (side wall body along coastlines, borders & oblique angles)
-          if (maxLayers > 1) {
-            ctx.fillStyle = style.sideWall
-            ctx.beginPath()
-            const rWall = dotSizeFront * 0.96
-            for (let layer = 0; layer < maxLayers - 1; layer++) {
-              const layerFrac = layer / (maxLayers - 1)
-              for (let i = 0; i < landDots.length; i++) {
-                const dot = landDots[i]
-                const info = currentGdpMap.get(dot.countryId)
-                const dotTier = info?.colorTier ?? 0
-                if (dotTier !== tier) continue
-
-                const rp = rotatePoint(dot, rotLonRad, rotLatRad)
-                if (rp.z < 0) continue
-                if (!dot.isEdge && rp.z > 0.72) continue
-
-                const rawDelta = (info?.terrainElev ?? 1.006) - 1.0
-                const elev = 1.0 + rawDelta * elevMultiplier * layerFrac
-                const vx = cx + rp.x * radius * elev
-                const vy = cy + rp.y * radius * elev
-                ctx.moveTo(vx + rWall, vy)
-                ctx.arc(vx, vy, rWall, 0, Math.PI * 2)
-              }
-            }
-            ctx.fill()
-          }
-
-          // 2) Draw Top Cap Voxel Plateau (Mid-depth band: 0 <= z < 0.5)
-          ctx.fillStyle = style.topCapMid
-          ctx.beginPath()
-          for (let i = 0; i < landDots.length; i++) {
-            const dot = landDots[i]
-            const info = currentGdpMap.get(dot.countryId)
-            const dotTier = info?.colorTier ?? 0
-            if (dotTier !== tier) continue
-
-            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
-            if (rp.z >= 0 && rp.z < 0.5) {
-              const rawDelta = (info?.terrainElev ?? 1.004) - 1.0
-              const elev = 1.0 + rawDelta * elevMultiplier
-              const ex = cx + rp.x * radius * elev
-              const ey = cy + rp.y * radius * elev
-              const rTop = dotSizeFront * (0.88 + structTier * 0.025)
-              ctx.moveTo(ex + rTop, ey)
-              ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
-            }
-          }
-          ctx.fill()
-
-          // 3) Draw Top Cap Voxel Plateau (Front-most band: z >= 0.5)
-          ctx.fillStyle = style.topCapFront
-          ctx.beginPath()
-          for (let i = 0; i < landDots.length; i++) {
-            const dot = landDots[i]
-            const info = currentGdpMap.get(dot.countryId)
-            const dotTier = info?.colorTier ?? 0
-            if (dotTier !== tier) continue
-
-            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
-            if (rp.z >= 0.5) {
-              const rawDelta = (info?.terrainElev ?? 1.004) - 1.0
-              const elev = 1.0 + rawDelta * elevMultiplier
-              const ex = cx + rp.x * radius * elev
-              const ey = cy + rp.y * radius * elev
-              const rTop = dotSizeFront * (0.94 + structTier * 0.03)
-              ctx.moveTo(ex + rTop, ey)
-              ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
-            }
-          }
-          ctx.fill()
-        }
-      } else {
-        // 'stocks' or 'fx': Flat sphere surface (elev = 1.0) colored by each country's daily change %
-        const activeBucketMap = activeMode === 'stocks' ? currentStockBucketMap : currentFxBucketMap
-        const rMid = dotSizeFront * 0.90
-        const rFront = dotSizeFront * 0.98
-        for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
-          const style = STOCK_DOT_STYLES[bucket]
-
-          // Mid-depth band (0 <= z < 0.5)
-          ctx.fillStyle = style.mid
-          ctx.beginPath()
-          for (let i = 0; i < landDots.length; i++) {
-            const dot = landDots[i]
-            const dotBucket = activeBucketMap.get(dot.countryId) ?? 0
-            if (dotBucket !== bucket) continue
-            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
-            if (rp.z >= 0 && rp.z < 0.5) {
-              const sx = cx + rp.x * radius
-              const sy = cy + rp.y * radius
-              ctx.moveTo(sx + rMid, sy)
-              ctx.arc(sx, sy, rMid, 0, Math.PI * 2)
-            }
-          }
-          ctx.fill()
-
-          // Front-most band (z >= 0.5)
-          ctx.fillStyle = style.front
-          ctx.beginPath()
-          for (let i = 0; i < landDots.length; i++) {
-            const dot = landDots[i]
-            const dotBucket = activeBucketMap.get(dot.countryId) ?? 0
-            if (dotBucket !== bucket) continue
-            const rp = rotatePoint(dot, rotLonRad, rotLatRad)
-            if (rp.z >= 0.5) {
-              const sx = cx + rp.x * radius
-              const sy = cy + rp.y * radius
-              ctx.moveTo(sx + rFront, sy)
-              ctx.arc(sx, sy, rFront, 0, Math.PI * 2)
-            }
-          }
-          ctx.fill()
-        }
-      }
-
-      // 4c. North Pole Easter Egg: 3D Polar Ice Floe, Cozy Igloo & Trotting Arctic Fox ("총총총")
-      drawArcticEasterEgg(ctx, cx, cy, radius, rotLonRad, rotLatRad, pulsePhase)
-
-      // 4d. South Pole Easter Egg: 3D Antarctic Ice Shelf, Glacier Peak & Two Strolling Penguins ("뒤뚱뒤뚱")
-      drawAntarcticEasterEgg(ctx, cx, cy, radius, rotLonRad, rotLatRad, pulsePhase)
-
-      // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub (Hidden in 'stocks' mode)
-      const currentHubs = enrichedHubsRef.current
-      const baseHubId = BASE_CURRENCY_HUB_ID[baseCurrency] || 'USA'
-      const baseHub = currentHubs.find((h) => h.id === baseHubId)
-      const isDesktopRatio = width >= 768 && width >= height * 0.95
-
-      if (baseHub && activeMode !== 'stocks') {
-        for (const target of currentHubs) {
-          if (target.id === baseHub.id) continue
-          if (!isDesktopRatio && target.desktopOnly) continue
-          const rpTarget = rotatePoint(target.unitVec, rotLonRad, rotLatRad)
-          const rpBase = rotatePoint(baseHub.unitVec, rotLonRad, rotLatRad)
-          if (rpTarget.z < 0.05 && rpBase.z < 0.05) continue
-
-          const isHighlighted =
-            hoveredHubIdRef.current === target.id || hoveredHubIdRef.current === baseHub.id
-
-          // Draw elevated 3D great-circle arc in 20 steps
-          const steps = 20
+        // 3. Subtle Graticule Wireframe Lines (Back & Front)
+        ctx.lineWidth = 0.8
+        for (const line of graticuleLines) {
           ctx.beginPath()
           let started = false
-          for (let s = 0; s <= steps; s++) {
-            const t = s / steps
-            const ix = baseHub.unitVec.x * (1 - t) + target.unitVec.x * t
-            const iy = baseHub.unitVec.y * (1 - t) + target.unitVec.y * t
-            const iz = baseHub.unitVec.z * (1 - t) + target.unitVec.z * t
-            const len = Math.hypot(ix, iy, iz) || 1
-            const elev = 1.04 + Math.sin(Math.PI * t) * 0.14
-            const p3d: Vec3 = {
-              x: (ix / len) * elev,
-              y: (iy / len) * elev,
-              z: (iz / len) * elev,
-            }
-            const rp = rotatePoint(p3d, rotLonRad, rotLatRad)
-            if (rp.z < -0.05) {
+          for (let i = 0; i < line.length; i++) {
+            const rp = rotatePoint(line[i], rotLonRad, rotLatRad)
+            if (rp.z < -0.15) {
               started = false
               continue
             }
@@ -2775,30 +2652,366 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               ctx.lineTo(sx, sy)
             }
           }
-          if (activeMode === 'fx') {
-            const fxChg = target.fxChangePct ?? 0
-            if (fxChg > 0.01) {
-              ctx.strokeStyle = isHighlighted
-                ? 'rgba(52, 211, 153, 0.85)'
-                : 'rgba(16, 185, 129, 0.38)'
-            } else if (fxChg < -0.01) {
-              ctx.strokeStyle = isHighlighted
-                ? 'rgba(251, 113, 133, 0.85)'
-                : 'rgba(244, 63, 94, 0.38)'
-            } else {
-              ctx.strokeStyle = isHighlighted
-                ? 'rgba(148, 163, 184, 0.75)'
-                : 'rgba(100, 116, 139, 0.25)'
-            }
-          } else {
-            ctx.strokeStyle = isHighlighted
-              ? 'rgba(52, 211, 153, 0.7)'
-              : 'rgba(99, 102, 241, 0.20)'
-          }
-          ctx.lineWidth = isHighlighted ? 1.8 : 1.0
+          ctx.strokeStyle = 'rgba(99, 102, 241, 0.13)'
           ctx.stroke()
         }
+
+        // Crisp Atmospheric Rim Ring on Base Sphere
+        ctx.beginPath()
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.30)'
+        ctx.lineWidth = 1.2
+        ctx.stroke()
+        ctx.restore()
       }
+
+      // 4. Mode-Specific Continent Rendering
+      const dotSizeBack = Math.max(0.88, radius * 0.0052)
+      const dotSizeFront = Math.max(1.38, radius * 0.0082)
+      const currentGdpMap = gdpLookupRef.current
+      const currentStockBucketMap = stockBucketLookupRef.current
+      const currentFxBucketMap = fxBucketLookupRef.current
+      const activeMode = displayModeRef.current
+      const isGdpMode = activeMode === 'gdp'
+      const elevMultiplier = 1.25
+
+      if (!isMorphingOr2D) {
+        // 4a. Back hemisphere dim hologram dots
+        ctx.fillStyle = 'rgba(71, 85, 105, 0.14)'
+        ctx.beginPath()
+        for (let i = 0; i < landDots.length; i++) {
+          const rp = rotatePoint(landDots[i], rotLonRad, rotLatRad)
+          if (rp.z < 0) {
+            const sx = cx + rp.x * radius
+            const sy = cy + rp.y * radius
+            ctx.moveTo(sx + dotSizeBack, sy)
+            ctx.arc(sx, sy, dotSizeBack, 0, Math.PI * 2)
+          }
+        }
+        ctx.fill()
+
+        // 4b. Front hemisphere continents based on active display mode
+        if (isGdpMode) {
+          for (let tier = 0; tier < GDP_VOXEL_STYLES.length; tier++) {
+            const style = GDP_VOXEL_STYLES[tier]
+            const structTier = getGdpStructTier(tier)
+            const maxLayers =
+              structTier === 4 ? 7 : structTier === 3 ? 5 : structTier === 2 ? 4 : structTier === 1 ? 2 : 1
+
+            if (maxLayers > 1) {
+              ctx.fillStyle = style.sideWall
+              ctx.beginPath()
+              const rWall = dotSizeFront * 0.96
+              for (let layer = 0; layer < maxLayers - 1; layer++) {
+                const layerFrac = layer / (maxLayers - 1)
+                for (let i = 0; i < landDots.length; i++) {
+                  const dot = landDots[i]
+                  const info = currentGdpMap.get(dot.countryId)
+                  const dotTier = info?.colorTier ?? 0
+                  if (dotTier !== tier) continue
+
+                  const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+                  if (rp.z < 0) continue
+                  if (!dot.isEdge && rp.z > 0.72) continue
+
+                  const rawDelta = (info?.terrainElev ?? 1.006) - 1.0
+                  const elev = 1.0 + rawDelta * elevMultiplier * layerFrac
+                  const vx = cx + rp.x * radius * elev
+                  const vy = cy + rp.y * radius * elev
+                  ctx.moveTo(vx + rWall, vy)
+                  ctx.arc(vx, vy, rWall, 0, Math.PI * 2)
+                }
+              }
+              ctx.fill()
+            }
+
+            ctx.fillStyle = style.topCapMid
+            ctx.beginPath()
+            for (let i = 0; i < landDots.length; i++) {
+              const dot = landDots[i]
+              const info = currentGdpMap.get(dot.countryId)
+              const dotTier = info?.colorTier ?? 0
+              if (dotTier !== tier) continue
+
+              const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+              if (rp.z >= 0 && rp.z < 0.5) {
+                const rawDelta = (info?.terrainElev ?? 1.004) - 1.0
+                const elev = 1.0 + rawDelta * elevMultiplier
+                const ex = cx + rp.x * radius * elev
+                const ey = cy + rp.y * radius * elev
+                const rTop = dotSizeFront * (0.88 + structTier * 0.025)
+                ctx.moveTo(ex + rTop, ey)
+                ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
+              }
+            }
+            ctx.fill()
+
+            ctx.fillStyle = style.topCapFront
+            ctx.beginPath()
+            for (let i = 0; i < landDots.length; i++) {
+              const dot = landDots[i]
+              const info = currentGdpMap.get(dot.countryId)
+              const dotTier = info?.colorTier ?? 0
+              if (dotTier !== tier) continue
+
+              const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+              if (rp.z >= 0.5) {
+                const rawDelta = (info?.terrainElev ?? 1.004) - 1.0
+                const elev = 1.0 + rawDelta * elevMultiplier
+                const ex = cx + rp.x * radius * elev
+                const ey = cy + rp.y * radius * elev
+                const rTop = dotSizeFront * (0.94 + structTier * 0.03)
+                ctx.moveTo(ex + rTop, ey)
+                ctx.arc(ex, ey, rTop, 0, Math.PI * 2)
+              }
+            }
+            ctx.fill()
+          }
+        } else {
+          const activeBucketMap = activeMode === 'stocks' ? currentStockBucketMap : currentFxBucketMap
+          const rMid = dotSizeFront * 0.90
+          const rFront = dotSizeFront * 0.98
+          for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
+            const style = STOCK_DOT_STYLES[bucket]
+
+            ctx.fillStyle = style.mid
+            ctx.beginPath()
+            for (let i = 0; i < landDots.length; i++) {
+              const dot = landDots[i]
+              const dotBucket = activeBucketMap.get(dot.countryId) ?? 0
+              if (dotBucket !== bucket) continue
+              const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+              if (rp.z >= 0 && rp.z < 0.5) {
+                const sx = cx + rp.x * radius
+                const sy = cy + rp.y * radius
+                ctx.moveTo(sx + rMid, sy)
+                ctx.arc(sx, sy, rMid, 0, Math.PI * 2)
+              }
+            }
+            ctx.fill()
+
+            ctx.fillStyle = style.front
+            ctx.beginPath()
+            for (let i = 0; i < landDots.length; i++) {
+              const dot = landDots[i]
+              const dotBucket = activeBucketMap.get(dot.countryId) ?? 0
+              if (dotBucket !== bucket) continue
+              const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+              if (rp.z >= 0.5) {
+                const sx = cx + rp.x * radius
+                const sy = cy + rp.y * radius
+                ctx.moveTo(sx + rFront, sy)
+                ctx.arc(sx, sy, rFront, 0, Math.PI * 2)
+              }
+            }
+            ctx.fill()
+          }
+        }
+      } else {
+        // Morphing between 3D sphere and 2D flat tile grid ("unrolling sphere" animation)
+        const canvasDotFade = m > 0.85 ? Math.max(0, 1 - (m - 0.85) / 0.15) : 1
+        if (canvasDotFade > 0.01) {
+          const target2dRadius = Math.max(dotSizeFront, (mapW / PIXEL_MAP_COLS) * 0.19)
+          const rMorph = dotSizeFront * (1 - m) + target2dRadius * m
+          const backAlpha = canvasDotFade * Math.min(1, 0.14 + m * 1.9)
+
+          if (isGdpMode) {
+            for (let tier = 0; tier < GDP_VOXEL_STYLES.length; tier++) {
+              const style = GDP_VOXEL_STYLES[tier]
+              // Back dots unfurling from behind the sphere
+              ctx.save()
+              ctx.globalAlpha = backAlpha
+              ctx.fillStyle = style.topCapMid
+              ctx.beginPath()
+              for (let i = 0; i < landDots.length; i++) {
+                const dot = landDots[i]
+                const info = currentGdpMap.get(dot.countryId)
+                if ((info?.colorTier ?? 0) !== tier) continue
+                const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+                if (rp.z < 0) {
+                  const x3d = cx + rp.x * radius
+                  const y3d = cy + rp.y * radius
+                  const x2d = mapLeft + ((dot.c + 0.5) / PIXEL_MAP_COLS) * mapW
+                  const y2d = mapTop + ((dot.r + 0.5) / PIXEL_MAP_ROWS) * mapH
+                  const sx = x3d * (1 - m) + x2d * m
+                  const sy = y3d * (1 - m) + y2d * m
+                  ctx.moveTo(sx + rMorph, sy)
+                  ctx.arc(sx, sy, rMorph, 0, Math.PI * 2)
+                }
+              }
+              ctx.fill()
+              ctx.restore()
+
+              // Front dots flattening from elevated voxels into 2D grid
+              ctx.save()
+              ctx.globalAlpha = canvasDotFade
+              ctx.fillStyle = style.topCapFront
+              ctx.beginPath()
+              for (let i = 0; i < landDots.length; i++) {
+                const dot = landDots[i]
+                const info = currentGdpMap.get(dot.countryId)
+                if ((info?.colorTier ?? 0) !== tier) continue
+                const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+                if (rp.z >= 0) {
+                  const rawDelta = (info?.terrainElev ?? 1.004) - 1.0
+                  const elev = 1.0 + rawDelta * elevMultiplier * (1 - m)
+                  const x3d = cx + rp.x * radius * elev
+                  const y3d = cy + rp.y * radius * elev
+                  const x2d = mapLeft + ((dot.c + 0.5) / PIXEL_MAP_COLS) * mapW
+                  const y2d = mapTop + ((dot.r + 0.5) / PIXEL_MAP_ROWS) * mapH
+                  const sx = x3d * (1 - m) + x2d * m
+                  const sy = y3d * (1 - m) + y2d * m
+                  ctx.moveTo(sx + rMorph, sy)
+                  ctx.arc(sx, sy, rMorph, 0, Math.PI * 2)
+                }
+              }
+              ctx.fill()
+              ctx.restore()
+            }
+          } else {
+            const activeBucketMap = activeMode === 'stocks' ? currentStockBucketMap : currentFxBucketMap
+            for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
+              const style = STOCK_DOT_STYLES[bucket]
+              ctx.save()
+              ctx.globalAlpha = backAlpha
+              ctx.fillStyle = style.mid
+              ctx.beginPath()
+              for (let i = 0; i < landDots.length; i++) {
+                const dot = landDots[i]
+                if ((activeBucketMap.get(dot.countryId) ?? 0) !== bucket) continue
+                const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+                if (rp.z < 0) {
+                  const x3d = cx + rp.x * radius
+                  const y3d = cy + rp.y * radius
+                  const x2d = mapLeft + ((dot.c + 0.5) / PIXEL_MAP_COLS) * mapW
+                  const y2d = mapTop + ((dot.r + 0.5) / PIXEL_MAP_ROWS) * mapH
+                  const sx = x3d * (1 - m) + x2d * m
+                  const sy = y3d * (1 - m) + y2d * m
+                  ctx.moveTo(sx + rMorph, sy)
+                  ctx.arc(sx, sy, rMorph, 0, Math.PI * 2)
+                }
+              }
+              ctx.fill()
+              ctx.restore()
+
+              ctx.save()
+              ctx.globalAlpha = canvasDotFade
+              ctx.fillStyle = style.front
+              ctx.beginPath()
+              for (let i = 0; i < landDots.length; i++) {
+                const dot = landDots[i]
+                if ((activeBucketMap.get(dot.countryId) ?? 0) !== bucket) continue
+                const rp = rotatePoint(dot, rotLonRad, rotLatRad)
+                if (rp.z >= 0) {
+                  const x3d = cx + rp.x * radius
+                  const y3d = cy + rp.y * radius
+                  const x2d = mapLeft + ((dot.c + 0.5) / PIXEL_MAP_COLS) * mapW
+                  const y2d = mapTop + ((dot.r + 0.5) / PIXEL_MAP_ROWS) * mapH
+                  const sx = x3d * (1 - m) + x2d * m
+                  const sy = y3d * (1 - m) + y2d * m
+                  ctx.moveTo(sx + rMorph, sy)
+                  ctx.arc(sx, sy, rMorph, 0, Math.PI * 2)
+                }
+              }
+              ctx.fill()
+              ctx.restore()
+            }
+          }
+        }
+      }
+
+      if (globeBgAlpha > 0.01) {
+        ctx.save()
+        ctx.globalAlpha = globeBgAlpha
+        // 4c. North Pole Easter Egg: 3D Polar Ice Floe, Cozy Igloo & Trotting Arctic Fox ("총총총")
+        drawArcticEasterEgg(ctx, cx, cy, radius, rotLonRad, rotLatRad, pulsePhase)
+
+        // 4d. South Pole Easter Egg: 3D Antarctic Ice Shelf, Glacier Peak & Two Strolling Penguins ("뒤뚱뒤뚱")
+        drawAntarcticEasterEgg(ctx, cx, cy, radius, rotLonRad, rotLatRad, pulsePhase)
+
+        // 5. Project Hubs & Draw 3D Great-Circle Arcs from Base Currency Hub (Hidden in 'stocks' mode)
+        const currentHubs = enrichedHubsRef.current
+        const baseHubId = BASE_CURRENCY_HUB_ID[baseCurrency] || 'USA'
+        const baseHub = currentHubs.find((h) => h.id === baseHubId)
+        const isDesktopRatio = width >= 768 && width >= height * 0.95
+
+        if (baseHub && activeMode !== 'stocks') {
+          for (const target of currentHubs) {
+            if (target.id === baseHub.id) continue
+            if (!isDesktopRatio && target.desktopOnly) continue
+            const rpTarget = rotatePoint(target.unitVec, rotLonRad, rotLatRad)
+            const rpBase = rotatePoint(baseHub.unitVec, rotLonRad, rotLatRad)
+            if (rpTarget.z < 0.05 && rpBase.z < 0.05) continue
+
+            const isHighlighted =
+              hoveredHubIdRef.current === target.id || hoveredHubIdRef.current === baseHub.id
+
+            // Draw elevated 3D great-circle arc in 20 steps
+            const steps = 20
+            ctx.beginPath()
+            let started = false
+            for (let s = 0; s <= steps; s++) {
+              const t = s / steps
+              const ix = baseHub.unitVec.x * (1 - t) + target.unitVec.x * t
+              const iy = baseHub.unitVec.y * (1 - t) + target.unitVec.y * t
+              const iz = baseHub.unitVec.z * (1 - t) + target.unitVec.z * t
+              const len = Math.hypot(ix, iy, iz) || 1
+              const elev = 1.04 + Math.sin(Math.PI * t) * 0.14
+              const p3d: Vec3 = {
+                x: (ix / len) * elev,
+                y: (iy / len) * elev,
+                z: (iz / len) * elev,
+              }
+              const rp = rotatePoint(p3d, rotLonRad, rotLatRad)
+              if (rp.z < -0.05) {
+                started = false
+                continue
+              }
+              const sx = cx + rp.x * radius
+              const sy = cy + rp.y * radius
+              if (!started) {
+                ctx.moveTo(sx, sy)
+                started = true
+              } else {
+                ctx.lineTo(sx, sy)
+              }
+            }
+            if (activeMode === 'fx') {
+              const fxChg = target.fxChangePct ?? 0
+              if (fxChg > 0.01) {
+                ctx.strokeStyle = isHighlighted
+                  ? 'rgba(52, 211, 153, 0.85)'
+                  : 'rgba(16, 185, 129, 0.38)'
+              } else if (fxChg < -0.01) {
+                ctx.strokeStyle = isHighlighted
+                  ? 'rgba(251, 113, 133, 0.85)'
+                  : 'rgba(244, 63, 94, 0.38)'
+              } else {
+                ctx.strokeStyle = isHighlighted
+                  ? 'rgba(148, 163, 184, 0.75)'
+                  : 'rgba(100, 116, 139, 0.25)'
+              }
+            } else {
+              ctx.strokeStyle = isHighlighted
+                ? 'rgba(52, 211, 153, 0.7)'
+                : 'rgba(99, 102, 241, 0.20)'
+            }
+            ctx.lineWidth = isHighlighted ? 1.8 : 1.0
+            ctx.stroke()
+          }
+        }
+        ctx.restore()
+      }
+
+      if (m > 0.35) {
+        ctx.restore()
+        setProjectedCapsules((prev) => (prev.length > 0 ? [] : prev))
+        rafId = window.requestAnimationFrame(renderFrame)
+        return
+      }
+
+      const currentHubs = enrichedHubsRef.current
+      const isDesktopRatio = width >= 768 && width >= height * 0.95
 
       // 6. Compute Visible Front-Hemisphere Capsules anchored flush on top of each country's 3D Voxel Block
       const rawCapsules: ProjectedCapsule[] = []
@@ -2822,7 +3035,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
         const depthFactor = Math.min(1, Math.max(0, (rp.z - 0.08) / 0.65))
         const scale = 0.82 + depthFactor * 0.2
-        const opacity = Math.min(1, Math.pow(depthFactor, 0.65))
+        const opacity = Math.min(1, Math.pow(depthFactor, 0.65)) * Math.max(0, 1 - m * 2.8)
 
         rawCapsules.push({
           id: h.id,
@@ -2971,6 +3184,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
   // Pointer drag handlers for interactive 3D rotation
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (viewDimensionRef.current === '2d') return
     if ((e.target as HTMLElement).closest('[data-globe-ui="true"]')) return
     dragRef.current = {
       isDown: true,
@@ -3014,7 +3228,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
-      className="relative w-full h-[calc(100dvh-136px)] md:h-[calc(100dvh-76px)] min-h-[540px] rounded-2xl bg-slate-950 border border-slate-800/80 overflow-hidden select-none cursor-grab active:cursor-grabbing shadow-2xl"
+      className={`relative w-full h-[calc(100dvh-136px)] md:h-[calc(100dvh-76px)] min-h-[540px] rounded-2xl bg-slate-950 border border-slate-800/80 overflow-hidden select-none shadow-2xl ${
+        viewDimension === '3d' ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
+      }`}
     >
       {/* Subtle Deep-Space Radial Vignette */}
       <div
@@ -3025,8 +3241,32 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         }}
       />
 
-      {/* 3D Globe Canvas */}
+      {/* 3D Globe & Unrolling Morph Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block pointer-events-none" />
+
+      {/* 2D Flat Tile World Map Overlay (Cross-fades in at morph >= 0.85) */}
+      <div
+        ref={tileOverlayRef}
+        data-globe-ui="true"
+        style={{ opacity: 0, visibility: 'hidden', pointerEvents: 'none' }}
+        className="absolute inset-x-0 top-14 bottom-2 z-20 flex items-center justify-center px-2 sm:px-6 overflow-y-auto"
+      >
+        <div className="w-full max-w-[1080px]">
+          <TileWorldMap
+            items={items ?? []}
+            metric="gdp"
+            baseCurrency={baseCurrency}
+            usdToBase={usdToBase}
+            lang={lang}
+            searchQuery=""
+            hoveredCountryId={hovered2dCountryId}
+            pinnedCountryId={null}
+            getCountryFill={get2dCountryFill}
+            onHoverCountry={setHovered2dCountryId}
+            onSelectCountry={onSelectCountry}
+          />
+        </div>
+      </div>
 
       {/* Top Glassmorphic Control Bar */}
       <div
@@ -3090,60 +3330,120 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             </button>
           </div>
 
-          {/* Region Quick Jump Pills */}
-          <div className="hidden md:flex items-center gap-1">
-            {(
-              [
-                { id: 'auto', labelKey: 'globeAutoOrbit' as const },
-                { id: 'asia', labelKey: 'globeAsia' as const },
-                { id: 'europe', labelKey: 'globeEurope' as const },
-                { id: 'americas', labelKey: 'globeAmericas' as const },
-                { id: 'oceania', labelKey: 'globeOceania' as const },
-              ] as const
-            ).map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => handleSelectPreset(p.id)}
-                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                  activePreset === p.id
-                    ? 'bg-indigo-500/25 text-indigo-300 border border-indigo-500/40'
-                    : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
-                }`}
-              >
-                {t(p.labelKey)}
-              </button>
-            ))}
-          </div>
+          {/* Economic Year Selector (2024 / 2025 / 2026) - Active in GDP mode */}
+          {displayMode === 'gdp' && selectedYear && onYearChange && (
+            <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
+              {ECONOMIC_YEAR_OPTIONS.map((opt) => {
+                const fullLabel = t(opt.labelKey).replace('{year}', opt.year)
+                const isSelected = selectedYear === opt.year
+                return (
+                  <button
+                    key={opt.year}
+                    type="button"
+                    title={fullLabel}
+                    onClick={() => onYearChange(opt.year)}
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      isSelected
+                        ? 'bg-emerald-600/90 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <span className="sm:hidden">{opt.year}</span>
+                    <span className="hidden sm:inline">{fullLabel}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Region Quick Jump Pills (3D mode only) */}
+          {viewDimension === '3d' && (
+            <div className="hidden md:flex items-center gap-1">
+              {(
+                [
+                  { id: 'auto', labelKey: 'globeAutoOrbit' as const },
+                  { id: 'asia', labelKey: 'globeAsia' as const },
+                  { id: 'europe', labelKey: 'globeEurope' as const },
+                  { id: 'americas', labelKey: 'globeAmericas' as const },
+                  { id: 'oceania', labelKey: 'globeOceania' as const },
+                ] as const
+              ).map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => handleSelectPreset(p.id)}
+                  className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                    activePreset === p.id
+                      ? 'bg-indigo-500/25 text-indigo-300 border border-indigo-500/40'
+                      : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
+                  }`}
+                >
+                  {t(p.labelKey)}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Right: Spin Toggle & Reset */}
+        {/* Right: 3D / 2D Dimension Toggle + Spin Toggle & Reset */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            type="button"
-            title={t('globePausePlay')}
-            onClick={() => {
-              targetRotationRef.current = null
-              setIsSpinning((s) => !s)
-            }}
-            className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
-              isSpinning
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:text-white'
-            }`}
-          >
-            {isSpinning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-            <span>{isSpinning ? t('globeOrbiting') : t('globePaused')}</span>
-          </button>
+          {/* 3D / 2D Morph Toggle */}
+          <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5">
+            <button
+              type="button"
+              onClick={() => setViewDimension('3d')}
+              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                viewDimension === '3d'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Globe className="w-3 h-3" />
+              <span>3D</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewDimension('2d')}
+              className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                viewDimension === '2d'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <MapIcon className="w-3 h-3" />
+              <span>2D</span>
+            </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => handleSelectPreset('auto')}
-            title={t('globeResetOrbit')}
-            className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
+          {viewDimension === '3d' && (
+            <>
+              <button
+                type="button"
+                title={t('globePausePlay')}
+                onClick={() => {
+                  targetRotationRef.current = null
+                  setIsSpinning((s) => !s)
+                }}
+                className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                  isSpinning
+                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+                    : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:text-white'
+                }`}
+              >
+                {isSpinning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                <span>{isSpinning ? t('globeOrbiting') : t('globePaused')}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectPreset('auto')}
+                title={t('globeResetOrbit')}
+                className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -3410,7 +3710,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         })}
       </div>
 
-      {/* Bottom Live Spotlight Strip (Front-Facing Hubs Currently in Focus) */}
+      {/* Bottom Live Spotlight Strip (Front-Facing Hubs Currently in Focus - 3D mode only) */}
+      {viewDimension === '3d' && (
       <div
         data-globe-ui="true"
         className="absolute bottom-2.5 left-2.5 right-2.5 z-30 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg cursor-default"
@@ -3524,6 +3825,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           })}
         </div>
       </div>
+      )}
     </div>
   )
 }
