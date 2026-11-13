@@ -3386,6 +3386,31 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             onHoverCountry={setHovered2dCountryId}
             onSelectCountry={onSelectCountry}
           />
+          {displayMode === 'gdp' && (
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800/90 shadow-lg text-[11px] font-mono cursor-default">
+              <span className="font-sans font-bold text-emerald-300 shrink-0">
+                {t('metricTotalGdp')}
+              </span>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                {[
+                  { label: 'Top 1~2', color: GDP_VOXEL_STYLES[6].topCapFront },
+                  { label: 'Top 3~5', color: GDP_VOXEL_STYLES[5].topCapFront },
+                  { label: '$2T+', color: GDP_VOXEL_STYLES[3].topCapFront },
+                  { label: '$500B ~ $2T', color: GDP_VOXEL_STYLES[2].topCapFront },
+                  { label: '$100B ~ $500B', color: GDP_VOXEL_STYLES[1].topCapFront },
+                  { label: '< $100B', color: GDP_VOXEL_STYLES[0].topCapFront },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center gap-1.5">
+                    <span
+                      className="w-3 h-3 rounded-sm border border-white/15 shrink-0"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-slate-300 font-medium whitespace-nowrap">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -3895,36 +3920,6 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           <span>3D</span>
         </button>
       </div>
-
-      {/* Bottom 2D GDP Color Scale Legend (2D + GDP mode only, with safe clearance from 2D/3D floating toggle) */}
-      {viewDimension === '2d' && displayMode === 'gdp' && (
-        <div
-          data-globe-ui="true"
-          className="absolute bottom-2.5 left-2.5 right-14 sm:right-16 z-30 flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg text-[11px] font-mono cursor-default"
-        >
-          <span className="font-sans font-bold text-emerald-300 shrink-0">
-            {t('metricTotalGdp')}
-          </span>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            {[
-              { label: 'Top 1~2', color: GDP_VOXEL_STYLES[6].topCapFront },
-              { label: 'Top 3~5', color: GDP_VOXEL_STYLES[5].topCapFront },
-              { label: '$2T+', color: GDP_VOXEL_STYLES[3].topCapFront },
-              { label: '$500B ~ $2T', color: GDP_VOXEL_STYLES[2].topCapFront },
-              { label: '$100B ~ $500B', color: GDP_VOXEL_STYLES[1].topCapFront },
-              { label: '< $100B', color: GDP_VOXEL_STYLES[0].topCapFront },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-1.5">
-                <span
-                  className="w-3 h-3 rounded-sm border border-white/15 shrink-0"
-                  style={{ backgroundColor: item.color }}
-                />
-                <span className="text-slate-300 font-medium whitespace-nowrap">{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Bottom Live Spotlight Strip (Front-Facing Hubs Currently in Focus - 3D mode only) */}
       {viewDimension === '3d' && (
