@@ -3700,32 +3700,32 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       {/* Vertical Floating 2D / 3D Dimension Toggle (Bottom-Right above Focus Market strip) */}
       <div
         data-globe-ui="true"
-        className={`absolute right-2.5 z-30 flex flex-col items-center rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-1 gap-1 shadow-xl transition-all duration-300 ${
+        className={`absolute right-2.5 z-30 flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl transition-all duration-300 ${
           viewDimension === '3d' ? 'bottom-[138px] sm:bottom-[92px]' : 'bottom-3'
         }`}
       >
         <button
           type="button"
           onClick={() => setViewDimension('2d')}
-          className={`w-11 py-1.5 rounded-lg text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+          className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
             viewDimension === '2d'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
           }`}
         >
-          <MapIcon className="w-3.5 h-3.5" />
+          <MapIcon className="hidden sm:block w-3.5 h-3.5" />
           <span>2D</span>
         </button>
         <button
           type="button"
           onClick={() => setViewDimension('3d')}
-          className={`w-11 py-1.5 rounded-lg text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+          className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
             viewDimension === '3d'
               ? 'bg-emerald-600 text-white shadow-sm'
               : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
           }`}
         >
-          <Globe className="w-3.5 h-3.5" />
+          <Globe className="hidden sm:block w-3.5 h-3.5" />
           <span>3D</span>
         </button>
       </div>
