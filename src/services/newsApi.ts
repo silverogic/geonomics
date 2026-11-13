@@ -1,7 +1,5 @@
 import type {
-  CountryMeta,
   CountryNewsArticle,
-  CountryTopicCategory,
   Language,
 } from '../types/economics'
 import { COUNTRIES } from '../data/countries'
@@ -12,51 +10,51 @@ const RSS_POOL_XML_URL =
 const COUNTRY_KEYWORD_RULES: Array<{ id: string; regex: RegExp }> = [
   {
     id: 'USA',
-    regex: /\b(U\.?S\.?|United States|Wall Street|Nasdaq|S&P 500|Dow Jones|Fed\b|Federal Reserve|Treasury|White House|SEC\b|FOMC|Powell)\b/i,
+    regex: /\b(U\.?S\.?|United States|Wall Street|Nasdaq|S&P 500|Dow Jones|Fed\b|Federal Reserve|Treasury|White House|SEC\b|FOMC|Powell)\b|(미국|미\s*증시|뉴욕증시|월가|나스닥|다우|연준|파월|백악관|달러|米国|ニューヨーク|美联储|美股)/i,
   },
   {
     id: 'CHN',
-    regex: /\b(China|Chinese|Beijing|PBOC|Shanghai|Shenzhen|Yuan|Renminbi|Hang Seng)\b/i,
+    regex: /\b(China|Chinese|Beijing|PBOC|Shanghai|Shenzhen|Yuan|Renminbi|Hang Seng)\b|(중국|베이징|상하이|인민은행|위안화|홍콩|中国|人民銀行|人民币)/i,
   },
   {
     id: 'KOR',
-    regex: /\b(South Korea|Korea\b|Korean|KOSPI|Seoul|Bank of Korea|Samsung|SK Hynix)\b/i,
+    regex: /\b(South Korea|Korea\b|Korean|KOSPI|Seoul|Bank of Korea|Samsung|SK Hynix)\b|(한국|국내|코스피|코스닥|한국은행|한은|원화|삼성전자|SK하이닉스|현대차|서울|韓国|ウォン)/i,
   },
   {
     id: 'JPN',
-    regex: /\b(Japan|Japanese|Tokyo|Nikkei|Bank of Japan|BOJ|Yen)\b/i,
+    regex: /\b(Japan|Japanese|Tokyo|Nikkei|Bank of Japan|BOJ|Yen)\b|(일본|도쿄|닛케이|일본은행|엔화|엔저|엔고|日本|日銀|円安|円高)/i,
   },
   {
     id: 'DEU',
-    regex: /\b(Germany|German|Frankfurt|DAX|Bundesbank|ECB|Eurozone)\b/i,
+    regex: /\b(Germany|German|Frankfurt|DAX|Bundesbank|ECB|Eurozone)\b|(독일|프랑크푸르트|유로존|유럽중앙은행|유로화|ドイツ|欧州)/i,
   },
   {
     id: 'GBR',
-    regex: /\b(U\.?K\.?|United Kingdom|Britain|British|London|FTSE|Bank of England|BOE|Sterling)\b/i,
+    regex: /\b(U\.?K\.?|United Kingdom|Britain|British|London|FTSE|Bank of England|BOE|Sterling)\b|(영국|런던|파운드|영란은행|英国|ポンド)/i,
   },
   {
     id: 'TWN',
-    regex: /\b(Taiwan|Taiwanese|Taipei|TSMC|TAIEX)\b/i,
+    regex: /\b(Taiwan|Taiwanese|Taipei|TSMC|TAIEX)\b|(대만|타이완|台湾)/i,
   },
   {
     id: 'IND',
-    regex: /\b(India|Indian|Mumbai|Sensex|Nifty|RBI)\b/i,
+    regex: /\b(India|Indian|Mumbai|Sensex|Nifty|RBI)\b|(인도|뭄바이|루피|インド)/i,
   },
   {
     id: 'FRA',
-    regex: /\b(France|French|Paris|CAC 40)\b/i,
+    regex: /\b(France|French|Paris|CAC 40)\b|(프랑스|파리|フランス)/i,
   },
   {
     id: 'CAN',
-    regex: /\b(Canada|Canadian|Toronto|Bank of Canada)\b/i,
+    regex: /\b(Canada|Canadian|Toronto|Bank of Canada)\b|(캐나다|カナダ)/i,
   },
   {
     id: 'AUS',
-    regex: /\b(Australia|Australian|Sydney|RBA|ASX)\b/i,
+    regex: /\b(Australia|Australian|Sydney|RBA|ASX)\b|(호주|오스트레일리아|オーストラリア)/i,
   },
   {
     id: 'SAU',
-    regex: /\b(Saudi Arabia|Saudi|Riyadh|Aramco|OPEC|Hormuz)\b/i,
+    regex: /\b(Saudi Arabia|Saudi|Riyadh|Aramco|OPEC|Hormuz)\b|(사우디|리야드|아람코|중동|호르무즈|サウジ)/i,
   },
   {
     id: 'VNM',
@@ -172,433 +170,6 @@ export function detectRelatedCountries(text: string, limit = 3): string[] {
 
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
-// ============================================================================
-// ON-THE-FLY REAL-TIME TRANSLATION ENGINE (In-Memory Session Cache)
-// ============================================================================
-
-const translationMemoryCache = new Map<string, string>()
-
-const TARGET_LANG_CODE_MAP: Record<Language, string> = {
-  en: 'en',
-  ko: 'ko',
-  ja: 'ja',
-  zh: 'zh-CN',
-  es: 'es',
-  hi: 'hi',
-}
-
-function getCacheKey(lang: Language, text: string): string {
-  return `${lang}:::${text}`
-}
-
-const FINANCIAL_ACRONYMS = new Set([
-  'AI', 'CPI', 'PPI', 'PCE', 'GDP', 'GNP', 'WTI', 'EIA', 'OPEC', 'OPEC+',
-  'FED', 'FOMC', 'ECB', 'BOJ', 'BOE', 'PBOC', 'BOK', 'RBA', 'SNB', 'IMF',
-  'BIS', 'WTO', 'WHO', 'UN', 'US', 'U.S.', 'UK', 'U.K.', 'EU', 'UAE',
-  'G7', 'G20', 'BRICS', 'NATO', 'KOSPI', 'KOSDAQ', 'NASDAQ', 'NYSE',
-  'S&P', 'DOW', 'FTSE', 'DAX', 'CAC', 'NIKKEI', 'ETF', 'ETFS', 'IPO', 'IPOS',
-  'M&A', 'CEO', 'CFO', 'COO', 'CTO', 'EV', 'EVS', 'GPU', 'GPUS', 'TSMC',
-  'NVDA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'AMD', 'ASML',
-  'ARM', 'FX', 'USD', 'EUR', 'JPY', 'GBP', 'CNY', 'RMB', 'KRW', 'CHF',
-  'CAD', 'AUD', 'YOY', 'QOQ', 'MOM', 'PMI', 'ISM', 'NFP', 'JOLTS', 'EPS',
-  'PE', 'P/E', 'ROE', 'ROI', 'CAPEX', 'OPEX', 'QE', 'QT', 'YCC', 'BPS',
-  'LNG', 'LPG', 'IEA', 'Q1', 'Q2', 'Q3', 'Q4', 'H1', 'H2',
-])
-
-const PROPER_NOUNS_MAP = new Map<string, string>([
-  ['fed', 'Fed'],
-  ['treasury', 'Treasury'],
-  ['treasuries', 'Treasuries'],
-  ['wall', 'Wall'],
-  ['street', 'Street'],
-  ['nasdaq', 'Nasdaq'],
-  ['nasdaq-100', 'Nasdaq-100'],
-  ['dow', 'Dow'],
-  ['brent', 'Brent'],
-  ['hormuz', 'Hormuz'],
-  ['china', 'China'],
-  ['chinese', 'Chinese'],
-  ['korea', 'Korea'],
-  ['korean', 'Korean'],
-  ['japan', 'Japan'],
-  ['japanese', 'Japanese'],
-  ['europe', 'Europe'],
-  ['european', 'European'],
-  ['eurozone', 'Eurozone'],
-  ['america', 'America'],
-  ['american', 'American'],
-  ['britain', 'Britain'],
-  ['british', 'British'],
-  ['germany', 'Germany'],
-  ['german', 'German'],
-  ['france', 'France'],
-  ['french', 'French'],
-  ['india', 'India'],
-  ['indian', 'Indian'],
-  ['russia', 'Russia'],
-  ['russian', 'Russian'],
-  ['iran', 'Iran'],
-  ['iranian', 'Iranian'],
-  ['israel', 'Israel'],
-  ['israeli', 'Israeli'],
-  ['taiwan', 'Taiwan'],
-  ['saudi', 'Saudi'],
-  ['arabia', 'Arabia'],
-  ['powell', 'Powell'],
-  ['warsh', 'Warsh'],
-  ['lagarde', 'Lagarde'],
-  ['ueda', 'Ueda'],
-  ['yellen', 'Yellen'],
-  ['trump', 'Trump'],
-  ['biden', 'Biden'],
-  ['january', 'January'],
-  ['february', 'February'],
-  ['march', 'March'],
-  ['april', 'April'],
-  ['may', 'May'],
-  ['june', 'June'],
-  ['july', 'July'],
-  ['august', 'August'],
-  ['september', 'September'],
-  ['october', 'October'],
-  ['november', 'November'],
-  ['december', 'December'],
-])
-
-/**
- * Normalizes ALL-CAPS wire headlines into grammatical sentence-case while preserving
- * financial acronyms and proper nouns so NMT engines parse syntax accurately.
- */
-function normalizeAllCapsHeadline(text: string): string {
-  const letters = text.replace(/[^a-zA-Z]/g, '')
-  if (!letters) return text
-  const upperCount = text.replace(/[^A-Z]/g, '').length
-  if (upperCount / letters.length < 0.7) return text
-
-  return text
-    .split(/\s+/)
-    .map((token, idx) => {
-      const match = token.match(/^([^A-Za-z0-9]*)([A-Za-z0-9.&/-]+?)(['’]S|['’]s)?([^A-Za-z0-9]*)$/)
-      if (!match) return token
-      const [, prefix, core, poss, suffix] = match
-      const upperCore = core.toUpperCase()
-      if (FINANCIAL_ACRONYMS.has(upperCore)) {
-        return `${prefix}${upperCore}${poss ? "'s" : ''}${suffix}`
-      }
-      const lowerCore = core.toLowerCase()
-      if (PROPER_NOUNS_MAP.has(lowerCore)) {
-        return `${prefix}${PROPER_NOUNS_MAP.get(lowerCore)}${poss ? "'s" : ''}${suffix}`
-      }
-      if (idx === 0) {
-        return `${prefix}${lowerCore.charAt(0).toUpperCase() + lowerCore.slice(1)}${poss ? "'s" : ''}${suffix}`
-      }
-      return `${prefix}${lowerCore}${poss ? "'s" : ''}${suffix}`
-    })
-    .join(' ')
-}
-
-/**
- * Financial Domain Pre-Glossary: Expands Wall Street idioms & polysemous jargon
- * into explicit economic terms before NMT translation to eliminate literal mistranslations.
- */
-const FINANCIAL_PRE_GLOSSARY: Array<[RegExp, string]> = [
-  // Safe-haven flows & bids
-  [/\bflight[- ]to[- ]safety\b/gi, 'safe-haven asset buying'],
-  [/\bflight[- ]to[- ]quality['’]?\s*bid\b/gi, 'safe-haven buying demand'],
-  [/\bflight[- ]to[- ]quality\b/gi, 'safe-haven asset buying'],
-  [/\bsafe[- ]haven bid\b/gi, 'safe-haven buying demand'],
-  [/\bbid for Treasuries\b/gi, 'buying demand for U.S. Treasury bonds'],
-  [/\binto haven(s)?\b/gi, 'into safe-haven assets'],
-
-  // Yields & Bonds
-  [/\b10-year yield\b/gi, 'U.S. 10-year Treasury bond yield'],
-  [/\b2-year yield\b/gi, 'U.S. 2-year Treasury bond yield'],
-  [/\b30-year yield\b/gi, 'U.S. 30-year Treasury bond yield'],
-  [/\b([0-9.]+%)\s+yields\b/gi, '$1 government bond yields'],
-  [/\bTreasury yields\b/gi, 'U.S. Treasury bond yields'],
-  [/\bTreasury yield\b/gi, 'U.S. Treasury bond yield'],
-  [/\bfor Treasuries\b/gi, 'for U.S. Treasury bonds'],
-  [/\bin Treasuries\b/gi, 'in U.S. Treasury bonds'],
-  [/\bwell off the ([0-9.]+%\+?)\s*spike\b/gi, 'retreating significantly from the $1 peak'],
-  [/\bwell off the highs?\b/gi, 'retreating significantly from the peak'],
-
-  // Headline action verbs ("slips", "edges", "inks", "mulls", "taps", "shrugs off")
-  [/\bgold slips\b/gi, 'gold price edges lower'],
-  [/\boil slips\b/gi, 'oil price edges lower'],
-  [/\bdollar slips\b/gi, 'U.S. dollar edges lower'],
-  [/\byield(s)? slip(ped|s)?\b/gi, 'bond yield$1 edged lower'],
-  [/\bslipped (\d+)\s*basis points?\b/gi, 'fell $1 bp (0.01%p)'],
-  [/\bslips (\d+)\s*basis points?\b/gi, 'falls $1 bp (0.01%p)'],
-  [/\b1 basis point\b/gi, '1 bp (0.01%p)'],
-  [/\b(\d+)\s*basis points?\b/gi, '$1 bp'],
-  [/\bpare(d|s)? gains\b/gi, 'reduced gains'],
-  [/\bpare(d|s)? losses\b/gi, 'reduced losses'],
-  [/\btrim(med|s)? gains\b/gi, 'reduced gains'],
-  [/\btrim(med|s)? losses\b/gi, 'reduced losses'],
-  [/\bshrug(ged|s)? off\b/gi, 'overcame'],
-  [/\bweigh(ed|s)? on\b/gi, 'put downward pressure on'],
-
-  // Inflation & Economic prints
-  [/\bhotter-than-expected CPI print\b/gi, 'higher-than-expected CPI inflation data'],
-  [/\bhot CPI report\b/gi, 'higher-than-expected CPI inflation report'],
-  [/\bhot CPI print\b/gi, 'higher-than-expected CPI inflation data'],
-  [/\bhot CPI\b/gi, 'higher-than-expected CPI inflation'],
-  [/\bcool CPI\b/gi, 'lower-than-expected CPI inflation'],
-  [/\bsoft CPI\b/gi, 'lower-than-expected CPI inflation'],
-  [/\bCPI print\b/gi, 'CPI inflation data'],
-  [/\bPPI print\b/gi, 'PPI inflation data'],
-  [/\bjobs print\b/gi, 'employment data'],
-  [/\bpayrolls print\b/gi, 'nonfarm payrolls data'],
-
-  // Commodities & Inventories
-  [/\bstee(p|per) inventory draw\b/gi, 'sharp crude oil inventory decline'],
-  [/\binventory draw\b/gi, 'crude oil inventory decline'],
-  [/\bcrude draw\b/gi, 'crude oil inventory decline'],
-  [/\binventory build\b/gi, 'crude oil inventory increase'],
-  [/\bcrude build\b/gi, 'crude oil inventory increase'],
-  [/\bgreenback\b/gi, 'U.S. dollar'],
-
-  // Sessions & Market Structure
-  [/\bworst session\b/gi, 'worst trading day'],
-  [/\bbest session\b/gi, 'best trading day'],
-  [/\btypical session\b/gi, 'typical trading day'],
-  [/\bin the same session\b/gi, 'on the same trading day'],
-  [/\bmega-cap tech names\b/gi, 'big-tech stocks'],
-  [/\bmega-cap tech\b/gi, 'big-tech'],
-  [/\bdebt-funded\b/gi, 'debt-financed'],
-  [/\bchip-heavy\b/gi, 'semiconductor-heavy'],
-  [/\bcap-weighted\b/gi, 'market-cap-weighted'],
-  [/\bAI-related capex\b/gi, 'AI-related capital expenditure'],
-  [/\bcapex\b/gi, 'capital expenditure'],
-  [/\bopex\b/gi, 'operating expenditure'],
-  [/\bhigh multiples\b/gi, 'high valuation multiples'],
-  [/\bmarket breadth is only modestly negative\b/gi, 'overall market decline is relatively mild'],
-  [/\bmarket breadth\b/gi, 'overall market advancing-to-declining ratio'],
-  [/\btech selloff\b/gi, 'technology stock selloff'],
-  [/\bequity selloff\b/gi, 'stock market selloff'],
-  [/\brisk-off move\b/gi, 'risk-averse market selloff'],
-  [/\brisk-off flows\b/gi, 'safe-haven investment flows'],
-  [/\brisk-off\b/gi, 'risk-averse'],
-  [/\brisk-on\b/gi, 'risk-seeking'],
-  [/\bholds rates higher for longer\b/gi, 'keeps interest rates high for longer'],
-  [/\bhigher for longer\b/gi, 'high interest rates for longer'],
-  [/\bround trip\b/gi, 'sharp reversal'],
-  [/\bfundamentals surprise\b/gi, 'unexpectedly strong supply-demand fundamentals'],
-]
-
-function preprocessForTranslation(text: string): string {
-  let out = normalizeAllCapsHeadline(text.replace(/\s+/g, ' ').trim())
-  for (const [pattern, replacement] of FINANCIAL_PRE_GLOSSARY) {
-    out = out.replace(pattern, replacement)
-  }
-  return out
-}
-
-/**
- * Post-processes translated text into natural financial journalism terminology.
- */
-function postprocessFinancialTranslation(text: string, lang: Language): string {
-  const trimmed = text.trim()
-  if (lang !== 'ko') return trimmed
-
-  return trimmed
-    .replace(/미국 10년 만기 국채\s*수익률은/g, '미 10년물 국채 금리는')
-    .replace(/미국 10년 만기 국채\s*수익률이/g, '미 10년물 국채 금리가')
-    .replace(/미국 10년 만기 국채\s*수익률을/g, '미 10년물 국채 금리를')
-    .replace(/미국 10년 만기 국채\s*수익률/g, '미 10년물 국채 금리')
-    .replace(/10년 만기 미국 국채\s*수익률은/g, '미 10년물 국채 금리는')
-    .replace(/10년 만기 미국 국채\s*수익률이/g, '미 10년물 국채 금리가')
-    .replace(/10년 만기 미국 국채\s*수익률/g, '미 10년물 국채 금리')
-    .replace(/10년 만기 국채\s*수익률은/g, '10년물 국채 금리는')
-    .replace(/10년 만기 국채\s*수익률이/g, '10년물 국채 금리가')
-    .replace(/10년 만기 국채\s*수익률/g, '10년물 국채 금리')
-    .replace(/미국 재무부 채권/g, '미 국채')
-    .replace(/국채\s*수익률은/g, '국채 금리는')
-    .replace(/국채\s*수익률이/g, '국채 금리가')
-    .replace(/국채\s*수익률을/g, '국채 금리를')
-    .replace(/국채\s*수익률/g, '국채 금리')
-    .replace(/채권\s*수익률은/g, '채권 금리는')
-    .replace(/채권\s*수익률이/g, '채권 금리가')
-    .replace(/채권\s*수익률을/g, '채권 금리를')
-    .replace(/채권\s*수익률/g, '채권 금리')
-    .replace(/수익률을 끌어올리는/g, '금리를 끌어올리는')
-    .replace(/수익률을 끌어내리는/g, '금리를 끌어내리는')
-    .replace(/금리은/g, '금리는')
-    .replace(/금리이/g, '금리가')
-    .replace(/금리을/g, '금리를')
-    .replace(/나스닥-100/g, '나스닥 100')
-    .replace(/Nasdaq-100/g, '나스닥 100')
-    .replace(/Nasdaq 100/g, '나스닥 100')
-    .replace(/안전 피난처 구매 수요/g, '안전자산 매수 수요')
-    .replace(/안전 피난처/g, '안전자산')
-    .replace(/안전한 매수 수요/g, '안전자산 매수 수요')
-    .replace(/안전한 자산 매입/g, '안전자산 매수')
-    .replace(/안전 자산/g, '안전자산')
-    .replace(/안전자산 입찰/g, '안전자산 매수세')
-    .replace(/가치 배수/g, '밸류에이션 멀티플(배수)')
-    .replace(/자본 지출/g, '설비투자(CAPEX)')
-    .replace(/연방준비제도\(Fed\)/g, '연준(Fed)')
-    .replace(/연방준비제도/g, '연준(Fed)')
-    .trim()
-}
-
-async function translateSingleTextFallback(
-  text: string,
-  targetLangCode: string,
-  lang: Language
-): Promise<string> {
-  const clean = preprocessForTranslation(text)
-  if (!clean) return text
-
-  try {
-    const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl=${encodeURIComponent(
-      targetLangCode
-    )}&q=${encodeURIComponent(clean)}`
-    const res = await fetch(url)
-    if (res.ok) {
-      const data = await res.json()
-      if (Array.isArray(data) && typeof data[0] === 'string') {
-        return postprocessFinancialTranslation(data[0], lang)
-      }
-    }
-  } catch {
-    // Fallback to MyMemory below
-  }
-
-  try {
-    const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-      clean.slice(0, 480)
-    )}&langpair=en|${encodeURIComponent(targetLangCode)}`
-    const res = await fetch(mmUrl)
-    if (res.ok) {
-      const data = await res.json()
-      if (data?.responseData?.translatedText) {
-        return postprocessFinancialTranslation(String(data.responseData.translatedText), lang)
-      }
-    }
-  } catch {
-    // Ignore and return original
-  }
-
-  return text
-}
-
-/**
- * Translates an array of texts on-the-fly in real time when the user views or switches language.
- * Applies Option A (Financial Domain Pre-Glossary + ALL-CAPS Normalization + Terminology Post-Processing).
- */
-export async function translateBatchOnTheFly(
-  texts: string[],
-  lang: Language
-): Promise<Map<string, string>> {
-  const resultMap = new Map<string, string>()
-  if (lang === 'en' || texts.length === 0) {
-    for (const t of texts) {
-      resultMap.set(t, t)
-    }
-    return resultMap
-  }
-
-  const targetLangCode = TARGET_LANG_CODE_MAP[lang]
-  const uncached: string[] = []
-  const seenUncached = new Set<string>()
-
-  for (const raw of texts) {
-    if (!raw || !raw.trim()) continue
-    const key = getCacheKey(lang, raw)
-    const cached = translationMemoryCache.get(key)
-    if (cached) {
-      resultMap.set(raw, cached)
-    } else if (!seenUncached.has(raw)) {
-      seenUncached.add(raw)
-      uncached.push(raw)
-    }
-  }
-
-  if (uncached.length === 0) {
-    return resultMap
-  }
-
-  // Group into batches of up to 8 items (or ~1400 chars) separated by single newline
-  const batches: string[][] = []
-  let currentBatch: string[] = []
-  let currentLen = 0
-
-  for (const item of uncached) {
-    const preprocessed = preprocessForTranslation(item)
-    if (
-      currentBatch.length >= 8 ||
-      (currentLen + preprocessed.length > 1400 && currentBatch.length > 0)
-    ) {
-      batches.push(currentBatch)
-      currentBatch = []
-      currentLen = 0
-    }
-    currentBatch.push(item)
-    currentLen += preprocessed.length
-  }
-  if (currentBatch.length > 0) {
-    batches.push(currentBatch)
-  }
-
-  await Promise.all(
-    batches.map(async (batch) => {
-      const sanitizedLines = batch.map((it) => preprocessForTranslation(it))
-      const joinedPayload = sanitizedLines.join('\n')
-
-      try {
-        const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl=${encodeURIComponent(
-          targetLangCode
-        )}&q=${encodeURIComponent(joinedPayload)}`
-        const res = await fetch(url)
-        if (res.ok) {
-          const data = await res.json()
-          const rawTranslated = Array.isArray(data)
-            ? typeof data[0] === 'string'
-              ? data[0]
-              : Array.isArray(data[0])
-              ? data[0].map((seg: any) => seg[0]).join('')
-              : ''
-            : ''
-
-          const splitLines = rawTranslated
-            .split('\n')
-            .map((s: string) => s.trim())
-            .filter((s: string) => s.length > 0)
-
-          if (splitLines.length === batch.length) {
-            batch.forEach((orig, idx) => {
-              const tr = postprocessFinancialTranslation(splitLines[idx] || orig, lang)
-              translationMemoryCache.set(getCacheKey(lang, orig), tr)
-              resultMap.set(orig, tr)
-            })
-            return
-          }
-        }
-      } catch {
-        // Fall through to individual parallel requests
-      }
-
-      // Per-item fallback if newline count mismatched or batch failed
-      await Promise.all(
-        batch.map(async (orig) => {
-          const tr = await translateSingleTextFallback(orig, targetLangCode, lang)
-          translationMemoryCache.set(getCacheKey(lang, orig), tr)
-          resultMap.set(orig, tr)
-        })
-      )
-    })
-  )
-
-  return resultMap
-}
-
-// ============================================================================
-// COUNTRY & SECTOR CUSTOMIZED ECONOMIC NEWS ENGINE ("1 + A")
-// High-quality single-source engine:
-// laapy/reuters-bloomberg-news-rss-pool (820+ global wire articles with summaries)
-// Updated every 4 hours via GitHub Actions (Bloomberg, Reuters, FT, CNBC, CNA)
-// ============================================================================
 
 interface RawRssPoolItem {
   title: string
@@ -610,296 +181,6 @@ interface RawRssPoolItem {
 
 let cachedRssPoolItems: RawRssPoolItem[] | null = null
 let lastRssPoolFetchTime = 0
-const countryNewsCache = new Map<string, { ts: number; items: CountryNewsArticle[] }>()
-
-const KEYWORD_TO_ENGLISH_DICT: Record<string, string> = {
-  // Korean
-  반도체: 'semiconductor chip',
-  칩: 'semiconductor chip',
-  파운드리: 'foundry semiconductor',
-  인공지능: 'AI artificial intelligence',
-  금리: 'interest rate central bank',
-  기준금리: 'interest rate central bank',
-  환율: 'currency exchange rate',
-  물가: 'inflation CPI',
-  인플레이션: 'inflation CPI',
-  전기차: 'EV electric vehicle',
-  배터리: 'battery EV',
-  이차전지: 'battery EV',
-  원전: 'nuclear power energy',
-  원자력: 'nuclear power energy',
-  석유: 'oil crude energy',
-  유가: 'oil price crude',
-  가스: 'natural gas LNG',
-  태양광: 'solar energy',
-  관세: 'tariff trade',
-  수출: 'export trade',
-  수입: 'import trade',
-  공급망: 'supply chain',
-  무역: 'trade export',
-  증시: 'stock market index',
-  주식: 'stock market shares',
-  채권: 'bond yield treasury',
-  국채: 'government bond yield',
-  부동산: 'real estate property housing',
-  방산: 'defense military export',
-  조선: 'shipbuilding',
-  철강: 'steel industry',
-  자동차: 'automaker car automotive',
-  바이오: 'biotech pharmaceutical',
-  제약: 'pharmaceutical drug',
-  은행: 'banking financial',
-  // Japanese
-  半導体: 'semiconductor chip',
-  金利: 'interest rate',
-  為替: 'currency exchange',
-  インフレ: 'inflation',
-  電気自動車: 'EV electric vehicle',
-  電池: 'battery',
-  原発: 'nuclear power',
-  関税: 'tariff trade',
-  輸出: 'export trade',
-  株価: 'stock market',
-  不動産: 'real estate',
-  // Chinese
-  半导体: 'semiconductor chip',
-  芯片: 'semiconductor chip',
-  利率: 'interest rate',
-  汇率: 'currency exchange',
-  通胀: 'inflation',
-  电动车: 'EV electric vehicle',
-  新能源汽车: 'EV electric vehicle',
-  锂电池: 'lithium battery',
-  电池: 'battery',
-  关税: 'tariff trade',
-  出口: 'export trade',
-  股市: 'stock market',
-  房地产: 'real estate property',
-  // Spanish
-  semiconductores: 'semiconductor chip',
-  tasas: 'interest rate',
-  inflación: 'inflation',
-  aranceles: 'tariff trade',
-  energía: 'energy oil',
-  baterías: 'battery EV',
-}
-
-export async function translateQueryToEnglish(rawQuery: string): Promise<string> {
-  const trimmed = rawQuery.trim()
-  if (!trimmed) return ''
-
-  const directMatch = KEYWORD_TO_ENGLISH_DICT[trimmed.toLowerCase()]
-  if (directMatch) return directMatch
-
-  // Check if ASCII-only (already English)
-  if (/^[\x00-\x7F]+$/.test(trimmed)) {
-    return trimmed
-  }
-
-  // Check if any token in the query is in our dictionary
-  const tokens = trimmed.split(/\s+/)
-  const mappedTokens = tokens.map((tok) => KEYWORD_TO_ENGLISH_DICT[tok.toLowerCase()] || null)
-  if (mappedTokens.every((m) => m !== null)) {
-    return mappedTokens.join(' ')
-  }
-
-  try {
-    const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=en&q=${encodeURIComponent(
-      trimmed
-    )}`
-    const res = await fetch(url)
-    if (res.ok) {
-      const data = await res.json()
-      const translated = Array.isArray(data)
-        ? typeof data[0] === 'string'
-          ? data[0]
-          : Array.isArray(data[0]) && typeof data[0][0] === 'string'
-          ? data[0][0]
-          : ''
-        : ''
-      if (translated.trim()) {
-        return translated.trim()
-      }
-    }
-  } catch {
-    // Ignore and return original
-  }
-  return trimmed
-}
-
-const COUNTRY_SEARCH_ALIASES: Record<
-  string,
-  { primary: string; extraTerms: string[]; regex: RegExp }
-> = {
-  USA: {
-    primary: 'US',
-    extraTerms: ['United States', 'Wall Street', 'Fed'],
-    regex: /\b(U\.?S\.?|United States|America|American|Wall Street|Fed\b|Federal Reserve|White House|Treasury|Nasdaq)\b/i,
-  },
-  IND: {
-    primary: 'India',
-    extraTerms: ['Indian', 'Mumbai', 'Modi'],
-    regex: /\b(India|Indian|Mumbai|New Delhi|Sensex|Nifty|RBI|Rupee|Modi)\b/i,
-  },
-  KOR: {
-    primary: 'South Korea',
-    extraTerms: ['Korea', 'Korean', 'Samsung', 'Seoul'],
-    regex: /\b(South Korea|Korea|Korean|Seoul|KOSPI|Samsung|SK Hynix|Hyundai|Won|BOK)\b/i,
-  },
-  JPN: {
-    primary: 'Japan',
-    extraTerms: ['Japanese', 'Tokyo', 'BOJ', 'Yen'],
-    regex: /\b(Japan|Japanese|Tokyo|Nikkei|BOJ|Bank of Japan|Yen|Toyota|SoftBank|RapidUs)\b/i,
-  },
-  CHN: {
-    primary: 'China',
-    extraTerms: ['Chinese', 'Beijing', 'Shanghai'],
-    regex: /\b(China|Chinese|Beijing|Shanghai|Shenzhen|PBOC|Yuan|Renminbi|Huawei|BYD|Alibaba|Tencent)\b/i,
-  },
-  TWN: {
-    primary: 'Taiwan',
-    extraTerms: ['Taiwanese', 'TSMC', 'Taipei'],
-    regex: /\b(Taiwan|Taiwanese|Taipei|TSMC|Foxconn|MediaTek|TAIEX)\b/i,
-  },
-  DEU: {
-    primary: 'Germany',
-    extraTerms: ['German', 'Berlin', 'Frankfurt'],
-    regex: /\b(Germany|German|Berlin|Frankfurt|DAX|Bundesbank|Volkswagen|Siemens|SAP)\b/i,
-  },
-  GBR: {
-    primary: 'UK',
-    extraTerms: ['Britain', 'British', 'London'],
-    regex: /\b(U\.?K\.?|United Kingdom|Britain|British|London|FTSE|Bank of England|BOE|Sterling|Pound)\b/i,
-  },
-  FRA: {
-    primary: 'France',
-    extraTerms: ['French', 'Paris'],
-    regex: /\b(France|French|Paris|CAC 40|Macron|TotalEnergies|Airbus|LVMH)\b/i,
-  },
-  VNM: {
-    primary: 'Vietnam',
-    extraTerms: ['Vietnamese', 'Hanoi'],
-    regex: /\b(Vietnam|Vietnamese|Hanoi|Ho Chi Minh|VinFast)\b/i,
-  },
-  SAU: {
-    primary: 'Saudi Arabia',
-    extraTerms: ['Saudi', 'Riyadh', 'Aramco'],
-    regex: /\b(Saudi Arabia|Saudi|Riyadh|Aramco|PIF)\b/i,
-  },
-  ARE: {
-    primary: 'UAE',
-    extraTerms: ['Dubai', 'Abu Dhabi'],
-    regex: /\b(UAE|United Arab Emirates|Dubai|Abu Dhabi|MGX|Mubadala)\b/i,
-  },
-  SGP: {
-    primary: 'Singapore',
-    extraTerms: ['Singaporean', 'MAS'],
-    regex: /\b(Singapore|Singaporean|Temasek|GIC|MAS)\b/i,
-  },
-  CAN: {
-    primary: 'Canada',
-    extraTerms: ['Canadian', 'Toronto', 'Ottawa'],
-    regex: /\b(Canada|Canadian|Toronto|Ottawa|Bank of Canada|Loonie)\b/i,
-  },
-  AUS: {
-    primary: 'Australia',
-    extraTerms: ['Australian', 'Sydney', 'RBA'],
-    regex: /\b(Australia|Australian|Sydney|Canberra|RBA|ASX)\b/i,
-  },
-  BRA: {
-    primary: 'Brazil',
-    extraTerms: ['Brazilian', 'Brasilia', 'Petrobras'],
-    regex: /\b(Brazil|Brazilian|Brasilia|Sao Paulo|Bovespa|Petrobras|Lula)\b/i,
-  },
-  MEX: {
-    primary: 'Mexico',
-    extraTerms: ['Mexican', 'Peso'],
-    regex: /\b(Mexico|Mexican|Mexico City|Banxico)\b/i,
-  },
-  NLD: {
-    primary: 'Netherlands',
-    extraTerms: ['Dutch', 'ASML', 'Amsterdam'],
-    regex: /\b(Netherlands|Dutch|Amsterdam|ASML|NXP)\b/i,
-  },
-  CHE: {
-    primary: 'Switzerland',
-    extraTerms: ['Swiss', 'Zurich', 'UBS', 'SNB'],
-    regex: /\b(Switzerland|Swiss|Zurich|Geneva|SNB|UBS|Novartis|Nestle)\b/i,
-  },
-  IDN: {
-    primary: 'Indonesia',
-    extraTerms: ['Indonesian', 'Jakarta'],
-    regex: /\b(Indonesia|Indonesian|Jakarta|Rupiah)\b/i,
-  },
-  MYS: {
-    primary: 'Malaysia',
-    extraTerms: ['Malaysian', 'Kuala Lumpur'],
-    regex: /\b(Malaysia|Malaysian|Kuala Lumpur|Ringgit|Johor)\b/i,
-  },
-  THA: {
-    primary: 'Thailand',
-    extraTerms: ['Thai', 'Bangkok'],
-    regex: /\b(Thailand|Thai|Bangkok|Baht)\b/i,
-  },
-  TUR: {
-    primary: 'Turkey',
-    extraTerms: ['Turkish', 'Istanbul', 'Lira'],
-    regex: /\b(Turkey|Turkish|Turkiye|Istanbul|Ankara|Lira)\b/i,
-  },
-  RUS: {
-    primary: 'Russia',
-    extraTerms: ['Russian', 'Moscow', 'Ruble'],
-    regex: /\b(Russia|Russian|Moscow|Ruble|Gazprom)\b/i,
-  },
-}
-
-function getCountrySearchProfile(country: CountryMeta): {
-  primary: string
-  extraTerms: string[]
-  regex: RegExp
-} {
-  const preset = COUNTRY_SEARCH_ALIASES[country.id]
-  if (preset) return preset
-  const escaped = country.nameEn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  return {
-    primary: country.nameEn,
-    extraTerms: [country.currencyCode],
-    regex: new RegExp(`\\b(${escaped}|${country.currencyCode})\\b`, 'i'),
-  }
-}
-
-const TOPIC_CONFIG: Record<
-  CountryTopicCategory,
-  {
-    subTerms: string[]
-    regex: RegExp
-  }
-> = {
-  ALL: {
-    subTerms: ['economy', 'market', 'trade', 'investment', 'industry'],
-    regex: /\b(econom|market|trade|export|import|gdp|invest|bank|rate|inflation|growth|industry|tariff|stock|bond|currency|chip|semiconductor|tech|energy|oil|ev|finance|fund|billion|million|company|corp|business|manufacturing|factory|supply chain|revenue|profit|tax|policy|central bank|deal|pact)\b/i,
-  },
-  SEMICONDUCTOR_AI: {
-    subTerms: ['semiconductor', 'chip', 'AI', 'data center'],
-    regex: /\b(semiconductor|semiconductors|chip|chips|chipmaker|wafer|foundry|fab\b|fabs\b|tsmc|nvidia|micron|samsung|hynix|asml|arm\b|ai\b|artificial intelligence|gpu|data center|tech|electronics|computing|quantum)\b/i,
-  },
-  CENTRAL_BANK: {
-    subTerms: ['interest rate', 'inflation', 'central bank', 'currency', 'bond'],
-    regex: /\b(rate|rates|inflation|cpi|deflation|central bank|fed\b|ecb|boj|pboc|rbi|bok|rba|snb|currency|forex|dollar|yen|yuan|rupee|won|euro|sterling|peso|lira|bond|bonds|yield|yields|treasury|gdp|monetary|fiscal|debt|deficit)\b/i,
-  },
-  ENERGY: {
-    subTerms: ['energy', 'EV', 'battery', 'oil', 'nuclear', 'solar'],
-    regex: /\b(energy|oil|crude|gas|lng|solar|wind|nuclear|reactor|ev\b|evs\b|electric vehicle|battery|batteries|lithium|grid|power|renewable|hydrogen|opec|refinery|mining|coal|electricity)\b/i,
-  },
-  TRADE: {
-    subTerms: ['trade', 'tariff', 'export', 'supply chain', 'manufacturing'],
-    regex: /\b(trade|tariff|tariffs|export|exports|import|imports|supply chain|manufacturing|factory|customs|sanction|sanctions|pact|deal|wto|fdi|investment|port|shipping|logistics)\b/i,
-  },
-  FINANCE: {
-    subTerms: ['stock', 'market', 'bank', 'investment', 'IPO'],
-    regex: /\b(stock|stocks|shares|equity|equities|market|index|bank|banks|banking|ipo|fund|invest|investment|investor|billion|million|valuation|earnings|profit|revenue|merger|acquisition|fintech|capital|wealth)\b/i,
-  },
-}
 
 const KNOWN_PUBLISHER_NAMES: Record<string, string> = {
   'reuters.com': 'Reuters',
@@ -1021,122 +302,94 @@ async function getRssPoolItems(): Promise<RawRssPoolItem[]> {
   }
 }
 
-/**
- * Fetches country-specific & sector/topic-specific economic news on-demand.
- * Powered by 820+ item Reuters/Bloomberg/FT/CNBC live RSS pool.
- * When `country` is null or `country.id === 'ALL'`, fetches Global Overall (세계종합) news.
- */
-export async function fetchCountrySpecificNews(
-  country: CountryMeta | null,
-  topic: CountryTopicCategory,
-  customQuery = '',
-  forceRefresh = false
-): Promise<CountryNewsArticle[]> {
-  const isAll = !country || country.id === 'ALL'
-  const scopeId = isAll ? 'ALL' : country.id
-  const cleanCustom = customQuery.trim()
-  const cacheKey = `${scopeId}::${topic}::${cleanCustom.toLowerCase()}`
-  const now = Date.now()
+const PROXY_URL = (import.meta.env?.VITE_STOCK_PROXY_URL as string | undefined)?.replace(/\/$/, '')
+const globeBreakingCache = new Map<string, { ts: number; map: Map<string, CountryNewsArticle[]> }>()
+const GLOBE_BREAKING_TTL_MS = 90 * 1000 // 90s client cache
 
+/**
+ * Fetches live breaking economic news from the Cloudflare Worker (?news=breaking)
+ * or local Vite dev middleware (/api/breaking-news), falling back to the RSS pool if needed,
+ * and maps every article to its related ISO3 country codes for the Economic Globe News Mode.
+ */
+export async function fetchBreakingNewsByCountry(
+  lang: Language,
+  forceRefresh = false
+): Promise<Map<string, CountryNewsArticle[]>> {
+  const now = Date.now()
   if (!forceRefresh) {
-    const cached = countryNewsCache.get(cacheKey)
-    if (cached && now - cached.ts < CACHE_TTL_MS) {
-      return cached.items
+    const cached = globeBreakingCache.get(lang)
+    if (cached && now - cached.ts < GLOBE_BREAKING_TTL_MS) {
+      return cached.map
     }
   }
 
-  const englishCustomQuery = cleanCustom ? await translateQueryToEnglish(cleanCustom) : ''
-  const countryProfile = isAll ? null : getCountrySearchProfile(country)
-  const topicConfig = TOPIC_CONFIG[topic]
-
-  // Build custom regex if customQuery is provided
-  const customTokens = englishCustomQuery
-    .split(/\s+/)
-    .map((w) => w.replace(/[^a-zA-Z0-9+-]/g, ''))
-    .filter((w) => w.length >= 2)
-
-  const customRegex =
-    customTokens.length > 0
-      ? new RegExp(
-          `\\b(${customTokens
-            .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-            .join('|')})`,
-          'i'
-        )
+  let rawItems: RawRssPoolItem[] = []
+  const endpoint = PROXY_URL
+    ? `${PROXY_URL}/?news=breaking&lang=${encodeURIComponent(lang)}`
+    : import.meta.env.DEV
+      ? `/api/breaking-news?lang=${encodeURIComponent(lang)}`
       : null
 
-  // Filter directly from 820+ item Reuters/Bloomberg/CNBC/FT RSS Pool (instant 0ms filtering)
-  const pool = await getRssPoolItems()
-  const matched: CountryNewsArticle[] = []
-
-  for (let i = 0; i < pool.length; i++) {
-    const item = pool[i]
-    const fullText = `${item.title} ${item.description}`
-
-    if (isAll) {
-      if (customRegex) {
-        if (!customRegex.test(fullText)) continue
-      } else if (topic !== 'ALL' && !topicConfig.regex.test(fullText)) {
-        continue
+  if (endpoint) {
+    try {
+      const res = await fetch(endpoint, { signal: AbortSignal.timeout(5000) })
+      if (res.ok) {
+        const data = (await res.json()) as {
+          items?: Array<{ title: string; url: string; source: string; publishedAt: string }>
+        }
+        if (Array.isArray(data.items) && data.items.length > 0) {
+          rawItems = data.items.map((it) => ({
+            title: it.title,
+            description: '',
+            url: it.url,
+            source: it.source,
+            publishedAt: it.publishedAt,
+          }))
+        }
       }
-      const related = detectRelatedCountries(fullText)
-      matched.push({
-        id: `rss-ALL-${i}`,
-        title: item.title,
-        description: item.description || undefined,
-        url: item.url,
-        source: item.source,
-        publishedAt: item.publishedAt,
-        countryId: 'ALL',
-        topic,
-        relatedCountryIds: related,
-      })
-    } else {
-      if (!countryProfile!.regex.test(fullText)) continue
-      if (customRegex) {
-        if (!customRegex.test(fullText)) continue
-      } else if (topic !== 'ALL' && !topicConfig.regex.test(fullText)) {
-        continue
-      }
-      matched.push({
-        id: `rss-${country!.id}-${i}`,
-        title: item.title,
-        description: item.description || undefined,
-        url: item.url,
-        source: item.source,
-        publishedAt: item.publishedAt,
-        countryId: country!.id,
-        topic,
-        relatedCountryIds: [country!.id],
-      })
+    } catch {
+      // Fall back to static RSS pool below
     }
   }
 
-  // Deduplicate by normalized title prefix (just in case)
-  const seenTitles = new Set<string>()
-  const seenUrls = new Set<string>()
-  const deduplicated: CountryNewsArticle[] = []
-
-  for (const item of matched) {
-    const normTitle = item.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '')
-      .slice(0, 50)
-    if (!normTitle || seenTitles.has(normTitle) || seenUrls.has(item.url)) continue
-    seenTitles.add(normTitle)
-    seenUrls.add(item.url)
-    deduplicated.push(item)
+  if (rawItems.length === 0) {
+    rawItems = await getRssPoolItems()
   }
 
-  // Sort by most recent date
-  deduplicated.sort((a, b) => {
-    const timeA = new Date(a.publishedAt).getTime() || 0
-    const timeB = new Date(b.publishedAt).getTime() || 0
-    return timeB - timeA
-  })
+  const byCountry = new Map<string, CountryNewsArticle[]>()
+  for (let i = 0; i < rawItems.length; i++) {
+    const item = rawItems[i]
+    const fullText = `${item.title} ${item.description}`
+    const related = detectRelatedCountries(fullText, 2)
+    // Default unmapped general macro/Wall St headlines to USA only if macro US terms present, else skip
+    for (const cid of related) {
+      const list = byCountry.get(cid) || []
+      if (list.length >= 6) continue
+      list.push({
+        id: `brk-${cid}-${i}`,
+        title: item.title,
+        description: item.description || undefined,
+        url: item.url,
+        source: item.source,
+        publishedAt: item.publishedAt,
+        countryId: cid,
+        topic: 'ALL',
+        relatedCountryIds: related,
+      })
+      byCountry.set(cid, list)
+    }
+  }
 
-  const finalItems = deduplicated.slice(0, 16)
-  countryNewsCache.set(cacheKey, { ts: Date.now(), items: finalItems })
-  return finalItems
+  // Sort each country's articles newest-first
+  for (const [cid, list] of byCountry.entries()) {
+    list.sort(
+      (a, b) => (new Date(b.publishedAt).getTime() || 0) - (new Date(a.publishedAt).getTime() || 0)
+    )
+    byCountry.set(cid, list)
+  }
+
+  globeBreakingCache.set(lang, { ts: now, map: byCountry })
+  return byCountry
 }
+
 

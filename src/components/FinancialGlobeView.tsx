@@ -11,10 +11,12 @@ import {
   Sparkles,
   Globe,
   Map as MapIcon,
+  Newspaper,
 } from 'lucide-react'
 import type {
   BaseCurrency,
   CountryMeta,
+  CountryNewsArticle,
   EconomicYear,
   ExchangeRates,
   InterestRateInfo,
@@ -37,6 +39,7 @@ import {
   getFxChangePct,
 } from '../services/exchangeApi'
 import { getCountryInterestRate } from '../services/interestRateApi'
+import { fetchBreakingNewsByCountry } from '../services/newsApi'
 import { getCountryName } from '../utils/countryNames'
 import { ECONOMIC_YEAR_OPTIONS } from '../utils/economicYears'
 import { detectVisitorCountry } from '../utils/locale'
@@ -62,7 +65,22 @@ interface FinancialGlobeViewProps {
   refreshKey?: number
 }
 
-type GlobeDisplayMode = 'gdp' | 'stocks' | 'fx'
+type GlobeDisplayMode = 'gdp' | 'stocks' | 'fx' | 'news'
+
+function formatRelativeNewsAge(iso: string, lang: Language): string {
+  const ts = new Date(iso).getTime()
+  if (!ts || Number.isNaN(ts)) return ''
+  const diffMin = Math.max(1, Math.floor((Date.now() - ts) / 60_000))
+  if (diffMin < 60) {
+    return lang === 'ko' ? `${diffMin}분 전` : lang === 'ja' ? `${diffMin}分前` : `${diffMin}m`
+  }
+  const diffHr = Math.floor(diffMin / 60)
+  if (diffHr < 24) {
+    return lang === 'ko' ? `${diffHr}시간 전` : lang === 'ja' ? `${diffHr}時間前` : `${diffHr}h`
+  }
+  const diffDay = Math.floor(diffHr / 24)
+  return lang === 'ko' ? `${diffDay}일 전` : lang === 'ja' ? `${diffDay}日前` : `${diffDay}d`
+}
 type RegionPreset = 'auto' | 'asia' | 'europe' | 'americas' | 'oceania'
 
 interface HubDefinition {
@@ -203,6 +221,7 @@ interface ProjectedCapsule {
   fxChangePct: number | null
   policyRatePct: number | null
   centralBankName?: string | null
+  newsArticles?: CountryNewsArticle[]
 }
 
 // 5 GDP Choropleth Tiers for 3D Stacked Voxel Continents (side wall shading + top cap highlight)
@@ -2073,7 +2092,19 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   const [expandedHubId, setExpandedHubId] = useState<string | null>(null)
   const [liveStockTick, setLiveStockTick] = useState(0)
   const [liveFxQuotes, setLiveFxQuotes] = useState<Record<string, LiveFxQuote>>({})
+  const [newsByCountry, setNewsByCountry] = useState<Map<string, CountryNewsArticle[]>>(() => new Map())
   const [projectedCapsules, setProjectedCapsules] = useState<ProjectedCapsule[]>([])
+
+  useEffect(() => {
+    if (displayMode !== 'news') return
+    let active = true
+    fetchBreakingNewsByCountry(lang, !!refreshKey).then((map) => {
+      if (active) setNewsByCountry(map)
+    })
+    return () => {
+      active = false
+    }
+  }, [displayMode, lang, refreshKey])
 
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -2275,17 +2306,43 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     fxBucketLookupRef.current = fxBucketLookup
   }, [fxBucketLookup])
 
+  // Build per-country Breaking News recency bucket lookup when in 'news' mode
+  const newsBucketLookup = useMemo(() => {
+    const map = new Map<string, number>()
+    const now = Date.now()
+    for (const [cid, list] of newsByCountry.entries()) {
+      if (!list || list.length === 0) continue
+      const newestTs = new Date(list[0].publishedAt).getTime() || 0
+      const ageHrs = newestTs > 0 ? (now - newestTs) / 3_600_000 : 24
+      if (ageHrs <= 1.5) map.set(cid, 7)
+      else if (ageHrs <= 4) map.set(cid, 6)
+      else if (ageHrs <= 12) map.set(cid, 5)
+      else map.set(cid, 4)
+    }
+    return map
+  }, [newsByCountry])
+
+  const newsBucketLookupRef = useRef(newsBucketLookup)
+  useEffect(() => {
+    newsBucketLookupRef.current = newsBucketLookup
+  }, [newsBucketLookup])
+
   const get2dCountryFill = useCallback(
     (countryId: string): string => {
       if (displayMode === 'gdp') {
         const tier = gdpLookup.get(countryId)?.colorTier ?? 0
         return GDP_VOXEL_STYLES[tier]?.topCapFront ?? '#1e293b'
       }
-      const bucketMap = displayMode === 'stocks' ? stockBucketLookup : fxBucketLookup
+      const bucketMap =
+        displayMode === 'stocks'
+          ? stockBucketLookup
+          : displayMode === 'fx'
+            ? fxBucketLookup
+            : newsBucketLookup
       const bucket = bucketMap.get(countryId) ?? 0
       return STOCK_DOT_STYLES[bucket]?.front ?? '#1e293b'
     },
-    [displayMode, gdpLookup, stockBucketLookup, fxBucketLookup]
+    [displayMode, gdpLookup, stockBucketLookup, fxBucketLookup, newsBucketLookup]
   )
 
   // Build hubs list calibrated directly to COUNTRY_LABEL_ANCHORS so every pin sits on its landmass dot
@@ -2326,8 +2383,29 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       }
     }
 
+    // Dynamically include any tracked country that has breaking news in News Mode
+    if (displayMode === 'news') {
+      for (const [cid, articles] of newsByCountry.entries()) {
+        if (!articles || articles.length === 0) continue
+        if (list.some((h) => h.id === cid)) continue
+        const c = countryMap.get(cid)
+        const anchor = COUNTRY_LABEL_ANCHORS[cid]
+        if (!c || !anchor) continue
+        const { lat, lon } = gridColRowToLatLon(anchor.c, anchor.r)
+        list.push({
+          id: cid,
+          lat,
+          lon,
+          offsetX: 20,
+          offsetY: -16,
+          country: c,
+          unitVec: latLonToVec3(lat, lon),
+        })
+      }
+    }
+
     return list
-  }, [])
+  }, [displayMode, newsByCountry])
 
   // Fetch near-real-time stock & FX quotes
   useEffect(() => {
@@ -2438,6 +2516,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         fxChangePct,
         policyRatePct: cbInfo?.ratePct ?? null,
         centralBankName: cbInfo?.centralBankName ?? null,
+        newsArticles: newsByCountry.get(h.id) || [],
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2450,6 +2529,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     lang,
     liveStockTick,
     liveFxQuotes,
+    newsByCountry,
   ])
 
   const enrichedHubsRef = useRef(enrichedHubs)
@@ -2475,6 +2555,16 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       }
       return { up, down, total: fxBucketLookup.size }
     }
+    if (displayMode === 'news') {
+      let totalArticles = 0
+      for (const list of newsByCountry.values()) {
+        if (list.length > 0) {
+          up++
+          totalArticles += list.length
+        }
+      }
+      return { up, down: totalArticles, total: newsByCountry.size }
+    }
     // displayMode === 'gdp'
     for (const info of gdpLookup.values()) {
       if (info.growthRatePct == null) continue
@@ -2482,7 +2572,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       else if (info.growthRatePct < 0) down++
     }
     return { up, down, total: gdpLookup.size }
-  }, [displayMode, stockBucketLookup, fxBucketLookup, gdpLookup])
+  }, [displayMode, stockBucketLookup, fxBucketLookup, gdpLookup, newsByCountry])
 
   const handleSelectPreset = (preset: RegionPreset) => {
     setActivePreset(preset)
@@ -2692,6 +2782,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       const currentGdpMap = gdpLookupRef.current
       const currentStockBucketMap = stockBucketLookupRef.current
       const currentFxBucketMap = fxBucketLookupRef.current
+      const currentNewsBucketMap = newsBucketLookupRef.current
       const activeMode = displayModeRef.current
       const isGdpMode = activeMode === 'gdp'
       const elevMultiplier = 1.25
@@ -2789,7 +2880,12 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             ctx.fill()
           }
         } else {
-          const activeBucketMap = activeMode === 'stocks' ? currentStockBucketMap : currentFxBucketMap
+          const activeBucketMap =
+            activeMode === 'stocks'
+              ? currentStockBucketMap
+              : activeMode === 'fx'
+                ? currentFxBucketMap
+                : currentNewsBucketMap
           const rMid = dotSizeFront * 0.90
           const rFront = dotSizeFront * 0.98
           for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
@@ -2890,7 +2986,12 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               ctx.restore()
             }
           } else {
-            const activeBucketMap = activeMode === 'stocks' ? currentStockBucketMap : currentFxBucketMap
+            const activeBucketMap =
+            activeMode === 'stocks'
+              ? currentStockBucketMap
+              : activeMode === 'fx'
+                ? currentFxBucketMap
+                : currentNewsBucketMap
             for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
               const style = STOCK_DOT_STYLES[bucket]
               ctx.save()
@@ -3033,7 +3134,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       const pulseScale = (Math.sin(pulsePhase) + 1) * 0.5
 
       for (const h of currentHubs) {
-        if (!isDesktopRatio && h.desktopOnly) continue
+        if (activeMode === 'news') {
+          if (!h.newsArticles || h.newsArticles.length === 0) continue
+        } else if (!isDesktopRatio && h.desktopOnly) {
+          continue
+        }
         const rp = rotatePoint(h.unitVec, rotLonRad, rotLatRad)
         // Only show hubs on the front hemisphere (z > 0.08)
         if (rp.z <= 0.08) continue
@@ -3077,6 +3182,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           fxChangePct: h.fxChangePct,
           policyRatePct: h.policyRatePct,
           centralBankName: h.centralBankName,
+          newsArticles: h.newsArticles,
         })
       }
 
@@ -3290,17 +3396,26 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       >
         {/* Left: Market Breadth Pill */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs font-mono">
-            <span className="text-emerald-400 font-bold flex items-center gap-0.5">
-              <TrendingUp className="w-3 h-3" />
-              {hubSummary.up}
-            </span>
-            <span className="text-slate-600">/</span>
-            <span className="text-rose-400 font-bold flex items-center gap-0.5">
-              <TrendingDown className="w-3 h-3" />
-              {hubSummary.down}
-            </span>
-          </div>
+          {displayMode === 'news' ? (
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs font-mono">
+              <Newspaper className="w-3 h-3 text-amber-400" />
+              <span className="text-amber-300 font-bold tabular-nums">{hubSummary.up}</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-300 font-bold tabular-nums">{hubSummary.down}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs font-mono">
+              <span className="text-emerald-400 font-bold flex items-center gap-0.5 tabular-nums">
+                <TrendingUp className="w-3 h-3" />
+                {hubSummary.up}
+              </span>
+              <span className="text-slate-600">/</span>
+              <span className="text-rose-400 font-bold flex items-center gap-0.5 tabular-nums">
+                <TrendingDown className="w-3 h-3" />
+                {hubSummary.down}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Center: Display Mode Switcher (GDP / Stocks / FX) + Region Presets */}
@@ -3344,6 +3459,21 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               <span>{t('globeDisplayModeFx')}</span>
             </button>
           </div>
+
+          {/* Independent Breaking News Toggle */}
+          <button
+            type="button"
+            onClick={() => setDisplayMode((prev) => (prev === 'news' ? 'gdp' : 'news'))}
+            aria-pressed={displayMode === 'news'}
+            className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+              displayMode === 'news'
+                ? 'bg-amber-500/20 border-amber-400/60 text-amber-300 shadow-sm'
+                : 'bg-slate-950/90 border-slate-800 text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Newspaper className="w-3 h-3" />
+            <span>{t('globeDisplayModeNews')}</span>
+          </button>
 
           {/* Economic Year Selector (2024 / 2025 / 2026) - Active in GDP mode */}
           {displayMode === 'gdp' && selectedYear && onYearChange && (
@@ -3536,6 +3666,14 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                       ? `+${cap.stockChangePct.toFixed(2)}%`
                       : `${cap.stockChangePct.toFixed(2)}%`}
                   </span>
+                ) : displayMode === 'news' ? (
+                  cap.newsArticles && cap.newsArticles.length > 0 ? (
+                    <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30 shrink-0 tabular-nums">
+                      {formatRelativeNewsAge(cap.newsArticles[0].publishedAt, lang) || `${cap.newsArticles.length}`}
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-mono text-slate-500 shrink-0">-</span>
+                  )
                 ) : cap.currency === baseCurrency ? (
                   <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-indigo-500/20 text-indigo-300 shrink-0">
                     BASE
@@ -3598,6 +3736,14 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                         : formatCompactFxValue(cap.fxRate, baseCurrency, lang)}
                     </span>
                   </>
+                )}
+
+                {displayMode === 'news' && (
+                  <span className="text-[9.5px] font-sans text-slate-200 truncate w-full leading-tight">
+                    {cap.newsArticles && cap.newsArticles.length > 0
+                      ? cap.newsArticles[0].title
+                      : '-'}
+                  </span>
                 )}
               </div>
 
@@ -3670,6 +3816,26 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                           {cap.policyRatePct != null ? `${cap.policyRatePct.toFixed(2)}%` : 'N/A'}
                         </span>
                       </div>
+                    </div>
+                  )}
+
+                  {displayMode === 'news' && isExpanded && cap.newsArticles && cap.newsArticles.length > 0 && (
+                    <div className="space-y-1 py-0.5">
+                      {cap.newsArticles.slice(0, 3).map((art) => (
+                        <a
+                          key={art.id}
+                          href={art.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="block text-[9.5px] leading-snug text-slate-200 hover:text-amber-300 transition-colors line-clamp-2"
+                        >
+                          <span className="text-amber-400/90 font-mono mr-1">
+                            [{art.source}]
+                          </span>
+                          {art.title}
+                        </a>
+                      ))}
                     </div>
                   )}
 
@@ -3777,12 +3943,25 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                           )}`
                         : displayMode === 'stocks'
                           ? hub.indexName
-                          : unitLabel}
+                          : displayMode === 'news'
+                            ? hub.newsArticles?.[0]
+                              ? `${hub.newsArticles[0].source} · ${formatRelativeNewsAge(
+                                  hub.newsArticles[0].publishedAt,
+                                  lang
+                                )}`
+                              : '-'
+                            : unitLabel}
                     </div>
                   </div>
                 </div>
 
-                {displayMode === 'gdp' ? (
+                {displayMode === 'news' ? (
+                  <div className="text-right shrink-0 max-w-[110px] sm:max-w-[130px]">
+                    <div className="text-[10px] font-medium text-amber-200/95 truncate">
+                      {hub.newsArticles?.[0]?.title || '-'}
+                    </div>
+                  </div>
+                ) : displayMode === 'gdp' ? (
                   <div className="text-right shrink-0 font-mono">
                     <div
                       className={`text-xs font-black ${

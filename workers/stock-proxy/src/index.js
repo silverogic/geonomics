@@ -7,9 +7,116 @@
  */
 
 const CACHE_SECONDS = 60
+const NEWS_CACHE_SECONDS = 120
 const MAX_SYMBOLS = 120
 const CONCURRENCY = 12
 const SYMBOL_PATTERN = /^[A-Za-z0-9^.=\-]{1,20}$/
+
+const GOOGLE_NEWS_FEEDS = {
+  ko: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=ko&gl=KR&ceid=KR:ko',
+  en: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en',
+  ja: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=ja&gl=JP&ceid=JP:ja',
+  zh: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=zh-CN&gl=CN&ceid=CN:zh-Hans',
+  es: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=es-419&gl=MX&ceid=MX:es-419',
+  hi: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=hi&gl=IN&ceid=IN:hi',
+}
+
+const GLOBAL_WIRE_FEEDS = [
+  'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en',
+  'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114',
+  'https://finance.yahoo.com/news/rssindex',
+]
+
+function decodeRssText(str) {
+  return (str || '')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function parseRssItems(xml) {
+  const rawItems = (xml || '').split('<item>').slice(1)
+  const items = []
+  for (const raw of rawItems) {
+    const titleMatch = raw.match(/<title>([\s\S]*?)<\/title>/)
+    const linkMatch = raw.match(/<link>([\s\S]*?)<\/link>/)
+    const pubMatch = raw.match(/<pubDate>([\s\S]*?)<\/pubDate>/)
+    const sourceMatch = raw.match(/<source[^>]*>([\s\S]*?)<\/source>/)
+
+    let title = titleMatch ? decodeRssText(titleMatch[1]) : ''
+    const url = linkMatch ? decodeRssText(linkMatch[1]) : ''
+    const pubDate = pubMatch ? decodeRssText(pubMatch[1]) : ''
+    let source = sourceMatch ? decodeRssText(sourceMatch[1]) : ''
+
+    if (!title || !url) continue
+    if (!source && title.includes(' - ')) {
+      const idx = title.lastIndexOf(' - ')
+      if (idx > 12) {
+        source = title.slice(idx + 3).trim()
+        title = title.slice(0, idx).trim()
+      }
+    }
+    if (!source) {
+      try {
+        source = new URL(url).hostname.replace(/^www\./, '')
+      } catch {
+        source = 'Global Wire'
+      }
+    }
+
+    const parsedDate = pubDate ? new Date(pubDate) : new Date()
+    const publishedAt = Number.isNaN(parsedDate.getTime())
+      ? new Date().toISOString()
+      : parsedDate.toISOString()
+
+    items.push({ title, url, source, publishedAt })
+  }
+  return items
+}
+
+async function fetchBreakingNewsPool(lang) {
+  const feedUrls = [...GLOBAL_WIRE_FEEDS]
+  const regionalFeed = GOOGLE_NEWS_FEEDS[lang]
+  if (regionalFeed && !feedUrls.includes(regionalFeed)) {
+    feedUrls.unshift(regionalFeed)
+  }
+
+  const results = await Promise.all(
+    feedUrls.map(async (feedUrl) => {
+      try {
+        const res = await fetch(feedUrl, {
+          signal: AbortSignal.timeout(3500),
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GeonomicsProxy/1.0)' },
+        })
+        if (!res.ok) return []
+        const xml = await res.text()
+        return parseRssItems(xml)
+      } catch {
+        return []
+      }
+    })
+  )
+
+  const merged = results.flat()
+  merged.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+
+  const seen = new Set()
+  const deduped = []
+  for (const item of merged) {
+    const key = item.title.toLowerCase().replace(/[^a-z0-9가-힣ぁ-んァ-ヶ一-龥]/g, '').slice(0, 40)
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    deduped.push(item)
+    if (deduped.length >= 120) break
+  }
+  return deduped
+}
 
 function getAllowedOrigin(request, env) {
   const origin = request.headers.get('Origin') || ''
@@ -87,6 +194,36 @@ export default {
     }
 
     const url = new URL(request.url)
+
+    // Breaking Economic News RSS Aggregator endpoint: ?news=breaking&lang=ko
+    if (url.searchParams.get('news') === 'breaking') {
+      const langParam = (url.searchParams.get('lang') || 'en').toLowerCase().slice(0, 2)
+      const lang = GOOGLE_NEWS_FEEDS[langParam] ? langParam : 'en'
+      const newsCacheKey = new Request(`${url.origin}/?news=breaking&lang=${lang}`)
+      const cache = caches.default
+      const cachedNews = await cache.match(newsCacheKey)
+      if (cachedNews) {
+        const hit = new Response(cachedNews.body, cachedNews)
+        Object.entries(corsHeaders(origin)).forEach(([k, v]) => hit.headers.set(k, v))
+        return hit
+      }
+
+      const items = await fetchBreakingNewsPool(lang)
+      const newsResponse = new Response(
+        JSON.stringify({ fetchedAt: Math.floor(Date.now() / 1000), lang, items }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': `public, max-age=${NEWS_CACHE_SECONDS}`,
+          },
+        }
+      )
+      if (items.length > 0) {
+        ctx.waitUntil(cache.put(newsCacheKey, newsResponse.clone()))
+      }
+      Object.entries(corsHeaders(origin)).forEach(([k, v]) => newsResponse.headers.set(k, v))
+      return newsResponse
+    }
 
     // IMF World Economic Outlook (WEO) DataMapper proxy endpoint: ?imf=weo or /imf-weo
     if (url.searchParams.get('imf') === 'weo' || url.pathname.endsWith('/imf-weo')) {
