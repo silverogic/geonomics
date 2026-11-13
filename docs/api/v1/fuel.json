@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-12",
+  "updatedAt": "2026-11-13",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -634,17 +634,17 @@
     },
     "ZMB": {
       "countryId": "ZMB",
-      "priceUsd": 1.28,
+      "priceUsd": 1.624,
       "currencyCode": "ZMW"
     },
     "MOZ": {
       "countryId": "MOZ",
-      "priceUsd": 1.38,
+      "priceUsd": 1.466,
       "currencyCode": "MZN"
     },
     "MDG": {
       "countryId": "MDG",
-      "priceUsd": 1.15,
+      "priceUsd": 1.169,
       "currencyCode": "MGA"
     }
   }
