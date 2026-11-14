@@ -3,7 +3,7 @@
     "countryId": "USA",
     "countryName": "United States",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 18295000000000,
@@ -253,7 +253,7 @@
     "countryId": "CHN",
     "countryName": "China",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 11279165000000,
@@ -503,7 +503,7 @@
     "countryId": "DEU",
     "countryName": "Germany",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 3433391000000,
@@ -753,7 +753,7 @@
     "countryId": "JPN",
     "countryName": "Japan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 4534438000000,
@@ -1003,7 +1003,7 @@
     "countryId": "IND",
     "countryName": "India",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 2083293000000,
@@ -1253,7 +1253,7 @@
     "countryId": "GBR",
     "countryName": "United Kingdom",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 2947612000000,
@@ -1503,7 +1503,7 @@
     "countryId": "FRA",
     "countryName": "France",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 2442731000000,
@@ -1753,7 +1753,7 @@
     "countryId": "ITA",
     "countryName": "Italy",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1845615000000,
@@ -2003,7 +2003,7 @@
     "countryId": "BRA",
     "countryName": "Brazil",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1800046000000,
@@ -2253,7 +2253,7 @@
     "countryId": "CAN",
     "countryName": "Canada",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1556508000000,
@@ -2503,7 +2503,7 @@
     "countryId": "RUS",
     "countryName": "Russia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1356703000000,
@@ -2753,7 +2753,7 @@
     "countryId": "MEX",
     "countryName": "Mexico",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1213294000000,
@@ -3003,7 +3003,7 @@
     "countryId": "AUS",
     "countryName": "Australia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1238841000000,
@@ -3253,7 +3253,7 @@
     "countryId": "KOR",
     "countryName": "South Korea",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1539212000000,
@@ -3503,7 +3503,7 @@
     "countryId": "ESP",
     "countryName": "Spain",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 1206287000000,
@@ -3753,7 +3753,7 @@
     "countryId": "IDN",
     "countryName": "Indonesia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 860854000000,
@@ -4003,7 +4003,7 @@
     "countryId": "TUR",
     "countryName": "Turkey",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 868204000000,
@@ -4253,7 +4253,7 @@
     "countryId": "NLD",
     "countryName": "Netherlands",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 775822000000,
@@ -4503,7 +4503,7 @@
     "countryId": "SAU",
     "countryName": "Saudi Arabia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 693415000000,
@@ -4753,7 +4753,7 @@
     "countryId": "CHE",
     "countryName": "Switzerland",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 706036000000,
@@ -5003,7 +5003,7 @@
     "countryId": "POL",
     "countryName": "Poland",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 479729000000,
@@ -5253,7 +5253,7 @@
     "countryId": "SWE",
     "countryName": "Sweden",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 501602000000,
@@ -5503,7 +5503,7 @@
     "countryId": "BEL",
     "countryName": "Belgium",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 461091000000,
@@ -5753,7 +5753,7 @@
     "countryId": "ARG",
     "countryName": "Argentina",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 642464000000,
@@ -6003,7 +6003,7 @@
     "countryId": "IRL",
     "countryName": "Ireland",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 301957000000,
@@ -6253,7 +6253,7 @@
     "countryId": "NOR",
     "countryName": "Norway",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 400669000000,
@@ -6503,7 +6503,7 @@
     "countryId": "AUT",
     "countryName": "Austria",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 379584000000,
@@ -6753,7 +6753,7 @@
     "countryId": "ISR",
     "countryName": "Israel",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 301316000000,
@@ -7003,7 +7003,7 @@
     "countryId": "ARE",
     "countryName": "United Arab Emirates",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 381973000000,
@@ -7253,7 +7253,7 @@
     "countryId": "SGP",
     "countryName": "Singapore",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 307999000000,
@@ -7503,7 +7503,7 @@
     "countryId": "MYS",
     "countryName": "Malaysia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 301355000000,
@@ -7753,7 +7753,7 @@
     "countryId": "ZAF",
     "countryName": "South Africa",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 346663000000,
@@ -8003,7 +8003,7 @@
     "countryId": "PHL",
     "countryName": "Philippines",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 306446000000,
@@ -8253,7 +8253,7 @@
     "countryId": "DNK",
     "countryName": "Denmark",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 301759000000,
@@ -8503,7 +8503,7 @@
     "countryId": "EGY",
     "countryName": "Egypt",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 350119000000,
@@ -8753,7 +8753,7 @@
     "countryId": "BGD",
     "countryName": "Bangladesh",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 233687000000,
@@ -9003,7 +9003,7 @@
     "countryId": "VNM",
     "countryName": "Vietnam",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 236839000000,
@@ -9253,7 +9253,7 @@
     "countryId": "NGA",
     "countryName": "Nigeria",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 696088000000,
@@ -9503,7 +9503,7 @@
     "countryId": "THA",
     "countryName": "Thailand",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 401296000000,
@@ -9753,7 +9753,7 @@
     "countryId": "HKG",
     "countryName": "Hong Kong",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 309386000000,
@@ -10003,7 +10003,7 @@
     "countryId": "NZL",
     "countryName": "New Zealand",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 176080000000,
@@ -10253,7 +10253,7 @@
     "countryId": "FIN",
     "countryName": "Finland",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 233234000000,
@@ -10503,7 +10503,7 @@
     "countryId": "PRT",
     "countryName": "Portugal",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 199059000000,
@@ -10753,7 +10753,7 @@
     "countryId": "COL",
     "countryName": "Colombia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 293493000000,
@@ -11003,7 +11003,7 @@
     "countryId": "CHL",
     "countryName": "Chile",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 242515000000,
@@ -11253,7 +11253,7 @@
     "countryId": "CZE",
     "countryName": "Czech Republic",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 189108000000,
@@ -11503,7 +11503,7 @@
     "countryId": "ROU",
     "countryName": "Romania",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 177878000000,
@@ -11753,7 +11753,7 @@
     "countryId": "PER",
     "countryName": "Peru",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 193352000000,
@@ -12003,7 +12003,7 @@
     "countryId": "GRC",
     "countryName": "Greece",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 194587000000,
@@ -12253,7 +12253,7 @@
     "countryId": "QAT",
     "countryName": "Qatar",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 161740000000,
@@ -12503,7 +12503,7 @@
     "countryId": "HUN",
     "countryName": "Hungary",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 125244000000,
@@ -12753,7 +12753,7 @@
     "countryId": "KWT",
     "countryName": "Kuwait",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 114606000000,
@@ -13003,7 +13003,7 @@
     "countryId": "UKR",
     "countryName": "Ukraine",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 90981000000,
@@ -13253,7 +13253,7 @@
     "countryId": "TWN",
     "countryName": "Taiwan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 534515000000,
@@ -13503,7 +13503,7 @@
     "countryId": "PAK",
     "countryName": "Pakistan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 299930000000,
@@ -13753,7 +13753,7 @@
     "countryId": "KAZ",
     "countryName": "Kazakhstan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 184388000000,
@@ -14003,7 +14003,7 @@
     "countryId": "IRN",
     "countryName": "Iran",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 471415000000,
@@ -14253,7 +14253,7 @@
     "countryId": "IRQ",
     "countryName": "Iraq",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 177634000000,
@@ -14503,7 +14503,7 @@
     "countryId": "DZA",
     "countryName": "Algeria",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 187494000000,
@@ -14753,7 +14753,7 @@
     "countryId": "MAR",
     "countryName": "Morocco",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 110414000000,
@@ -15003,7 +15003,7 @@
     "countryId": "ETH",
     "countryName": "Ethiopia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 64591000000,
@@ -15253,7 +15253,7 @@
     "countryId": "SVK",
     "countryName": "Slovakia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 89188000000,
@@ -15503,7 +15503,7 @@
     "countryId": "PRI",
     "countryName": "Puerto Rico",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 103376000000,
@@ -15753,7 +15753,7 @@
     "countryId": "DOM",
     "countryName": "Dominican Republic",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 71056000000,
@@ -16003,7 +16003,7 @@
     "countryId": "ECU",
     "countryName": "Ecuador",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 97210000000,
@@ -16253,7 +16253,7 @@
     "countryId": "UZB",
     "countryName": "Uzbekistan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 96960000000,
@@ -16503,7 +16503,7 @@
     "countryId": "VEN",
     "countryName": "Venezuela",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 84287000000,
@@ -16753,7 +16753,7 @@
     "countryId": "AGO",
     "countryName": "Angola",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 131661000000,
@@ -17003,7 +17003,7 @@
     "countryId": "KEN",
     "countryName": "Kenya",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 70370000000,
@@ -17253,7 +17253,7 @@
     "countryId": "BGR",
     "countryName": "Bulgaria",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 50818000000,
@@ -17503,7 +17503,7 @@
     "countryId": "GTM",
     "countryName": "Guatemala",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 62180000000,
@@ -17753,7 +17753,7 @@
     "countryId": "LKA",
     "countryName": "Sri Lanka",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 85091000000,
@@ -18003,7 +18003,7 @@
     "countryId": "CRI",
     "countryName": "Costa Rica",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 56442000000,
@@ -18253,7 +18253,7 @@
     "countryId": "LUX",
     "countryName": "Luxembourg",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 60078000000,
@@ -18503,7 +18503,7 @@
     "countryId": "HRV",
     "countryName": "Croatia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 51005000000,
@@ -18753,7 +18753,7 @@
     "countryId": "SRB",
     "countryName": "Serbia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 41297000000,
@@ -19003,7 +19003,7 @@
     "countryId": "CIV",
     "countryName": "Côte d'Ivoire",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 45815000000,
@@ -19253,7 +19253,7 @@
     "countryId": "PAN",
     "countryName": "Panama",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 55768000000,
@@ -19503,7 +19503,7 @@
     "countryId": "LTU",
     "countryName": "Lithuania",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 41548000000,
@@ -19753,7 +19753,7 @@
     "countryId": "GHA",
     "countryName": "Ghana",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 49437000000,
@@ -20003,7 +20003,7 @@
     "countryId": "URY",
     "countryName": "Uruguay",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 58218000000,
@@ -20253,7 +20253,7 @@
     "countryId": "TZA",
     "countryName": "Tanzania",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 47424000000,
@@ -20503,7 +20503,7 @@
     "countryId": "BLR",
     "countryName": "Belarus",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 56329000000,
@@ -20753,7 +20753,7 @@
     "countryId": "MMR",
     "countryName": "Myanmar",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 59330000000,
@@ -21003,7 +21003,7 @@
     "countryId": "COD",
     "countryName": "DR Congo",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 40154000000,
@@ -21253,7 +21253,7 @@
     "countryId": "AZE",
     "countryName": "Azerbaijan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 52997000000,
@@ -21503,7 +21503,7 @@
     "countryId": "SVN",
     "countryName": "Slovenia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 42714000000,
@@ -21753,7 +21753,7 @@
     "countryId": "TKM",
     "countryName": "Turkmenistan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 35800000000,
@@ -22003,7 +22003,7 @@
     "countryId": "JOR",
     "countryName": "Jordan",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 42454000000,
@@ -22253,7 +22253,7 @@
     "countryId": "UGA",
     "countryName": "Uganda",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 30122000000,
@@ -22503,7 +22503,7 @@
     "countryId": "BOL",
     "countryName": "Bolivia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 40034000000,
@@ -22753,7 +22753,7 @@
     "countryId": "CMR",
     "countryName": "Cameroon",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 32213000000,
@@ -23003,7 +23003,7 @@
     "countryId": "TUN",
     "countryName": "Tunisia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 45779000000,
@@ -23253,7 +23253,7 @@
     "countryId": "MAC",
     "countryName": "Macao SAR",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 44941000000,
@@ -23503,7 +23503,7 @@
     "countryId": "BHR",
     "countryName": "Bahrain",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 32523000000,
@@ -23753,7 +23753,7 @@
     "countryId": "LVA",
     "countryName": "Latvia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 26347000000,
@@ -24003,7 +24003,7 @@
     "countryId": "EST",
     "countryName": "Estonia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 23314000000,
@@ -24253,7 +24253,7 @@
     "countryId": "ISL",
     "countryName": "Iceland",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 17700000000,
@@ -24503,7 +24503,7 @@
     "countryId": "CYP",
     "countryName": "Cyprus",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 19911000000,
@@ -24753,7 +24753,7 @@
     "countryId": "OMN",
     "countryName": "Oman",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 78711000000,
@@ -25003,7 +25003,7 @@
     "countryId": "PRY",
     "countryName": "Paraguay",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 36211000000,
@@ -25253,7 +25253,7 @@
     "countryId": "KHM",
     "countryName": "Cambodia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 24080000000,
@@ -25503,7 +25503,7 @@
     "countryId": "NPL",
     "countryName": "Nepal",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 24361000000,
@@ -25753,7 +25753,7 @@
     "countryId": "SEN",
     "countryName": "Senegal",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 17777000000,
@@ -26003,7 +26003,7 @@
     "countryId": "GUY",
     "countryName": "Guyana",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 4280000000,
@@ -26253,7 +26253,7 @@
     "countryId": "PNG",
     "countryName": "Papua New Guinea",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 21723000000,
@@ -26503,7 +26503,7 @@
     "countryId": "GEO",
     "countryName": "Georgia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 15223000000,
@@ -26753,7 +26753,7 @@
     "countryId": "MNG",
     "countryName": "Mongolia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 11620000000,
@@ -27003,7 +27003,7 @@
     "countryId": "SLV",
     "countryName": "El Salvador",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 23438000000,
@@ -27253,7 +27253,7 @@
     "countryId": "LBY",
     "countryName": "Libya",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 48718000000,
@@ -27503,7 +27503,7 @@
     "countryId": "HND",
     "countryName": "Honduras",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 20978000000,
@@ -27753,7 +27753,7 @@
     "countryId": "NIC",
     "countryName": "Nicaragua",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 12757000000,
@@ -28003,7 +28003,7 @@
     "countryId": "MDA",
     "countryName": "Moldova",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 7778000000,
@@ -28253,7 +28253,7 @@
     "countryId": "LBN",
     "countryName": "Lebanon",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 49893000000,
@@ -28503,7 +28503,7 @@
     "countryId": "MLT",
     "countryName": "Malta",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 11342000000,
@@ -28753,7 +28753,7 @@
     "countryId": "JAM",
     "countryName": "Jamaica",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 14927000000,
@@ -29003,7 +29003,7 @@
     "countryId": "ARM",
     "countryName": "Armenia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 10553000000,
@@ -29253,7 +29253,7 @@
     "countryId": "ALB",
     "countryName": "Albania",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 11508000000,
@@ -29503,7 +29503,7 @@
     "countryId": "BWA",
     "countryName": "Botswana",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 13531000000,
@@ -29753,7 +29753,7 @@
     "countryId": "BRN",
     "countryName": "Brunei",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 12933000000,
@@ -30003,7 +30003,7 @@
     "countryId": "MUS",
     "countryName": "Mauritius",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 12007000000,
@@ -30253,7 +30253,7 @@
     "countryId": "TTO",
     "countryName": "Trinidad and Tobago",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 26942000000,
@@ -30503,7 +30503,7 @@
     "countryId": "NAM",
     "countryName": "Namibia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 11450000000,
@@ -30753,7 +30753,7 @@
     "countryId": "MKD",
     "countryName": "North Macedonia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 10067000000,
@@ -31003,7 +31003,7 @@
     "countryId": "BIH",
     "countryName": "Bosnia and Herzegovina",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 16413000000,
@@ -31253,7 +31253,7 @@
     "countryId": "ZMB",
     "countryName": "Zambia",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 21245000000,
@@ -31503,7 +31503,7 @@
     "countryId": "MOZ",
     "countryName": "Mozambique",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 16209000000,
@@ -31753,7 +31753,7 @@
     "countryId": "MDG",
     "countryName": "Madagascar",
     "source": "IMF DataMapper API v1 (WEO)",
-    "lastUpdated": "IMF WEO Official API (2026-11-13)",
+    "lastUpdated": "IMF WEO Official API (2026-11-14)",
     "years": {
       "2015": {
         "totalGdpUsd": 11323000000,
