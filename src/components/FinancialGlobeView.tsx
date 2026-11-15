@@ -72,14 +72,32 @@ function formatRelativeNewsAge(iso: string, lang: Language): string {
   if (!ts || Number.isNaN(ts)) return ''
   const diffMin = Math.max(1, Math.floor((Date.now() - ts) / 60_000))
   if (diffMin < 60) {
-    return lang === 'ko' ? `${diffMin}분 전` : lang === 'ja' ? `${diffMin}分前` : `${diffMin}m`
+    return lang === 'ko'
+      ? `${diffMin}분 전`
+      : lang === 'ja'
+        ? `${diffMin}分前`
+        : lang === 'zh'
+          ? `${diffMin}分钟前`
+          : `${diffMin}m`
   }
   const diffHr = Math.floor(diffMin / 60)
   if (diffHr < 24) {
-    return lang === 'ko' ? `${diffHr}시간 전` : lang === 'ja' ? `${diffHr}時間前` : `${diffHr}h`
+    return lang === 'ko'
+      ? `${diffHr}시간 전`
+      : lang === 'ja'
+        ? `${diffHr}時間前`
+        : lang === 'zh'
+          ? `${diffHr}小时前`
+          : `${diffHr}h`
   }
   const diffDay = Math.floor(diffHr / 24)
-  return lang === 'ko' ? `${diffDay}일 전` : lang === 'ja' ? `${diffDay}日前` : `${diffDay}d`
+  return lang === 'ko'
+    ? `${diffDay}일 전`
+    : lang === 'ja'
+      ? `${diffDay}日前`
+      : lang === 'zh'
+        ? `${diffDay}天前`
+        : `${diffDay}d`
 }
 type RegionPreset = 'auto' | 'asia' | 'europe' | 'americas' | 'oceania'
 
@@ -2096,7 +2114,6 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   const [projectedCapsules, setProjectedCapsules] = useState<ProjectedCapsule[]>([])
 
   useEffect(() => {
-    if (displayMode !== 'news') return
     let active = true
     fetchBreakingNewsByCountry(lang, !!refreshKey).then((map) => {
       if (active) setNewsByCountry(map)
