@@ -101,6 +101,156 @@ function formatRelativeNewsAge(iso: string, lang: Language): string {
         ? `${diffDay}天前`
         : `${diffDay}d`
 }
+interface PublisherBadgeMeta {
+  code: string
+  label: string
+  bgClass: string
+  kind?: 'reuters' | 'bloomberg' | 'cnbc' | 'ft' | 'wsj' | 'yahoo' | 'nikkei' | 'bbc' | 'generic'
+}
+
+function getPublisherBadgeMeta(source?: string, url?: string): PublisherBadgeMeta {
+  const s = `${source || ''} ${url || ''}`.toLowerCase()
+  if (/reuters|로이터|ロイター|路透/.test(s)) {
+    return {
+      code: 'R',
+      label: 'Reuters',
+      bgClass: 'bg-orange-500/25 text-orange-300 border-orange-400/50',
+      kind: 'reuters',
+    }
+  }
+  if (/bloomberg|블룸버그|ブルームバーグ|彭博/.test(s)) {
+    return {
+      code: 'B',
+      label: 'Bloomberg',
+      bgClass: 'bg-violet-500/25 text-violet-200 border-violet-400/50',
+      kind: 'bloomberg',
+    }
+  }
+  if (/cnbc/.test(s)) {
+    return {
+      code: 'C',
+      label: 'CNBC',
+      bgClass: 'bg-sky-500/25 text-sky-200 border-sky-400/50',
+      kind: 'cnbc',
+    }
+  }
+  if (/financial times|\bft\.com\b|\bft\b|파이낸셜타임스/.test(s)) {
+    return {
+      code: 'FT',
+      label: 'Financial Times',
+      bgClass: 'bg-amber-600/25 text-amber-200 border-amber-400/50',
+      kind: 'ft',
+    }
+  }
+  if (/wall street journal|\bwsj\b|월스트리트저널/.test(s)) {
+    return {
+      code: 'W',
+      label: 'WSJ',
+      bgClass: 'bg-slate-700/70 text-slate-100 border-slate-400/50',
+      kind: 'wsj',
+    }
+  }
+  if (/yahoo|야후/.test(s)) {
+    return {
+      code: 'Y!',
+      label: 'Yahoo Finance',
+      bgClass: 'bg-purple-500/25 text-purple-200 border-purple-400/50',
+      kind: 'yahoo',
+    }
+  }
+  if (/nikkei|닛케이|日経/.test(s)) {
+    return {
+      code: 'N',
+      label: 'Nikkei',
+      bgClass: 'bg-blue-500/25 text-blue-200 border-blue-400/50',
+      kind: 'nikkei',
+    }
+  }
+  if (/\bbbc\b/.test(s)) {
+    return {
+      code: 'B',
+      label: 'BBC',
+      bgClass: 'bg-rose-600/25 text-rose-200 border-rose-400/50',
+      kind: 'bbc',
+    }
+  }
+  if (/scmp|south china/.test(s)) {
+    return {
+      code: 'SC',
+      label: 'SCMP',
+      bgClass: 'bg-amber-500/20 text-amber-300 border-amber-400/45',
+    }
+  }
+  if (/channel newsasia|\bcna\b/.test(s)) {
+    return {
+      code: 'CN',
+      label: 'CNA',
+      bgClass: 'bg-red-500/25 text-red-200 border-red-400/45',
+    }
+  }
+  if (/yonhap|연합뉴스|yna\.co/.test(s)) {
+    return {
+      code: '연',
+      label: source || '연합뉴스',
+      bgClass: 'bg-cyan-500/25 text-cyan-200 border-cyan-400/45',
+    }
+  }
+  if (/한국경제|한경|hankyung/.test(s)) {
+    return {
+      code: '한',
+      label: source || '한국경제',
+      bgClass: 'bg-emerald-500/25 text-emerald-200 border-emerald-400/45',
+    }
+  }
+  if (/매일경제|매경|\bmk\.co/.test(s)) {
+    return {
+      code: '매',
+      label: source || '매일경제',
+      bgClass: 'bg-orange-500/25 text-orange-200 border-orange-400/45',
+    }
+  }
+
+  const clean = (source || 'News').replace(/^www\./i, '').trim()
+  const firstChar = clean.charAt(0).toUpperCase() || 'N'
+  return {
+    code: firstChar,
+    label: clean,
+    bgClass: 'bg-slate-800/90 text-amber-300 border-amber-500/35',
+    kind: 'generic',
+  }
+}
+
+const NewsPublisherIcon: React.FC<{
+  source?: string
+  url?: string
+  className?: string
+}> = ({ source, url, className = '' }) => {
+  const meta = getPublisherBadgeMeta(source, url)
+
+  return (
+    <span
+      title={source || meta.label}
+      className={`inline-flex items-center justify-center h-3.5 min-w-[14px] px-1 rounded-[3.5px] border text-[8.5px] font-mono font-black leading-none shrink-0 align-middle select-none ${meta.bgClass} ${className}`}
+    >
+      {meta.kind === 'reuters' ? (
+        <svg viewBox="0 0 14 14" className="w-2.5 h-2.5 fill-current" aria-hidden="true">
+          <circle cx="7" cy="2" r="1.25" />
+          <circle cx="10.5" cy="3.5" r="1.25" />
+          <circle cx="12" cy="7" r="1.25" />
+          <circle cx="10.5" cy="10.5" r="1.25" />
+          <circle cx="7" cy="12" r="1.25" />
+          <circle cx="3.5" cy="10.5" r="1.25" />
+          <circle cx="2" cy="7" r="1.25" />
+          <circle cx="3.5" cy="3.5" r="1.25" />
+          <circle cx="7" cy="7" r="1.5" />
+        </svg>
+      ) : (
+        meta.code
+      )}
+    </span>
+  )
+}
+
 type RegionPreset = 'auto' | 'asia' | 'europe' | 'americas' | 'oceania'
 
 interface HubDefinition {
@@ -3913,10 +4063,18 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 )}
 
                 {displayMode === 'news' && (
-                  <span className="text-[9.5px] font-sans text-slate-200 truncate w-full leading-tight">
-                    {cap.newsArticles && cap.newsArticles.length > 0
-                      ? cap.newsArticles[0].title
-                      : '-'}
+                  <span className="text-[9.5px] font-sans text-slate-200 truncate w-full leading-tight flex items-center gap-1">
+                    {cap.newsArticles && cap.newsArticles.length > 0 ? (
+                      <>
+                        <NewsPublisherIcon
+                          source={cap.newsArticles[0].source}
+                          url={cap.newsArticles[0].url}
+                        />
+                        <span className="truncate">{cap.newsArticles[0].title}</span>
+                      </>
+                    ) : (
+                      '-'
+                    )}
                   </span>
                 )}
               </div>
@@ -4004,9 +4162,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                           onClick={(e) => e.stopPropagation()}
                           className="block text-[9.5px] leading-snug text-slate-200 hover:text-amber-300 transition-colors line-clamp-2"
                         >
-                          <span className="text-amber-400/90 font-mono mr-1">
-                            [{art.source}]
-                          </span>
+                          <NewsPublisherIcon
+                            source={art.source}
+                            url={art.url}
+                            className="mr-1 -mt-0.5"
+                          />
                           {art.title}
                         </a>
                       ))}
@@ -4118,12 +4278,22 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                         : displayMode === 'stocks'
                           ? hub.indexName
                           : displayMode === 'news'
-                            ? hub.newsArticles?.[0]
-                              ? `${hub.newsArticles[0].source} · ${formatRelativeNewsAge(
-                                  hub.newsArticles[0].publishedAt,
-                                  lang
-                                )}`
-                              : '-'
+                            ? hub.newsArticles?.[0] ? (
+                                <span className="inline-flex items-center gap-1">
+                                  <NewsPublisherIcon
+                                    source={hub.newsArticles[0].source}
+                                    url={hub.newsArticles[0].url}
+                                  />
+                                  <span>
+                                    {formatRelativeNewsAge(
+                                      hub.newsArticles[0].publishedAt,
+                                      lang
+                                    )}
+                                  </span>
+                                </span>
+                              ) : (
+                                '-'
+                              )
                             : unitLabel}
                     </div>
                   </div>
