@@ -12,6 +12,8 @@ import {
   Globe,
   Map as MapIcon,
   Newspaper,
+  ChevronDown,
+  Check,
 } from 'lucide-react'
 import type {
   BaseCurrency,
@@ -2147,6 +2149,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 }) => {
   const { t } = useTranslation()
   const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('gdp')
+  const [lastMetricMode, setLastMetricMode] = useState<'gdp' | 'stocks' | 'fx'>('gdp')
+  const [isModeComboOpen, setIsModeComboOpen] = useState(false)
+  const modeComboRef = useRef<HTMLDivElement>(null)
   const [viewDimension, setViewDimension] = useState<'3d' | '2d'>('3d')
   const [hovered2dCountryId, setHovered2dCountryId] = useState<string | null>(null)
   const [activePreset, setActivePreset] = useState<RegionPreset>('auto')
@@ -2167,6 +2172,27 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       active = false
     }
   }, [displayMode, lang, refreshKey])
+
+  useEffect(() => {
+    if (displayMode !== 'news') {
+      setLastMetricMode(displayMode)
+    }
+  }, [displayMode])
+
+  useEffect(() => {
+    if (!isModeComboOpen) return
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
+      if (modeComboRef.current && !modeComboRef.current.contains(e.target as Node)) {
+        setIsModeComboOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    document.addEventListener('touchstart', handleOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleOutside)
+      document.removeEventListener('touchstart', handleOutside)
+    }
+  }, [isModeComboOpen])
 
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -3486,9 +3512,88 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         </div>
 
         {/* Center: Display Mode Switcher (GDP / Stocks / FX) + Region Presets */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
-          {/* Display Mode Tabs */}
-          <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
+        <div className="flex items-center gap-1.5 max-w-full">
+          {/* Mobile Display Mode Combo Box (GDP / Stocks / FX) */}
+          <div className="relative sm:hidden shrink-0" ref={modeComboRef}>
+            <button
+              type="button"
+              onClick={() => setIsModeComboOpen((prev) => !prev)}
+              aria-haspopup="listbox"
+              aria-expanded={isModeComboOpen}
+              className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                displayMode === 'news'
+                  ? 'bg-slate-950/90 border-slate-800 text-slate-300 hover:text-white'
+                  : lastMetricMode === 'gdp'
+                    ? 'bg-emerald-600 border-emerald-500/80 text-white shadow-sm'
+                    : 'bg-indigo-600 border-indigo-500/80 text-white shadow-sm'
+              }`}
+            >
+              {lastMetricMode === 'gdp' ? (
+                <BarChart3 className="w-3 h-3 shrink-0" />
+              ) : lastMetricMode === 'stocks' ? (
+                <TrendingUp className="w-3 h-3 shrink-0" />
+              ) : (
+                <Coins className="w-3 h-3 shrink-0" />
+              )}
+              <span>
+                {lastMetricMode === 'gdp'
+                  ? t('globeDisplayModeGdp')
+                  : lastMetricMode === 'stocks'
+                    ? t('globeDisplayModeStocks')
+                    : t('globeDisplayModeFx')}
+              </span>
+              <ChevronDown
+                className={`w-3 h-3 shrink-0 transition-transform duration-150 ${
+                  isModeComboOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {isModeComboOpen && (
+              <div
+                role="listbox"
+                className="absolute left-0 top-full mt-1.5 min-w-[120px] bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-xl p-1 shadow-2xl z-50 space-y-0.5"
+              >
+                {(
+                  [
+                    { id: 'gdp', label: t('globeDisplayModeGdp'), icon: BarChart3, activeBg: 'bg-emerald-600/25 border-emerald-500/40 text-emerald-200' },
+                    { id: 'stocks', label: t('globeDisplayModeStocks'), icon: TrendingUp, activeBg: 'bg-indigo-600/25 border-indigo-500/40 text-indigo-200' },
+                    { id: 'fx', label: t('globeDisplayModeFx'), icon: Coins, activeBg: 'bg-indigo-600/25 border-indigo-500/40 text-indigo-200' },
+                  ] as const
+                ).map((opt) => {
+                  const Icon = opt.icon
+                  const isSelected = displayMode === opt.id
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        setLastMetricMode(opt.id)
+                        setDisplayMode(opt.id)
+                        setIsModeComboOpen(false)
+                      }}
+                      className={`w-full px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-between gap-2 transition-colors cursor-pointer border ${
+                        isSelected
+                          ? opt.activeBg
+                          : 'border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Icon className="w-3.5 h-3.5 shrink-0" />
+                        <span>{opt.label}</span>
+                      </span>
+                      {isSelected && <Check className="w-3 h-3 shrink-0" />}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Display Mode Tabs */}
+          <div className="hidden sm:flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
             <button
               type="button"
               onClick={() => setDisplayMode('gdp')}
@@ -3530,7 +3635,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           {/* Independent Breaking News Toggle */}
           <button
             type="button"
-            onClick={() => setDisplayMode((prev) => (prev === 'news' ? 'gdp' : 'news'))}
+            onClick={() => setDisplayMode((prev) => (prev === 'news' ? lastMetricMode : 'news'))}
             aria-pressed={displayMode === 'news'}
             className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
               displayMode === 'news'
