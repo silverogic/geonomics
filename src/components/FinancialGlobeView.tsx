@@ -16,7 +16,6 @@ import {
   Check,
   ZoomIn,
   ZoomOut,
-  Zap,
 } from 'lucide-react'
 import type {
   BaseCurrency,
@@ -2361,19 +2360,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const tileOverlayRef = useRef<HTMLDivElement>(null)
   const gpuRendererRef = useRef<GlobeGpuRenderer | null>(null)
-  const [gpuAvailable, setGpuAvailable] = useState(false)
-  const [gpuEnabled, setGpuEnabled] = useState(true)
-  const [gpuDeviceName, setGpuDeviceName] = useState('')
-  const gpuEnabledRef = useRef(true)
   const viewDimensionRef = useRef<'3d' | '2d'>('3d')
   const morphRef = useRef<number>(0)
   const [zoomLevel, setZoomLevel] = useState<number>(DEFAULT_GLOBE_ZOOM)
   const zoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
   const targetZoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
-
-  useEffect(() => {
-    gpuEnabledRef.current = gpuEnabled
-  }, [gpuEnabled])
 
   const applyTargetZoom = useCallback((nextZoom: number) => {
     const clamped = Math.min(
@@ -2642,16 +2633,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     const gpuCanvas = gpuCanvasRef.current
     if (!gpuCanvas) return
     const { landDots, graticuleLines } = getGlobeGeometry()
-    const renderer = createGlobeGpuRenderer(gpuCanvas, landDots, graticuleLines, () => {
-      setGpuAvailable(false)
-    })
+    const renderer = createGlobeGpuRenderer(gpuCanvas, landDots, graticuleLines)
     if (!renderer) {
-      setGpuAvailable(false)
       return
     }
     gpuRendererRef.current = renderer
-    setGpuAvailable(true)
-    setGpuDeviceName(renderer.gpuName)
     renderer.updateDotStyles({
       activeMode: displayModeRef.current,
       gdpMap: gdpLookupRef.current,
@@ -3073,7 +3059,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       // Attempt WebGL2 Hardware GPU rendering for Sphere, Halo, Graticules & Continent Voxel Dots
       let renderedByGpu = false
       const gpuRenderer = gpuRendererRef.current
-      if (gpuRenderer && gpuEnabledRef.current && !gpuRenderer.isContextLost()) {
+      if (gpuRenderer && !gpuRenderer.isContextLost()) {
         renderedByGpu = gpuRenderer.renderFrame({
           width,
           height,
@@ -4020,33 +4006,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           )}
         </div>
 
-        {/* Right: GPU Acceleration Badge, Spin Toggle & Reset */}
+        {/* Right: Spin Toggle & Reset */}
         <div className="flex items-center gap-1.5 shrink-0">
           {viewDimension === '3d' && (
             <>
-              {gpuAvailable && (
-                <button
-                  type="button"
-                  onClick={() => setGpuEnabled((prev) => !prev)}
-                  aria-pressed={gpuEnabled}
-                  title={
-                    gpuEnabled
-                      ? `${lang === 'ko' ? 'GPU 하드웨어 가속 활성' : 'GPU Acceleration Active'} (${gpuDeviceName})`
-                      : lang === 'ko'
-                        ? 'GPU 가속 꺼짐 (Canvas 2D 모드)'
-                        : 'GPU Acceleration Off (Canvas 2D Mode)'
-                  }
-                  className={`hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg border text-[10px] font-mono font-bold transition-all cursor-pointer ${
-                    gpuEnabled
-                      ? 'bg-cyan-500/15 border-cyan-400/45 text-cyan-300 shadow-sm'
-                      : 'bg-slate-950/80 border-slate-800 text-slate-500 hover:text-slate-300'
-                  }`}
-                >
-                  <Zap className={`w-3 h-3 ${gpuEnabled ? 'text-cyan-400' : 'text-slate-500'}`} />
-                  <span>GPU</span>
-                </button>
-              )}
-
               <button
                 type="button"
                 title={t('globePausePlay')}
