@@ -349,6 +349,51 @@ function getStockColorBucket(changePct: number): number {
   return 7
 }
 
+// Amber Color Buckets for 'news' Display Mode (matching Breaking News amber badge)
+const NEWS_DOT_STYLES: Array<{
+  mid: string
+  front: string
+}> = [
+  // 0: Untracked / No breaking news
+  {
+    mid: 'rgba(71, 85, 105, 0.26)',
+    front: 'rgba(100, 116, 139, 0.40)',
+  },
+  // 1..3: Unused fallback amber
+  {
+    mid: 'rgba(180, 83, 9, 0.40)',
+    front: 'rgba(217, 119, 6, 0.58)',
+  },
+  {
+    mid: 'rgba(180, 83, 9, 0.44)',
+    front: 'rgba(217, 119, 6, 0.62)',
+  },
+  {
+    mid: 'rgba(180, 83, 9, 0.48)',
+    front: 'rgba(217, 119, 6, 0.66)',
+  },
+  // 4: News > 12h old
+  {
+    mid: 'rgba(217, 119, 6, 0.46)',
+    front: 'rgba(245, 158, 11, 0.66)',
+  },
+  // 5: News <= 12h old
+  {
+    mid: 'rgba(245, 158, 11, 0.56)',
+    front: 'rgba(251, 191, 36, 0.78)',
+  },
+  // 6: News <= 4h old
+  {
+    mid: 'rgba(245, 158, 11, 0.72)',
+    front: 'rgba(251, 191, 36, 0.90)',
+  },
+  // 7: Breaking News <= 1.5h old
+  {
+    mid: 'rgba(217, 119, 6, 0.86)',
+    front: 'rgba(252, 211, 77, 0.98)',
+  },
+]
+
 function getFxColorBucket(changePct: number): number {
   if (changePct <= -0.6) return 1
   if (changePct <= -0.2) return 2
@@ -2357,7 +2402,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             ? fxBucketLookup
             : newsBucketLookup
       const bucket = bucketMap.get(countryId) ?? 0
-      return STOCK_DOT_STYLES[bucket]?.front ?? '#1e293b'
+      const styles = displayMode === 'news' ? NEWS_DOT_STYLES : STOCK_DOT_STYLES
+      return styles[bucket]?.front ?? '#1e293b'
     },
     [displayMode, gdpLookup, stockBucketLookup, fxBucketLookup, newsBucketLookup]
   )
@@ -2905,8 +2951,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 : currentNewsBucketMap
           const rMid = dotSizeFront * 0.90
           const rFront = dotSizeFront * 0.98
-          for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
-            const style = STOCK_DOT_STYLES[bucket]
+          const activeDotStyles = activeMode === 'news' ? NEWS_DOT_STYLES : STOCK_DOT_STYLES
+          for (let bucket = 0; bucket < activeDotStyles.length; bucket++) {
+            const style = activeDotStyles[bucket]
 
             ctx.fillStyle = style.mid
             ctx.beginPath()
@@ -3009,8 +3056,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               : activeMode === 'fx'
                 ? currentFxBucketMap
                 : currentNewsBucketMap
-            for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
-              const style = STOCK_DOT_STYLES[bucket]
+            const activeDotStyles = activeMode === 'news' ? NEWS_DOT_STYLES : STOCK_DOT_STYLES
+            for (let bucket = 0; bucket < activeDotStyles.length; bucket++) {
+              const style = activeDotStyles[bucket]
               ctx.save()
               ctx.globalAlpha = backAlpha
               ctx.fillStyle = style.mid
@@ -3263,7 +3311,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               : (cap.fxChangePct ?? 0) < -0.01
 
         // Beacon color matches amber tier in GDP mode
-        const isTop12Gdp = displayModeRef.current === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2)
+        const isTop12Gdp =
+          displayModeRef.current === 'news' ||
+          (displayModeRef.current === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2))
         const isTop35Gdp = displayModeRef.current === 'gdp' && (cap.colorTier === 5 || (cap.gdpRank >= 3 && cap.gdpRank <= 5))
 
         const colorHex = isTop12Gdp
@@ -3601,7 +3651,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           const sparklineData =
             displayMode === 'stocks' && isHovered ? getCapsuleSparkline(cap) : null
 
-          const isTop12Gdp = displayMode === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2)
+          const isTop12Gdp =
+            displayMode === 'news' ||
+            (displayMode === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2))
           const isTop35Gdp = displayMode === 'gdp' && (cap.colorTier === 5 || (cap.gdpRank >= 3 && cap.gdpRank <= 5))
 
           const borderClass = isHovered
@@ -3610,7 +3662,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               : isTop35Gdp
                 ? 'border-amber-200 ring-2 ring-amber-300/40 bg-slate-900/95'
                 : 'border-white ring-2 ring-emerald-400/50 bg-slate-900/95'
-            : displayMode === 'gdp'
+            : displayMode === 'gdp' || displayMode === 'news'
               ? isTop12Gdp
                 ? 'border-amber-400/70 bg-amber-950/20 hover:border-amber-300 shadow-amber-500/10'
                 : isTop35Gdp
