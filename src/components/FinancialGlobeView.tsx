@@ -16,6 +16,7 @@ import {
   Check,
   ZoomIn,
   ZoomOut,
+  Zap,
 } from 'lucide-react'
 import type {
   BaseCurrency,
@@ -56,6 +57,10 @@ import {
 import { CountryFlag } from './CountryFlag'
 import { StockSparkline } from './StockSparkline'
 import { TileWorldMap } from './TileWorldMap'
+import {
+  createGlobeGpuRenderer,
+  type GlobeGpuRenderer,
+} from '../utils/globeGpuRenderer'
 
 interface FinancialGlobeViewProps {
   items?: CountryRowItem[]
@@ -2352,13 +2357,23 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   }, [isModeComboOpen])
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const gpuCanvasRef = useRef<HTMLCanvasElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const tileOverlayRef = useRef<HTMLDivElement>(null)
+  const gpuRendererRef = useRef<GlobeGpuRenderer | null>(null)
+  const [gpuAvailable, setGpuAvailable] = useState(false)
+  const [gpuEnabled, setGpuEnabled] = useState(true)
+  const [gpuDeviceName, setGpuDeviceName] = useState('')
+  const gpuEnabledRef = useRef(true)
   const viewDimensionRef = useRef<'3d' | '2d'>('3d')
   const morphRef = useRef<number>(0)
   const [zoomLevel, setZoomLevel] = useState<number>(DEFAULT_GLOBE_ZOOM)
   const zoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
   const targetZoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
+
+  useEffect(() => {
+    gpuEnabledRef.current = gpuEnabled
+  }, [gpuEnabled])
 
   const applyTargetZoom = useCallback((nextZoom: number) => {
     const clamped = Math.min(
@@ -2621,6 +2636,46 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   useEffect(() => {
     newsBucketLookupRef.current = newsBucketLookup
   }, [newsBucketLookup])
+
+  // Initialize hardware WebGL2 GPU renderer if supported, with automatic Canvas 2D fallback
+  useEffect(() => {
+    const gpuCanvas = gpuCanvasRef.current
+    if (!gpuCanvas) return
+    const { landDots, graticuleLines } = getGlobeGeometry()
+    const renderer = createGlobeGpuRenderer(gpuCanvas, landDots, graticuleLines, () => {
+      setGpuAvailable(false)
+    })
+    if (!renderer) {
+      setGpuAvailable(false)
+      return
+    }
+    gpuRendererRef.current = renderer
+    setGpuAvailable(true)
+    setGpuDeviceName(renderer.gpuName)
+    renderer.updateDotStyles({
+      activeMode: displayModeRef.current,
+      gdpMap: gdpLookupRef.current,
+      stockBucketMap: stockBucketLookupRef.current,
+      fxBucketMap: fxBucketLookupRef.current,
+      newsBucketMap: newsBucketLookupRef.current,
+    })
+
+    return () => {
+      renderer.dispose()
+      gpuRendererRef.current = null
+    }
+  }, [])
+
+  // Sync per-country dot style buffers to GPU whenever mode or data maps update
+  useEffect(() => {
+    gpuRendererRef.current?.updateDotStyles({
+      activeMode: displayMode,
+      gdpMap: gdpLookup,
+      stockBucketMap: stockBucketLookup,
+      fxBucketMap: fxBucketLookup,
+      newsBucketMap: newsBucketLookup,
+    })
+  }, [displayMode, gdpLookup, stockBucketLookup, fxBucketLookup, newsBucketLookup])
 
   const get2dCountryFill = useCallback(
     (countryId: string): string => {
@@ -3011,89 +3066,116 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       }
 
       const globeBgAlpha = Math.max(0, 1 - m * 1.45)
-
-      // 1. Outer Atmospheric Halo Glow
-      if (globeBgAlpha > 0.01) {
-        ctx.save()
-        ctx.globalAlpha = globeBgAlpha
-        const outerHalo = ctx.createRadialGradient(
-          cx,
-          cy,
-          radius * 0.72,
-          cx,
-          cy,
-          radius * 1.34
-        )
-        outerHalo.addColorStop(0, 'rgba(16, 185, 129, 0.16)')
-        outerHalo.addColorStop(0.45, 'rgba(79, 70, 229, 0.16)')
-        outerHalo.addColorStop(1, 'rgba(2, 6, 23, 0)')
-        ctx.fillStyle = outerHalo
-        ctx.beginPath()
-        ctx.arc(cx, cy, radius * 1.34, 0, Math.PI * 2)
-        ctx.fill()
-
-        // 2. 3D Sphere Ocean Body with Specular Highlight
-        const sphereGrad = ctx.createRadialGradient(
-          cx - radius * 0.28,
-          cy - radius * 0.28,
-          radius * 0.08,
-          cx,
-          cy,
-          radius
-        )
-        sphereGrad.addColorStop(0, '#132046')
-        sphereGrad.addColorStop(0.65, '#091128')
-        sphereGrad.addColorStop(1, '#040817')
-        ctx.fillStyle = sphereGrad
-        ctx.beginPath()
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-        ctx.fill()
-
-        // 3. Subtle Graticule Wireframe Lines (Back & Front)
-        ctx.lineWidth = 0.8
-        for (const line of graticuleLines) {
-          ctx.beginPath()
-          let started = false
-          for (let i = 0; i < line.length; i++) {
-            const rp = rotatePoint(line[i], rotLonRad, rotLatRad)
-            if (rp.z < -0.15) {
-              started = false
-              continue
-            }
-            const sx = cx + rp.x * radius
-            const sy = cy + rp.y * radius
-            if (!started) {
-              ctx.moveTo(sx, sy)
-              started = true
-            } else {
-              ctx.lineTo(sx, sy)
-            }
-          }
-          ctx.strokeStyle = 'rgba(99, 102, 241, 0.13)'
-          ctx.stroke()
-        }
-
-        // Crisp Atmospheric Rim Ring on Base Sphere
-        ctx.beginPath()
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-        ctx.strokeStyle = 'rgba(52, 211, 153, 0.30)'
-        ctx.lineWidth = 1.2
-        ctx.stroke()
-        ctx.restore()
-      }
-
-      // 4. Mode-Specific Continent Rendering
-      const dotSizeBack = Math.max(0.88, radius * 0.0052)
-      const dotSizeFront = Math.max(1.38, radius * 0.0082)
-      const currentGdpMap = gdpLookupRef.current
-      const currentStockBucketMap = stockBucketLookupRef.current
-      const currentFxBucketMap = fxBucketLookupRef.current
-      const currentNewsBucketMap = newsBucketLookupRef.current
       const activeMode = displayModeRef.current
       const isGdpMode = activeMode === 'gdp'
       const elevMultiplier = 1.25
 
-      if (!isMorphingOr2D) {
+      // Attempt WebGL2 Hardware GPU rendering for Sphere, Halo, Graticules & Continent Voxel Dots
+      let renderedByGpu = false
+      const gpuRenderer = gpuRendererRef.current
+      if (gpuRenderer && gpuEnabledRef.current && !gpuRenderer.isContextLost()) {
+        renderedByGpu = gpuRenderer.renderFrame({
+          width,
+          height,
+          dpr,
+          cx,
+          cy,
+          radius,
+          rotLonRad,
+          rotLatRad,
+          morph: m,
+          globeBgAlpha,
+          mapLeft,
+          mapTop,
+          mapW,
+          mapH,
+          isGdpMode,
+          activeMode,
+        })
+      } else if (gpuRenderer) {
+        gpuRenderer.clear(width, height, dpr)
+      }
+
+      if (!renderedByGpu) {
+        // 1. Outer Atmospheric Halo Glow (Canvas 2D Fallback)
+        if (globeBgAlpha > 0.01) {
+          ctx.save()
+          ctx.globalAlpha = globeBgAlpha
+          const outerHalo = ctx.createRadialGradient(
+            cx,
+            cy,
+            radius * 0.72,
+            cx,
+            cy,
+            radius * 1.34
+          )
+          outerHalo.addColorStop(0, 'rgba(16, 185, 129, 0.16)')
+          outerHalo.addColorStop(0.45, 'rgba(79, 70, 229, 0.16)')
+          outerHalo.addColorStop(1, 'rgba(2, 6, 23, 0)')
+          ctx.fillStyle = outerHalo
+          ctx.beginPath()
+          ctx.arc(cx, cy, radius * 1.34, 0, Math.PI * 2)
+          ctx.fill()
+
+          // 2. 3D Sphere Ocean Body with Specular Highlight
+          const sphereGrad = ctx.createRadialGradient(
+            cx - radius * 0.28,
+            cy - radius * 0.28,
+            radius * 0.08,
+            cx,
+            cy,
+            radius
+          )
+          sphereGrad.addColorStop(0, '#132046')
+          sphereGrad.addColorStop(0.65, '#091128')
+          sphereGrad.addColorStop(1, '#040817')
+          ctx.fillStyle = sphereGrad
+          ctx.beginPath()
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+          ctx.fill()
+
+          // 3. Subtle Graticule Wireframe Lines (Back & Front)
+          ctx.lineWidth = 0.8
+          for (const line of graticuleLines) {
+            ctx.beginPath()
+            let started = false
+            for (let i = 0; i < line.length; i++) {
+              const rp = rotatePoint(line[i], rotLonRad, rotLatRad)
+              if (rp.z < -0.15) {
+                started = false
+                continue
+              }
+              const sx = cx + rp.x * radius
+              const sy = cy + rp.y * radius
+              if (!started) {
+                ctx.moveTo(sx, sy)
+                started = true
+              } else {
+                ctx.lineTo(sx, sy)
+              }
+            }
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.13)'
+            ctx.stroke()
+          }
+
+          // Crisp Atmospheric Rim Ring on Base Sphere
+          ctx.beginPath()
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+          ctx.strokeStyle = 'rgba(52, 211, 153, 0.30)'
+          ctx.lineWidth = 1.2
+          ctx.stroke()
+          ctx.restore()
+        }
+
+        // 4. Mode-Specific Continent Rendering (Canvas 2D Fallback)
+        const dotSizeBack = Math.max(0.88, radius * 0.0052)
+        const dotSizeFront = Math.max(1.38, radius * 0.0082)
+        const currentGdpMap = gdpLookupRef.current
+        const currentStockBucketMap = stockBucketLookupRef.current
+        const currentFxBucketMap = fxBucketLookupRef.current
+        const currentNewsBucketMap = newsBucketLookupRef.current
+
+        if (!isMorphingOr2D) {
         // 4a. Back hemisphere dim hologram dots
         ctx.fillStyle = 'rgba(71, 85, 105, 0.14)'
         ctx.beginPath()
@@ -3348,6 +3430,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             }
           }
         }
+      }
       }
 
       if (globeBgAlpha > 0.01) {
@@ -3687,7 +3770,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         }}
       />
 
-      {/* 3D Globe & Unrolling Morph Canvas */}
+      {/* WebGL2 Hardware GPU Acceleration Layer (Sphere, Halo, Graticules & Instanced Voxel Continents) */}
+      <canvas ref={gpuCanvasRef} className="absolute inset-0 w-full h-full block pointer-events-none" />
+
+      {/* 3D Globe Overlay & Canvas 2D Fallback Layer */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block pointer-events-none" />
 
       {/* 2D Flat Tile World Map Overlay (Cross-fades in at morph >= 0.85) */}
@@ -3934,10 +4020,33 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           )}
         </div>
 
-        {/* Right: Spin Toggle & Reset */}
+        {/* Right: GPU Acceleration Badge, Spin Toggle & Reset */}
         <div className="flex items-center gap-1.5 shrink-0">
           {viewDimension === '3d' && (
             <>
+              {gpuAvailable && (
+                <button
+                  type="button"
+                  onClick={() => setGpuEnabled((prev) => !prev)}
+                  aria-pressed={gpuEnabled}
+                  title={
+                    gpuEnabled
+                      ? `${lang === 'ko' ? 'GPU 하드웨어 가속 활성' : 'GPU Acceleration Active'} (${gpuDeviceName})`
+                      : lang === 'ko'
+                        ? 'GPU 가속 꺼짐 (Canvas 2D 모드)'
+                        : 'GPU Acceleration Off (Canvas 2D Mode)'
+                  }
+                  className={`hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg border text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                    gpuEnabled
+                      ? 'bg-cyan-500/15 border-cyan-400/45 text-cyan-300 shadow-sm'
+                      : 'bg-slate-950/80 border-slate-800 text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  <Zap className={`w-3 h-3 ${gpuEnabled ? 'text-cyan-400' : 'text-slate-500'}`} />
+                  <span>GPU</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 title={t('globePausePlay')}
