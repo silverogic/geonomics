@@ -261,7 +261,7 @@ export function detectRelatedCountries(text: string, limit = 3): string[] {
 // ============================================================================
 
 const translationMemoryCache = new Map<string, string>()
-const STORAGE_CACHE_PREFIX = 'geonomics_news_tr_v2_'
+const STORAGE_CACHE_PREFIX = 'geonomics_news_tr_v3_'
 const hydratedLangs = new Set<Language>()
 
 const TARGET_LANG_CODE_MAP: Record<Language, string> = {
@@ -275,42 +275,6 @@ const TARGET_LANG_CODE_MAP: Record<Language, string> = {
 
 function getCacheKey(lang: Language, text: string): string {
   return `${lang}:::${text}`
-}
-
-function hydrateLangCacheFromStorage(lang: Language): void {
-  if (hydratedLangs.has(lang) || typeof window === 'undefined') return
-  hydratedLangs.add(lang)
-  try {
-    const raw = window.localStorage.getItem(`${STORAGE_CACHE_PREFIX}${lang}`)
-    if (!raw) return
-    const parsed = JSON.parse(raw) as Record<string, string>
-    for (const [orig, tr] of Object.entries(parsed)) {
-      if (orig && tr) {
-        translationMemoryCache.set(getCacheKey(lang, orig), tr)
-      }
-    }
-  } catch {
-    // Ignore storage read errors
-  }
-}
-
-function persistLangCacheToStorage(lang: Language): void {
-  if (typeof window === 'undefined') return
-  try {
-    const obj: Record<string, string> = {}
-    const prefix = `${lang}:::`
-    let count = 0
-    for (const [k, v] of translationMemoryCache.entries()) {
-      if (k.startsWith(prefix)) {
-        obj[k.slice(prefix.length)] = v
-        count++
-        if (count >= 250) break
-      }
-    }
-    window.localStorage.setItem(`${STORAGE_CACHE_PREFIX}${lang}`, JSON.stringify(obj))
-  } catch {
-    // Ignore storage quota errors
-  }
 }
 
 /**
@@ -340,6 +304,51 @@ export function isAlreadyInTargetLang(text: string, lang: Language): boolean {
       )
     default:
       return false
+  }
+}
+
+function detectSourceLangCode(text: string): string {
+  if (/[가-힣]/.test(text)) return 'ko'
+  if (/[ぁ-んァ-ヶ]/.test(text)) return 'ja'
+  if (/[\u4e00-\u9fff]/.test(text)) return 'zh-CN'
+  if (/[\u0900-\u097F]/.test(text)) return 'hi'
+  if (/[áéíóúñ¿¡]/i.test(text)) return 'es'
+  return 'en'
+}
+
+function hydrateLangCacheFromStorage(lang: Language): void {
+  if (hydratedLangs.has(lang) || typeof window === 'undefined') return
+  hydratedLangs.add(lang)
+  try {
+    const raw = window.localStorage.getItem(`${STORAGE_CACHE_PREFIX}${lang}`)
+    if (!raw) return
+    const parsed = JSON.parse(raw) as Record<string, string>
+    for (const [orig, tr] of Object.entries(parsed)) {
+      if (orig && tr && isAlreadyInTargetLang(tr, lang)) {
+        translationMemoryCache.set(getCacheKey(lang, orig), tr)
+      }
+    }
+  } catch {
+    // Ignore storage read errors
+  }
+}
+
+function persistLangCacheToStorage(lang: Language): void {
+  if (typeof window === 'undefined') return
+  try {
+    const obj: Record<string, string> = {}
+    const prefix = `${lang}:::`
+    let count = 0
+    for (const [k, v] of translationMemoryCache.entries()) {
+      if (k.startsWith(prefix) && isAlreadyInTargetLang(v, lang)) {
+        obj[k.slice(prefix.length)] = v
+        count++
+        if (count >= 250) break
+      }
+    }
+    window.localStorage.setItem(`${STORAGE_CACHE_PREFIX}${lang}`, JSON.stringify(obj))
+  } catch {
+    // Ignore storage quota errors
   }
 }
 
@@ -538,11 +547,12 @@ async function translateSingleTextFallback(
 ): Promise<string> {
   const clean = preprocessForTranslation(text)
   if (!clean) return text
+  const sl = detectSourceLangCode(clean)
 
   try {
-    const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=${encodeURIComponent(
-      targetLangCode
-    )}&q=${encodeURIComponent(clean)}`
+    const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=${encodeURIComponent(
+      sl
+    )}&tl=${encodeURIComponent(targetLangCode)}&q=${encodeURIComponent(clean)}`
     const res = await fetch(url, { signal: AbortSignal.timeout(4000) })
     if (res.ok) {
       const data = await res.json()
@@ -558,7 +568,7 @@ async function translateSingleTextFallback(
   try {
     const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
       clean.slice(0, 480)
-    )}&langpair=en|${encodeURIComponent(targetLangCode)}`
+    )}&langpair=${encodeURIComponent(sl)}|${encodeURIComponent(targetLangCode)}`
     const res = await fetch(mmUrl, { signal: AbortSignal.timeout(4000) })
     if (res.ok) {
       const data = await res.json()
@@ -575,7 +585,8 @@ async function translateSingleTextFallback(
 
 /**
  * Translates an array of headlines on-the-fly in real time into `lang`.
- * Skips headlines that are already in the target language.
+ * Groups batches by detected source language (`sl=en`, etc.) so mixed-language feeds
+ * never confuse NMT source-language detection, and verifies every translated output.
  */
 export async function translateBatchOnTheFly(
   texts: string[],
@@ -587,7 +598,7 @@ export async function translateBatchOnTheFly(
   hydrateLangCacheFromStorage(lang)
 
   const targetLangCode = TARGET_LANG_CODE_MAP[lang] || 'en'
-  const uncached: string[] = []
+  const uncachedBySl = new Map<string, string[]>()
   const seenUncached = new Set<string>()
 
   for (const raw of texts) {
@@ -598,48 +609,54 @@ export async function translateBatchOnTheFly(
     }
     const key = getCacheKey(lang, raw)
     const cached = translationMemoryCache.get(key)
-    if (cached) {
+    if (cached && isAlreadyInTargetLang(cached, lang)) {
       resultMap.set(raw, cached)
     } else if (!seenUncached.has(raw)) {
       seenUncached.add(raw)
-      uncached.push(raw)
+      const sl = detectSourceLangCode(raw)
+      const bucket = uncachedBySl.get(sl) || []
+      bucket.push(raw)
+      uncachedBySl.set(sl, bucket)
     }
   }
 
-  if (uncached.length === 0) {
+  if (uncachedBySl.size === 0) {
     return resultMap
   }
 
-  const batches: string[][] = []
-  let currentBatch: string[] = []
-  let currentLen = 0
+  const batches: Array<{ sl: string; items: string[] }> = []
 
-  for (const item of uncached) {
-    const preprocessed = preprocessForTranslation(item)
-    if (
-      currentBatch.length >= 10 ||
-      (currentLen + preprocessed.length > 1500 && currentBatch.length > 0)
-    ) {
-      batches.push(currentBatch)
-      currentBatch = []
-      currentLen = 0
+  for (const [sl, items] of uncachedBySl.entries()) {
+    let currentBatch: string[] = []
+    let currentLen = 0
+    for (const item of items) {
+      const preprocessed = preprocessForTranslation(item)
+      if (
+        currentBatch.length >= 10 ||
+        (currentLen + preprocessed.length > 1500 && currentBatch.length > 0)
+      ) {
+        batches.push({ sl, items: currentBatch })
+        currentBatch = []
+        currentLen = 0
+      }
+      currentBatch.push(item)
+      currentLen += preprocessed.length
     }
-    currentBatch.push(item)
-    currentLen += preprocessed.length
-  }
-  if (currentBatch.length > 0) {
-    batches.push(currentBatch)
+    if (currentBatch.length > 0) {
+      batches.push({ sl, items: currentBatch })
+    }
   }
 
   await Promise.all(
-    batches.map(async (batch) => {
+    batches.map(async ({ sl, items: batch }) => {
       const sanitizedLines = batch.map((it) => preprocessForTranslation(it))
       const joinedPayload = sanitizedLines.join('\n')
+      let missedItems = batch
 
       try {
-        const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=${encodeURIComponent(
-          targetLangCode
-        )}&q=${encodeURIComponent(joinedPayload)}`
+        const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=${encodeURIComponent(
+          sl
+        )}&tl=${encodeURIComponent(targetLangCode)}&q=${encodeURIComponent(joinedPayload)}`
         const res = await fetch(url, { signal: AbortSignal.timeout(4500) })
         if (res.ok) {
           const data = await res.json()
@@ -650,25 +667,34 @@ export async function translateBatchOnTheFly(
             .filter((s: string) => s.length > 0)
 
           if (splitLines.length === batch.length) {
+            const retryList: string[] = []
             batch.forEach((orig, idx) => {
               const tr = postprocessFinancialTranslation(splitLines[idx] || orig, lang)
-              translationMemoryCache.set(getCacheKey(lang, orig), tr)
-              resultMap.set(orig, tr)
+              if (isAlreadyInTargetLang(tr, lang) || lang === 'es') {
+                translationMemoryCache.set(getCacheKey(lang, orig), tr)
+                resultMap.set(orig, tr)
+              } else {
+                retryList.push(orig)
+              }
             })
-            return
+            missedItems = retryList
           }
         }
       } catch {
         // Fall through to individual parallel requests
       }
 
-      await Promise.all(
-        batch.map(async (orig) => {
-          const tr = await translateSingleTextFallback(orig, targetLangCode, lang)
-          translationMemoryCache.set(getCacheKey(lang, orig), tr)
-          resultMap.set(orig, tr)
-        })
-      )
+      if (missedItems.length > 0) {
+        await Promise.all(
+          missedItems.map(async (orig) => {
+            const tr = await translateSingleTextFallback(orig, targetLangCode, lang)
+            if (isAlreadyInTargetLang(tr, lang)) {
+              translationMemoryCache.set(getCacheKey(lang, orig), tr)
+            }
+            resultMap.set(orig, tr)
+          })
+        )
+      }
     })
   )
 
@@ -773,7 +799,7 @@ function decodeXmlEntities(str: string): string {
 }
 
 const EXCLUDED_FLUFF_REGEX =
-  /\b(NHL|NBA|NFL|MLB|Premier League|Champions League|Figure Skating|Skate America|Soccer|Football|Tennis|Golf|Cricket|Rugby|Formula 1|Olympics|Boxing|UFC|MMA|Baseball|Basketball|Volleyball|Sponichi|Oscars|Grammys|Box Office|Crossword)\b|(スポニチ|サッカー|野球|フィギュア|五輪)/i
+  /\b(NHL|NBA|NFL|MLB|Premier League|Champions League|Figure Skating|Skate America|Soccer|Football|Tennis|Golf|Cricket|Rugby|Formula 1|Olympics|Boxing|UFC|MMA|Baseball|Basketball|Volleyball|Sponichi|Oscars|Grammys|Box Office|Crossword)\b|(スポニチ|サッカー|野球|フィギュア|五輪|ラグビー)/i
 
 async function getRssPoolItems(): Promise<RawRssPoolItem[]> {
   const now = Date.now()
