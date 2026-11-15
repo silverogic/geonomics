@@ -312,7 +312,12 @@ function detectSourceLangCode(text: string): string {
   if (/[ぁ-んァ-ヶ]/.test(text)) return 'ja'
   if (/[\u4e00-\u9fff]/.test(text)) return 'zh-CN'
   if (/[\u0900-\u097F]/.test(text)) return 'hi'
-  if (/[áéíóúñ¿¡]/i.test(text)) return 'es'
+  if (
+    /[áéíóúñ¿¡]/i.test(text) ||
+    /\b(que|para|por|con|una|del|los|las|inversor|contra|ahora|entre|sobre|según)\b/i.test(text)
+  ) {
+    return 'es'
+  }
   return 'en'
 }
 
@@ -799,7 +804,18 @@ function decodeXmlEntities(str: string): string {
 }
 
 const EXCLUDED_FLUFF_REGEX =
-  /\b(NHL|NBA|NFL|MLB|Premier League|Champions League|Figure Skating|Skate America|Soccer|Football|Tennis|Golf|Cricket|Rugby|Formula 1|Olympics|Boxing|UFC|MMA|Baseball|Basketball|Volleyball|Sponichi|Oscars|Grammys|Box Office|Crossword)\b|(スポニチ|サッカー|野球|フィギュア|五輪|ラグビー)/i
+  /\b(NHL|NBA|NFL|MLB|MLS|Premier League|Champions League|Nations League|World Cup|Figure Skating|Skate America|Soccer|Football|Tennis|Golf|Cricket|Rugby|Formula 1|Olympics|Boxing|UFC|MMA|Baseball|Basketball|Volleyball|Marathon|Badminton|Wimbledon|Grand Slam|Ronaldo|Messi|Sabalenka|Svitolina|Malinin|Sakamoto|Sponichi|Oscars|Grammys|Emmy|Box Office|Crossword|Horoscope|Prince William|Princess Kate|King Charles|Royal Family|tax exam|cheating with AI|Armed Forces member confirmed dead|killed in attack|Zika vaccine|friendly|pedestrian bridge|puente peatonal|fighter jet|missile sale)\b|\b\d+-\d+\b|(スポニチ|サッカー|野球|フィギュア|五輪|ラグビー|選手権|大敗|惨敗|失点|親善試合|スポーツイベント|税理士試験|カンニング|럭비|축구|야구|농구|배구|친선경기|세리사 시험|왕자)/i
+
+const ECONOMIC_RELEVANCE_REGEX =
+  /\b(econom|gdp|inflation|cpi|ppi|pce|deflation|stagflation|recession|interest rate|rates?\b|rate cut|rate hike|central bank|fed\b|fomc|powell|ecb|lagarde|boj|ueda|pboc|boe|bok|rba|rbi|snb|banxico|monetary|fiscal|treasur|yield|bond|gilt|bund|debt|deficit|surplus|budget|stimulus|imf|world bank|oecd|stock|share|equit|market|index|wall street|nasdaq|dow\b|s&p|kospi|kosdaq|nikkei|topix|ftse|dax|cac|hang seng|sensex|nifty|bovespa|msci|rally|selloff|ipo|etf|fund|hedge fund|private equity|pension|asset|invest|dividend|buyback|valuation|earnings|revenue|profit|margin|net loss|operating loss|first-half loss|quarterly loss|guidance|forecast|quarter|q[1-4]\b|bank|banking|lender|loan|mortgage|credit|default|bankruptcy|fintech|crypto|bitcoin|stablecoin|currency|forex|fx|dollar|greenback|euro|yen|yuan|renminbi|won\b|pound|sterling|franc|rupee|peso|brazilian real|lira|rupiah|ringgit|baht|carry trade|trade|tariff|export|import|customs|wto|fta\b|supply chain|sanction|subsid|antitrust|fine[ds]?\b|tax|wage|labor|employment|unemployment|jobless|payroll|layoff|housing|real estate|property|auction clearance|retail|consumer|spending|manufacturing|pmi|ism|industrial|output|factory|oil|crude|brent|wti|opec|gas|lng|pipeline|refiner|petro|energy|solar|wind|nuclear|grid|power|electricity|hydrogen|ev\b|evs\b|electric vehicle|battery|lithium|gold|silver|copper|iron ore|steel|aluminum|nickel|rare earth|mining|mine|mineral|coal|grain|wheat|soybean|cocoa|coffee|palm oil|carbon|compan|corp|firm|business|ceo|cfo|merger|acquisition|m&a|takeover|buyout|stake|deal|contract|billion|million|trillion|semiconductor|chip|wafer|foundry|fab\b|ai\b|artificial intelligence|data center|cloud|software|automaker|airline|boeing|airbus|comac|shipping|freight|logistics|port|pharma|biotech|obesity|wegovy|telecom|nvidia|tsmc|samsung|hynix|apple|microsoft|alphabet|google|meta|amazon|tesla|byd|aramco|novelis|ecopetrol|petrobras)\b|([$€£¥₩]\s*\d)|(경제|증시|주식|주가|코스피|코스닥|나스닥|환율|달러|원화|엔화|위안|유로|금리|기준금리|국채|채권|수익률|물가|인플레이션|성장률|무역|수출|수입|관세|반도체|인공지능|배터리|전기차|석유|원유|유가|가스|원전|은행|금융|투자|펀드|실적|매출|영업이익|순이익|인수|합병|공급망|부동산|주택|고용|실업|예산|재정|부채|중앙은행|연준|한은|기업|산업|시장|経済|株|市場|日経|相場|為替|円安|円高|ドル|金利|利上げ|利下げ|国債|利回り|物価|インフレ|デフレ|成長率|貿易|輸出|輸入|関税|半導体|生成AI|電池|原油|石油|ガス|銀行|金融|投資|ファンド|業績|売上|利益|買収|提携|不動産|雇用|賃金|財政|予算|日銀|中銀|企業|社債|販売|ペソ|キャリー取引|经济|股市|股票|指数|汇率|美元|人民币|利率|降息|加息|国债|收益率|通胀|物价|贸易|出口|进口|关税|半导体|芯片|人工智能|电池|电动车|原油|石油|银行|金融|投资|基金|营收|利润|并购|房地产|央行|美联储|economía|económico|mercado|bolsa|acciones|dólar|tasa|interés|inflación|pib|bonos|deuda|comercio|exportación|importación|arancel|inversión|inversor|banco|finanzas|petróleo|gas|energía|empresa|millones)/i
+
+function isEconomicNewsArticle(title: string, description = '', source = ''): boolean {
+  const combined = `${title} ${description}`
+  if (EXCLUDED_FLUFF_REGEX.test(combined) || EXCLUDED_FLUFF_REGEX.test(source)) {
+    return false
+  }
+  return ECONOMIC_RELEVANCE_REGEX.test(combined)
+}
 
 async function getRssPoolItems(): Promise<RawRssPoolItem[]> {
   const now = Date.now()
@@ -829,7 +845,7 @@ async function getRssPoolItems(): Promise<RawRssPoolItem[]> {
       const publisher = wireMatch ? decodeXmlEntities(wireMatch[1]) : ''
 
       if (!title || !url) continue
-      if (EXCLUDED_FLUFF_REGEX.test(rawTitle) || EXCLUDED_FLUFF_REGEX.test(publisher)) {
+      if (!isEconomicNewsArticle(rawTitle, description, publisher)) {
         continue
       }
 
@@ -877,7 +893,7 @@ async function fetchLiveBreakingEndpoint(lang: Language): Promise<RawRssPoolItem
       }
       if (Array.isArray(data.items) && data.items.length > 0) {
         return data.items
-          .filter((it) => it.title && !EXCLUDED_FLUFF_REGEX.test(it.title))
+          .filter((it) => it.title && isEconomicNewsArticle(it.title, '', it.source))
           .map((it) => ({
             title: stripTrailingPublisherFromTitle(it.title),
             description: '',
