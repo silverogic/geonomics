@@ -5473,13 +5473,9 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 5.12,
-    "changePct": 1.23,
-    "changePct30d": 6.71,
+    "changePct": 1.43,
+    "changePct30d": 7.15,
     "points": [
-      {
-        "date": "2026-10-02",
-        "close": 4.8
-      },
       {
         "date": "2026-10-05",
         "close": 4.78
@@ -5595,6 +5591,10 @@
       {
         "date": "2026-11-12",
         "close": 5.05
+      },
+      {
+        "date": "2026-11-13",
+        "close": 5.12
       }
     ]
   },
@@ -5872,13 +5872,9 @@
     "isSupported": true,
     "currency": "CZK",
     "currentPrice": 1340,
-    "changePct": 0.37,
-    "changePct30d": -0.22,
+    "changePct": 0.83,
+    "changePct30d": 0.07,
     "points": [
-      {
-        "date": "2026-10-01",
-        "close": 1343
-      },
       {
         "date": "2026-10-02",
         "close": 1339
@@ -5994,6 +5990,10 @@
       {
         "date": "2026-11-12",
         "close": 1329
+      },
+      {
+        "date": "2026-11-13",
+        "close": 1340
       }
     ]
   },
@@ -6005,13 +6005,9 @@
     "isSupported": true,
     "currency": "RON",
     "currentPrice": 84.8,
-    "changePct": -0.47,
-    "changePct30d": 10.42,
+    "changePct": -0.24,
+    "changePct30d": 6.8,
     "points": [
-      {
-        "date": "2026-10-02",
-        "close": 76.8
-      },
       {
         "date": "2026-10-05",
         "close": 79.4
@@ -6127,6 +6123,10 @@
       {
         "date": "2026-11-12",
         "close": 85
+      },
+      {
+        "date": "2026-11-13",
+        "close": 84.8
       }
     ]
   },
@@ -6537,13 +6537,9 @@
     "isSupported": true,
     "currency": "HUF",
     "currentPrice": 41300,
-    "changePct": -2.82,
-    "changePct30d": 3.3,
+    "changePct": -1.57,
+    "changePct30d": 2.61,
     "points": [
-      {
-        "date": "2026-10-01",
-        "close": 39980
-      },
       {
         "date": "2026-10-02",
         "close": 40250
@@ -6659,6 +6655,10 @@
       {
         "date": "2026-11-12",
         "close": 41960
+      },
+      {
+        "date": "2026-11-13",
+        "close": 41300
       }
     ]
   },
@@ -6949,13 +6949,9 @@
     "isSupported": true,
     "currency": "PKR",
     "currentPrice": 131.87,
-    "changePct": -58.28,
-    "changePct30d": -57.92,
+    "changePct": -57.92,
+    "changePct30d": -58.09,
     "points": [
-      {
-        "date": "2026-10-01",
-        "close": 313.39
-      },
       {
         "date": "2026-10-02",
         "close": 314.62
@@ -7071,6 +7067,10 @@
       {
         "date": "2026-11-12",
         "close": 313.39
+      },
+      {
+        "date": "2026-11-13",
+        "close": 315.87
       }
     ]
   },
@@ -7663,13 +7663,9 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 16.8,
-    "changePct": 0,
-    "changePct30d": 0,
+    "changePct": -3.45,
+    "changePct30d": 1.2,
     "points": [
-      {
-        "date": "2026-10-02",
-        "close": 16.8
-      },
       {
         "date": "2026-10-05",
         "close": 16.6
@@ -7785,6 +7781,10 @@
       {
         "date": "2026-11-12",
         "close": 17.4
+      },
+      {
+        "date": "2026-11-13",
+        "close": 16.8
       }
     ]
   },
@@ -7796,13 +7796,9 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 22.1,
-    "changePct": 0.23,
+    "changePct": -0.45,
     "changePct30d": 1.61,
     "points": [
-      {
-        "date": "2026-10-01",
-        "close": 21.75
-      },
       {
         "date": "2026-10-02",
         "close": 21.75
@@ -7918,6 +7914,10 @@
       {
         "date": "2026-11-12",
         "close": 22.2
+      },
+      {
+        "date": "2026-11-13",
+        "close": 22.1
       }
     ]
   },
@@ -7929,13 +7929,9 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 57.02,
-    "changePct": -4.23,
-    "changePct30d": -0.45,
+    "changePct": -3.03,
+    "changePct30d": -1.01,
     "points": [
-      {
-        "date": "2026-10-02",
-        "close": 57.28
-      },
       {
         "date": "2026-10-05",
         "close": 57.6
@@ -8051,6 +8047,10 @@
       {
         "date": "2026-11-12",
         "close": 58.8
+      },
+      {
+        "date": "2026-11-13",
+        "close": 57.02
       }
     ]
   },
@@ -8195,13 +8195,9 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 115.9,
-    "changePct": -1.78,
-    "changePct30d": 0.26,
+    "changePct": -0.52,
+    "changePct30d": 2.02,
     "points": [
-      {
-        "date": "2026-10-01",
-        "close": 115.6
-      },
       {
         "date": "2026-10-02",
         "close": 113.6
@@ -8317,6 +8313,10 @@
       {
         "date": "2026-11-12",
         "close": 116.5
+      },
+      {
+        "date": "2026-11-13",
+        "close": 115.9
       }
     ]
   },
@@ -9126,13 +9126,9 @@
     "isSupported": true,
     "currency": "EUR",
     "currentPrice": 62.6,
-    "changePct": -2.49,
-    "changePct30d": 6.83,
+    "changePct": -0.71,
+    "changePct30d": 7.28,
     "points": [
-      {
-        "date": "2026-10-01",
-        "close": 58.6
-      },
       {
         "date": "2026-10-02",
         "close": 58.35
@@ -9248,6 +9244,10 @@
       {
         "date": "2026-11-12",
         "close": 63.05
+      },
+      {
+        "date": "2026-11-13",
+        "close": 62.6
       }
     ]
   }
