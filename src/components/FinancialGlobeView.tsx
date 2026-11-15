@@ -3884,7 +3884,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       <div
         data-globe-ui="true"
         className={`absolute right-2.5 z-30 flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl transition-all duration-300 ${
-          viewDimension === '3d' ? 'bottom-[138px] sm:bottom-[92px]' : 'bottom-3'
+          viewDimension === '3d' ? 'bottom-[76px] sm:bottom-[92px]' : 'bottom-3'
         }`}
       >
         <button
@@ -3925,7 +3925,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         </div>
 
         <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 min-w-0">
-          {spotlightHubs.map((hub) => {
+          {spotlightHubs.map((hub, idx) => {
             const isUp = hub.stockChangePct > 0.15
             const isDown = hub.stockChangePct < -0.15
             const unitLabel =
@@ -3942,7 +3942,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 onMouseEnter={() => setHoveredHubId(hub.id)}
                 onMouseLeave={() => setHoveredHubId(null)}
                 onClick={() => onSelectCountry(hub.country)}
-                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0"
+                className={`${idx >= 2 ? 'hidden sm:flex' : 'flex'} items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0`}
               >
                 <div className="flex items-center gap-1.5 min-w-0">
                   <CountryFlag iso2={hub.country.iso2} className="w-4 h-3 rounded-[2px] shrink-0" />
