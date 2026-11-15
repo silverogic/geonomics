@@ -14,6 +14,8 @@ import {
   Newspaper,
   ChevronDown,
   Check,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react'
 import type {
   BaseCurrency,
@@ -252,6 +254,11 @@ const NewsPublisherIcon: React.FC<{
 }
 
 type RegionPreset = 'auto' | 'asia' | 'europe' | 'americas' | 'oceania'
+
+const MIN_GLOBE_ZOOM = 0.75
+const MAX_GLOBE_ZOOM = 2.5
+const DEFAULT_GLOBE_ZOOM = 1.0
+const GLOBE_ZOOM_STEP = 0.25
 
 interface HubDefinition {
   id: string
@@ -2349,6 +2356,18 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   const tileOverlayRef = useRef<HTMLDivElement>(null)
   const viewDimensionRef = useRef<'3d' | '2d'>('3d')
   const morphRef = useRef<number>(0)
+  const [zoomLevel, setZoomLevel] = useState<number>(DEFAULT_GLOBE_ZOOM)
+  const zoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
+  const targetZoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
+
+  const applyTargetZoom = useCallback((nextZoom: number) => {
+    const clamped = Math.min(
+      MAX_GLOBE_ZOOM,
+      Math.max(MIN_GLOBE_ZOOM, Math.round(nextZoom * 100) / 100)
+    )
+    targetZoomRef.current = clamped
+    setZoomLevel(clamped)
+  }, [])
 
   useEffect(() => {
     viewDimensionRef.current = viewDimension
@@ -2390,10 +2409,32 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     isSpinningRef.current = isSpinning
   }, [isSpinning])
 
-  // Spacebar shortcut to toggle globe play / pause
+  // Desktop mouse wheel / trackpad zoom in 3D mode
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const handleWheel = (e: WheelEvent) => {
+      if (window.innerWidth < 768) return
+      if (viewDimensionRef.current !== '3d') return
+      const target = e.target as HTMLElement | null
+      if (target && target.closest('[role="listbox"]')) return
+
+      e.preventDefault()
+      const factor = e.deltaMode === 1 ? 0.06 : 0.0014
+      const delta = -e.deltaY * factor
+      if (Math.abs(delta) < 0.001) return
+
+      applyTargetZoom(targetZoomRef.current + delta)
+    }
+
+    el.addEventListener('wheel', handleWheel, { passive: false })
+    return () => el.removeEventListener('wheel', handleWheel)
+  }, [applyTargetZoom])
+
+  // Keyboard shortcuts: Spacebar (play/pause) & Desktop +/-/0 (3D zoom)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== 'Space' && e.key !== ' ') return
       if (viewDimensionRef.current === '2d') return
       if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return
 
@@ -2411,18 +2452,34 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         }
       }
 
-      e.preventDefault()
-      targetRotationRef.current = null
-      setIsSpinning((prev) => {
-        const next = !prev
-        if (next) setActivePreset('auto')
-        return next
-      })
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault()
+        targetRotationRef.current = null
+        setIsSpinning((prev) => {
+          const next = !prev
+          if (next) setActivePreset('auto')
+          return next
+        })
+        return
+      }
+
+      if (window.innerWidth >= 768) {
+        if (e.key === '+' || e.key === '=') {
+          e.preventDefault()
+          applyTargetZoom(targetZoomRef.current + GLOBE_ZOOM_STEP)
+        } else if (e.key === '-' || e.key === '_') {
+          e.preventDefault()
+          applyTargetZoom(targetZoomRef.current - GLOBE_ZOOM_STEP)
+        } else if (e.key === '0') {
+          e.preventDefault()
+          applyTargetZoom(DEFAULT_GLOBE_ZOOM)
+        }
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [applyTargetZoom])
 
   useEffect(() => {
     hoveredHubIdRef.current = hoveredHubId
@@ -2923,7 +2980,17 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       const usableH = Math.max(300, height - topSafe - bottomSafe)
       const cx = width / 2
       const cy = topSafe + usableH / 2
-      const radius = Math.min(width * (width < 640 ? 0.38 : 0.40), usableH * 0.45)
+      const baseRadius = Math.min(width * (width < 640 ? 0.38 : 0.40), usableH * 0.45)
+
+      // Smoothly interpolate 3D zoom level on desktop and blend to 1.0 when morphing to 2D
+      const zoomDiff = targetZoomRef.current - zoomRef.current
+      if (Math.abs(zoomDiff) > 0.001) {
+        zoomRef.current += zoomDiff * 0.16
+      } else {
+        zoomRef.current = targetZoomRef.current
+      }
+      const effectiveZoom = width >= 768 ? 1 + (zoomRef.current - 1) * (1 - m) : 1
+      const radius = baseRadius * effectiveZoom
 
       // Measure target 2D grid bounds from DOM TileWorldMap so morph aligns 1:1 with pixels
       let mapW = Math.min(width - 48, usableH * (PIXEL_MAP_COLS / PIXEL_MAP_ROWS))
@@ -3389,10 +3456,21 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         const surfaceX = cx + rp.x * radius * topSurfaceElev
         const surfaceY = cy + rp.y * radius * topSurfaceElev
 
-        // Radial push outward from globe center + custom hub offset scaled to globe radius
-        const radialScale = Math.max(0.65, radius / 250)
-        const initX = surfaceX + h.offsetX * radialScale + rp.x * (radius * 0.065)
-        const initY = surfaceY + h.offsetY * radialScale + rp.y * (radius * 0.065)
+        // When zoomed in on desktop, skip hubs whose 3D surface anchor lies outside the visible viewport
+        if (
+          effectiveZoom > 1.02 &&
+          (surfaceX < 16 ||
+            surfaceX > width - 16 ||
+            surfaceY < topSafe + 4 ||
+            surfaceY > height - bottomSafe - 4)
+        ) {
+          continue
+        }
+
+        // Radial push outward from globe center + custom hub offset scaled to base globe radius
+        const radialScale = Math.max(0.65, baseRadius / 250)
+        const initX = surfaceX + h.offsetX * radialScale + rp.x * (baseRadius * 0.065)
+        const initY = surfaceY + h.offsetY * radialScale + rp.y * (baseRadius * 0.065)
 
         const depthFactor = Math.min(1, Math.max(0, (rp.z - 0.08) / 0.65))
         const scale = 0.82 + depthFactor * 0.2
@@ -3567,13 +3645,17 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     dragRef.current.lastX = e.clientX
     dragRef.current.lastY = e.clientY
 
-    rotationRef.current.lon += dx * 0.35
+    const zoomFactor = Math.max(1, zoomRef.current * 0.85)
+    const dragStep = 0.35 / zoomFactor
+    const velStep = 0.18 / zoomFactor
+
+    rotationRef.current.lon += dx * dragStep
     rotationRef.current.lat = Math.max(
       -68,
-      Math.min(68, rotationRef.current.lat + dy * 0.35)
+      Math.min(68, rotationRef.current.lat + dy * dragStep)
     )
-    rotationRef.current.velLon = dx * 0.18
-    rotationRef.current.velLat = dy * 0.18
+    rotationRef.current.velLon = dx * velStep
+    rotationRef.current.velLat = dy * velStep
   }
 
   const handlePointerUp = () => {
@@ -3875,7 +3957,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
               <button
                 type="button"
-                onClick={() => handleSelectPreset('auto')}
+                onClick={() => {
+                  handleSelectPreset('auto')
+                  applyTargetZoom(DEFAULT_GLOBE_ZOOM)
+                }}
                 title={t('globeResetOrbit')}
                 className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
@@ -4197,37 +4282,78 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         })}
       </div>
 
-      {/* Vertical Floating 2D / 3D Dimension Toggle (Bottom-Right above Focus Market strip) */}
+      {/* Right-Side Floating Controls: Desktop 3D Zoom + 2D/3D Dimension Toggle */}
       <div
         data-globe-ui="true"
-        className={`absolute right-2.5 z-30 flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl transition-all duration-300 ${
+        className={`absolute right-2.5 z-30 flex flex-col items-center gap-2 transition-all duration-300 ${
           viewDimension === '3d' ? 'bottom-[76px] sm:bottom-[92px]' : 'bottom-3'
         }`}
       >
-        <button
-          type="button"
-          onClick={() => setViewDimension('2d')}
-          className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
-            viewDimension === '2d'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-          }`}
-        >
-          <MapIcon className="hidden sm:block w-3.5 h-3.5" />
-          <span>2D</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setViewDimension('3d')}
-          className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
-            viewDimension === '3d'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-          }`}
-        >
-          <Globe className="hidden sm:block w-3.5 h-3.5" />
-          <span>3D</span>
-        </button>
+        {/* Desktop-Only 3D Zoom Control Pill (3D mode only) */}
+        {viewDimension === '3d' && (
+          <div className="hidden md:flex flex-col items-center rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-1 gap-0.5 shadow-xl">
+            <button
+              type="button"
+              onClick={() => applyTargetZoom(targetZoomRef.current + GLOBE_ZOOM_STEP)}
+              disabled={zoomLevel >= MAX_GLOBE_ZOOM - 0.01}
+              title={lang === 'ko' ? '확대 (+)' : 'Zoom In (+)'}
+              aria-label={lang === 'ko' ? '확대' : 'Zoom In'}
+              className="w-11 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 disabled:opacity-35 disabled:pointer-events-none transition-all flex items-center justify-center cursor-pointer"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => applyTargetZoom(DEFAULT_GLOBE_ZOOM)}
+              title={lang === 'ko' ? '배율 초기화 (100%)' : 'Reset Zoom (100%)'}
+              className={`w-11 py-0.5 rounded text-[10px] font-mono font-bold tabular-nums transition-colors cursor-pointer ${
+                Math.abs(zoomLevel - DEFAULT_GLOBE_ZOOM) > 0.01
+                  ? 'text-emerald-300 hover:bg-slate-800/70'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {Math.round(zoomLevel * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={() => applyTargetZoom(targetZoomRef.current - GLOBE_ZOOM_STEP)}
+              disabled={zoomLevel <= MIN_GLOBE_ZOOM + 0.01}
+              title={lang === 'ko' ? '축소 (-)' : 'Zoom Out (-)'}
+              aria-label={lang === 'ko' ? '축소' : 'Zoom Out'}
+              className="w-11 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 disabled:opacity-35 disabled:pointer-events-none transition-all flex items-center justify-center cursor-pointer"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Vertical Floating 2D / 3D Dimension Toggle */}
+        <div className="flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl">
+          <button
+            type="button"
+            onClick={() => setViewDimension('2d')}
+            className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+              viewDimension === '2d'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <MapIcon className="hidden sm:block w-3.5 h-3.5" />
+            <span>2D</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewDimension('3d')}
+            className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+              viewDimension === '3d'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <Globe className="hidden sm:block w-3.5 h-3.5" />
+            <span>3D</span>
+          </button>
+        </div>
       </div>
 
       {/* Bottom Live Spotlight Strip (Front-Facing Hubs Currently in Focus - 3D mode only) */}
