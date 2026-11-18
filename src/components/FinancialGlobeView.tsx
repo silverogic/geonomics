@@ -12,6 +12,10 @@ import {
   Globe,
   Map as MapIcon,
   Newspaper,
+  ChevronDown,
+  Check,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react'
 import type {
   BaseCurrency,
@@ -52,6 +56,10 @@ import {
 import { CountryFlag } from './CountryFlag'
 import { StockSparkline } from './StockSparkline'
 import { TileWorldMap } from './TileWorldMap'
+import {
+  createGlobeGpuRenderer,
+  type GlobeGpuRenderer,
+} from '../utils/globeGpuRenderer'
 
 interface FinancialGlobeViewProps {
   items?: CountryRowItem[]
@@ -72,16 +80,189 @@ function formatRelativeNewsAge(iso: string, lang: Language): string {
   if (!ts || Number.isNaN(ts)) return ''
   const diffMin = Math.max(1, Math.floor((Date.now() - ts) / 60_000))
   if (diffMin < 60) {
-    return lang === 'ko' ? `${diffMin}분 전` : lang === 'ja' ? `${diffMin}分前` : `${diffMin}m`
+    return lang === 'ko'
+      ? `${diffMin}분 전`
+      : lang === 'ja'
+        ? `${diffMin}分前`
+        : lang === 'zh'
+          ? `${diffMin}分钟前`
+          : `${diffMin}m`
   }
   const diffHr = Math.floor(diffMin / 60)
   if (diffHr < 24) {
-    return lang === 'ko' ? `${diffHr}시간 전` : lang === 'ja' ? `${diffHr}時間前` : `${diffHr}h`
+    return lang === 'ko'
+      ? `${diffHr}시간 전`
+      : lang === 'ja'
+        ? `${diffHr}時間前`
+        : lang === 'zh'
+          ? `${diffHr}小时前`
+          : `${diffHr}h`
   }
   const diffDay = Math.floor(diffHr / 24)
-  return lang === 'ko' ? `${diffDay}일 전` : lang === 'ja' ? `${diffDay}日前` : `${diffDay}d`
+  return lang === 'ko'
+    ? `${diffDay}일 전`
+    : lang === 'ja'
+      ? `${diffDay}日前`
+      : lang === 'zh'
+        ? `${diffDay}天前`
+        : `${diffDay}d`
 }
+interface PublisherBadgeMeta {
+  code: string
+  label: string
+  bgClass: string
+  kind?: 'reuters' | 'bloomberg' | 'cnbc' | 'ft' | 'wsj' | 'yahoo' | 'nikkei' | 'bbc' | 'generic'
+}
+
+function getPublisherBadgeMeta(source?: string, url?: string): PublisherBadgeMeta {
+  const s = `${source || ''} ${url || ''}`.toLowerCase()
+  if (/reuters|로이터|ロイター|路透/.test(s)) {
+    return {
+      code: 'R',
+      label: 'Reuters',
+      bgClass: 'bg-orange-500/25 text-orange-300 border-orange-400/50',
+      kind: 'reuters',
+    }
+  }
+  if (/bloomberg|블룸버그|ブルームバーグ|彭博/.test(s)) {
+    return {
+      code: 'B',
+      label: 'Bloomberg',
+      bgClass: 'bg-violet-500/25 text-violet-200 border-violet-400/50',
+      kind: 'bloomberg',
+    }
+  }
+  if (/cnbc/.test(s)) {
+    return {
+      code: 'C',
+      label: 'CNBC',
+      bgClass: 'bg-sky-500/25 text-sky-200 border-sky-400/50',
+      kind: 'cnbc',
+    }
+  }
+  if (/financial times|\bft\.com\b|\bft\b|파이낸셜타임스/.test(s)) {
+    return {
+      code: 'FT',
+      label: 'Financial Times',
+      bgClass: 'bg-amber-600/25 text-amber-200 border-amber-400/50',
+      kind: 'ft',
+    }
+  }
+  if (/wall street journal|\bwsj\b|월스트리트저널/.test(s)) {
+    return {
+      code: 'W',
+      label: 'WSJ',
+      bgClass: 'bg-slate-700/70 text-slate-100 border-slate-400/50',
+      kind: 'wsj',
+    }
+  }
+  if (/yahoo|야후/.test(s)) {
+    return {
+      code: 'Y!',
+      label: 'Yahoo Finance',
+      bgClass: 'bg-purple-500/25 text-purple-200 border-purple-400/50',
+      kind: 'yahoo',
+    }
+  }
+  if (/nikkei|닛케이|日経/.test(s)) {
+    return {
+      code: 'N',
+      label: 'Nikkei',
+      bgClass: 'bg-blue-500/25 text-blue-200 border-blue-400/50',
+      kind: 'nikkei',
+    }
+  }
+  if (/\bbbc\b/.test(s)) {
+    return {
+      code: 'B',
+      label: 'BBC',
+      bgClass: 'bg-rose-600/25 text-rose-200 border-rose-400/50',
+      kind: 'bbc',
+    }
+  }
+  if (/scmp|south china/.test(s)) {
+    return {
+      code: 'SC',
+      label: 'SCMP',
+      bgClass: 'bg-amber-500/20 text-amber-300 border-amber-400/45',
+    }
+  }
+  if (/channel newsasia|\bcna\b/.test(s)) {
+    return {
+      code: 'CN',
+      label: 'CNA',
+      bgClass: 'bg-red-500/25 text-red-200 border-red-400/45',
+    }
+  }
+  if (/yonhap|연합뉴스|yna\.co/.test(s)) {
+    return {
+      code: '연',
+      label: source || '연합뉴스',
+      bgClass: 'bg-cyan-500/25 text-cyan-200 border-cyan-400/45',
+    }
+  }
+  if (/한국경제|한경|hankyung/.test(s)) {
+    return {
+      code: '한',
+      label: source || '한국경제',
+      bgClass: 'bg-emerald-500/25 text-emerald-200 border-emerald-400/45',
+    }
+  }
+  if (/매일경제|매경|\bmk\.co/.test(s)) {
+    return {
+      code: '매',
+      label: source || '매일경제',
+      bgClass: 'bg-orange-500/25 text-orange-200 border-orange-400/45',
+    }
+  }
+
+  const clean = (source || 'News').replace(/^www\./i, '').trim()
+  const firstChar = clean.charAt(0).toUpperCase() || 'N'
+  return {
+    code: firstChar,
+    label: clean,
+    bgClass: 'bg-slate-800/90 text-amber-300 border-amber-500/35',
+    kind: 'generic',
+  }
+}
+
+const NewsPublisherIcon: React.FC<{
+  source?: string
+  url?: string
+  className?: string
+}> = ({ source, url, className = '' }) => {
+  const meta = getPublisherBadgeMeta(source, url)
+
+  return (
+    <span
+      title={source || meta.label}
+      className={`inline-flex items-center justify-center h-3.5 min-w-[14px] px-1 rounded-[3.5px] border text-[8.5px] font-mono font-black leading-none shrink-0 align-middle select-none ${meta.bgClass} ${className}`}
+    >
+      {meta.kind === 'reuters' ? (
+        <svg viewBox="0 0 14 14" className="w-2.5 h-2.5 fill-current" aria-hidden="true">
+          <circle cx="7" cy="2" r="1.25" />
+          <circle cx="10.5" cy="3.5" r="1.25" />
+          <circle cx="12" cy="7" r="1.25" />
+          <circle cx="10.5" cy="10.5" r="1.25" />
+          <circle cx="7" cy="12" r="1.25" />
+          <circle cx="3.5" cy="10.5" r="1.25" />
+          <circle cx="2" cy="7" r="1.25" />
+          <circle cx="3.5" cy="3.5" r="1.25" />
+          <circle cx="7" cy="7" r="1.5" />
+        </svg>
+      ) : (
+        meta.code
+      )}
+    </span>
+  )
+}
+
 type RegionPreset = 'auto' | 'asia' | 'europe' | 'americas' | 'oceania'
+
+const MIN_GLOBE_ZOOM = 0.75
+const MAX_GLOBE_ZOOM = 2.5
+const DEFAULT_GLOBE_ZOOM = 1.0
+const GLOBE_ZOOM_STEP = 0.25
 
 interface HubDefinition {
   id: string
@@ -330,6 +511,51 @@ function getStockColorBucket(changePct: number): number {
   if (changePct < 1.5) return 6
   return 7
 }
+
+// Amber Color Buckets for 'news' Display Mode (matching Breaking News amber badge)
+const NEWS_DOT_STYLES: Array<{
+  mid: string
+  front: string
+}> = [
+  // 0: Untracked / No breaking news
+  {
+    mid: 'rgba(71, 85, 105, 0.26)',
+    front: 'rgba(100, 116, 139, 0.40)',
+  },
+  // 1..3: Unused fallback amber
+  {
+    mid: 'rgba(180, 83, 9, 0.40)',
+    front: 'rgba(217, 119, 6, 0.58)',
+  },
+  {
+    mid: 'rgba(180, 83, 9, 0.44)',
+    front: 'rgba(217, 119, 6, 0.62)',
+  },
+  {
+    mid: 'rgba(180, 83, 9, 0.48)',
+    front: 'rgba(217, 119, 6, 0.66)',
+  },
+  // 4: News > 12h old
+  {
+    mid: 'rgba(217, 119, 6, 0.46)',
+    front: 'rgba(245, 158, 11, 0.66)',
+  },
+  // 5: News <= 12h old
+  {
+    mid: 'rgba(245, 158, 11, 0.56)',
+    front: 'rgba(251, 191, 36, 0.78)',
+  },
+  // 6: News <= 4h old
+  {
+    mid: 'rgba(245, 158, 11, 0.72)',
+    front: 'rgba(251, 191, 36, 0.90)',
+  },
+  // 7: Breaking News <= 1.5h old
+  {
+    mid: 'rgba(217, 119, 6, 0.86)',
+    front: 'rgba(252, 211, 77, 0.98)',
+  },
+]
 
 function getFxColorBucket(changePct: number): number {
   if (changePct <= -0.6) return 1
@@ -2084,6 +2310,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 }) => {
   const { t } = useTranslation()
   const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('gdp')
+  const [lastMetricMode, setLastMetricMode] = useState<'gdp' | 'stocks' | 'fx'>('gdp')
+  const [isModeComboOpen, setIsModeComboOpen] = useState(false)
+  const modeComboRef = useRef<HTMLDivElement>(null)
   const [viewDimension, setViewDimension] = useState<'3d' | '2d'>('3d')
   const [hovered2dCountryId, setHovered2dCountryId] = useState<string | null>(null)
   const [activePreset, setActivePreset] = useState<RegionPreset>('auto')
@@ -2096,7 +2325,6 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   const [projectedCapsules, setProjectedCapsules] = useState<ProjectedCapsule[]>([])
 
   useEffect(() => {
-    if (displayMode !== 'news') return
     let active = true
     fetchBreakingNewsByCountry(lang, !!refreshKey).then((map) => {
       if (active) setNewsByCountry(map)
@@ -2106,11 +2334,46 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     }
   }, [displayMode, lang, refreshKey])
 
+  useEffect(() => {
+    if (displayMode !== 'news') {
+      setLastMetricMode(displayMode)
+    }
+  }, [displayMode])
+
+  useEffect(() => {
+    if (!isModeComboOpen) return
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
+      if (modeComboRef.current && !modeComboRef.current.contains(e.target as Node)) {
+        setIsModeComboOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    document.addEventListener('touchstart', handleOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleOutside)
+      document.removeEventListener('touchstart', handleOutside)
+    }
+  }, [isModeComboOpen])
+
   const containerRef = useRef<HTMLDivElement>(null)
+  const gpuCanvasRef = useRef<HTMLCanvasElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const tileOverlayRef = useRef<HTMLDivElement>(null)
+  const gpuRendererRef = useRef<GlobeGpuRenderer | null>(null)
   const viewDimensionRef = useRef<'3d' | '2d'>('3d')
   const morphRef = useRef<number>(0)
+  const [zoomLevel, setZoomLevel] = useState<number>(DEFAULT_GLOBE_ZOOM)
+  const zoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
+  const targetZoomRef = useRef<number>(DEFAULT_GLOBE_ZOOM)
+
+  const applyTargetZoom = useCallback((nextZoom: number) => {
+    const clamped = Math.min(
+      MAX_GLOBE_ZOOM,
+      Math.max(MIN_GLOBE_ZOOM, Math.round(nextZoom * 100) / 100)
+    )
+    targetZoomRef.current = clamped
+    setZoomLevel(clamped)
+  }, [])
 
   useEffect(() => {
     viewDimensionRef.current = viewDimension
@@ -2152,10 +2415,32 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     isSpinningRef.current = isSpinning
   }, [isSpinning])
 
-  // Spacebar shortcut to toggle globe play / pause
+  // Desktop mouse wheel / trackpad zoom in 3D mode
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const handleWheel = (e: WheelEvent) => {
+      if (window.innerWidth < 768) return
+      if (viewDimensionRef.current !== '3d') return
+      const target = e.target as HTMLElement | null
+      if (target && target.closest('[role="listbox"]')) return
+
+      e.preventDefault()
+      const factor = e.deltaMode === 1 ? 0.06 : 0.0014
+      const delta = -e.deltaY * factor
+      if (Math.abs(delta) < 0.001) return
+
+      applyTargetZoom(targetZoomRef.current + delta)
+    }
+
+    el.addEventListener('wheel', handleWheel, { passive: false })
+    return () => el.removeEventListener('wheel', handleWheel)
+  }, [applyTargetZoom])
+
+  // Keyboard shortcuts: Spacebar (play/pause) & Desktop +/-/0 (3D zoom)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== 'Space' && e.key !== ' ') return
       if (viewDimensionRef.current === '2d') return
       if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return
 
@@ -2173,18 +2458,34 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         }
       }
 
-      e.preventDefault()
-      targetRotationRef.current = null
-      setIsSpinning((prev) => {
-        const next = !prev
-        if (next) setActivePreset('auto')
-        return next
-      })
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault()
+        targetRotationRef.current = null
+        setIsSpinning((prev) => {
+          const next = !prev
+          if (next) setActivePreset('auto')
+          return next
+        })
+        return
+      }
+
+      if (window.innerWidth >= 768) {
+        if (e.key === '+' || e.key === '=') {
+          e.preventDefault()
+          applyTargetZoom(targetZoomRef.current + GLOBE_ZOOM_STEP)
+        } else if (e.key === '-' || e.key === '_') {
+          e.preventDefault()
+          applyTargetZoom(targetZoomRef.current - GLOBE_ZOOM_STEP)
+        } else if (e.key === '0') {
+          e.preventDefault()
+          applyTargetZoom(DEFAULT_GLOBE_ZOOM)
+        }
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [applyTargetZoom])
 
   useEffect(() => {
     hoveredHubIdRef.current = hoveredHubId
@@ -2327,6 +2628,41 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     newsBucketLookupRef.current = newsBucketLookup
   }, [newsBucketLookup])
 
+  // Initialize hardware WebGL2 GPU renderer if supported, with automatic Canvas 2D fallback
+  useEffect(() => {
+    const gpuCanvas = gpuCanvasRef.current
+    if (!gpuCanvas) return
+    const { landDots, graticuleLines } = getGlobeGeometry()
+    const renderer = createGlobeGpuRenderer(gpuCanvas, landDots, graticuleLines)
+    if (!renderer) {
+      return
+    }
+    gpuRendererRef.current = renderer
+    renderer.updateDotStyles({
+      activeMode: displayModeRef.current,
+      gdpMap: gdpLookupRef.current,
+      stockBucketMap: stockBucketLookupRef.current,
+      fxBucketMap: fxBucketLookupRef.current,
+      newsBucketMap: newsBucketLookupRef.current,
+    })
+
+    return () => {
+      renderer.dispose()
+      gpuRendererRef.current = null
+    }
+  }, [])
+
+  // Sync per-country dot style buffers to GPU whenever mode or data maps update
+  useEffect(() => {
+    gpuRendererRef.current?.updateDotStyles({
+      activeMode: displayMode,
+      gdpMap: gdpLookup,
+      stockBucketMap: stockBucketLookup,
+      fxBucketMap: fxBucketLookup,
+      newsBucketMap: newsBucketLookup,
+    })
+  }, [displayMode, gdpLookup, stockBucketLookup, fxBucketLookup, newsBucketLookup])
+
   const get2dCountryFill = useCallback(
     (countryId: string): string => {
       if (displayMode === 'gdp') {
@@ -2340,7 +2676,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             ? fxBucketLookup
             : newsBucketLookup
       const bucket = bucketMap.get(countryId) ?? 0
-      return STOCK_DOT_STYLES[bucket]?.front ?? '#1e293b'
+      const styles = displayMode === 'news' ? NEWS_DOT_STYLES : STOCK_DOT_STYLES
+      return styles[bucket]?.front ?? '#1e293b'
     },
     [displayMode, gdpLookup, stockBucketLookup, fxBucketLookup, newsBucketLookup]
   )
@@ -2684,7 +3021,17 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       const usableH = Math.max(300, height - topSafe - bottomSafe)
       const cx = width / 2
       const cy = topSafe + usableH / 2
-      const radius = Math.min(width * (width < 640 ? 0.38 : 0.40), usableH * 0.45)
+      const baseRadius = Math.min(width * (width < 640 ? 0.38 : 0.40), usableH * 0.45)
+
+      // Smoothly interpolate 3D zoom level on desktop and blend to 1.0 when morphing to 2D
+      const zoomDiff = targetZoomRef.current - zoomRef.current
+      if (Math.abs(zoomDiff) > 0.001) {
+        zoomRef.current += zoomDiff * 0.16
+      } else {
+        zoomRef.current = targetZoomRef.current
+      }
+      const effectiveZoom = width >= 768 ? 1 + (zoomRef.current - 1) * (1 - m) : 1
+      const radius = baseRadius * effectiveZoom
 
       // Measure target 2D grid bounds from DOM TileWorldMap so morph aligns 1:1 with pixels
       let mapW = Math.min(width - 48, usableH * (PIXEL_MAP_COLS / PIXEL_MAP_ROWS))
@@ -2705,89 +3052,116 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       }
 
       const globeBgAlpha = Math.max(0, 1 - m * 1.45)
-
-      // 1. Outer Atmospheric Halo Glow
-      if (globeBgAlpha > 0.01) {
-        ctx.save()
-        ctx.globalAlpha = globeBgAlpha
-        const outerHalo = ctx.createRadialGradient(
-          cx,
-          cy,
-          radius * 0.72,
-          cx,
-          cy,
-          radius * 1.34
-        )
-        outerHalo.addColorStop(0, 'rgba(16, 185, 129, 0.16)')
-        outerHalo.addColorStop(0.45, 'rgba(79, 70, 229, 0.16)')
-        outerHalo.addColorStop(1, 'rgba(2, 6, 23, 0)')
-        ctx.fillStyle = outerHalo
-        ctx.beginPath()
-        ctx.arc(cx, cy, radius * 1.34, 0, Math.PI * 2)
-        ctx.fill()
-
-        // 2. 3D Sphere Ocean Body with Specular Highlight
-        const sphereGrad = ctx.createRadialGradient(
-          cx - radius * 0.28,
-          cy - radius * 0.28,
-          radius * 0.08,
-          cx,
-          cy,
-          radius
-        )
-        sphereGrad.addColorStop(0, '#132046')
-        sphereGrad.addColorStop(0.65, '#091128')
-        sphereGrad.addColorStop(1, '#040817')
-        ctx.fillStyle = sphereGrad
-        ctx.beginPath()
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-        ctx.fill()
-
-        // 3. Subtle Graticule Wireframe Lines (Back & Front)
-        ctx.lineWidth = 0.8
-        for (const line of graticuleLines) {
-          ctx.beginPath()
-          let started = false
-          for (let i = 0; i < line.length; i++) {
-            const rp = rotatePoint(line[i], rotLonRad, rotLatRad)
-            if (rp.z < -0.15) {
-              started = false
-              continue
-            }
-            const sx = cx + rp.x * radius
-            const sy = cy + rp.y * radius
-            if (!started) {
-              ctx.moveTo(sx, sy)
-              started = true
-            } else {
-              ctx.lineTo(sx, sy)
-            }
-          }
-          ctx.strokeStyle = 'rgba(99, 102, 241, 0.13)'
-          ctx.stroke()
-        }
-
-        // Crisp Atmospheric Rim Ring on Base Sphere
-        ctx.beginPath()
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-        ctx.strokeStyle = 'rgba(52, 211, 153, 0.30)'
-        ctx.lineWidth = 1.2
-        ctx.stroke()
-        ctx.restore()
-      }
-
-      // 4. Mode-Specific Continent Rendering
-      const dotSizeBack = Math.max(0.88, radius * 0.0052)
-      const dotSizeFront = Math.max(1.38, radius * 0.0082)
-      const currentGdpMap = gdpLookupRef.current
-      const currentStockBucketMap = stockBucketLookupRef.current
-      const currentFxBucketMap = fxBucketLookupRef.current
-      const currentNewsBucketMap = newsBucketLookupRef.current
       const activeMode = displayModeRef.current
       const isGdpMode = activeMode === 'gdp'
       const elevMultiplier = 1.25
 
-      if (!isMorphingOr2D) {
+      // Attempt WebGL2 Hardware GPU rendering for Sphere, Halo, Graticules & Continent Voxel Dots
+      let renderedByGpu = false
+      const gpuRenderer = gpuRendererRef.current
+      if (gpuRenderer && !gpuRenderer.isContextLost()) {
+        renderedByGpu = gpuRenderer.renderFrame({
+          width,
+          height,
+          dpr,
+          cx,
+          cy,
+          radius,
+          rotLonRad,
+          rotLatRad,
+          morph: m,
+          globeBgAlpha,
+          mapLeft,
+          mapTop,
+          mapW,
+          mapH,
+          isGdpMode,
+          activeMode,
+        })
+      } else if (gpuRenderer) {
+        gpuRenderer.clear(width, height, dpr)
+      }
+
+      if (!renderedByGpu) {
+        // 1. Outer Atmospheric Halo Glow (Canvas 2D Fallback)
+        if (globeBgAlpha > 0.01) {
+          ctx.save()
+          ctx.globalAlpha = globeBgAlpha
+          const outerHalo = ctx.createRadialGradient(
+            cx,
+            cy,
+            radius * 0.72,
+            cx,
+            cy,
+            radius * 1.34
+          )
+          outerHalo.addColorStop(0, 'rgba(16, 185, 129, 0.16)')
+          outerHalo.addColorStop(0.45, 'rgba(79, 70, 229, 0.16)')
+          outerHalo.addColorStop(1, 'rgba(2, 6, 23, 0)')
+          ctx.fillStyle = outerHalo
+          ctx.beginPath()
+          ctx.arc(cx, cy, radius * 1.34, 0, Math.PI * 2)
+          ctx.fill()
+
+          // 2. 3D Sphere Ocean Body with Specular Highlight
+          const sphereGrad = ctx.createRadialGradient(
+            cx - radius * 0.28,
+            cy - radius * 0.28,
+            radius * 0.08,
+            cx,
+            cy,
+            radius
+          )
+          sphereGrad.addColorStop(0, '#132046')
+          sphereGrad.addColorStop(0.65, '#091128')
+          sphereGrad.addColorStop(1, '#040817')
+          ctx.fillStyle = sphereGrad
+          ctx.beginPath()
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+          ctx.fill()
+
+          // 3. Subtle Graticule Wireframe Lines (Back & Front)
+          ctx.lineWidth = 0.8
+          for (const line of graticuleLines) {
+            ctx.beginPath()
+            let started = false
+            for (let i = 0; i < line.length; i++) {
+              const rp = rotatePoint(line[i], rotLonRad, rotLatRad)
+              if (rp.z < -0.15) {
+                started = false
+                continue
+              }
+              const sx = cx + rp.x * radius
+              const sy = cy + rp.y * radius
+              if (!started) {
+                ctx.moveTo(sx, sy)
+                started = true
+              } else {
+                ctx.lineTo(sx, sy)
+              }
+            }
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.13)'
+            ctx.stroke()
+          }
+
+          // Crisp Atmospheric Rim Ring on Base Sphere
+          ctx.beginPath()
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+          ctx.strokeStyle = 'rgba(52, 211, 153, 0.30)'
+          ctx.lineWidth = 1.2
+          ctx.stroke()
+          ctx.restore()
+        }
+
+        // 4. Mode-Specific Continent Rendering (Canvas 2D Fallback)
+        const dotSizeBack = Math.max(0.88, radius * 0.0052)
+        const dotSizeFront = Math.max(1.38, radius * 0.0082)
+        const currentGdpMap = gdpLookupRef.current
+        const currentStockBucketMap = stockBucketLookupRef.current
+        const currentFxBucketMap = fxBucketLookupRef.current
+        const currentNewsBucketMap = newsBucketLookupRef.current
+
+        if (!isMorphingOr2D) {
         // 4a. Back hemisphere dim hologram dots
         ctx.fillStyle = 'rgba(71, 85, 105, 0.14)'
         ctx.beginPath()
@@ -2888,8 +3262,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 : currentNewsBucketMap
           const rMid = dotSizeFront * 0.90
           const rFront = dotSizeFront * 0.98
-          for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
-            const style = STOCK_DOT_STYLES[bucket]
+          const activeDotStyles = activeMode === 'news' ? NEWS_DOT_STYLES : STOCK_DOT_STYLES
+          for (let bucket = 0; bucket < activeDotStyles.length; bucket++) {
+            const style = activeDotStyles[bucket]
 
             ctx.fillStyle = style.mid
             ctx.beginPath()
@@ -2992,8 +3367,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               : activeMode === 'fx'
                 ? currentFxBucketMap
                 : currentNewsBucketMap
-            for (let bucket = 0; bucket < STOCK_DOT_STYLES.length; bucket++) {
-              const style = STOCK_DOT_STYLES[bucket]
+            const activeDotStyles = activeMode === 'news' ? NEWS_DOT_STYLES : STOCK_DOT_STYLES
+            for (let bucket = 0; bucket < activeDotStyles.length; bucket++) {
+              const style = activeDotStyles[bucket]
               ctx.save()
               ctx.globalAlpha = backAlpha
               ctx.fillStyle = style.mid
@@ -3040,6 +3416,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             }
           }
         }
+      }
       }
 
       if (globeBgAlpha > 0.01) {
@@ -3148,10 +3525,21 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         const surfaceX = cx + rp.x * radius * topSurfaceElev
         const surfaceY = cy + rp.y * radius * topSurfaceElev
 
-        // Radial push outward from globe center + custom hub offset scaled to globe radius
-        const radialScale = Math.max(0.65, radius / 250)
-        const initX = surfaceX + h.offsetX * radialScale + rp.x * (radius * 0.065)
-        const initY = surfaceY + h.offsetY * radialScale + rp.y * (radius * 0.065)
+        // When zoomed in on desktop, skip hubs whose 3D surface anchor lies outside the visible viewport
+        if (
+          effectiveZoom > 1.02 &&
+          (surfaceX < 16 ||
+            surfaceX > width - 16 ||
+            surfaceY < topSafe + 4 ||
+            surfaceY > height - bottomSafe - 4)
+        ) {
+          continue
+        }
+
+        // Radial push outward from globe center + custom hub offset scaled to base globe radius
+        const radialScale = Math.max(0.65, baseRadius / 250)
+        const initX = surfaceX + h.offsetX * radialScale + rp.x * (baseRadius * 0.065)
+        const initY = surfaceY + h.offsetY * radialScale + rp.y * (baseRadius * 0.065)
 
         const depthFactor = Math.min(1, Math.max(0, (rp.z - 0.08) / 0.65))
         const scale = 0.82 + depthFactor * 0.2
@@ -3246,7 +3634,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               : (cap.fxChangePct ?? 0) < -0.01
 
         // Beacon color matches amber tier in GDP mode
-        const isTop12Gdp = displayModeRef.current === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2)
+        const isTop12Gdp =
+          displayModeRef.current === 'news' ||
+          (displayModeRef.current === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2))
         const isTop35Gdp = displayModeRef.current === 'gdp' && (cap.colorTier === 5 || (cap.gdpRank >= 3 && cap.gdpRank <= 5))
 
         const colorHex = isTop12Gdp
@@ -3324,13 +3714,17 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     dragRef.current.lastX = e.clientX
     dragRef.current.lastY = e.clientY
 
-    rotationRef.current.lon += dx * 0.35
+    const zoomFactor = Math.max(1, zoomRef.current * 0.85)
+    const dragStep = 0.35 / zoomFactor
+    const velStep = 0.18 / zoomFactor
+
+    rotationRef.current.lon += dx * dragStep
     rotationRef.current.lat = Math.max(
       -68,
-      Math.min(68, rotationRef.current.lat + dy * 0.35)
+      Math.min(68, rotationRef.current.lat + dy * dragStep)
     )
-    rotationRef.current.velLon = dx * 0.18
-    rotationRef.current.velLat = dy * 0.18
+    rotationRef.current.velLon = dx * velStep
+    rotationRef.current.velLat = dy * velStep
   }
 
   const handlePointerUp = () => {
@@ -3362,7 +3756,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         }}
       />
 
-      {/* 3D Globe & Unrolling Morph Canvas */}
+      {/* WebGL2 Hardware GPU Acceleration Layer (Sphere, Halo, Graticules & Instanced Voxel Continents) */}
+      <canvas ref={gpuCanvasRef} className="absolute inset-0 w-full h-full block pointer-events-none" />
+
+      {/* 3D Globe Overlay & Canvas 2D Fallback Layer */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block pointer-events-none" />
 
       {/* 2D Flat Tile World Map Overlay (Cross-fades in at morph >= 0.85) */}
@@ -3444,9 +3841,88 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         </div>
 
         {/* Center: Display Mode Switcher (GDP / Stocks / FX) + Region Presets */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
-          {/* Display Mode Tabs */}
-          <div className="flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
+        <div className="flex items-center gap-1.5 max-w-full">
+          {/* Mobile Display Mode Combo Box (GDP / Stocks / FX) */}
+          <div className="relative sm:hidden shrink-0" ref={modeComboRef}>
+            <button
+              type="button"
+              onClick={() => setIsModeComboOpen((prev) => !prev)}
+              aria-haspopup="listbox"
+              aria-expanded={isModeComboOpen}
+              className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                displayMode === 'news'
+                  ? 'bg-slate-950/90 border-slate-800 text-slate-300 hover:text-white'
+                  : lastMetricMode === 'gdp'
+                    ? 'bg-emerald-600 border-emerald-500/80 text-white shadow-sm'
+                    : 'bg-indigo-600 border-indigo-500/80 text-white shadow-sm'
+              }`}
+            >
+              {lastMetricMode === 'gdp' ? (
+                <BarChart3 className="w-3 h-3 shrink-0" />
+              ) : lastMetricMode === 'stocks' ? (
+                <TrendingUp className="w-3 h-3 shrink-0" />
+              ) : (
+                <Coins className="w-3 h-3 shrink-0" />
+              )}
+              <span>
+                {lastMetricMode === 'gdp'
+                  ? t('globeDisplayModeGdp')
+                  : lastMetricMode === 'stocks'
+                    ? t('globeDisplayModeStocks')
+                    : t('globeDisplayModeFx')}
+              </span>
+              <ChevronDown
+                className={`w-3 h-3 shrink-0 transition-transform duration-150 ${
+                  isModeComboOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {isModeComboOpen && (
+              <div
+                role="listbox"
+                className="absolute left-0 top-full mt-1.5 min-w-[120px] bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-xl p-1 shadow-2xl z-50 space-y-0.5"
+              >
+                {(
+                  [
+                    { id: 'gdp', label: t('globeDisplayModeGdp'), icon: BarChart3, activeBg: 'bg-emerald-600/25 border-emerald-500/40 text-emerald-200' },
+                    { id: 'stocks', label: t('globeDisplayModeStocks'), icon: TrendingUp, activeBg: 'bg-indigo-600/25 border-indigo-500/40 text-indigo-200' },
+                    { id: 'fx', label: t('globeDisplayModeFx'), icon: Coins, activeBg: 'bg-indigo-600/25 border-indigo-500/40 text-indigo-200' },
+                  ] as const
+                ).map((opt) => {
+                  const Icon = opt.icon
+                  const isSelected = displayMode === opt.id
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        setLastMetricMode(opt.id)
+                        setDisplayMode(opt.id)
+                        setIsModeComboOpen(false)
+                      }}
+                      className={`w-full px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-between gap-2 transition-colors cursor-pointer border ${
+                        isSelected
+                          ? opt.activeBg
+                          : 'border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Icon className="w-3.5 h-3.5 shrink-0" />
+                        <span>{opt.label}</span>
+                      </span>
+                      {isSelected && <Check className="w-3 h-3 shrink-0" />}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Display Mode Tabs */}
+          <div className="hidden sm:flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
             <button
               type="button"
               onClick={() => setDisplayMode('gdp')}
@@ -3488,7 +3964,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           {/* Independent Breaking News Toggle */}
           <button
             type="button"
-            onClick={() => setDisplayMode((prev) => (prev === 'news' ? 'gdp' : 'news'))}
+            onClick={() => setDisplayMode((prev) => (prev === 'news' ? lastMetricMode : 'news'))}
             aria-pressed={displayMode === 'news'}
             className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
               displayMode === 'news'
@@ -3578,7 +4054,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
               <button
                 type="button"
-                onClick={() => handleSelectPreset('auto')}
+                onClick={() => {
+                  handleSelectPreset('auto')
+                  applyTargetZoom(DEFAULT_GLOBE_ZOOM)
+                }}
                 title={t('globeResetOrbit')}
                 className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
@@ -3609,7 +4088,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           const sparklineData =
             displayMode === 'stocks' && isHovered ? getCapsuleSparkline(cap) : null
 
-          const isTop12Gdp = displayMode === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2)
+          const isTop12Gdp =
+            displayMode === 'news' ||
+            (displayMode === 'gdp' && (cap.colorTier === 6 || cap.gdpRank <= 2))
           const isTop35Gdp = displayMode === 'gdp' && (cap.colorTier === 5 || (cap.gdpRank >= 3 && cap.gdpRank <= 5))
 
           const borderClass = isHovered
@@ -3618,7 +4099,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               : isTop35Gdp
                 ? 'border-amber-200 ring-2 ring-amber-300/40 bg-slate-900/95'
                 : 'border-white ring-2 ring-emerald-400/50 bg-slate-900/95'
-            : displayMode === 'gdp'
+            : displayMode === 'gdp' || displayMode === 'news'
               ? isTop12Gdp
                 ? 'border-amber-400/70 bg-amber-950/20 hover:border-amber-300 shadow-amber-500/10'
                 : isTop35Gdp
@@ -3764,10 +4245,18 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 )}
 
                 {displayMode === 'news' && (
-                  <span className="text-[9.5px] font-sans text-slate-200 truncate w-full leading-tight">
-                    {cap.newsArticles && cap.newsArticles.length > 0
-                      ? cap.newsArticles[0].title
-                      : '-'}
+                  <span className="text-[9.5px] font-sans text-slate-200 truncate w-full leading-tight flex items-center gap-1">
+                    {cap.newsArticles && cap.newsArticles.length > 0 ? (
+                      <>
+                        <NewsPublisherIcon
+                          source={cap.newsArticles[0].source}
+                          url={cap.newsArticles[0].url}
+                        />
+                        <span className="truncate">{cap.newsArticles[0].title}</span>
+                      </>
+                    ) : (
+                      '-'
+                    )}
                   </span>
                 )}
               </div>
@@ -3855,9 +4344,11 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                           onClick={(e) => e.stopPropagation()}
                           className="block text-[9.5px] leading-snug text-slate-200 hover:text-amber-300 transition-colors line-clamp-2"
                         >
-                          <span className="text-amber-400/90 font-mono mr-1">
-                            [{art.source}]
-                          </span>
+                          <NewsPublisherIcon
+                            source={art.source}
+                            url={art.url}
+                            className="mr-1 -mt-0.5"
+                          />
                           {art.title}
                         </a>
                       ))}
@@ -3888,37 +4379,78 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         })}
       </div>
 
-      {/* Vertical Floating 2D / 3D Dimension Toggle (Bottom-Right above Focus Market strip) */}
+      {/* Right-Side Floating Controls: Desktop 3D Zoom + 2D/3D Dimension Toggle */}
       <div
         data-globe-ui="true"
-        className={`absolute right-2.5 z-30 flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl transition-all duration-300 ${
-          viewDimension === '3d' ? 'bottom-[138px] sm:bottom-[92px]' : 'bottom-3'
+        className={`absolute right-2.5 z-30 flex flex-col items-center gap-2 transition-all duration-300 ${
+          viewDimension === '3d' ? 'bottom-[76px] sm:bottom-[92px]' : 'bottom-3'
         }`}
       >
-        <button
-          type="button"
-          onClick={() => setViewDimension('2d')}
-          className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
-            viewDimension === '2d'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-          }`}
-        >
-          <MapIcon className="hidden sm:block w-3.5 h-3.5" />
-          <span>2D</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setViewDimension('3d')}
-          className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
-            viewDimension === '3d'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-          }`}
-        >
-          <Globe className="hidden sm:block w-3.5 h-3.5" />
-          <span>3D</span>
-        </button>
+        {/* Desktop-Only 3D Zoom Control Pill (3D mode only) */}
+        {viewDimension === '3d' && (
+          <div className="hidden md:flex flex-col items-center rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-1 gap-0.5 shadow-xl">
+            <button
+              type="button"
+              onClick={() => applyTargetZoom(targetZoomRef.current + GLOBE_ZOOM_STEP)}
+              disabled={zoomLevel >= MAX_GLOBE_ZOOM - 0.01}
+              title={lang === 'ko' ? '확대 (+)' : 'Zoom In (+)'}
+              aria-label={lang === 'ko' ? '확대' : 'Zoom In'}
+              className="w-11 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 disabled:opacity-35 disabled:pointer-events-none transition-all flex items-center justify-center cursor-pointer"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => applyTargetZoom(DEFAULT_GLOBE_ZOOM)}
+              title={lang === 'ko' ? '배율 초기화 (100%)' : 'Reset Zoom (100%)'}
+              className={`w-11 py-0.5 rounded text-[10px] font-mono font-bold tabular-nums transition-colors cursor-pointer ${
+                Math.abs(zoomLevel - DEFAULT_GLOBE_ZOOM) > 0.01
+                  ? 'text-emerald-300 hover:bg-slate-800/70'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {Math.round(zoomLevel * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={() => applyTargetZoom(targetZoomRef.current - GLOBE_ZOOM_STEP)}
+              disabled={zoomLevel <= MIN_GLOBE_ZOOM + 0.01}
+              title={lang === 'ko' ? '축소 (-)' : 'Zoom Out (-)'}
+              aria-label={lang === 'ko' ? '축소' : 'Zoom Out'}
+              className="w-11 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 disabled:opacity-35 disabled:pointer-events-none transition-all flex items-center justify-center cursor-pointer"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Vertical Floating 2D / 3D Dimension Toggle */}
+        <div className="flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl">
+          <button
+            type="button"
+            onClick={() => setViewDimension('2d')}
+            className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+              viewDimension === '2d'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <MapIcon className="hidden sm:block w-3.5 h-3.5" />
+            <span>2D</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewDimension('3d')}
+            className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+              viewDimension === '3d'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <Globe className="hidden sm:block w-3.5 h-3.5" />
+            <span>3D</span>
+          </button>
+        </div>
       </div>
 
       {/* Bottom Live Spotlight Strip (Front-Facing Hubs Currently in Focus - 3D mode only) */}
@@ -3933,7 +4465,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         </div>
 
         <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 min-w-0">
-          {spotlightHubs.map((hub) => {
+          {spotlightHubs.map((hub, idx) => {
             const isUp = hub.stockChangePct > 0.15
             const isDown = hub.stockChangePct < -0.15
             const unitLabel =
@@ -3950,7 +4482,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 onMouseEnter={() => setHoveredHubId(hub.id)}
                 onMouseLeave={() => setHoveredHubId(null)}
                 onClick={() => onSelectCountry(hub.country)}
-                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0"
+                className={`${idx >= 2 ? 'hidden sm:flex' : 'flex'} items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0`}
               >
                 <div className="flex items-center gap-1.5 min-w-0">
                   <CountryFlag iso2={hub.country.iso2} className="w-4 h-3 rounded-[2px] shrink-0" />
@@ -3969,12 +4501,22 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                         : displayMode === 'stocks'
                           ? hub.indexName
                           : displayMode === 'news'
-                            ? hub.newsArticles?.[0]
-                              ? `${hub.newsArticles[0].source} · ${formatRelativeNewsAge(
-                                  hub.newsArticles[0].publishedAt,
-                                  lang
-                                )}`
-                              : '-'
+                            ? hub.newsArticles?.[0] ? (
+                                <span className="inline-flex items-center gap-1">
+                                  <NewsPublisherIcon
+                                    source={hub.newsArticles[0].source}
+                                    url={hub.newsArticles[0].url}
+                                  />
+                                  <span>
+                                    {formatRelativeNewsAge(
+                                      hub.newsArticles[0].publishedAt,
+                                      lang
+                                    )}
+                                  </span>
+                                </span>
+                              ) : (
+                                '-'
+                              )
                             : unitLabel}
                     </div>
                   </div>
