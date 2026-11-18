@@ -227,7 +227,7 @@ npm run dev
 
 브라우저에서 `http://localhost:5173`으로 접속합니다.
 
-### 준실시간 주가 프록시 설정 (선택 사항)
+### Cloudflare Worker 프록시 및 방문자 집계 설정 (선택 사항)
 
 Cloudflare Worker를 배포하고 앱에 연결합니다:
 
@@ -235,14 +235,27 @@ Cloudflare Worker를 배포하고 앱에 연결합니다:
 cd workers/stock-proxy
 npx wrangler login
 npx wrangler deploy
+# 처음 배포 시 "Would you like to register a workers.dev subdomain now?"가 나오면 Yes 선택
 ```
 
 ```bash
-# .env.local (로컬 개발) 및 GitHub 리포지토리 Actions Secret (프로덕션 빌드)
+# .env.local (로컬 개발) 및 GitHub 리포지토리 Actions Variable (프로덕션 빌드)
 VITE_STOCK_PROXY_URL=https://<your-worker>.workers.dev
 ```
 
 배포된 웹사이트의 도메인이 다를 경우 `workers/stock-proxy/wrangler.toml`의 `ALLOWED_ORIGINS`에 해당 도메인을 추가해야 합니다. 환경 변수를 설정하지 않으면 빌드 시점의 정적 주가 데이터로 동작합니다.
+
+#### 실시간 방문자수 집계 설정 (Cloudflare D1)
+
+Footer에 오늘/누적 순방문자 수를 표시하려면 아래 절차를 1회 진행합니다:
+
+```bash
+cd workers/stock-proxy
+npx wrangler d1 create geonomics-visitors
+```
+
+1. 출력된 `database_id`를 `workers/stock-proxy/wrangler.toml`의 `[[d1_databases]]` 주석을 해제한 뒤 입력합니다 (`binding = "VISITOR_DB"`).
+2. `npx wrangler deploy`로 Worker를 다시 배포합니다 (첫 요청 시 D1 테이블이 자동 생성됩니다).
 
 ### 데이터 파이프라인 및 빌드 스크립트
 

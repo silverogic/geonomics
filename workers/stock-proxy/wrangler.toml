@@ -12,4 +12,4 @@ ALLOWED_ORIGINS = "https://silverogic.github.io"
 # [[d1_databases]]
 # binding = "VISITOR_DB"
 # database_name = "geonomics-visitors"
-# database_id = "30e47479-b3e6-4981-ac85-1316666eb787"
+# database_id = "316f87f3-c9a1-4101-a7c1-c18afc765c19""

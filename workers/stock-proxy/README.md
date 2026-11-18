@@ -7,7 +7,7 @@ Near-real-time Yahoo Finance quote proxy with CORS + 60s edge cache.
 ```bash
 cd workers/stock-proxy
 npx wrangler login     # once
-npx wrangler deploy
+npx wrangler deploy    # choose Yes if prompted to register a *.workers.dev subdomain
 ```
 
 Copy the printed `https://geonomics-stock-proxy.<account>.workers.dev` URL and set it as

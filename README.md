@@ -227,7 +227,7 @@ npm run dev
 
 Open `http://localhost:5173` in your browser.
 
-### Near-Real-Time Stock Quotes (Optional)
+### Cloudflare Worker Proxy & Visitor Counter (Optional)
 
 Deploy the proxy once, then point the app at it:
 
@@ -235,6 +235,7 @@ Deploy the proxy once, then point the app at it:
 cd workers/stock-proxy
 npx wrangler login
 npx wrangler deploy
+# If prompted "Would you like to register a workers.dev subdomain now?", choose Yes
 ```
 
 ```bash
@@ -243,6 +244,18 @@ VITE_STOCK_PROXY_URL=https://<your-worker>.workers.dev
 ```
 
 Edit `ALLOWED_ORIGINS` in `workers/stock-proxy/wrangler.toml` if the site is served from a different origin. Without the variable, only prebuilt static stock data is used.
+
+#### Real-Time Visitor Counter Setup (Cloudflare D1)
+
+To display live daily & total unique visitor counts in the Footer:
+
+```bash
+cd workers/stock-proxy
+npx wrangler d1 create geonomics-visitors
+```
+
+1. Copy the printed `database_id` into `workers/stock-proxy/wrangler.toml` by uncommenting `[[d1_databases]]` (`binding = "VISITOR_DB"`).
+2. Redeploy the Worker with `npx wrangler deploy` (tables are auto-created on the first request).
 
 ### Data Pipeline & Build Scripts
 
