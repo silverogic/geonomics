@@ -176,6 +176,8 @@ export const translations = {
     footerBis: 'Bank for International Settlements (BIS) Policy Rates',
     footerGithub: 'Hosted on GitHub Pages',
     footerSupport: 'Customer Support',
+    footerVisitorsToday: 'Today',
+    footerVisitorsTotal: 'Total',
 
     // Common & UI Elements
     prevClose: 'Prev Close',
@@ -403,6 +405,8 @@ export const translations = {
     footerBis: '국제결제은행(BIS) 정책금리 통계',
     footerGithub: 'GitHub Pages 호스팅',
     footerSupport: '고객센터',
+    footerVisitorsToday: '오늘',
+    footerVisitorsTotal: '누적',
 
     // Common & UI Elements
     prevClose: '전일 종가',
@@ -630,6 +634,8 @@ export const translations = {
     footerBis: '国際決済銀行 (BIS) 政策金利',
     footerGithub: 'GitHub Pages でホスティング中',
     footerSupport: 'カスタマーサポート',
+    footerVisitorsToday: '今日',
+    footerVisitorsTotal: '累計',
 
     // Common & UI Elements
     prevClose: '前日終値',
@@ -857,6 +863,8 @@ export const translations = {
     footerBis: 'Banco de Pagos Internacionales (BPI)',
     footerGithub: 'Alojado en GitHub Pages',
     footerSupport: 'Centro de Ayuda',
+    footerVisitorsToday: 'Hoy',
+    footerVisitorsTotal: 'Total',
 
     // Common & UI Elements
     prevClose: 'Cierre anterior',
@@ -1084,6 +1092,8 @@ export const translations = {
     footerBis: '国际清算银行 (BIS) 政策利率',
     footerGithub: 'GitHub Pages 托管运行',
     footerSupport: '客服中心',
+    footerVisitorsToday: '今日',
+    footerVisitorsTotal: '累计',
 
     // Common & UI Elements
     prevClose: '前收盘价',
@@ -1285,6 +1295,8 @@ export const translations = {
     footerBis: 'बैंक फॉर इंटरनेशनल सेटलमेंट्स (बीआईएस) नीतिगत दरें',
     footerGithub: 'गिटहब पेजेस पर होस्ट किया गया',
     footerSupport: 'ग्राहक सहायता',
+    footerVisitorsToday: 'आज',
+    footerVisitorsTotal: 'कुल',
     prevClose: 'पिछला बंद',
     globeDisplayModeStocks: 'शेयर',
     globeDisplayModeGdp: 'GDP',

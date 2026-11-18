@@ -5,3 +5,11 @@ compatibility_date = "2025-01-01"
 [vars]
 # Comma-separated list of allowed browser origins (localhost is always allowed for dev)
 ALLOWED_ORIGINS = "https://silverogic.github.io"
+
+# Optional D1 database binding for real-time visitor counting (?visit=1):
+# 1) Run: npx wrangler d1 create geonomics-visitors
+# 2) Uncomment below and paste your database_id, then run: npx wrangler deploy
+# [[d1_databases]]
+# binding = "VISITOR_DB"
+# database_name = "geonomics-visitors"
+# database_id = "30e47479-b3e6-4981-ac85-1316666eb787"

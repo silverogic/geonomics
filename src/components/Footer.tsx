@@ -1,7 +1,8 @@
-import React from 'react'
-import { ExternalLink, Globe, LifeBuoy } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { ExternalLink, Globe, LifeBuoy, Users } from 'lucide-react'
 import type { Language } from '../types/economics'
 import { translations } from '../i18n/translations'
+import { fetchVisitorStats, type VisitorStats } from '../services/visitorApi'
 
 interface FooterProps {
   lang: Language
@@ -9,6 +10,17 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ lang }) => {
   const t = translations[lang]
+  const [visitors, setVisitors] = useState<VisitorStats | null>(null)
+
+  useEffect(() => {
+    let active = true
+    fetchVisitorStats().then((stats) => {
+      if (active && stats) setVisitors(stats)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <footer className="mt-16 border-t border-slate-800/80 bg-slate-950 py-10 text-slate-400 text-xs">
@@ -86,8 +98,28 @@ export const Footer: React.FC<FooterProps> = ({ lang }) => {
           <p>* {t.footerDisclaimer}</p>
         </div>
 
-        <div className="text-center text-slate-600 text-[11px]">
-          (C) {new Date().getFullYear()} Geonomics. Powered by World Bank Open API, IMF World Economic Outlook (WEO), BIS SDMX & ECB Reference Rates. Hosted on GitHub Pages.
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-slate-600 text-[11px]">
+          <span className="text-center sm:text-left">
+            (C) {new Date().getFullYear()} Geonomics. Powered by World Bank Open API, IMF World Economic Outlook (WEO), BIS SDMX & ECB Reference Rates. Hosted on GitHub Pages.
+          </span>
+          {visitors && (
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800/90 text-[11px] font-mono text-slate-300 shrink-0">
+              <Users className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>
+                {t.footerVisitorsToday}{' '}
+                <strong className="text-emerald-300 tabular-nums">
+                  {visitors.today.toLocaleString()}
+                </strong>
+              </span>
+              <span className="text-slate-600">/</span>
+              <span>
+                {t.footerVisitorsTotal}{' '}
+                <strong className="text-slate-100 tabular-nums">
+                  {visitors.total.toLocaleString()}
+                </strong>
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </footer>

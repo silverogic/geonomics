@@ -181,6 +181,71 @@ async function mapWithConcurrency(items, limit, fn) {
   return results
 }
 
+const BOT_UA_PATTERN = /bot|crawler|spider|headless|curl|wget|python-requests|slurp|lighthouse|pagespeed/i
+
+async function sha256Hex(input) {
+  const bytes = new TextEncoder().encode(input)
+  const digest = await crypto.subtle.digest('SHA-256', bytes)
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+let visitorTablesInitialized = false
+
+async function handleVisitorCount(request, env, mode) {
+  const db = env.VISITOR_DB
+  if (!db) {
+    return { configured: false, today: null, total: null }
+  }
+
+  if (!visitorTablesInitialized) {
+    await db.batch([
+      db.prepare(
+        'CREATE TABLE IF NOT EXISTS daily_stats (date TEXT PRIMARY KEY, unique_visitors INTEGER NOT NULL DEFAULT 0, page_views INTEGER NOT NULL DEFAULT 0)'
+      ),
+      db.prepare(
+        'CREATE TABLE IF NOT EXISTS daily_uniques (date TEXT NOT NULL, visitor_hash TEXT NOT NULL, PRIMARY KEY (date, visitor_hash))'
+      ),
+    ])
+    visitorTablesInitialized = true
+  }
+
+  // Use UTC+9 (KST) or UTC date cleanly; UTC YYYY-MM-DD keeps global stats consistent
+  const today = new Date().toISOString().slice(0, 10)
+  const ua = request.headers.get('User-Agent') || ''
+  const isBot = !ua || BOT_UA_PATTERN.test(ua)
+
+  if (mode !== 'read' && !isBot) {
+    const ip = request.headers.get('CF-Connecting-IP') || '0.0.0.0'
+    const visitorHash = await sha256Hex(`${ip}|${ua}|${today}`)
+    const insertUnique = await db
+      .prepare('INSERT OR IGNORE INTO daily_uniques (date, visitor_hash) VALUES (?, ?)')
+      .bind(today, visitorHash)
+      .run()
+    const isNewUnique = (insertUnique?.meta?.changes || 0) > 0 ? 1 : 0
+
+    await db
+      .prepare(
+        'INSERT INTO daily_stats (date, unique_visitors, page_views) VALUES (?, ?, 1) ON CONFLICT(date) DO UPDATE SET unique_visitors = unique_visitors + ?, page_views = page_views + 1'
+      )
+      .bind(today, isNewUnique, isNewUnique)
+      .run()
+  }
+
+  const [todayRow, totalRow] = await Promise.all([
+    db.prepare('SELECT unique_visitors FROM daily_stats WHERE date = ?').bind(today).first(),
+    db.prepare('SELECT COALESCE(SUM(unique_visitors), 0) AS total FROM daily_stats').first(),
+  ])
+
+  return {
+    configured: true,
+    date: today,
+    today: Number(todayRow?.unique_visitors ?? 0),
+    total: Number(totalRow?.total ?? 0),
+  }
+}
+
 export default {
   async fetch(request, env, ctx) {
     const origin = getAllowedOrigin(request, env)
@@ -194,6 +259,26 @@ export default {
     }
 
     const url = new URL(request.url)
+
+    // Visitor Counter endpoint: ?visit=1 (increment + read) or ?visit=read (read-only)
+    const visitParam = url.searchParams.get('visit')
+    if (visitParam === '1' || visitParam === 'read') {
+      try {
+        const stats = await handleVisitorCount(request, env, visitParam === 'read' ? 'read' : 'hit')
+        return new Response(JSON.stringify(stats), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+            ...corsHeaders(origin),
+          },
+        })
+      } catch {
+        return new Response(JSON.stringify({ configured: false, today: null, total: null }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+        })
+      }
+    }
 
     // Breaking Economic News RSS Aggregator endpoint: ?news=breaking&lang=ko
     if (url.searchParams.get('news') === 'breaking') {
