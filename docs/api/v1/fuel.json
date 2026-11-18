@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-18",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -9,67 +9,67 @@
   "prices": {
     "USA": {
       "countryId": "USA",
-      "priceUsd": 1.142,
+      "priceUsd": 1.092,
       "currencyCode": "USD"
     },
     "CHN": {
       "countryId": "CHN",
-      "priceUsd": 1.43,
+      "priceUsd": 1.431,
       "currencyCode": "CNY"
     },
     "DEU": {
       "countryId": "DEU",
-      "priceUsd": 2.229,
+      "priceUsd": 2.153,
       "currencyCode": "EUR"
     },
     "JPN": {
       "countryId": "JPN",
-      "priceUsd": 1.071,
+      "priceUsd": 1.066,
       "currencyCode": "JPY"
     },
     "IND": {
       "countryId": "IND",
-      "priceUsd": 1.16,
+      "priceUsd": 1.163,
       "currencyCode": "INR"
     },
     "GBR": {
       "countryId": "GBR",
-      "priceUsd": 2.278,
+      "priceUsd": 2.206,
       "currencyCode": "GBP"
     },
     "FRA": {
       "countryId": "FRA",
-      "priceUsd": 2.271,
+      "priceUsd": 2.191,
       "currencyCode": "EUR"
     },
     "ITA": {
       "countryId": "ITA",
-      "priceUsd": 2.228,
+      "priceUsd": 2.166,
       "currencyCode": "EUR"
     },
     "BRA": {
       "countryId": "BRA",
-      "priceUsd": 1.247,
+      "priceUsd": 1.144,
       "currencyCode": "BRL"
     },
     "CAN": {
       "countryId": "CAN",
-      "priceUsd": 1.319,
+      "priceUsd": 1.247,
       "currencyCode": "CAD"
     },
     "RUS": {
       "countryId": "RUS",
-      "priceUsd": 0.891,
+      "priceUsd": 0.911,
       "currencyCode": "RUB"
     },
     "MEX": {
       "countryId": "MEX",
-      "priceUsd": 1.523,
+      "priceUsd": 1.539,
       "currencyCode": "MXN"
     },
     "AUS": {
       "countryId": "AUS",
-      "priceUsd": 1.579,
+      "priceUsd": 1.515,
       "currencyCode": "AUD"
     },
     "KOR": {
@@ -79,22 +79,22 @@
     },
     "ESP": {
       "countryId": "ESP",
-      "priceUsd": 1.847,
+      "priceUsd": 1.751,
       "currencyCode": "EUR"
     },
     "IDN": {
       "countryId": "IDN",
-      "priceUsd": 1.06,
+      "priceUsd": 1.049,
       "currencyCode": "IDR"
     },
     "TUR": {
       "countryId": "TUR",
-      "priceUsd": 1.485,
+      "priceUsd": 1.412,
       "currencyCode": "TRY"
     },
     "NLD": {
       "countryId": "NLD",
-      "priceUsd": 2.534,
+      "priceUsd": 2.409,
       "currencyCode": "EUR"
     },
     "SAU": {
@@ -104,47 +104,47 @@
     },
     "CHE": {
       "countryId": "CHE",
-      "priceUsd": 2.383,
+      "priceUsd": 2.298,
       "currencyCode": "CHF"
     },
     "POL": {
       "countryId": "POL",
-      "priceUsd": 1.634,
+      "priceUsd": 1.516,
       "currencyCode": "PLN"
     },
     "SWE": {
       "countryId": "SWE",
-      "priceUsd": 1.619,
+      "priceUsd": 1.532,
       "currencyCode": "SEK"
     },
     "BEL": {
       "countryId": "BEL",
-      "priceUsd": 1.968,
+      "priceUsd": 1.914,
       "currencyCode": "EUR"
     },
     "ARG": {
       "countryId": "ARG",
-      "priceUsd": 1.429,
+      "priceUsd": 1.426,
       "currencyCode": "ARS"
     },
     "IRL": {
       "countryId": "IRL",
-      "priceUsd": 2.195,
+      "priceUsd": 2.154,
       "currencyCode": "EUR"
     },
     "NOR": {
       "countryId": "NOR",
-      "priceUsd": 2.855,
+      "priceUsd": 2.755,
       "currencyCode": "NOK"
     },
     "AUT": {
       "countryId": "AUT",
-      "priceUsd": 1.864,
+      "priceUsd": 1.768,
       "currencyCode": "EUR"
     },
     "ISR": {
       "countryId": "ISR",
-      "priceUsd": 2.548,
+      "priceUsd": 2.492,
       "currencyCode": "ILS"
     },
     "ARE": {
@@ -154,102 +154,102 @@
     },
     "SGP": {
       "countryId": "SGP",
-      "priceUsd": 2.507,
+      "priceUsd": 2.496,
       "currencyCode": "SGD"
     },
     "MYS": {
       "countryId": "MYS",
-      "priceUsd": 1.053,
+      "priceUsd": 0.945,
       "currencyCode": "MYR"
     },
     "ZAF": {
       "countryId": "ZAF",
-      "priceUsd": 1.804,
+      "priceUsd": 1.761,
       "currencyCode": "ZAR"
     },
     "PHL": {
       "countryId": "PHL",
-      "priceUsd": 1.518,
+      "priceUsd": 1.239,
       "currencyCode": "PHP"
     },
     "DNK": {
       "countryId": "DNK",
-      "priceUsd": 2.617,
+      "priceUsd": 2.525,
       "currencyCode": "DKK"
     },
     "EGY": {
       "countryId": "EGY",
-      "priceUsd": 0.45,
+      "priceUsd": 0.447,
       "currencyCode": "EGP"
     },
     "BGD": {
       "countryId": "BGD",
-      "priceUsd": 1.325,
+      "priceUsd": 1.322,
       "currencyCode": "BDT"
     },
     "VNM": {
       "countryId": "VNM",
-      "priceUsd": 0.864,
+      "priceUsd": 0.818,
       "currencyCode": "VND"
     },
     "NGA": {
       "countryId": "NGA",
-      "priceUsd": 0.932,
+      "priceUsd": 0.86,
       "currencyCode": "NGN"
     },
     "THA": {
       "countryId": "THA",
-      "priceUsd": 1.457,
+      "priceUsd": 1.433,
       "currencyCode": "THB"
     },
     "HKG": {
       "countryId": "HKG",
-      "priceUsd": 4.426,
+      "priceUsd": 4.425,
       "currencyCode": "HKD"
     },
     "NZL": {
       "countryId": "NZL",
-      "priceUsd": 2.044,
+      "priceUsd": 2.003,
       "currencyCode": "NZD"
     },
     "FIN": {
       "countryId": "FIN",
-      "priceUsd": 2.537,
+      "priceUsd": 2.429,
       "currencyCode": "EUR"
     },
     "PRT": {
       "countryId": "PRT",
-      "priceUsd": 2.146,
+      "priceUsd": 2.072,
       "currencyCode": "EUR"
     },
     "COL": {
       "countryId": "COL",
-      "priceUsd": 1.279,
+      "priceUsd": 1.265,
       "currencyCode": "COP"
     },
     "CHL": {
       "countryId": "CHL",
-      "priceUsd": 1.562,
+      "priceUsd": 1.57,
       "currencyCode": "CLP"
     },
     "CZE": {
       "countryId": "CZE",
-      "priceUsd": 1.971,
+      "priceUsd": 1.819,
       "currencyCode": "CZK"
     },
     "ROU": {
       "countryId": "ROU",
-      "priceUsd": 2.049,
+      "priceUsd": 1.948,
       "currencyCode": "RON"
     },
     "PER": {
       "countryId": "PER",
-      "priceUsd": 1.698,
+      "priceUsd": 1.8,
       "currencyCode": "PEN"
     },
     "GRC": {
       "countryId": "GRC",
-      "priceUsd": 2.28,
+      "priceUsd": 2.166,
       "currencyCode": "EUR"
     },
     "QAT": {
@@ -259,7 +259,7 @@
     },
     "HUN": {
       "countryId": "HUN",
-      "priceUsd": 1.955,
+      "priceUsd": 1.906,
       "currencyCode": "HUF"
     },
     "KWT": {
@@ -269,22 +269,22 @@
     },
     "UKR": {
       "countryId": "UKR",
-      "priceUsd": 1.979,
+      "priceUsd": 1.966,
       "currencyCode": "UAH"
     },
     "TWN": {
       "countryId": "TWN",
-      "priceUsd": 0.993,
+      "priceUsd": 0.994,
       "currencyCode": "TWD"
     },
     "PAK": {
       "countryId": "PAK",
-      "priceUsd": 1.223,
+      "priceUsd": 1.177,
       "currencyCode": "PKR"
     },
     "KAZ": {
       "countryId": "KAZ",
-      "priceUsd": 0.722,
+      "priceUsd": 0.726,
       "currencyCode": "KZT"
     },
     "IRN": {
@@ -299,32 +299,32 @@
     },
     "DZA": {
       "countryId": "DZA",
-      "priceUsd": 0.344,
+      "priceUsd": 0.343,
       "currencyCode": "DZD"
     },
     "MAR": {
       "countryId": "MAR",
-      "priceUsd": 1.576,
+      "priceUsd": 1.541,
       "currencyCode": "MAD"
     },
     "ETH": {
       "countryId": "ETH",
-      "priceUsd": 1.03,
+      "priceUsd": 1.038,
       "currencyCode": "ETB"
     },
     "SVK": {
       "countryId": "SVK",
-      "priceUsd": 1.993,
+      "priceUsd": 1.86,
       "currencyCode": "EUR"
     },
     "PRI": {
       "countryId": "PRI",
-      "priceUsd": 1.186,
+      "priceUsd": 1.168,
       "currencyCode": "USD"
     },
     "DOM": {
       "countryId": "DOM",
-      "priceUsd": 1.558,
+      "priceUsd": 1.582,
       "currencyCode": "DOP"
     },
     "ECU": {
@@ -334,7 +334,7 @@
     },
     "UZB": {
       "countryId": "UZB",
-      "priceUsd": 1.553,
+      "priceUsd": 1.548,
       "currencyCode": "UZS"
     },
     "VEN": {
@@ -349,77 +349,77 @@
     },
     "KEN": {
       "countryId": "KEN",
-      "priceUsd": 1.736,
+      "priceUsd": 1.734,
       "currencyCode": "KES"
     },
     "BGR": {
       "countryId": "BGR",
-      "priceUsd": 1.758,
+      "priceUsd": 1.674,
       "currencyCode": "BGN"
     },
     "GTM": {
       "countryId": "GTM",
-      "priceUsd": 1.157,
+      "priceUsd": 1.127,
       "currencyCode": "GTQ"
     },
     "LKA": {
       "countryId": "LKA",
-      "priceUsd": 1.476,
+      "priceUsd": 1.474,
       "currencyCode": "LKR"
     },
     "CRI": {
       "countryId": "CRI",
-      "priceUsd": 1.781,
+      "priceUsd": 1.809,
       "currencyCode": "CRC"
     },
     "LUX": {
       "countryId": "LUX",
-      "priceUsd": 1.816,
+      "priceUsd": 1.754,
       "currencyCode": "EUR"
     },
     "HRV": {
       "countryId": "HRV",
-      "priceUsd": 1.952,
+      "priceUsd": 1.924,
       "currencyCode": "EUR"
     },
     "SRB": {
       "countryId": "SRB",
-      "priceUsd": 1.964,
+      "priceUsd": 1.936,
       "currencyCode": "RSD"
     },
     "CIV": {
       "countryId": "CIV",
-      "priceUsd": 1.549,
+      "priceUsd": 1.522,
       "currencyCode": "XOF"
     },
     "PAN": {
       "countryId": "PAN",
-      "priceUsd": 1.325,
+      "priceUsd": 1.232,
       "currencyCode": "USD"
     },
     "LTU": {
       "countryId": "LTU",
-      "priceUsd": 2.078,
+      "priceUsd": 1.956,
       "currencyCode": "EUR"
     },
     "GHA": {
       "countryId": "GHA",
-      "priceUsd": 1.642,
+      "priceUsd": 1.638,
       "currencyCode": "GHS"
     },
     "URY": {
       "countryId": "URY",
-      "priceUsd": 2.236,
+      "priceUsd": 2.227,
       "currencyCode": "UYU"
     },
     "TZA": {
       "countryId": "TZA",
-      "priceUsd": 1.535,
+      "priceUsd": 1.531,
       "currencyCode": "TZS"
     },
     "BLR": {
       "countryId": "BLR",
-      "priceUsd": 0.913,
+      "priceUsd": 0.911,
       "currencyCode": "BYN"
     },
     "MMR": {
@@ -429,7 +429,7 @@
     },
     "COD": {
       "countryId": "COD",
-      "priceUsd": 1.145,
+      "priceUsd": 1.155,
       "currencyCode": "CDF"
     },
     "AZE": {
@@ -439,12 +439,12 @@
     },
     "SVN": {
       "countryId": "SVN",
-      "priceUsd": 1.681,
+      "priceUsd": 1.588,
       "currencyCode": "EUR"
     },
     "TKM": {
       "countryId": "TKM",
-      "priceUsd": 0.428,
+      "priceUsd": 0.429,
       "currencyCode": "TMT"
     },
     "JOR": {
@@ -454,22 +454,22 @@
     },
     "UGA": {
       "countryId": "UGA",
-      "priceUsd": 1.662,
+      "priceUsd": 1.634,
       "currencyCode": "UGX"
     },
     "BOL": {
       "countryId": "BOL",
-      "priceUsd": 0.587,
+      "priceUsd": 0.597,
       "currencyCode": "BOB"
     },
     "CMR": {
       "countryId": "CMR",
-      "priceUsd": 1.438,
+      "priceUsd": 1.409,
       "currencyCode": "XAF"
     },
     "TUN": {
       "countryId": "TUN",
-      "priceUsd": 0.847,
+      "priceUsd": 0.83,
       "currencyCode": "TND"
     },
     "MAC": {
@@ -484,22 +484,22 @@
     },
     "LVA": {
       "countryId": "LVA",
-      "priceUsd": 2.02,
+      "priceUsd": 1.907,
       "currencyCode": "EUR"
     },
     "EST": {
       "countryId": "EST",
-      "priceUsd": 2.027,
+      "priceUsd": 1.945,
       "currencyCode": "EUR"
     },
     "ISL": {
       "countryId": "ISL",
-      "priceUsd": 2.262,
+      "priceUsd": 2.181,
       "currencyCode": "ISK"
     },
     "CYP": {
       "countryId": "CYP",
-      "priceUsd": 1.929,
+      "priceUsd": 1.79,
       "currencyCode": "EUR"
     },
     "OMN": {
@@ -509,27 +509,27 @@
     },
     "PRY": {
       "countryId": "PRY",
-      "priceUsd": 1.214,
+      "priceUsd": 1.155,
       "currencyCode": "PYG"
     },
     "KHM": {
       "countryId": "KHM",
-      "priceUsd": 1.495,
+      "priceUsd": 1.497,
       "currencyCode": "KHR"
     },
     "NPL": {
       "countryId": "NPL",
-      "priceUsd": 1.331,
+      "priceUsd": 1.339,
       "currencyCode": "NPR"
     },
     "SEN": {
       "countryId": "SEN",
-      "priceUsd": 1.694,
+      "priceUsd": 1.665,
       "currencyCode": "XOF"
     },
     "GUY": {
       "countryId": "GUY",
-      "priceUsd": 1.233,
+      "priceUsd": 1.236,
       "currencyCode": "GYD"
     },
     "PNG": {
@@ -559,7 +559,7 @@
     },
     "HND": {
       "countryId": "HND",
-      "priceUsd": 1.429,
+      "priceUsd": 1.368,
       "currencyCode": "HNL"
     },
     "NIC": {
@@ -569,22 +569,22 @@
     },
     "MDA": {
       "countryId": "MDA",
-      "priceUsd": 1.671,
+      "priceUsd": 1.55,
       "currencyCode": "MDL"
     },
     "LBN": {
       "countryId": "LBN",
-      "priceUsd": 1.241,
+      "priceUsd": 1.189,
       "currencyCode": "LBP"
     },
     "MLT": {
       "countryId": "MLT",
-      "priceUsd": 1.496,
+      "priceUsd": 1.474,
       "currencyCode": "EUR"
     },
     "JAM": {
       "countryId": "JAM",
-      "priceUsd": 1.535,
+      "priceUsd": 1.5,
       "currencyCode": "JMD"
     },
     "ARM": {
@@ -594,12 +594,12 @@
     },
     "ALB": {
       "countryId": "ALB",
-      "priceUsd": 2.065,
+      "priceUsd": 2.006,
       "currencyCode": "ALL"
     },
     "BWA": {
       "countryId": "BWA",
-      "priceUsd": 1.441,
+      "priceUsd": 1.412,
       "currencyCode": "BWP"
     },
     "BRN": {
@@ -609,17 +609,17 @@
     },
     "MUS": {
       "countryId": "MUS",
-      "priceUsd": 1.657,
+      "priceUsd": 1.624,
       "currencyCode": "MUR"
     },
     "TTO": {
       "countryId": "TTO",
-      "priceUsd": 1.144,
+      "priceUsd": 1.146,
       "currencyCode": "TTD"
     },
     "NAM": {
       "countryId": "NAM",
-      "priceUsd": 1.745,
+      "priceUsd": 1.687,
       "currencyCode": "NAD"
     },
     "MKD": {
@@ -629,12 +629,12 @@
     },
     "BIH": {
       "countryId": "BIH",
-      "priceUsd": 1.871,
+      "priceUsd": 1.766,
       "currencyCode": "BAM"
     },
     "ZMB": {
       "countryId": "ZMB",
-      "priceUsd": 1.624,
+      "priceUsd": 1.615,
       "currencyCode": "ZMW"
     },
     "MOZ": {
@@ -644,7 +644,7 @@
     },
     "MDG": {
       "countryId": "MDG",
-      "priceUsd": 1.169,
+      "priceUsd": 1.155,
       "currencyCode": "MGA"
     }
   }
