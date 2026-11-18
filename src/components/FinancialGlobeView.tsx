@@ -3805,6 +3805,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             getCountryFill={get2dCountryFill}
             onHoverCountry={setHovered2dCountryId}
             onSelectCountry={handleCountryCardClick}
+            newsByCountry={displayMode === 'news' ? newsByCountry : undefined}
           />
           {displayMode === 'gdp' && (
             <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800/90 shadow-lg text-[11px] font-mono cursor-default">

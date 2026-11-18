@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useCallback, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import {
   PIXEL_MAP_TILES,
   PIXEL_MAP_COLS,
@@ -6,7 +7,7 @@ import {
   COUNTRY_LABEL_ANCHORS,
   type PixelTile,
 } from '../data/pixelMapData'
-import type { CountryMeta, BaseCurrency, Region, Language } from '../types/economics'
+import type { CountryMeta, CountryNewsArticle, BaseCurrency, Region, Language } from '../types/economics'
 import type { CountryRowItem } from './RankingTable'
 import { formatGdpCompact, formatPerCapita } from '../utils/formatters'
 import { CountryFlag } from './CountryFlag'
@@ -31,6 +32,22 @@ interface TileWorldMapProps {
   getCountryFill: (countryId: string) => string
   onHoverCountry: (countryId: string | null) => void
   onSelectCountry: (country: CountryMeta) => void
+  newsByCountry?: Map<string, CountryNewsArticle[]>
+}
+
+function formatTileNewsAge(iso: string, lang: Language): string {
+  const ts = new Date(iso).getTime()
+  if (!ts || Number.isNaN(ts)) return ''
+  const diffMin = Math.max(1, Math.floor((Date.now() - ts) / 60_000))
+  if (diffMin < 60) {
+    return lang === 'ko' ? `${diffMin}분 전` : lang === 'ja' ? `${diffMin}分前` : `${diffMin}m`
+  }
+  const diffHr = Math.floor(diffMin / 60)
+  if (diffHr < 24) {
+    return lang === 'ko' ? `${diffHr}시간 전` : lang === 'ja' ? `${diffHr}時間前` : `${diffHr}h`
+  }
+  const diffDay = Math.floor(diffHr / 24)
+  return lang === 'ko' ? `${diffDay}일 전` : lang === 'ja' ? `${diffDay}日前` : `${diffDay}d`
 }
 
 export const TileWorldMap: React.FC<TileWorldMapProps> = ({
@@ -47,11 +64,11 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
   getCountryFill,
   onHoverCountry,
   onSelectCountry,
+  newsByCountry,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
-  // Store tooltip position in a ref to avoid re-renders on mouse move
-  const tooltipPosRef = useRef<{ x: number; y: number; containerWidth: number } | null>(null)
+  // Store viewport cursor coordinates in a ref to avoid re-renders on mouse move
+  const tooltipPosRef = useRef<{ clientX: number; clientY: number } | null>(null)
   const rafIdRef = useRef<number>(0)
 
   const t = translations[lang]
@@ -84,7 +101,7 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
 
   const isAllRegions = activeRegions.length === 0 || activeRegions.length === 5
 
-  // Direct DOM update for tooltip position via rAF — zero React re-renders
+  // Direct DOM update for fixed viewport tooltip position via rAF — never clipped by container overflow
   const updateTooltipDOM = useCallback(() => {
     const el = tooltipRef.current
     const pos = tooltipPosRef.current
@@ -94,21 +111,32 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
       return
     }
     el.style.display = ''
-    el.style.left = `${pos.x}px`
-    el.style.top = `${pos.y}px`
-    // Clamp tooltip horizontally so it never exits the container boundary
-    const ratio = pos.containerWidth > 0 ? pos.x / pos.containerWidth : 0.5
-    const xShift = ratio < 0.2 ? '0%' : ratio > 0.8 ? '-100%' : '-50%'
-    el.style.transform = `translateX(${xShift}) translateY(-100%)`
+    const pad = 12
+    const offset = 14
+    const cardW = el.offsetWidth || 240
+    const cardH = el.offsetHeight || 180
+
+    // Center horizontally on cursor, clamped strictly inside viewport
+    const left = Math.max(
+      pad,
+      Math.min(window.innerWidth - cardW - pad, pos.clientX - cardW / 2)
+    )
+
+    // Prefer above cursor; flip below cursor if near top edge, then clamp inside viewport
+    let top = pos.clientY - cardH - offset
+    if (top < pad) {
+      top = pos.clientY + offset + 6
+    }
+    top = Math.max(pad, Math.min(window.innerHeight - cardH - pad, top))
+
+    el.style.left = `${Math.round(left)}px`
+    el.style.top = `${Math.round(top)}px`
   }, [])
 
   const handleTileMouseMove = useCallback((e: React.MouseEvent, countryId: string) => {
-    if (!containerRef.current) return
-    const rect = containerRef.current.getBoundingClientRect()
     tooltipPosRef.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      containerWidth: rect.width,
+      clientX: e.clientX,
+      clientY: e.clientY,
     }
     // Schedule a single rAF for tooltip position update (no React state change)
     if (!rafIdRef.current) {
@@ -154,7 +182,6 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
 
   return (
     <div
-      ref={containerRef}
       className="relative w-full bg-slate-950 rounded-3xl border border-slate-800/90 overflow-hidden shadow-2xl p-3 sm:p-6 select-none"
     >
       {/* Subtle Ocean Matrix Background */}
@@ -264,17 +291,18 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
         </div>
       </div>
 
-      {/* Floating Dynamic Tooltip HUD — positioned via direct DOM control (no state re-render) */}
-      {activeHoveredItem && (
-        <div
-          ref={tooltipRef}
-          className="absolute z-30 pointer-events-none"
-          style={{
-            display: 'none',
-            marginBottom: '0.75rem',
-            willChange: 'transform',
-          }}
-        >
+      {/* Floating Dynamic Tooltip HUD — portaled to body & fixed to viewport so container boundaries never clip it */}
+      {activeHoveredItem &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            ref={tooltipRef}
+            className="fixed z-50 pointer-events-none"
+            style={{
+              display: 'none',
+              willChange: 'left, top',
+            }}
+          >
           <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl min-w-[210px] max-w-[280px] text-xs space-y-2">
             {/* Header: Flag + Name + Rank */}
             <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-2">
@@ -285,13 +313,44 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                 </span>
                 <span className="text-[10px] text-slate-400 font-mono">({activeHoveredItem.country.id})</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px]">
-                #{activeHoveredItem.rank}
+              <span
+                className={`px-1.5 py-0.5 rounded font-mono font-bold text-[10px] ${
+                  newsByCountry
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-400/30 tabular-nums'
+                    : 'bg-indigo-500/20 text-indigo-300'
+                }`}
+              >
+                {newsByCountry
+                  ? `${(newsByCountry.get(activeHoveredItem.country.id) || []).length}`
+                  : `#${activeHoveredItem.rank}`}
               </span>
             </div>
 
-            {/* Stats List */}
-            <div className="space-y-1">
+            {newsByCountry ? (
+              <div className="space-y-1.5">
+                {((newsByCountry.get(activeHoveredItem.country.id) || []).slice(0, 3)).length === 0 ? (
+                  <div className="text-[11px] text-slate-400 py-1">-</div>
+                ) : (
+                  (newsByCountry.get(activeHoveredItem.country.id) || [])
+                    .slice(0, 3)
+                    .map((art) => (
+                      <div key={art.id} className="space-y-0.5 border-b border-slate-800/70 last:border-b-0 pb-1.5 last:pb-0">
+                        <div className="flex items-center justify-between gap-2 text-[10px] font-mono">
+                          <span className="text-amber-300 font-bold truncate">{art.source}</span>
+                          <span className="text-slate-400 shrink-0 tabular-nums">
+                            {formatTileNewsAge(art.publishedAt, lang)}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-100 leading-snug line-clamp-2">
+                          {art.title}
+                        </p>
+                      </div>
+                    ))
+                )}
+              </div>
+            ) : (
+              /* Stats List */
+              <div className="space-y-1">
               <div
                 className={`flex items-center justify-between ${
                   metric === 'gdp' ? 'text-indigo-300 font-semibold' : 'text-slate-400'
@@ -417,16 +476,22 @@ export const TileWorldMap: React.FC<TileWorldMapProps> = ({
                   </div>
                 )
               })()}
-            </div>
+              </div>
+            )}
 
             {/* Hint */}
-            <div className="text-[10px] text-indigo-400 font-medium pt-1 border-t border-slate-800 flex items-center justify-between">
-              <span>{t.viewDetailsBtn}</span>
+            <div
+              className={`text-[10px] font-medium pt-1 border-t border-slate-800 flex items-center justify-between ${
+                newsByCountry ? 'text-amber-300' : 'text-indigo-400'
+              }`}
+            >
+              <span>{newsByCountry ? t.globeDisplayModeNews : t.viewDetailsBtn}</span>
               <ChevronRight className="w-3 h-3" />
             </div>
           </div>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
 
       {/* Mobile Swipe Hint */}
       <div className="sm:hidden text-center text-[10px] text-slate-500 mt-2">
