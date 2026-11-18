@@ -16,6 +16,8 @@ import {
   Check,
   ZoomIn,
   ZoomOut,
+  X,
+  ExternalLink,
 } from 'lucide-react'
 import type {
   BaseCurrency,
@@ -2322,7 +2324,28 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   const [liveStockTick, setLiveStockTick] = useState(0)
   const [liveFxQuotes, setLiveFxQuotes] = useState<Record<string, LiveFxQuote>>({})
   const [newsByCountry, setNewsByCountry] = useState<Map<string, CountryNewsArticle[]>>(() => new Map())
+  const [newsModalCountry, setNewsModalCountry] = useState<CountryMeta | null>(null)
   const [projectedCapsules, setProjectedCapsules] = useState<ProjectedCapsule[]>([])
+
+  const handleCountryCardClick = useCallback(
+    (country: CountryMeta) => {
+      if (displayMode === 'news') {
+        setNewsModalCountry(country)
+        return
+      }
+      onSelectCountry(country)
+    },
+    [displayMode, onSelectCountry]
+  )
+
+  useEffect(() => {
+    if (!newsModalCountry) return
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setNewsModalCountry(null)
+    }
+    window.addEventListener('keydown', handleEsc)
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [newsModalCountry])
 
   useEffect(() => {
     let active = true
@@ -3781,7 +3804,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             pinnedCountryId={null}
             getCountryFill={get2dCountryFill}
             onHoverCountry={setHovered2dCountryId}
-            onSelectCountry={onSelectCountry}
+            onSelectCountry={handleCountryCardClick}
           />
           {displayMode === 'gdp' && (
             <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800/90 shadow-lg text-[11px] font-mono cursor-default">
@@ -4125,7 +4148,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               data-globe-ui="true"
               onMouseEnter={() => setHoveredHubId(cap.id)}
               onMouseLeave={() => setHoveredHubId(null)}
-              onClick={() => onSelectCountry(cap.country)}
+              onClick={() => handleCountryCardClick(cap.country)}
               style={{
                 transform: `translate3d(${Math.round(cap.x)}px, ${Math.round(cap.y - 22)}px, 0) translate(-50%, 0) scale(${cap.scale.toFixed(3)})`,
                 transformOrigin: 'top center',
@@ -4481,7 +4504,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 type="button"
                 onMouseEnter={() => setHoveredHubId(hub.id)}
                 onMouseLeave={() => setHoveredHubId(null)}
-                onClick={() => onSelectCountry(hub.country)}
+                onClick={() => handleCountryCardClick(hub.country)}
                 className={`${idx >= 2 ? 'hidden sm:flex' : 'flex'} items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0`}
               >
                 <div className="flex items-center gap-1.5 min-w-0">
@@ -4591,6 +4614,87 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
           })}
         </div>
       </div>
+      )}
+
+      {/* Country Breaking News Modal (Opened when clicking a country card in News mode) */}
+      {newsModalCountry && (
+        <div
+          data-globe-ui="true"
+          role="dialog"
+          aria-modal="true"
+          aria-label={getCountryName(newsModalCountry, lang)}
+          onClick={() => setNewsModalCountry(null)}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-sm cursor-default"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xl max-h-[82vh] flex flex-col rounded-2xl bg-slate-900 border border-slate-700/80 shadow-2xl overflow-hidden"
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between gap-3 px-4 py-3.5 border-b border-slate-800 bg-slate-900/95 shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <CountryFlag
+                  iso2={newsModalCountry.iso2}
+                  className="w-6 h-4 rounded-[3px] shadow-sm shrink-0"
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm sm:text-base font-bold text-white truncate">
+                      {getCountryName(newsModalCountry, lang)}
+                    </h3>
+                    <span className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30 shrink-0 tabular-nums">
+                      {t('globeDisplayModeNews')} · {(newsByCountry.get(newsModalCountry.id) || []).length}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                aria-label={t('modalClose')}
+                onClick={() => setNewsModalCountry(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body: Country Breaking News List */}
+            <div className="overflow-y-auto p-3 sm:p-4 space-y-2.5 select-text">
+              {(newsByCountry.get(newsModalCountry.id) || []).length === 0 ? (
+                <div className="py-10 text-center text-sm text-slate-400">
+                  {t('newsEmpty') || '-'}
+                </div>
+              ) : (
+                (newsByCountry.get(newsModalCountry.id) || []).map((art) => (
+                  <a
+                    key={art.id}
+                    href={art.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block p-3 rounded-xl bg-slate-950/75 hover:bg-slate-800/80 border border-slate-800/90 hover:border-amber-400/40 transition-all"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1 text-[11px] font-mono">
+                      <span className="font-bold text-amber-300 truncate">{art.source}</span>
+                      <span className="text-slate-400 shrink-0 tabular-nums flex items-center gap-1">
+                        {formatRelativeNewsAge(art.publishedAt, lang)}
+                        <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-amber-300 transition-colors" />
+                      </span>
+                    </div>
+                    <h4 className="text-xs sm:text-sm font-semibold text-slate-100 group-hover:text-white leading-relaxed">
+                      {art.title}
+                    </h4>
+                    {art.description && (
+                      <p className="mt-1 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                        {art.description}
+                      </p>
+                    )}
+                  </a>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
