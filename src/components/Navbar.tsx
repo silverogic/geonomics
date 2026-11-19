@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Layers, Coins, ChevronDown, LayoutGrid, Check, Globe } from 'lucide-react'
+import { Layers, Coins, ChevronDown, LayoutGrid, Check, Globe, Flame } from 'lucide-react'
 import { BASE_CURRENCIES } from '../data/countries'
 import type { BaseCurrency, Language, ExchangeRates, InterestRateInfo } from '../types/economics'
 import { translations } from '../i18n/translations'
@@ -16,8 +16,8 @@ const LANGUAGE_CONFIG: Record<Language, { label: string; short: string; flagIso2
 }
 
 interface NavbarProps {
-  activeTab: 'globe' | 'cards' | 'heatmap'
-  setActiveTab: (tab: 'globe' | 'cards' | 'heatmap') => void
+  activeTab: 'globe' | 'cards' | 'heatmap' | 'energy'
+  setActiveTab: (tab: 'globe' | 'cards' | 'heatmap' | 'energy') => void
   baseCurrency: BaseCurrency
   setBaseCurrency: (c: BaseCurrency) => void
   lang: Language
@@ -112,6 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               },
               { id: 'heatmap', label: t.navStockHeatmap, icon: LayoutGrid },
               { id: 'cards', label: t.navExplorer, icon: Layers },
+              { id: 'energy', label: t.navEnergy, icon: Flame },
             ].map(({ id, label, icon: Icon }) => {
               const isActive = activeTab === id
               return (
@@ -437,7 +438,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         aria-label="Mobile Bottom Navigation"
         className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_25px_rgba(0,0,0,0.6)]"
       >
-        <div className="max-w-lg mx-auto grid grid-cols-3 gap-1.5">
+        <div className="max-w-lg mx-auto grid grid-cols-4 gap-1.5">
           <button
             onClick={() => setActiveTab('globe')}
             className={`flex items-center justify-center gap-1 py-2 px-1 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
@@ -472,6 +473,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Layers className="w-3.5 h-3.5 shrink-0" />
             <span className="text-[11px] font-bold tracking-tight truncate">{t.navExplorer}</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('energy')}
+            className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl font-semibold transition-all duration-150 active:scale-95 min-w-0 ${
+              activeTab === 'energy'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold tracking-tight truncate">{t.navEnergy}</span>
           </button>
         </div>
       </nav>

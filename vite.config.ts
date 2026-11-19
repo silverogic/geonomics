@@ -123,6 +123,98 @@ function breakingNewsDevPlugin(): Plugin {
           res.end(JSON.stringify({ items: [] }))
         }
       })
+
+      const chartCache = new Map<string, { ts: number; payload: string }>()
+      const DEV_CHART_RANGES: Record<string, string> = {
+        '1d': '15m',
+        '5d': '1h',
+        '1mo': '1d',
+        '3mo': '1d',
+        '6mo': '1d',
+        '1y': '1d',
+      }
+      server.middlewares.use('/api/chart', async (req, res) => {
+        try {
+          const url = new URL(req.url || '/', 'http://localhost')
+          const symbol = (url.searchParams.get('symbol') || '').trim()
+          const range = url.searchParams.get('range') || '1mo'
+          const interval = DEV_CHART_RANGES[range]
+          if (!/^[A-Za-z0-9^.=\-]{1,20}$/.test(symbol) || !interval) {
+            res.statusCode = 400
+            res.end(JSON.stringify({ error: 'invalid chart params' }))
+            return
+          }
+          const key = `${symbol}::${range}`
+          const cached = chartCache.get(key)
+          if (cached && Date.now() - cached.ts < 60_000) {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(cached.payload)
+            return
+          }
+          const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`
+          const yRes = await fetch(yUrl, {
+            signal: AbortSignal.timeout(5000),
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GeonomicsDev/1.0)' },
+          })
+          if (!yRes.ok) {
+            res.statusCode = 502
+            res.end(JSON.stringify({ error: 'upstream error' }))
+            return
+          }
+          const data = (await yRes.json()) as {
+            chart?: {
+              result?: Array<{
+                meta?: {
+                  currency?: string
+                  regularMarketPrice?: number
+                  chartPreviousClose?: number
+                  currentTradingPeriod?: { regular?: { start: number; end: number } }
+                }
+                timestamp?: number[]
+                indicators?: { quote?: Array<{ close?: Array<number | null> }> }
+              }>
+            }
+          }
+          const result = data?.chart?.result?.[0]
+          const meta = result?.meta
+          const timestamps = result?.timestamp || []
+          const closes = result?.indicators?.quote?.[0]?.close || []
+          const points: Array<{ time: number; close: number }> = []
+          for (let i = 0; i < timestamps.length; i++) {
+            const c = closes[i]
+            if (typeof c === 'number' && Number.isFinite(c)) {
+              points.push({ time: timestamps[i], close: Number(c.toFixed(4)) })
+            }
+          }
+          const price = typeof meta?.regularMarketPrice === 'number' ? meta.regularMarketPrice : null
+          const prevClose =
+            typeof meta?.chartPreviousClose === 'number' ? meta.chartPreviousClose : null
+          const changePct =
+            price !== null && prevClose && prevClose > 0
+              ? Number((((price - prevClose) / prevClose) * 100).toFixed(2))
+              : null
+          const now = Math.floor(Date.now() / 1000)
+          const regular = meta?.currentTradingPeriod?.regular
+          const isOpen = regular ? now >= regular.start && now <= regular.end : false
+          const payload = JSON.stringify({
+            symbol,
+            range,
+            currency: meta?.currency || 'USD',
+            price,
+            prevClose,
+            changePct,
+            isOpen,
+            fetchedAt: now,
+            points,
+          })
+          if (points.length > 0) chartCache.set(key, { ts: Date.now(), payload })
+          res.setHeader('Content-Type', 'application/json')
+          res.end(payload)
+        } catch {
+          res.statusCode = 502
+          res.end(JSON.stringify({ error: 'chart failed' }))
+        }
+      })
     },
   }
 }

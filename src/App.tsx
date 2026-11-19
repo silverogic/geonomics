@@ -18,6 +18,7 @@ import { Footer } from './components/Footer'
 import { GdpWorldMap } from './components/GdpWorldMap'
 import { StockHeatmap } from './components/StockHeatmap'
 import { FinancialGlobeView } from './components/FinancialGlobeView'
+import { EnergyChartsView } from './components/EnergyChartsView'
 import { Spinner } from './components/Spinner'
 import { AppTooltip } from './components/AppTooltip'
 import { getFuelPriceUsd } from './data/fuelPrices'
@@ -57,7 +58,7 @@ export function App() {
   }, [lang, i18n])
 
   const t = translations[lang]
-  const [activeTab, setActiveTab] = useState<'globe' | 'cards' | 'heatmap'>('globe')
+  const [activeTab, setActiveTab] = useState<'globe' | 'cards' | 'heatmap' | 'energy'>('globe')
 
   // Selected economic year: Default current year (e.g. 2026)
   const [selectedYear, setSelectedYear] = useState<EconomicYear>(DEFAULT_ECONOMIC_YEAR)
@@ -295,6 +296,16 @@ export function App() {
             exchangeRates={exchangeRates}
             lang={lang}
             onSelectCountry={handleSelectCountry}
+            refreshKey={refreshCount}
+          />
+        )}
+
+        {/* TAB 3: GLOBAL ENERGY CHARTS */}
+        {activeTab === 'energy' && (
+          <EnergyChartsView
+            baseCurrency={baseCurrency}
+            usdToBase={exchangeRates?.rates[baseCurrency] ?? 1}
+            lang={lang}
             refreshKey={refreshCount}
           />
         )}
