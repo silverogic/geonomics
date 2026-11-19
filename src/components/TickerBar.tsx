@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
-import { ChevronDown, Sparkles } from 'lucide-react'
+import { ChevronDown, Sparkles, Flame } from 'lucide-react'
 import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo, CountryMeta } from '../types/economics'
 import { translations } from '../i18n/translations'
 import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
+import { ENERGY_BENCHMARKS, fetchLiveEnergyQuotes, type EnergyQuote } from '../services/energyApi'
 import { getFxRateColorClass, getFxBadgeColorClass, formatFxChangeBadgeText } from '../utils/formatters'
 import { detectVisitorCountry } from '../utils/locale'
 import { CountryFlag } from './CountryFlag'
@@ -16,11 +17,15 @@ interface TickerBarProps {
 }
 
 interface ReelItem {
-  currency: string
-  flagIso2: string
+  key: string
+  kind: 'fx' | 'energy'
+  code: string
+  flagIso2?: string
   displayName: string
   multiplier: number
   rate: number
+  decimals?: number
+  unit?: string
   changePct?: number | null
   prevClose?: number | null
   centralBankName?: string
@@ -156,6 +161,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
 }) => {
   const t = translations[lang]
   const [liveFxQuotes, setLiveFxQuotes] = useState<Record<string, LiveFxQuote>>({})
+  const [liveEnergyQuotes, setLiveEnergyQuotes] = useState<Record<string, EnergyQuote>>({})
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
@@ -193,6 +199,11 @@ export const TickerBar: React.FC<TickerBarProps> = ({
           setLiveFxQuotes((prev) => ({ ...prev, ...quotes }))
         }
       })
+      fetchLiveEnergyQuotes(force).then((quotes) => {
+        if (isMounted && Object.keys(quotes).length > 0) {
+          setLiveEnergyQuotes((prev) => ({ ...prev, ...quotes }))
+        }
+      })
     }
 
     loadQuotes(false)
@@ -204,54 +215,77 @@ export const TickerBar: React.FC<TickerBarProps> = ({
     }
   }, [baseCurrency, keyCurrencies])
 
-  // Build unified 3-reel items: [Currency & Flag] - [Rate & 24h Change] - [Policy Rate]
+  // Build unified 3-reel items: FX pairs + Energy benchmarks (WTI, Brent, Natural Gas, Gasoline)
   const reelItems: ReelItem[] = useMemo(() => {
-    if (!exchangeRates) return []
+    const items: ReelItem[] = []
 
-    return keyCurrencies.map((curr) => {
-      const isJpy = curr === 'JPY'
-      const isKrw = curr === 'KRW'
-      const usdPerUnit = exchangeRates.rates[curr] || 1
-      const multiplier = isJpy
-        ? 100
-        : isKrw
-          ? 1000
-          : usdPerUnit >= 500
+    if (exchangeRates) {
+      for (const curr of keyCurrencies) {
+        const isJpy = curr === 'JPY'
+        const isKrw = curr === 'KRW'
+        const usdPerUnit = exchangeRates.rates[curr] || 1
+        const multiplier = isJpy
+          ? 100
+          : isKrw
             ? 1000
-            : usdPerUnit >= 80
-              ? 100
-              : 1
-      const liveQuote = liveFxQuotes[curr]
-      const rate =
-        liveQuote?.price && typeof liveQuote.price === 'number'
-          ? liveQuote.price * multiplier
-          : getConversionRate(exchangeRates, curr, baseCurrency) * multiplier
+            : usdPerUnit >= 500
+              ? 1000
+              : usdPerUnit >= 80
+                ? 100
+                : 1
+        const liveQuote = liveFxQuotes[curr]
+        const rate =
+          liveQuote?.price && typeof liveQuote.price === 'number'
+            ? liveQuote.price * multiplier
+            : getConversionRate(exchangeRates, curr, baseCurrency) * multiplier
 
-      const fallbackPrevRate = getPreviousConversionRate(exchangeRates, curr, baseCurrency)
-      const fallbackChangePct = getFxChangePct(exchangeRates, curr, baseCurrency)
+        const fallbackPrevRate = getPreviousConversionRate(exchangeRates, curr, baseCurrency)
+        const fallbackChangePct = getFxChangePct(exchangeRates, curr, baseCurrency)
 
-      const isExtraVisitorCurr = extraVisitorCountry?.currencyCode === curr
-      const cbCode = CURRENCY_CB_CODES[curr] || (isExtraVisitorCurr ? extraVisitorCountry.iso2 : curr)
-      const cbInfo = interestRates?.[cbCode]
+        const isExtraVisitorCurr = extraVisitorCountry?.currencyCode === curr
+        const cbCode = CURRENCY_CB_CODES[curr] || (isExtraVisitorCurr ? extraVisitorCountry.iso2 : curr)
+        const cbInfo = interestRates?.[cbCode]
 
-      return {
-        currency: curr,
-        flagIso2: CURRENCY_FLAGS[curr] || (isExtraVisitorCurr ? extraVisitorCountry.iso2 : curr.slice(0, 2)),
-        displayName: getLocalizedTargetCurrencyName(curr, lang, multiplier),
-        multiplier,
-        rate,
-        changePct: liveQuote?.changePct ?? fallbackChangePct,
-        prevClose: liveQuote?.prevClose
-          ? liveQuote.prevClose * multiplier
-          : fallbackPrevRate
-            ? fallbackPrevRate * multiplier
-            : undefined,
-        centralBankName: cbInfo?.centralBankName,
-        policyRatePct: cbInfo?.ratePct,
-        policyRateDate: cbInfo?.date,
+        items.push({
+          key: `fx-${curr}`,
+          kind: 'fx',
+          code: curr,
+          flagIso2: CURRENCY_FLAGS[curr] || (isExtraVisitorCurr ? extraVisitorCountry.iso2 : curr.slice(0, 2)),
+          displayName: getLocalizedTargetCurrencyName(curr, lang, multiplier),
+          multiplier,
+          rate,
+          changePct: liveQuote?.changePct ?? fallbackChangePct,
+          prevClose: liveQuote?.prevClose
+            ? liveQuote.prevClose * multiplier
+            : fallbackPrevRate
+              ? fallbackPrevRate * multiplier
+              : undefined,
+          centralBankName: cbInfo?.centralBankName,
+          policyRatePct: cbInfo?.ratePct,
+          policyRateDate: cbInfo?.date,
+        })
       }
-    })
-  }, [exchangeRates, interestRates, baseCurrency, keyCurrencies, liveFxQuotes, lang, extraVisitorCountry])
+    }
+
+    for (const bench of ENERGY_BENCHMARKS) {
+      const q = liveEnergyQuotes[bench.symbol]
+      if (!q) continue
+      items.push({
+        key: `energy-${bench.symbol}`,
+        kind: 'energy',
+        code: bench.code,
+        displayName: bench.names[lang],
+        multiplier: 1,
+        rate: q.price,
+        decimals: bench.decimals,
+        unit: bench.unit,
+        changePct: q.changePct,
+        prevClose: q.prevClose,
+      })
+    }
+
+    return items
+  }, [exchangeRates, interestRates, baseCurrency, keyCurrencies, liveFxQuotes, liveEnergyQuotes, lang, extraVisitorCountry])
 
   // Reset index when items change
   useEffect(() => {
@@ -323,17 +357,33 @@ export const TickerBar: React.FC<TickerBarProps> = ({
             className="transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col"
             style={{ transform: `translateY(-${(currentIndex * 100) / reelItems.length}%)` }}
           >
-            {reelItems.map((item) => (
+            {reelItems.map((item) => {
+              const formattedValue =
+                item.kind === 'energy'
+                  ? `$${item.rate.toFixed(item.decimals ?? 2)}`
+                  : formatLocalizedFxRate(item.rate, baseCurrency, lang)
+              const formattedPrev =
+                item.prevClose != null
+                  ? item.kind === 'energy'
+                    ? `$${item.prevClose.toFixed(item.decimals ?? 2)}`
+                    : formatLocalizedFxRate(item.prevClose, baseCurrency, lang)
+                  : null
+
+              return (
               <div
-                key={item.currency}
+                key={item.key}
                 className="h-7 flex items-center justify-between gap-1 sm:gap-2 shrink-0 px-0.5"
               >
-                {/* Reel 1: Flag & Currency */}
+                {/* Reel 1: Flag/Icon & Name */}
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 min-w-0">
-                  <CountryFlag
-                    iso2={item.flagIso2}
-                    className="w-3.5 h-2.5 sm:w-4 sm:h-3 rounded-[2px] shadow-sm shrink-0"
-                  />
+                  {item.kind === 'energy' ? (
+                    <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  ) : (
+                    <CountryFlag
+                      iso2={item.flagIso2 || 'US'}
+                      className="w-3.5 h-2.5 sm:w-4 sm:h-3 rounded-[2px] shadow-sm shrink-0"
+                    />
+                  )}
                   <span className="font-bold text-slate-100 text-xs sm:text-sm whitespace-nowrap">
                     {item.displayName}
                   </span>
@@ -341,23 +391,19 @@ export const TickerBar: React.FC<TickerBarProps> = ({
 
                 <span className="text-slate-600 text-xs shrink-0 hidden sm:inline">→</span>
 
-                {/* Reel 2: Live FX Rate & 24h Change */}
+                {/* Reel 2: Live Rate/Price & 24h Change */}
                 <div className="flex items-center gap-1 shrink-0">
                   <span
-                    className={`font-mono font-bold text-xs sm:text-sm whitespace-nowrap transition-colors ${getFxRateColorClass(
+                    className={`font-mono font-bold text-xs sm:text-sm whitespace-nowrap tabular-nums transition-colors ${getFxRateColorClass(
                       item.changePct
                     )}`}
                   >
-                    {formatLocalizedFxRate(item.rate, baseCurrency, lang)}
+                    {formattedValue}
                   </span>
                   {item.changePct != null && (
                     <span
-                      title={
-                        item.prevClose
-                          ? `${t.prevClose}: ${formatLocalizedFxRate(item.prevClose, baseCurrency, lang)}`
-                          : undefined
-                      }
-                      className={`hidden sm:inline-flex items-center text-[10px] font-mono font-bold px-1 py-0.2 rounded shrink-0 whitespace-nowrap ${getFxBadgeColorClass(
+                      title={formattedPrev ? `${t.prevClose}: ${formattedPrev}` : undefined}
+                      className={`hidden sm:inline-flex items-center text-[10px] font-mono font-bold tabular-nums px-1 py-0.2 rounded shrink-0 whitespace-nowrap ${getFxBadgeColorClass(
                         item.changePct
                       )}`}
                     >
@@ -366,7 +412,8 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                   )}
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -403,9 +450,15 @@ export const TickerBar: React.FC<TickerBarProps> = ({
           </div>
 
           <div className="space-y-1 max-h-[340px] overflow-y-auto [scrollbar-width:thin]">
-            {reelItems.map((item, idx) => (
+            {reelItems.map((item, idx) => {
+              const formattedValue =
+                item.kind === 'energy'
+                  ? `$${item.rate.toFixed(item.decimals ?? 2)}`
+                  : formatLocalizedFxRate(item.rate, baseCurrency, lang)
+
+              return (
               <button
-                key={item.currency}
+                key={item.key}
                 type="button"
                 onClick={() => {
                   setCurrentIndex(idx)
@@ -417,27 +470,31 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                     : 'hover:bg-slate-800/60 text-slate-300 border border-transparent'
                 }`}
               >
-                {/* Left: Flag & Currency */}
+                {/* Left: Flag/Icon & Name */}
                 <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
-                  <CountryFlag iso2={item.flagIso2} className="w-4 h-3 rounded shadow-sm shrink-0" />
+                  {item.kind === 'energy' ? (
+                    <Flame className="w-4 h-3.5 text-amber-400 shrink-0" />
+                  ) : (
+                    <CountryFlag iso2={item.flagIso2 || 'US'} className="w-4 h-3 rounded shadow-sm shrink-0" />
+                  )}
                   <span className="font-bold text-slate-200 whitespace-nowrap">
                     {item.displayName}
-                    <span className="text-[10px] text-slate-400 ml-1 font-normal font-mono">({item.currency})</span>
+                    <span className="text-[10px] text-slate-400 ml-1 font-normal font-mono">({item.code})</span>
                   </span>
                 </div>
 
-                {/* Center: Rate & Change */}
+                {/* Center: Rate/Price & Change */}
                 <div className="flex items-center gap-1.5 shrink-0">
                   <span
-                    className={`font-mono font-semibold whitespace-nowrap ${getFxRateColorClass(
+                    className={`font-mono font-semibold whitespace-nowrap tabular-nums ${getFxRateColorClass(
                       item.changePct
                     )}`}
                   >
-                    {formatLocalizedFxRate(item.rate, baseCurrency, lang)}
+                    {formattedValue}
                   </span>
                   {item.changePct != null && (
                     <span
-                      className={`text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded whitespace-nowrap ${getFxBadgeColorClass(
+                      className={`text-[10px] font-mono font-bold tabular-nums px-1 sm:px-1.5 py-0.2 rounded whitespace-nowrap ${getFxBadgeColorClass(
                         item.changePct
                       )}`}
                     >
@@ -446,19 +503,24 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                   )}
                 </div>
 
-                {/* Right: Policy Rate */}
-                {item.centralBankName && item.policyRatePct != null ? (
+                {/* Right: Policy Rate (FX) or Unit (Energy) */}
+                {item.kind === 'energy' ? (
+                  <span className="font-mono text-[10px] sm:text-[11px] text-amber-300/90 shrink-0 whitespace-nowrap">
+                    USD/{item.unit}
+                  </span>
+                ) : item.centralBankName && item.policyRatePct != null ? (
                   <div className="flex items-center gap-1 font-mono text-[10px] sm:text-[11px] text-indigo-300 shrink-0 whitespace-nowrap">
                     <span className="text-slate-500 text-[9px] sm:text-[10px] hidden xs:inline sm:inline">
                       {item.centralBankName}
                     </span>
-                    <span className="font-bold">{item.policyRatePct.toFixed(2)}%</span>
+                    <span className="font-bold tabular-nums">{item.policyRatePct.toFixed(2)}%</span>
                   </div>
                 ) : (
                   <span className="text-slate-600 text-[10px] shrink-0">-</span>
                 )}
               </button>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
