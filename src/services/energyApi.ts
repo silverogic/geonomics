@@ -173,5 +173,51 @@ export async function fetchAllEnergySnapshots(
       return [b.symbol, data] as const
     })
   )
-  return Object.fromEntries(entries)
+  const map = Object.fromEntries(entries) as Record<string, EnergyChartData | null>
+
+  // Fallback to /?symbols=... for live prices if /?chart= is not yet deployed on the Worker
+  const missingSymbols = ENERGY_BENCHMARKS.filter((b) => !map[b.symbol]).map((b) => b.symbol)
+  if (missingSymbols.length > 0 && PROXY_URL) {
+    try {
+      const res = await fetch(
+        `${PROXY_URL}/?symbols=${encodeURIComponent(missingSymbols.join(','))}`,
+        { signal: AbortSignal.timeout(5000) }
+      )
+      if (res.ok) {
+        const json = (await res.json()) as {
+          fetchedAt?: number
+          quotes?: Record<
+            string,
+            {
+              price?: number
+              prevClose?: number | null
+              changePct?: number | null
+              currency?: string
+              isOpen?: boolean
+            }
+          >
+        }
+        for (const sym of missingSymbols) {
+          const q = json.quotes?.[sym]
+          if (q && typeof q.price === 'number') {
+            map[sym] = {
+              symbol: sym,
+              range,
+              currency: q.currency || 'USD',
+              price: q.price,
+              prevClose: q.prevClose ?? null,
+              changePct: q.changePct ?? null,
+              isOpen: !!q.isOpen,
+              fetchedAt: json.fetchedAt || Math.floor(Date.now() / 1000),
+              points: [],
+            }
+          }
+        }
+      }
+    } catch {
+      // Silent fallback
+    }
+  }
+
+  return map
 }
