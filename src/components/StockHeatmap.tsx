@@ -11,7 +11,10 @@ import {
   Building2,
   Layers,
   Loader2,
+  Camera,
+  Check,
 } from 'lucide-react'
+import { toBlob } from 'html-to-image'
 import type { CountryMeta, BaseCurrency, ExchangeRates, Language, Region } from '../types/economics'
 import { COUNTRIES } from '../data/countries'
 import { getAllStockPrices, type StockPriceInfo } from '../data/stockPrices'
@@ -181,6 +184,56 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       active = false
     }
   }, [isCompanyMode, lang, exchangeRates, refreshKey])
+
+  const heatmapCaptureRef = useRef<HTMLDivElement>(null)
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copying' | 'copied'>('idle')
+
+  const handleCopyHeatmapImage = async () => {
+    const node = heatmapCaptureRef.current
+    if (!node || copyStatus === 'copying') return
+    setCopyStatus('copying')
+    try {
+      const fullWidth = node.scrollWidth || node.clientWidth
+      const fullHeight = node.scrollHeight || node.clientHeight
+      const blob = await toBlob(node, {
+        pixelRatio: 2,
+        backgroundColor: '#020617',
+        width: fullWidth,
+        height: fullHeight,
+        style: {
+          overflow: 'visible',
+          height: `${fullHeight}px`,
+          maxHeight: 'none',
+        },
+        skipFonts: true,
+        filter: (el) => {
+          // Skip remote cross-origin <img> tags if they lack CORS so canvas export never taints
+          if (el instanceof HTMLImageElement && el.src.startsWith('http') && !el.crossOrigin) {
+            return false
+          }
+          return true
+        },
+      })
+      if (!blob) throw new Error('Failed to render heatmap image')
+
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+      } else {
+        // Fallback PNG download when Clipboard image write is unavailable
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `geonomics-heatmap-${new Date().toISOString().slice(0, 10)}.png`
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+
+      setCopyStatus('copied')
+      window.setTimeout(() => setCopyStatus('idle'), 2200)
+    } catch {
+      setCopyStatus('idle')
+    }
+  }
 
   // Near-real-time quotes (via Cloudflare Worker proxy). Silently no-op if not configured.
   useEffect(() => {
@@ -691,6 +744,30 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
             <span className="w-3.5 h-2.5 rounded-[2px] bg-[#047857] text-[7px] text-white flex items-center justify-center font-mono font-bold">+3</span>
           </div>
 
+          {/* Copy Heatmap as Image to Clipboard */}
+          <button
+            type="button"
+            onClick={handleCopyHeatmapImage}
+            disabled={copyStatus === 'copying'}
+            title={copyStatus === 'copied' ? t.heatmapCopied : t.heatmapCopyImage}
+            className={`px-2 py-1 sm:py-1 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-all shrink-0 cursor-pointer ${
+              copyStatus === 'copied'
+                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
+                : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            {copyStatus === 'copying' ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+            ) : copyStatus === 'copied' ? (
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+            ) : (
+              <Camera className="w-3.5 h-3.5" />
+            )}
+            <span className="hidden sm:inline">
+              {copyStatus === 'copied' ? t.heatmapCopied : t.heatmapCopyImage}
+            </span>
+          </button>
+
           {/* Zen / Fullscreen Toggle */}
           <button
             type="button"
@@ -756,7 +833,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       )}
 
       {/* 2. FULL-WIDTH IMMERSIVE TREEMAP CANVAS */}
-      <div className="w-full flex-grow min-h-0 overflow-y-auto">
+      <div ref={heatmapCaptureRef} className="w-full flex-grow min-h-0 overflow-y-auto bg-slate-950 rounded-xl">
         {isCompanyMode ? (
           isLoadingCompanies && companyBaseFilteredItems.length === 0 ? (
             <div
