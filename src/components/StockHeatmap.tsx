@@ -192,10 +192,49 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
     const node = heatmapCaptureRef.current
     if (!node || copyStatus === 'copying') return
     setCopyStatus('copying')
+    const wasZen = isZenMode
+    const fixedSvgs: Array<{
+      el: SVGSVGElement
+      prevStyle: string
+      prevW: string | null
+      prevH: string | null
+    }> = []
+
     try {
-      const fullWidth = node.scrollWidth || node.clientWidth
-      const fullHeight = node.scrollHeight || node.clientHeight
-      const blob = await toBlob(node, {
+      // Temporarily expand to Zen fullscreen size so the copied image matches the maximized layout
+      if (!wasZen) {
+        setIsZenMode(true)
+        await new Promise((r) => window.setTimeout(r, 180))
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+      }
+
+      const targetNode = heatmapCaptureRef.current
+      if (!targetNode) throw new Error('Heatmap container unavailable')
+
+      // Lock nested SVGs (flags/icons) inside <foreignObject> to exact pixel dimensions
+      // so html-to-image serialization never stretches w-full/h-full flags across the cell.
+      targetNode.querySelectorAll('foreignObject svg').forEach((svgEl) => {
+        if (!(svgEl instanceof SVGSVGElement)) return
+        const r = svgEl.getBoundingClientRect()
+        if (r.width > 0 && r.height > 0) {
+          fixedSvgs.push({
+            el: svgEl,
+            prevStyle: svgEl.getAttribute('style') || '',
+            prevW: svgEl.getAttribute('width'),
+            prevH: svgEl.getAttribute('height'),
+          })
+          svgEl.setAttribute('width', `${Math.round(r.width)}`)
+          svgEl.setAttribute('height', `${Math.round(r.height)}`)
+          svgEl.style.width = `${r.width}px`
+          svgEl.style.height = `${r.height}px`
+          svgEl.style.minWidth = `${r.width}px`
+          svgEl.style.minHeight = `${r.height}px`
+        }
+      })
+
+      const fullWidth = targetNode.scrollWidth || targetNode.clientWidth
+      const fullHeight = targetNode.scrollHeight || targetNode.clientHeight
+      const blob = await toBlob(targetNode, {
         pixelRatio: 2,
         backgroundColor: '#020617',
         width: fullWidth,
@@ -232,6 +271,18 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       window.setTimeout(() => setCopyStatus('idle'), 2200)
     } catch {
       setCopyStatus('idle')
+    } finally {
+      for (const item of fixedSvgs) {
+        if (item.prevStyle) item.el.setAttribute('style', item.prevStyle)
+        else item.el.removeAttribute('style')
+        if (item.prevW !== null) item.el.setAttribute('width', item.prevW)
+        else item.el.removeAttribute('width')
+        if (item.prevH !== null) item.el.setAttribute('height', item.prevH)
+        else item.el.removeAttribute('height')
+      }
+      if (!wasZen) {
+        setIsZenMode(false)
+      }
     }
   }
 
