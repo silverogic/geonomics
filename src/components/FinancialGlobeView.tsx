@@ -2311,8 +2311,8 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
   refreshKey,
 }) => {
   const { t } = useTranslation()
-  const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('gdp')
-  const [lastMetricMode, setLastMetricMode] = useState<'gdp' | 'stocks' | 'fx'>('gdp')
+  const [displayMode, setDisplayMode] = useState<GlobeDisplayMode>('stocks')
+  const [lastMetricMode, setLastMetricMode] = useState<'gdp' | 'stocks' | 'fx'>('stocks')
   const [isModeComboOpen, setIsModeComboOpen] = useState(false)
   const modeComboRef = useRef<HTMLDivElement>(null)
   const [viewDimension, setViewDimension] = useState<'3d' | '2d'>('3d')
@@ -3895,9 +3895,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
               >
                 {(
                   [
-                    { id: 'gdp', label: t('globeDisplayModeGdp'), icon: BarChart3, activeBg: 'bg-emerald-600/25 border-emerald-500/40 text-emerald-200' },
                     { id: 'stocks', label: t('globeDisplayModeStocks'), icon: TrendingUp, activeBg: 'bg-indigo-600/25 border-indigo-500/40 text-indigo-200' },
                     { id: 'fx', label: t('globeDisplayModeFx'), icon: Coins, activeBg: 'bg-indigo-600/25 border-indigo-500/40 text-indigo-200' },
+                    { id: 'gdp', label: t('globeDisplayModeGdp'), icon: BarChart3, activeBg: 'bg-emerald-600/25 border-emerald-500/40 text-emerald-200' },
                   ] as const
                 ).map((opt) => {
                   const Icon = opt.icon
@@ -3931,23 +3931,14 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             )}
           </div>
 
-          {/* Desktop Display Mode Tabs */}
+          {/* Desktop Display Mode Tabs (Stocks / FX / GDP) */}
           <div className="hidden sm:flex items-center rounded-lg bg-slate-950/90 border border-slate-800 p-0.5 shrink-0">
             <button
               type="button"
-              onClick={() => setDisplayMode('gdp')}
-              className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                displayMode === 'gdp'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <BarChart3 className="w-3 h-3" />
-              <span>{t('globeDisplayModeGdp')}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setDisplayMode('stocks')}
+              onClick={() => {
+                setLastMetricMode('stocks')
+                setDisplayMode('stocks')
+              }}
               className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
                 displayMode === 'stocks'
                   ? 'bg-indigo-600 text-white shadow-sm'
@@ -3959,7 +3950,10 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setDisplayMode('fx')}
+              onClick={() => {
+                setLastMetricMode('fx')
+                setDisplayMode('fx')
+              }}
               className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
                 displayMode === 'fx'
                   ? 'bg-indigo-600 text-white shadow-sm'
@@ -3968,6 +3962,21 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             >
               <Coins className="w-3 h-3" />
               <span>{t('globeDisplayModeFx')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setLastMetricMode('gdp')
+                setDisplayMode('gdp')
+              }}
+              className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                displayMode === 'gdp'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <BarChart3 className="w-3 h-3" />
+              <span>{t('globeDisplayModeGdp')}</span>
             </button>
           </div>
 
