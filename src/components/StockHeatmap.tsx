@@ -275,14 +275,8 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
       const currentYear = new Date().getFullYear()
       const capYear = liveCapData?.years[c.id] ?? `${currentYear} Live Est.`
       const capSource = liveCapData?.sources[c.id] ?? 'TradingView Mainboard Exchange Aggregate'
-      // Ensure 1-Day daily change percentage (전일 대비 1일 등락률 보장)
-      let changePct = stock?.changePct ?? 0
-      if (stock?.points && stock.points.length >= 2) {
-        const prevClose = stock.points[stock.points.length - 2].close
-        if (prevClose > 0) {
-          changePct = Number((((stock.currentPrice - prevClose) / prevClose) * 100).toFixed(2))
-        }
-      }
+      // Use authoritative 1-Day daily change percentage (live Yahoo prevClose or static baseline)
+      const changePct = stock?.changePct ?? 0
 
       const marketCapUsd = calculateLiveMarketCap(estimatedCap, stock)
       const indexName = stock ? (lang === 'ko' ? stock.nameKo : stock.nameEn) : 'Equity Market'

@@ -2584,13 +2584,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
 
     for (const [countryId, stock] of Object.entries(allStocks)) {
       if (!stock || stock.isSupported === false || !(stock.currentPrice > 0)) continue
-      let changePct = stock.changePct ?? 0
-      if (stock.points && stock.points.length >= 2) {
-        const prevClose = stock.points[stock.points.length - 2].close
-        if (prevClose > 0) {
-          changePct = Number((((stock.currentPrice - prevClose) / prevClose) * 100).toFixed(2))
-        }
-      }
+      const changePct = stock.changePct ?? 0
       map.set(countryId, getStockColorBucket(changePct))
     }
     return map
@@ -2810,15 +2804,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
     return hubItems.map((h) => {
       const gdpInfo = gdpLookup.get(h.id)
       const stock = allStocks[h.id]
-      let stockChangePct = stock?.changePct ?? 0
-      if (stock?.points && stock.points.length >= 2) {
-        const prevClose = stock.points[stock.points.length - 2].close
-        if (prevClose > 0) {
-          stockChangePct = Number(
-            (((stock.currentPrice - prevClose) / prevClose) * 100).toFixed(2)
-          )
-        }
-      }
+      const stockChangePct = stock?.changePct ?? 0
 
       const curr = h.country.currencyCode
       const usdPerUnit = exchangeRates?.rates[curr] || 1
