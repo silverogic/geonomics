@@ -3824,42 +3824,42 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       {/* Top Glassmorphic Control Bar */}
       <div
         data-globe-ui="true"
-        className="absolute top-2.5 left-2.5 right-2.5 z-30 flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg cursor-default"
+        className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 right-2 sm:right-2.5 z-30 flex flex-nowrap sm:flex-wrap items-center justify-between gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg cursor-default"
       >
         {/* Left: Market Breadth Pill */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {displayMode === 'news' ? (
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs font-mono">
-              <Newspaper className="w-3 h-3 text-amber-400" />
+            <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-[10px] sm:text-xs font-mono">
+              <Newspaper className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400" />
               <span className="text-amber-300 font-bold tabular-nums">{hubSummary.up}</span>
               <span className="text-slate-600">/</span>
               <span className="text-slate-300 font-bold tabular-nums">{hubSummary.down}</span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs font-mono">
+            <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-[10px] sm:text-xs font-mono">
               <span className="text-emerald-400 font-bold flex items-center gap-0.5 tabular-nums">
-                <TrendingUp className="w-3 h-3" />
+                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 {hubSummary.up}
               </span>
               <span className="text-slate-600">/</span>
               <span className="text-rose-400 font-bold flex items-center gap-0.5 tabular-nums">
-                <TrendingDown className="w-3 h-3" />
+                <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 {hubSummary.down}
               </span>
             </div>
           )}
         </div>
 
-        {/* Center: Display Mode Switcher (GDP / Stocks / FX) + Region Presets */}
-        <div className="flex items-center gap-1.5 max-w-full">
-          {/* Mobile Display Mode Combo Box (GDP / Stocks / FX) */}
+        {/* Center: Display Mode Switcher (Stocks / FX / GDP) + News + Region Presets */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 sm:shrink max-w-full">
+          {/* Mobile Display Mode Combo Box (Stocks / FX / GDP) */}
           <div className="relative sm:hidden shrink-0" ref={modeComboRef}>
             <button
               type="button"
               onClick={() => setIsModeComboOpen((prev) => !prev)}
               aria-haspopup="listbox"
               aria-expanded={isModeComboOpen}
-              className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 py-1 rounded-lg border text-[10px] font-bold transition-all flex items-center gap-1 whitespace-nowrap cursor-pointer ${
                 displayMode === 'news'
                   ? 'bg-slate-950/90 border-slate-800 text-slate-300 hover:text-white'
                   : lastMetricMode === 'gdp'
@@ -3985,13 +3985,13 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             type="button"
             onClick={() => setDisplayMode((prev) => (prev === 'news' ? lastMetricMode : 'news'))}
             aria-pressed={displayMode === 'news'}
-            className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+            className={`px-2 sm:px-2.5 py-1 rounded-lg border text-[10px] sm:text-[11px] font-bold transition-all flex items-center gap-1 whitespace-nowrap shrink-0 cursor-pointer ${
               displayMode === 'news'
                 ? 'bg-amber-500/20 border-amber-400/60 text-amber-300 shadow-sm'
                 : 'bg-slate-950/90 border-slate-800 text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Newspaper className="w-3 h-3" />
+            <Newspaper className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             <span>{t('globeDisplayModeNews')}</span>
           </button>
 
@@ -4051,7 +4051,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         </div>
 
         {/* Right: Spin Toggle & Reset */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           {viewDimension === '3d' && (
             <>
               <button
@@ -4061,13 +4061,13 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                   targetRotationRef.current = null
                   setIsSpinning((s) => !s)
                 }}
-                className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                className={`px-1.5 sm:px-2.5 py-1 rounded-lg border text-[10px] sm:text-[11px] font-bold flex items-center gap-1 whitespace-nowrap transition-all cursor-pointer ${
                   isSpinning
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
                     : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:text-white'
                 }`}
               >
-                {isSpinning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                {isSpinning ? <Pause className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> : <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
                 <span>{isSpinning ? t('globeOrbiting') : t('globePaused')}</span>
               </button>
 
@@ -4078,9 +4078,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                   applyTargetZoom(DEFAULT_GLOBE_ZOOM)
                 }}
                 title={t('globeResetOrbit')}
-                className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1 sm:p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </button>
             </>
           )}
