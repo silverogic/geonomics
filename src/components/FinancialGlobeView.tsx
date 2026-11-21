@@ -4462,7 +4462,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             onClick={() => setViewDimension('3d')}
             className={`w-8 py-1 sm:w-11 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
               viewDimension === '3d'
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-indigo-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
