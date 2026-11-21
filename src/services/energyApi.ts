@@ -3,11 +3,14 @@ import type { Language } from '../types/economics'
 const PROXY_URL = (import.meta.env?.VITE_STOCK_PROXY_URL as string | undefined)?.replace(/\/$/, '')
 const CACHE_TTL_MS = 60 * 1000
 
+export type CommodityIconType = 'oil' | 'gas' | 'gold'
+
 export interface EnergyBenchmark {
   symbol: string
   code: string
   unit: string
   decimals: number
+  iconType: CommodityIconType
   names: Record<Language, string>
 }
 
@@ -17,6 +20,7 @@ export const ENERGY_BENCHMARKS: EnergyBenchmark[] = [
     code: 'WTI',
     unit: 'bbl',
     decimals: 2,
+    iconType: 'oil',
     names: {
       ko: 'WTI 원유',
       en: 'WTI Crude',
@@ -31,6 +35,7 @@ export const ENERGY_BENCHMARKS: EnergyBenchmark[] = [
     code: 'Brent',
     unit: 'bbl',
     decimals: 2,
+    iconType: 'oil',
     names: {
       ko: '브렌트유',
       en: 'Brent Crude',
@@ -45,6 +50,7 @@ export const ENERGY_BENCHMARKS: EnergyBenchmark[] = [
     code: 'NatGas',
     unit: 'MMBtu',
     decimals: 3,
+    iconType: 'gas',
     names: {
       ko: '천연가스',
       en: 'Natural Gas',
@@ -59,6 +65,7 @@ export const ENERGY_BENCHMARKS: EnergyBenchmark[] = [
     code: 'Gasoline',
     unit: 'gal',
     decimals: 4,
+    iconType: 'oil',
     names: {
       ko: '휘발유 선물',
       en: 'Gasoline',
@@ -66,6 +73,21 @@ export const ENERGY_BENCHMARKS: EnergyBenchmark[] = [
       es: 'Gasolina',
       zh: '汽油期货',
       hi: 'गैसोलीन',
+    },
+  },
+  {
+    symbol: 'GC=F',
+    code: 'Gold',
+    unit: 'oz',
+    decimals: 2,
+    iconType: 'gold',
+    names: {
+      ko: '금',
+      en: 'Gold',
+      ja: '金',
+      es: 'Oro',
+      zh: '黄金',
+      hi: 'सोना',
     },
   },
 ]

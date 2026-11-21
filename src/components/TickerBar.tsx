@@ -4,7 +4,7 @@ import type { ExchangeRates, BaseCurrency, Language, InterestRateInfo, CountryMe
 import { translations } from '../i18n/translations'
 import { getConversionRate, getPreviousConversionRate, getFxChangePct } from '../services/exchangeApi'
 import { fetchLiveFxQuotes, type LiveFxQuote } from '../services/liveFxApi'
-import { ENERGY_BENCHMARKS, fetchLiveEnergyQuotes, type EnergyQuote } from '../services/energyApi'
+import { ENERGY_BENCHMARKS, fetchLiveEnergyQuotes, type CommodityIconType, type EnergyQuote } from '../services/energyApi'
 import { getFxRateColorClass, getFxBadgeColorClass, formatFxChangeBadgeText } from '../utils/formatters'
 import { detectVisitorCountry } from '../utils/locale'
 import { CountryFlag } from './CountryFlag'
@@ -21,6 +21,7 @@ interface ReelItem {
   kind: 'fx' | 'energy'
   code: string
   flagIso2?: string
+  commodityIcon?: CommodityIconType
   displayName: string
   multiplier: number
   rate: number
@@ -274,6 +275,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({
         key: `energy-${bench.symbol}`,
         kind: 'energy',
         code: bench.code,
+        commodityIcon: bench.iconType,
         displayName: bench.names[lang],
         multiplier: 1,
         rate: q.price,
@@ -377,7 +379,13 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                 {/* Reel 1: Flag/Icon & Name */}
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 min-w-0">
                   {item.kind === 'energy' ? (
-                    <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    item.commodityIcon === 'oil' ? (
+                      <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🛢️</span>
+                    ) : item.commodityIcon === 'gold' ? (
+                      <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🪙</span>
+                    ) : (
+                      <Flame className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                    )
                   ) : (
                     <CountryFlag
                       iso2={item.flagIso2 || 'US'}
@@ -424,10 +432,10 @@ export const TickerBar: React.FC<TickerBarProps> = ({
           }`}
         />
 
-        {/* Live Indicator Dot */}
+        {/* Live Indicator Dot (desktop only) */}
         <span
           title={liveTooltipText}
-          className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0 cursor-help ml-0.5"
+          className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0 cursor-help ml-0.5"
         />
       </div>
 
@@ -473,7 +481,13 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                 {/* Left: Flag/Icon & Name */}
                 <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
                   {item.kind === 'energy' ? (
-                    <Flame className="w-4 h-3.5 text-amber-400 shrink-0" />
+                    item.commodityIcon === 'oil' ? (
+                      <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🛢️</span>
+                    ) : item.commodityIcon === 'gold' ? (
+                      <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🪙</span>
+                    ) : (
+                      <Flame className="w-4 h-3.5 text-sky-400 shrink-0" />
+                    )
                   ) : (
                     <CountryFlag iso2={item.flagIso2 || 'US'} className="w-4 h-3 rounded shadow-sm shrink-0" />
                   )}
