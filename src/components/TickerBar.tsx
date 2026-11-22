@@ -16,6 +16,43 @@ interface TickerBarProps {
   lang: Language
 }
 
+const BullionIcon: React.FC<{ variant: 'gold' | 'silver' }> = ({ variant }) => {
+  const isGold = variant === 'gold'
+  return (
+    <svg
+      viewBox="0 0 16 14"
+      className="w-3.5 h-3 shrink-0"
+      aria-hidden="true"
+    >
+      {/* Top beveled face of bullion bar */}
+      <polygon
+        points="4,2 12,2 13.5,6.5 2.5,6.5"
+        fill={isGold ? '#fde047' : '#f1f5f9'}
+      />
+      {/* Front angled face */}
+      <polygon
+        points="2.5,6.5 13.5,6.5 15,11.5 1,11.5"
+        fill={isGold ? '#eab308' : '#cbd5e1'}
+      />
+      {/* Bottom shadow edge */}
+      <polygon
+        points="1,11.5 15,11.5 14.5,12.8 1.5,12.8"
+        fill={isGold ? '#a16207' : '#64748b'}
+      />
+      {/* Crisp highlight line */}
+      <line
+        x1="4.5"
+        y1="3.2"
+        x2="11.5"
+        y2="3.2"
+        stroke={isGold ? '#fef9c3' : '#ffffff'}
+        strokeWidth="0.9"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 interface ReelItem {
   key: string
   kind: 'fx' | 'energy'
@@ -382,9 +419,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                     item.commodityIcon === 'oil' ? (
                       <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🛢️</span>
                     ) : item.commodityIcon === 'gold' ? (
-                      <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🪙</span>
+                      <BullionIcon variant="gold" />
                     ) : item.commodityIcon === 'silver' ? (
-                      <span className="text-[13px] leading-none shrink-0 grayscale brightness-125" aria-hidden="true">🪙</span>
+                      <BullionIcon variant="silver" />
                     ) : (
                       <Flame className="w-3.5 h-3.5 text-sky-400 shrink-0" />
                     )
@@ -486,9 +523,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                     item.commodityIcon === 'oil' ? (
                       <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🛢️</span>
                     ) : item.commodityIcon === 'gold' ? (
-                      <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🪙</span>
+                      <BullionIcon variant="gold" />
                     ) : item.commodityIcon === 'silver' ? (
-                      <span className="text-[13px] leading-none shrink-0 grayscale brightness-125" aria-hidden="true">🪙</span>
+                      <BullionIcon variant="silver" />
                     ) : (
                       <Flame className="w-4 h-3.5 text-sky-400 shrink-0" />
                     )
