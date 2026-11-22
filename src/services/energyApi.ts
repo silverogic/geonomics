@@ -3,7 +3,7 @@ import type { Language } from '../types/economics'
 const PROXY_URL = (import.meta.env?.VITE_STOCK_PROXY_URL as string | undefined)?.replace(/\/$/, '')
 const CACHE_TTL_MS = 60 * 1000
 
-export type CommodityIconType = 'oil' | 'gas' | 'gold'
+export type CommodityIconType = 'oil' | 'gas' | 'gold' | 'silver'
 
 export interface EnergyBenchmark {
   symbol: string
@@ -88,6 +88,21 @@ export const ENERGY_BENCHMARKS: EnergyBenchmark[] = [
       es: 'Oro',
       zh: '黄金',
       hi: 'सोना',
+    },
+  },
+  {
+    symbol: 'SI=F',
+    code: 'Silver',
+    unit: 'oz',
+    decimals: 2,
+    iconType: 'silver',
+    names: {
+      ko: '은',
+      en: 'Silver',
+      ja: '銀',
+      es: 'Plata',
+      zh: '白银',
+      hi: 'चांदी',
     },
   },
 ]

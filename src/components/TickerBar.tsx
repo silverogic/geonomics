@@ -383,6 +383,8 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                       <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🛢️</span>
                     ) : item.commodityIcon === 'gold' ? (
                       <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🪙</span>
+                    ) : item.commodityIcon === 'silver' ? (
+                      <span className="text-[13px] leading-none shrink-0 grayscale brightness-125" aria-hidden="true">🪙</span>
                     ) : (
                       <Flame className="w-3.5 h-3.5 text-sky-400 shrink-0" />
                     )
@@ -485,6 +487,8 @@ export const TickerBar: React.FC<TickerBarProps> = ({
                       <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🛢️</span>
                     ) : item.commodityIcon === 'gold' ? (
                       <span className="text-[13px] leading-none shrink-0" aria-hidden="true">🪙</span>
+                    ) : item.commodityIcon === 'silver' ? (
+                      <span className="text-[13px] leading-none shrink-0 grayscale brightness-125" aria-hidden="true">🪙</span>
                     ) : (
                       <Flame className="w-4 h-3.5 text-sky-400 shrink-0" />
                     )
