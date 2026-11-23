@@ -1283,16 +1283,22 @@ const TreemapPanel: React.FC<TreemapPanelProps> = ({
 
             {/* Sparkline */}
             {hoveredItem.stockInfo?.points && hoveredItem.stockInfo.points.length > 1 && (
-              <div className="pt-1 border-t border-slate-800/80">
-                <div className="flex justify-between items-center text-[9px] text-slate-400 font-mono mb-0.5">
-                  <span>{hoveredItem.stockInfo.currentPrice.toLocaleString()} {hoveredItem.stockInfo.currency}</span>
-                  <span>30D Trend</span>
+              <div className="pt-1.5 border-t border-slate-800/80">
+                <div className="flex justify-between items-center text-[10px] mb-1">
+                  <span className="font-mono font-bold text-slate-200 tabular-nums">
+                    {hoveredItem.stockInfo.currentPrice.toLocaleString()} {hoveredItem.stockInfo.currency}
+                  </span>
+                  <span className="font-sans font-semibold text-slate-200">
+                    {lang === 'ko' ? '30일 등락 추이' : '30D Trend'}
+                  </span>
                 </div>
-                <div className="h-8 w-full">
+                <div className="h-9 w-full">
                   <StockSparkline
                     points={hoveredItem.stockInfo.points}
                     isPositive={hoveredItem.changePct >= 0}
-                    height={32}
+                    width={256}
+                    height={36}
+                    className="w-full"
                   />
                 </div>
               </div>
