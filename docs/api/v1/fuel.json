@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19",
+  "updatedAt": "2026-11-23",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -304,7 +304,7 @@
     },
     "MAR": {
       "countryId": "MAR",
-      "priceUsd": 1.541,
+      "priceUsd": 1.49,
       "currencyCode": "MAD"
     },
     "ETH": {
@@ -404,7 +404,7 @@
     },
     "GHA": {
       "countryId": "GHA",
-      "priceUsd": 1.638,
+      "priceUsd": 1.617,
       "currencyCode": "GHS"
     },
     "URY": {
@@ -414,7 +414,7 @@
     },
     "TZA": {
       "countryId": "TZA",
-      "priceUsd": 1.531,
+      "priceUsd": 1.541,
       "currencyCode": "TZS"
     },
     "BLR": {
