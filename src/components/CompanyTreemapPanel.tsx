@@ -255,7 +255,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                   top: `${rect.y}px`,
                   width: `${Math.max(0, w)}px`,
                   height: `${Math.max(0, h)}px`,
-                  padding: '1.5px',
+                  padding: '0.5px',
                 }}
                 className="group cursor-pointer transition-all duration-150"
               >
@@ -271,7 +271,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                 >
                   {isExtraLarge ? (
                     /* LEVEL 1: EXTRA LARGE COMPANY TILE */
-                    <div className="p-2.5 flex flex-col justify-between h-full w-full">
+                    <div className="p-1.5 sm:p-2 flex flex-col justify-between h-full w-full">
                       <div className="flex items-start justify-between gap-1.5 min-w-0">
                         <div className="flex items-center gap-2 min-w-0">
                           <CompanyLogo
@@ -331,7 +331,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                     </div>
                   ) : isWide ? (
                     /* LEVEL 2: WIDE COMPANY TILE */
-                    <div className="p-2 flex flex-col justify-between h-full w-full">
+                    <div className="p-1 sm:p-1.5 flex flex-col justify-between h-full w-full">
                       <div className="flex items-center justify-between gap-1 min-w-0">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <CompanyLogo
@@ -367,7 +367,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                     </div>
                   ) : isMedium ? (
                     /* LEVEL 3: MEDIUM COMPANY TILE */
-                    <div className="p-1.5 flex flex-col justify-between h-full w-full">
+                    <div className="p-0.5 sm:p-1 flex flex-col justify-between h-full w-full">
                       <div className="flex items-center gap-1 min-w-0">
                         <CompanyLogo
                           logoUrl={company.logoUrl}
@@ -386,7 +386,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                     </div>
                   ) : isCompact ? (
                     /* LEVEL 4: COMPACT COMPANY TILE */
-                    <div className="p-1 flex flex-col items-center justify-center text-center h-full w-full leading-none">
+                    <div className="p-0.5 flex flex-col items-center justify-center text-center h-full w-full leading-none">
                       <div className="font-bold text-[10px] truncate max-w-full">{company.ticker}</div>
                       <div className="text-[9px] font-mono font-semibold opacity-95 mt-0.5">
                         {changeText}
