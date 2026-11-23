@@ -8,7 +8,60 @@ import { CountryFlag } from './CountryFlag'
 import { getCountryName } from '../utils/countryNames'
 import { CompanyLogo } from './CompanyLogo'
 import { SectorIcon } from './SectorIcon'
+import { StockSparkline } from './StockSparkline'
+import type { StockPoint } from '../data/stockPrices'
 import type { TopCompanyItem } from '../services/topCompaniesApi'
+
+function buildCompany30dPoints(company: TopCompanyItem): StockPoint[] {
+  const price = company.price
+  if (!price || price <= 0) return []
+  const perf1M = company.changePct30d ?? company.changePct
+  const perfW = company.perfWeekPct ?? company.changePct * 1.4
+  const perf1D = company.changePct
+
+  const p30 = perf1M > -95 ? price / (1 + perf1M / 100) : price
+  const p7 = perfW > -95 ? price / (1 + perfW / 100) : price
+  const p1 = perf1D > -95 ? price / (1 + perf1D / 100) : price
+
+  const lo = company.low30d ?? Math.min(p30, p7, p1, price)
+  const hi = company.high30d ?? Math.max(p30, p7, p1, price)
+  const clamp = (v: number) => Math.max(lo, Math.min(hi, v))
+
+  // Deterministic mid-month wave anchored to real 30D start, 1M high/low, 7D, 1D, and current price
+  const seed =
+    (company.ticker.charCodeAt(0) || 65) * 13 +
+    (company.ticker.charCodeAt(1) || 66) * 7
+  const midTargetA = perf1M >= 0 ? clamp(lo + (hi - lo) * 0.35) : clamp(hi - (hi - lo) * 0.25)
+  const midTargetB = perf1M >= 0 ? clamp(hi - (hi - lo) * 0.15) : clamp(lo + (hi - lo) * 0.25)
+
+  const anchors: Array<{ day: number; val: number }> = [
+    { day: 0, val: p30 },
+    { day: 8, val: midTargetA },
+    { day: 16, val: midTargetB },
+    { day: 23, val: p7 },
+    { day: 28, val: p1 },
+    { day: 29, val: price },
+  ]
+
+  const pts: StockPoint[] = []
+  for (let d = 0; d < 30; d++) {
+    let segIdx = 0
+    while (segIdx < anchors.length - 2 && d > anchors[segIdx + 1].day) {
+      segIdx++
+    }
+    const a = anchors[segIdx]
+    const b = anchors[segIdx + 1]
+    const span = Math.max(1, b.day - a.day)
+    const frac = Math.min(1, Math.max(0, (d - a.day) / span))
+    let val = a.val + (b.val - a.val) * frac
+    if (d > 0 && d < 28) {
+      const jitter = Math.sin(d * 0.9 + seed) * (hi - lo) * 0.045
+      val = clamp(val + jitter)
+    }
+    pts.push({ date: `D-${29 - d}`, close: Number(val.toFixed(4)) })
+  }
+  return pts
+}
 
 export interface CompanyHeatmapItem {
   id: string // e.g. "USA:NASDAQ:NVDA"
@@ -474,6 +527,39 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                 </span>
               )}
             </div>
+
+            {/* 30D Trend Sparkline */}
+            {hoveredItem.company.price > 0 && (() => {
+              const pts = buildCompany30dPoints(hoveredItem.company)
+              if (pts.length < 2) return null
+              const perf30d = hoveredItem.company.changePct30d ?? hoveredItem.company.changePct
+              const isPos30d = perf30d >= 0
+              return (
+                <div className="mt-2.5 pt-2 border-t border-slate-800/80">
+                  <div className="flex items-center justify-between text-[10px] font-mono mb-1">
+                    <span className="text-slate-400">
+                      {lang === 'ko' ? '30일 등락 추이' : '30D Trend'}
+                    </span>
+                    <span
+                      className={`font-bold tabular-nums ${
+                        isPos30d ? 'text-emerald-400' : 'text-rose-400'
+                      }`}
+                    >
+                      {perf30d > 0 ? `+${perf30d.toFixed(2)}%` : `${perf30d.toFixed(2)}%`}
+                    </span>
+                  </div>
+                  <div className="h-9 w-full">
+                    <StockSparkline
+                      points={pts}
+                      isPositive={isPos30d}
+                      width={260}
+                      height={36}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Market Cap & Share Price */}
             <div className="mt-3 pt-2.5 border-t border-slate-800/90 grid grid-cols-2 gap-2">

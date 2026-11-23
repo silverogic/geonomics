@@ -12,6 +12,10 @@ export interface TopCompanyItem {
   price: number           // Current stock price in trading currency
   priceCurrency: string   // Trading currency code (e.g. "USD", "KRW")
   changePct: number       // 24h price change percentage
+  changePct30d?: number | null  // 1-Month (30D) performance percentage
+  perfWeekPct?: number | null   // 1-Week performance percentage
+  high30d?: number | null       // 1-Month high price
+  low30d?: number | null        // 1-Month low price
   sector: string          // Localized industry sector
   sectorKey: string       // Canonical English sector key for reliable grouping across languages
   logoUrl: string | null  // Official SVG logo URL if available
@@ -318,6 +322,10 @@ export async function fetchCountryTopCompanies(
             'sector',
             'indexes',
             'country',
+            'Perf.1M',
+            'Perf.W',
+            'High.1M',
+            'Low.1M',
           ],
           sort: {
             sortBy: 'market_cap_basic',
@@ -355,6 +363,10 @@ export async function fetchCountryTopCompanies(
           rawSectorEn,
           rawIndexes,
           rawRowCountry,
+          rawPerf1M,
+          rawPerfW,
+          rawHigh1M,
+          rawLow1M,
         ] = row.d
 
         const marketCapBasic = typeof rawMarketCap === 'number' ? rawMarketCap : 0
@@ -412,6 +424,10 @@ export async function fetchCountryTopCompanies(
         const price = typeof rawClose === 'number' ? rawClose : 0
         const priceCurrency = typeof rawPriceCurrency === 'string' ? rawPriceCurrency : fundCurrency
         const changePct = typeof rawChange === 'number' ? Number(rawChange.toFixed(2)) : 0
+        const changePct30d = typeof rawPerf1M === 'number' ? Number(rawPerf1M.toFixed(2)) : null
+        const perfWeekPct = typeof rawPerfW === 'number' ? Number(rawPerfW.toFixed(2)) : null
+        const high30d = typeof rawHigh1M === 'number' && rawHigh1M > 0 ? rawHigh1M : null
+        const low30d = typeof rawLow1M === 'number' && rawLow1M > 0 ? rawLow1M : null
         const sectorKey = String(rawSectorEn || 'Other').trim() || 'Other'
         const sector = String(rawSectorTr || rawSectorEn || '')
 
@@ -425,6 +441,10 @@ export async function fetchCountryTopCompanies(
           price,
           priceCurrency,
           changePct,
+          changePct30d,
+          perfWeekPct,
+          high30d,
+          low30d,
           sector,
           sectorKey,
           logoUrl: logoId ? `https://s3-symbol-logo.tradingview.com/${logoId}.svg` : null,
