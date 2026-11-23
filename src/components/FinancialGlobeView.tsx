@@ -3752,7 +3752,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
-      className={`relative w-full h-[calc(100dvh-136px)] md:h-[calc(100dvh-76px)] min-h-[540px] rounded-2xl bg-slate-950 border border-slate-800/80 overflow-hidden select-none shadow-2xl ${
+      className={`relative w-full h-[calc(100dvh-136px)] md:h-[calc(100dvh-76px)] min-h-[540px] bg-slate-950 overflow-hidden select-none ${
         viewDimension === '3d' ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
       }`}
     >
@@ -3794,7 +3794,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
             newsByCountry={displayMode === 'news' ? newsByCountry : undefined}
           />
           {displayMode === 'gdp' && (
-            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800/90 shadow-lg text-[11px] font-mono cursor-default">
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800/40 shadow-lg text-[11px] font-mono cursor-default">
               <span className="font-sans font-bold text-emerald-300 shrink-0">
                 {t('metricTotalGdp')}
               </span>
@@ -3824,7 +3824,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       {/* Top Glassmorphic Control Bar */}
       <div
         data-globe-ui="true"
-        className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 right-2 sm:right-2.5 z-30 flex flex-nowrap sm:flex-wrap items-center justify-between gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg cursor-default"
+        className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 right-2 sm:right-2.5 z-30 flex flex-nowrap sm:flex-wrap items-center justify-between gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-800/40 shadow-lg cursor-default"
       >
         {/* Left: Market Breadth Pill */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -4407,7 +4407,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       >
         {/* Desktop-Only 3D Zoom Control Pill (3D mode only) */}
         {viewDimension === '3d' && (
-          <div className="hidden md:flex flex-col items-center rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-1 gap-0.5 shadow-xl">
+          <div className="hidden md:flex flex-col items-center rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/40 p-1 gap-0.5 shadow-xl">
             <button
               type="button"
               onClick={() => applyTargetZoom(targetZoomRef.current + GLOBE_ZOOM_STEP)}
@@ -4444,7 +4444,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
         )}
 
         {/* Vertical Floating 2D / 3D Dimension Toggle */}
-        <div className="flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-800/90 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl">
+        <div className="flex flex-col items-center rounded-lg sm:rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/40 p-0.5 sm:p-1 gap-0.5 sm:gap-1 shadow-xl">
           <button
             type="button"
             onClick={() => setViewDimension('2d')}
@@ -4476,9 +4476,9 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
       {viewDimension === '3d' && (
       <div
         data-globe-ui="true"
-        className="absolute bottom-2.5 left-2.5 right-2.5 z-30 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800/90 shadow-lg cursor-default"
+        className="absolute bottom-2.5 left-2.5 right-2.5 z-30 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-800/40 shadow-lg cursor-default"
       >
-        <div className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-300 shrink-0 pr-2 border-r border-slate-800">
+        <div className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-300 shrink-0 pr-2 border-r border-slate-800/50">
           <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
           <span>{t('globeSpotlightTitle')}</span>
         </div>
@@ -4501,7 +4501,7 @@ export const FinancialGlobeView: React.FC<FinancialGlobeViewProps> = ({
                 onMouseEnter={() => setHoveredHubId(hub.id)}
                 onMouseLeave={() => setHoveredHubId(null)}
                 onClick={() => handleCountryCardClick(hub.country)}
-                className={`${idx >= 2 ? 'hidden sm:flex' : 'flex'} items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0`}
+                className={`${idx >= 2 ? 'hidden sm:flex' : 'flex'} items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/75 hover:bg-slate-800/80 border border-slate-800/40 hover:border-emerald-500/40 transition-all cursor-pointer min-w-0`}
               >
                 <div className="flex items-center gap-1.5 min-w-0">
                   <CountryFlag iso2={hub.country.iso2} className="w-4 h-3 rounded-[2px] shrink-0" />
