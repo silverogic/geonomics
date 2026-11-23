@@ -525,3 +525,85 @@ export async function fetchBatchTopCompanies(
 
   return results
 }
+
+export interface CompanyFundamentals {
+  symbol: string
+  perfWeekPct: number | null
+  perf1MPct: number | null
+  perfYtdPct: number | null
+  perf1YPct: number | null
+  high52w: number | null
+  low52w: number | null
+  peRatio: number | null
+  revenueUsd: number | null
+  netIncomeUsd: number | null
+  operatingMarginPct: number | null
+}
+
+const fundamentalsCache = new Map<string, { ts: number; data: CompanyFundamentals }>()
+
+/**
+ * Fetches concise on-demand fundamentals for a single company symbol via TradingView Scanner.
+ * Used by CompanyModal when the user clicks a company tile in the Stock Heatmap.
+ */
+export async function fetchCompanyFundamentals(
+  symbol: string
+): Promise<CompanyFundamentals | null> {
+  const now = Date.now()
+  const cached = fundamentalsCache.get(symbol)
+  if (cached && now - cached.ts < CACHE_TTL_MS) {
+    return cached.data
+  }
+
+  try {
+    const res = await fetch('https://scanner.tradingview.com/global/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      signal: AbortSignal.timeout(5000),
+      body: JSON.stringify({
+        symbols: { tickers: [symbol] },
+        columns: [
+          'Perf.W',
+          'Perf.1M',
+          'Perf.YTD',
+          'Perf.Y',
+          'price_52_week_high',
+          'price_52_week_low',
+          'price_earnings_ttm',
+          'total_revenue_ttm',
+          'net_income_ttm',
+          'operating_margin_ttm',
+        ],
+      }),
+    })
+    if (!res.ok) return null
+
+    const json = (await res.json()) as {
+      data?: Array<{ s: string; d: unknown[] }>
+    }
+    const row = json.data?.[0]?.d
+    if (!Array.isArray(row)) return null
+
+    const num = (v: unknown): number | null =>
+      typeof v === 'number' && Number.isFinite(v) ? v : null
+
+    const data: CompanyFundamentals = {
+      symbol,
+      perfWeekPct: num(row[0]),
+      perf1MPct: num(row[1]),
+      perfYtdPct: num(row[2]),
+      perf1YPct: num(row[3]),
+      high52w: num(row[4]),
+      low52w: num(row[5]),
+      peRatio: num(row[6]),
+      revenueUsd: num(row[7]),
+      netIncomeUsd: num(row[8]),
+      operatingMarginPct: num(row[9]),
+    }
+
+    fundamentalsCache.set(symbol, { ts: now, data })
+    return data
+  } catch {
+    return null
+  }
+}

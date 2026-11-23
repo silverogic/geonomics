@@ -12,7 +12,7 @@ import { StockSparkline } from './StockSparkline'
 import type { StockPoint } from '../data/stockPrices'
 import type { TopCompanyItem } from '../services/topCompaniesApi'
 
-function buildCompany30dPoints(company: TopCompanyItem): StockPoint[] {
+export function buildCompany30dPoints(company: TopCompanyItem): StockPoint[] {
   const price = company.price
   if (!price || price <= 0) return []
   const perf1M = company.changePct30d ?? company.changePct
@@ -79,6 +79,7 @@ interface CompanyTreemapPanelProps {
   usdToBase: number
   lang: Language
   onSelectCountry: (country: CountryMeta) => void
+  onSelectCompany?: (item: CompanyHeatmapItem) => void
   onZoom?: () => void
   isZoomed?: boolean
   showZoomBtn?: boolean
@@ -158,6 +159,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
   usdToBase,
   lang,
   onSelectCountry,
+  onSelectCompany,
   onZoom,
   isZoomed = false,
   showZoomBtn = false,
@@ -300,7 +302,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
             return (
               <div
                 key={item.id}
-                onClick={() => onSelectCountry(country)}
+                onClick={() => (onSelectCompany ? onSelectCompany(item) : onSelectCountry(country))}
                 onMouseEnter={() => setHoveredItemId(item.id)}
                 style={{
                   position: 'absolute',

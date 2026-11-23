@@ -36,6 +36,7 @@ import {
   type TopCompanyItem,
 } from '../services/topCompaniesApi'
 import { CompanyTreemapPanel, type CompanyHeatmapItem } from './CompanyTreemapPanel'
+import { CompanyModal } from './CompanyModal'
 import { SectorIcon } from './SectorIcon'
 
 interface StockHeatmapProps {
@@ -138,6 +139,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
     'unified' | 'byContinent' | 'companiesUnified' | 'companiesBySector'
   >('unified')
   const [selectedSector, setSelectedSector] = useState<string>('All')
+  const [selectedCompanyItem, setSelectedCompanyItem] = useState<CompanyHeatmapItem | null>(null)
   const [topCompaniesByCountry, setTopCompaniesByCountry] = useState<Record<string, TopCompanyItem[]>>({})
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -909,6 +911,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
               usdToBase={usdToBase}
               lang={lang}
               onSelectCountry={onSelectCountry}
+              onSelectCompany={setSelectedCompanyItem}
               onZoom={activeSectorGroup ? () => setSelectedSector('All') : undefined}
               isZoomed={Boolean(activeSectorGroup)}
               showZoomBtn={Boolean(activeSectorGroup)}
@@ -925,6 +928,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
               usdToBase={usdToBase}
               lang={lang}
               onSelectCountry={onSelectCountry}
+              onSelectCompany={setSelectedCompanyItem}
               onZoom={() => setSelectedSector('All')}
               isZoomed={true}
               showZoomBtn={true}
@@ -952,6 +956,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
                     usdToBase={usdToBase}
                     lang={lang}
                     onSelectCountry={onSelectCountry}
+                    onSelectCompany={setSelectedCompanyItem}
                     onZoom={() => setSelectedSector(group.sectorKey)}
                     isZoomed={false}
                     showZoomBtn={true}
@@ -1089,6 +1094,16 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
           />
         )}
       </div>
+
+      {/* Company Detail Modal (Opened when clicking a company in Companies Unified / By Sector modes) */}
+      <CompanyModal
+        item={selectedCompanyItem}
+        onClose={() => setSelectedCompanyItem(null)}
+        onOpenCountry={onSelectCountry}
+        baseCurrency={baseCurrency}
+        usdToBase={usdToBase}
+        lang={lang}
+      />
     </div>
   )
 }
