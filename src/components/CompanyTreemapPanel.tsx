@@ -536,13 +536,13 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
               const isPos30d = perf30d >= 0
               return (
                 <div className="mt-2.5 pt-2 border-t border-slate-800/80">
-                  <div className="flex items-center justify-between text-[10px] font-mono mb-1">
-                    <span className="text-slate-400">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-sans font-semibold text-slate-200">
                       {lang === 'ko' ? '30일 등락 추이' : '30D Trend'}
                     </span>
                     <span
-                      className={`font-bold tabular-nums ${
-                        isPos30d ? 'text-emerald-400' : 'text-rose-400'
+                      className={`text-xs font-mono font-extrabold tabular-nums ${
+                        isPos30d ? 'text-emerald-300' : 'text-rose-300'
                       }`}
                     >
                       {perf30d > 0 ? `+${perf30d.toFixed(2)}%` : `${perf30d.toFixed(2)}%`}
