@@ -1101,6 +1101,7 @@ export const StockHeatmap: React.FC<StockHeatmapProps> = ({
         onClose={() => setSelectedCompanyItem(null)}
         onOpenCountry={onSelectCountry}
         baseCurrency={baseCurrency}
+        exchangeRates={exchangeRates}
         usdToBase={usdToBase}
         lang={lang}
       />

@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { X, TrendingUp, TrendingDown, ExternalLink, Globe } from 'lucide-react'
-import type { BaseCurrency, CountryMeta, Language } from '../types/economics'
+import { X, TrendingUp, TrendingDown, Globe } from 'lucide-react'
+import type { BaseCurrency, CountryMeta, ExchangeRates, Language } from '../types/economics'
 import type { CompanyHeatmapItem } from './CompanyTreemapPanel'
 import { buildCompany30dPoints } from './CompanyTreemapPanel'
 import {
   fetchCompanyFundamentals,
   type CompanyFundamentals,
 } from '../services/topCompaniesApi'
+import { getConversionRate } from '../services/exchangeApi'
 import { formatStockMarketCap } from '../data/stockMarketCaps'
 import { getCountryName } from '../utils/countryNames'
 import { CountryFlag } from './CountryFlag'
@@ -20,6 +21,7 @@ interface CompanyModalProps {
   onClose: () => void
   onOpenCountry: (country: CountryMeta) => void
   baseCurrency: BaseCurrency
+  exchangeRates: ExchangeRates | null
   usdToBase: number
   lang: Language
 }
@@ -139,6 +141,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
   onClose,
   onOpenCountry,
   baseCurrency,
+  exchangeRates,
   usdToBase,
   lang,
 }) => {
@@ -192,9 +195,19 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       ? Math.min(100, Math.max(0, ((company.price - low52w) / (high52w - low52w)) * 100))
       : null
 
-  const tvUrl = `https://www.tradingview.com/symbols/${encodeURIComponent(
-    `${company.exchange}-${company.ticker}`
-  )}/`
+  const priceConvRate =
+    company.priceCurrency.toUpperCase() === baseCurrency
+      ? 1
+      : exchangeRates
+        ? getConversionRate(exchangeRates, company.priceCurrency, baseCurrency)
+        : 0
+  const useBaseCurrency = priceConvRate > 0
+  const displayCurrency = useBaseCurrency ? baseCurrency : company.priceCurrency
+  const displayDecimals = displayCurrency === 'KRW' || displayCurrency === 'JPY' ? 0 : 2
+  const formatConvertedPrice = (raw: number) =>
+    `${(useBaseCurrency ? raw * priceConvRate : raw).toLocaleString(undefined, {
+      maximumFractionDigits: displayDecimals,
+    })} ${displayCurrency}`
 
   const formatSignedPct = (val: number | null | undefined) => {
     if (val == null || Number.isNaN(val)) return 'N/A'
@@ -263,9 +276,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
             <div>
               <div className="flex items-baseline gap-2 flex-wrap">
                 <span className="text-2xl font-black font-mono text-white tabular-nums">
-                  {company.price > 0
-                    ? `${company.price.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${company.priceCurrency}`
-                    : 'N/A'}
+                  {company.price > 0 ? formatConvertedPrice(company.price) : 'N/A'}
                 </span>
                 <span
                   className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md font-mono text-xs font-black tabular-nums ${
@@ -347,8 +358,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-200 font-bold">{L.range52w}</span>
                 <span className="font-mono font-semibold text-slate-300 tabular-nums">
-                  {low52w.toLocaleString(undefined, { maximumFractionDigits: 2 })} —{' '}
-                  {high52w.toLocaleString(undefined, { maximumFractionDigits: 2 })} {company.priceCurrency}
+                  {formatConvertedPrice(low52w)} — {formatConvertedPrice(high52w)}
                 </span>
               </div>
               <div className="relative h-2 rounded-full bg-slate-800 overflow-visible">
@@ -419,28 +429,18 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-slate-800 bg-slate-950/50 text-xs">
+        <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-slate-800 bg-slate-950/50 text-xs">
           <button
             type="button"
             onClick={() => {
               onClose()
               onOpenCountry(country)
             }}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold transition-colors cursor-pointer"
           >
             <Globe className="w-3.5 h-3.5 text-indigo-400" />
             <span>{L.countryInfo}</span>
           </button>
-
-          <a
-            href={tvUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-500/40 text-indigo-300 font-semibold transition-colors"
-          >
-            <span>{L.viewOnTv}</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
         </div>
       </div>
     </div>
