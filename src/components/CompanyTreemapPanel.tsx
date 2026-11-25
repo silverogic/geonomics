@@ -293,6 +293,7 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
             const isMedium = w >= 88 && h >= 58
             const isCompact = w >= 54 && h >= 36
             const isTiny = w >= 28 && h >= 20
+            const isMicroIcon = w >= 16 && h >= 16
 
             const changeText =
               company.changePct > 0
@@ -453,6 +454,16 @@ export const CompanyTreemapPanel: React.FC<CompanyTreemapPanelProps> = ({
                       <span className="text-[8px] font-mono font-bold truncate px-0.5">
                         {company.ticker}
                       </span>
+                    </div>
+                  ) : isMicroIcon ? (
+                    /* LEVEL 6: MICRO ICON-ONLY TILE (fits 12x12 company logo cleanly) */
+                    <div className="flex items-center justify-center h-full w-full">
+                      <CompanyLogo
+                        logoUrl={company.logoUrl}
+                        name={company.name}
+                        ticker={company.ticker}
+                        size="xxs"
+                      />
                     </div>
                   ) : null}
                 </div>

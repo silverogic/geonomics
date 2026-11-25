@@ -4,7 +4,7 @@ interface CompanyLogoProps {
   logoUrl: string | null
   name: string
   ticker: string
-  size?: 'xs' | 'sm' | 'md'
+  size?: 'xxs' | 'xs' | 'sm' | 'md'
 }
 
 export const CompanyLogo: React.FC<CompanyLogoProps> = ({
@@ -16,11 +16,13 @@ export const CompanyLogo: React.FC<CompanyLogoProps> = ({
   const [hasError, setHasError] = useState(false)
 
   const sizeClass =
-    size === 'xs'
-      ? 'w-4 h-4 text-[8px] rounded'
-      : size === 'sm'
-        ? 'w-5 h-5 text-[9px] rounded-md'
-        : 'w-6 h-6 text-[10px] rounded-md'
+    size === 'xxs'
+      ? 'w-3 h-3 text-[7px] rounded-[2px]'
+      : size === 'xs'
+        ? 'w-4 h-4 text-[8px] rounded'
+        : size === 'sm'
+          ? 'w-5 h-5 text-[9px] rounded-md'
+          : 'w-6 h-6 text-[10px] rounded-md'
 
   if (!logoUrl || hasError) {
     const initial = (name || ticker || '?').trim().charAt(0).toUpperCase()
