@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-25",
+  "updatedAt": "2026-11-26",
   "source": "Global Petrol Prices / National Energy Ministries",
   "unit": "USD/L",
   "octaneStandard": "Octane-95 (RON 95)",
@@ -194,7 +194,7 @@
     },
     "NGA": {
       "countryId": "NGA",
-      "priceUsd": 0.857,
+      "priceUsd": 0.78,
       "currencyCode": "NGN"
     },
     "THA": {
@@ -279,12 +279,12 @@
     },
     "PAK": {
       "countryId": "PAK",
-      "priceUsd": 1.177,
+      "priceUsd": 1.152,
       "currencyCode": "PKR"
     },
     "KAZ": {
       "countryId": "KAZ",
-      "priceUsd": 0.701,
+      "priceUsd": 0.705,
       "currencyCode": "KZT"
     },
     "IRN": {
@@ -319,7 +319,7 @@
     },
     "PRI": {
       "countryId": "PRI",
-      "priceUsd": 1.168,
+      "priceUsd": 1.127,
       "currencyCode": "USD"
     },
     "DOM": {
@@ -559,7 +559,7 @@
     },
     "HND": {
       "countryId": "HND",
-      "priceUsd": 1.38,
+      "priceUsd": 1.327,
       "currencyCode": "HNL"
     },
     "NIC": {
